@@ -1,0 +1,147 @@
+/* Dark by default: thumbnails and 3D previews read far better against it. */
+:root {
+  --bg: #12131a;
+  --panel: #1a1c25;
+  --panel-2: #21242f;
+  --line: #2e3240;
+  --text: #e6e8ef;
+  --muted: #9198ad;
+  --accent: #6ea8fe;
+  --ok: #4ec98a;
+  --warn: #e6b455;
+  --bad: #e2686d;
+  --pending: #6b7280;
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+button, input, select, textarea {
+  font: inherit; color: inherit;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: #0d1117; border-color: var(--accent); font-weight: 600; }
+button.danger { color: var(--bad); border-color: #4a2b2e; }
+textarea { width: 100%; min-height: 70px; resize: vertical; font-family: ui-monospace, monospace; font-size: 13px; }
+
+.app { display: flex; flex-direction: column; height: 100%; }
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.brand { font-weight: 700; letter-spacing: 0.02em; }
+.grow { flex: 1; }
+.muted { color: var(--muted); }
+.mono { font-family: ui-monospace, monospace; }
+
+.banner { padding: 10px 16px; background: #43302b; border-bottom: 1px solid #6b4a3f; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.chip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-size: 12px; }
+.chip.on { border-color: var(--accent); color: var(--accent); }
+
+.grid {
+  display: grid; gap: 12px; padding: 16px; overflow: auto;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-auto-rows: min-content;
+  align-content: start;
+}
+/* Flex column with a fixed thumb height, not aspect-ratio: an aspect-ratio
+   thumb resolves its height after the grid row is sized, so overflow:hidden
+   clips the card body away entirely. */
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  overflow: hidden; cursor: pointer;
+  display: flex; flex-direction: column;
+}
+.card:hover { border-color: var(--accent); }
+.card .thumb {
+  height: 168px; flex: 0 0 168px; background: var(--panel-2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 12px; text-align: center; padding: 12px;
+}
+.card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.card .body { padding: 10px; flex: 1 1 auto; }
+.card .name { font-weight: 600; margin-bottom: 4px; }
+
+.badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.badge { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--line); }
+.badge.pending { color: var(--pending); }
+.badge.running { color: var(--accent); }
+.badge.done { color: var(--ok); }
+.badge.failed, .badge.quarantined { color: var(--bad); }
+.badge.score-good { color: var(--ok); border-color: #2c5c44; }
+.badge.score-mid { color: var(--warn); border-color: #5c4a2c; }
+.badge.score-bad { color: var(--bad); border-color: #5c2c30; }
+
+.drawer {
+  position: fixed; inset: 0 0 0 auto; width: min(760px, 100%);
+  background: var(--panel); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,.45);
+}
+.drawer header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.drawer .content { overflow: auto; padding: 16px; display: grid; gap: 16px; }
+.tabs { display: flex; gap: 6px; padding: 0 16px 10px; }
+.tab { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); font-size: 13px; cursor: pointer; }
+.tab.on { border-color: var(--accent); color: var(--accent); }
+
+.field { display: grid; gap: 5px; }
+.field label { font-size: 12px; color: var(--muted); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.viewer { height: 380px; background: #0e0f14; border: 1px solid var(--line); border-radius: 8px; position: relative; }
+.viewer .overlay {
+  position: absolute; left: 8px; bottom: 8px; font-family: ui-monospace, monospace; font-size: 11px;
+  background: rgba(0,0,0,.6); padding: 6px 9px; border-radius: 6px; line-height: 1.6;
+}
+.viewer .controls { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; }
+.ref { margin: 0; }
+/* Capped rather than full-bleed: the plate is square, and a square as wide as
+   the drawer pushes everything below it off the screen. */
+.ref img {
+  width: 100%; max-width: 320px; border-radius: 6px; border: 1px solid var(--line);
+  background: #808080; display: block;
+}
+.ref-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.ref-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; padding-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+td, th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 500; }
+.bar { height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); }
+.empty { padding: 60px 20px; text-align: center; color: var(--muted); }
+.empty h2 { color: var(--text); }
+.checkline { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+.checkline input { width: auto; }
+
+/* --- two mesh tracks, side by side ---------------------------------------
+   A prop can be built twice -- Blender primitives and Meshy reconstruction --
+   and the whole reason to do that is to compare them, so they share a row and
+   collapse to a column only when the drawer is too narrow to hold both. */
+.tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 900px) { .tracks { grid-template-columns: 1fr; } }
+.track { display: grid; gap: 8px; min-width: 0; }
+/* Shorter than a solo viewer: two of these plus the reference plate have to
+   fit in one drawer without turning it into a scroll marathon. */
+.tracks .viewer { height: 260px; }
+.track-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.track-head .checkline { color: var(--text); }
+.track-blurb { font-size: 12px; margin: 0; }
+/* A build shown from scratch/ never passed and never shipped. It is worth
+   looking at -- that is how you choose the next rung -- but it must not read
+   as the finished article, so it is tinted with the warning colour. */
+.track-blurb.unpromoted { color: var(--warn); }
+.badge.preferred { border-color: var(--accent); color: var(--accent); }
+
+.tabs.sub { padding: 0 0 10px; }
+
+.legend { display: flex; gap: 14px; font-size: 12px; align-items: center; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }

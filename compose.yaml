@@ -1,0 +1,37 @@
+name: thaikit
+
+services:
+  web:
+    build:
+      context: .
+      target: runtime
+    image: thaikit/web:local
+    container_name: thaikit-web
+    # Bound to loopback on purpose: this API has no auth and can delete files
+    # from disk. Change it deliberately if you want it on the LAN.
+    ports:
+      - "127.0.0.1:${THAIKIT_PORT:-3733}:3733"
+    user: "${THAIKIT_UID:-1000}:${THAIKIT_GID:-1000}"
+    environment:
+      NODE_ENV: production
+      PORT: "3733"
+      THAIKIT_REPO_ROOT: /repo
+      THAIKIT_REGISTRY_PATH: /repo/registry.json
+      THAIKIT_ASSETS_DIR: /repo/assets
+      THAIKIT_SCRATCH_DIR: /repo/scratch
+      # Required on WSL2 and macOS: host writes do not deliver inotify events
+      # across a bind mount, so without polling the UI never sees the
+      # generation skills' work at all.
+      THAIKIT_WATCH_POLL: "1"
+      THAIKIT_WATCH_INTERVAL: "1000"
+    volumes:
+      - ./:/repo
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 5s

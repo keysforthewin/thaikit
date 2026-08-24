@@ -1,0 +1,298 @@
+import express from 'express';
+import fs from 'node:fs/promises';
+import { z } from 'zod';
+
+import {
+  readRegistry,
+  updateRegistry,
+  updateAsset,
+  AssetSchema,
+  etagFor,
+  etagForAsset,
+  assetDir,
+} from '@thaikit/registry-core';
+
+/** What a client may send when creating an asset; the server fills the rest. */
+const CreateInput = z.object({
+  name: z.string().min(1),
+  id: z.string().optional(),
+  category: z.string().min(1),
+  description: z.string().optional(),
+  nameTh: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  budgetClass: z.enum(['small', 'medium', 'large', 'hero']).default('medium'),
+  targetTriangles: z.number().int().positive().nullable().optional(),
+  subject: z.enum(['prop', 'animal', 'character']).optional(),
+  pivot: z.enum(['base-center', 'center', 'back-center', 'top-center']).optional(),
+  collider: z.enum(['box', 'cylinder', 'convex', 'none']).optional(),
+  placement: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+  prompts: z
+    .object({ image: z.string().optional(), texture: z.string().optional() })
+    .optional(),
+  scale: z
+    .object({
+      declared: z.object({ w: z.number(), h: z.number(), d: z.number() }),
+      primaryAxis: z.enum(['w', 'h', 'd']).optional(),
+    })
+    .optional(),
+});
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
+function buildAsset(input, taken) {
+  let id = slugify(input.id || input.name);
+  if (!id) throw Object.assign(new Error('could not derive a slug from name'), { status: 400 });
+  let n = 2;
+  const base = id;
+  while (taken.has(id)) id = `${base}-${n++}`;
+
+  const now = new Date().toISOString();
+  const image = input.prompts?.image || input.description || input.name;
+
+  return AssetSchema.parse({
+    id,
+    name: input.name,
+    nameTh: input.nameTh ?? '',
+    description: input.description ?? '',
+    category: input.category,
+    tags: input.tags ?? [],
+    prompts: {
+      image,
+      imageBase: image,
+      texture: input.prompts?.texture ?? '',
+      styleProfileId: 'thai-street-photoreal-v1',
+    },
+    subject: input.subject ?? 'prop',
+    budgetClass: input.budgetClass,
+    targetTriangles: input.targetTriangles ?? null,
+    scale: {
+      declared: input.scale?.declared ?? { w: 0.5, h: 0.5, d: 0.5 },
+      measured: null,
+      primaryAxis: input.scale?.primaryAxis ?? 'h',
+      tolerance: 0.1,
+    },
+    pivot: input.pivot ?? 'base-center',
+    placement: input.placement ?? ['floor'],
+    collider: input.collider ?? 'box',
+    status: { image: 'pending', model: 'pending' },
+    image: null,
+    model: {},
+    license: {},
+    hidden: false,
+    notes: input.notes ?? '',
+    createdAt: now,
+    updatedAt: now,
+  });
+}
+
+/** Deep-merge for nested objects; arrays are replaced wholesale. */
+function merge(target, patch) {
+  const out = { ...target };
+  for (const [key, value] of Object.entries(patch)) {
+    if (value && typeof value === 'object' && !Array.isArray(value) && typeof out[key] === 'object' && out[key] !== null && !Array.isArray(out[key])) {
+      out[key] = merge(out[key], value);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+function guardReadOnly(state) {
+  return (req, res, next) => {
+    if (state.readOnly) {
+      return res.status(503).json({
+        error: 'registry is read-only',
+        reason: state.readOnlyReason,
+      });
+    }
+    next();
+  };
+}
+
+export function assetsRouter(state) {
+  const router = express.Router();
+  const noWrites = guardReadOnly(state);
+
+  router.get('/assets', async (req, res, next) => {
+    try {
+      const registry = await readRegistry();
+      const { q, imageStatus, modelStatus, subject, category, tag, minScore, maxScore, sort, order, page, limit, includeHidden } =
+        req.query;
+
+      // One build per prop now, so there is nothing to reconcile: the score, the
+      // status and the triangle count each have exactly one place to come from.
+      const score = (a) => a.model.review.score;
+      const triangles = (a) => a.model.triangles;
+
+      let items = registry.assets;
+      if (includeHidden !== '1') items = items.filter((a) => !a.hidden);
+      if (imageStatus) items = items.filter((a) => a.status.image === imageStatus);
+      if (modelStatus) items = items.filter((a) => a.model.status === modelStatus);
+      if (subject) items = items.filter((a) => a.subject === subject);
+      if (category) items = items.filter((a) => a.category === category);
+      if (tag) items = items.filter((a) => a.tags.includes(tag));
+      if (minScore) items = items.filter((a) => (score(a) ?? -1) >= Number(minScore));
+      if (maxScore) items = items.filter((a) => (score(a) ?? 101) <= Number(maxScore));
+      if (q) {
+        const needle = String(q).toLowerCase();
+        items = items.filter((a) =>
+          [a.id, a.name, a.nameTh, a.description, a.category, ...a.tags]
+            .join(' ')
+            .toLowerCase()
+            .includes(needle),
+        );
+      }
+
+      const key = sort || 'name';
+      const dir = order === 'desc' ? -1 : 1;
+      items = [...items].sort((a, b) => {
+        const av = key === 'score' ? (score(a) ?? -1) : key === 'triangles' ? (triangles(a) ?? -1) : a[key] ?? '';
+        const bv = key === 'score' ? (score(b) ?? -1) : key === 'triangles' ? (triangles(b) ?? -1) : b[key] ?? '';
+        return av < bv ? -dir : av > bv ? dir : 0;
+      });
+
+      const total = items.length;
+      const size = limit ? Number(limit) : total;
+      const offset = page ? (Number(page) - 1) * size : 0;
+
+      res.set('ETag', etagFor(registry));
+      res.json({ items: items.slice(offset, offset + size), total, etag: etagFor(registry) });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/assets/:id', async (req, res, next) => {
+    try {
+      const registry = await readRegistry();
+      const asset = registry.assets.find((a) => a.id === req.params.id);
+      if (!asset) return res.status(404).json({ error: `no such asset: ${req.params.id}` });
+      // Per-asset, so a generation skill writing a different prop does not
+      // invalidate this editor. The list route keeps the registry-wide ETag.
+      res.set('ETag', etagForAsset(asset));
+      res.json(asset);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post('/assets', noWrites, async (req, res, next) => {
+    try {
+      const input = CreateInput.parse(req.body);
+      let created;
+      const { etag } = await updateRegistry((registry) => {
+        const taken = new Set(registry.assets.map((a) => a.id));
+        created = buildAsset(input, taken);
+        registry.assets.push(created);
+        return registry;
+      });
+      res.status(201).set('ETag', etag).location(`/api/assets/${created.id}`).json(created);
+    } catch (err) {
+      if (err instanceof z.ZodError) err.status = 400;
+      next(err);
+    }
+  });
+
+  const applyUpdate = (replace) => async (req, res, next) => {
+    try {
+      const ifMatch = req.get('If-Match') || undefined;
+      const { asset, etag } = await updateAsset(
+        req.params.id,
+        (current) => {
+          const next = replace
+            ? { ...req.body, id: current.id, createdAt: current.createdAt }
+            : merge(current, req.body);
+          next.updatedAt = new Date().toISOString();
+          return AssetSchema.parse(next);
+        },
+        { ifMatch },
+      );
+      res.set('ETag', etag).json(asset);
+    } catch (err) {
+      if (err instanceof z.ZodError) err.status = 400;
+      next(err);
+    }
+  };
+
+  router.patch('/assets/:id', noWrites, applyUpdate(false));
+  router.put('/assets/:id', noWrites, applyUpdate(true));
+
+  router.delete('/assets/:id', noWrites, async (req, res, next) => {
+    try {
+      let removed = null;
+      await updateRegistry((registry) => {
+        const i = registry.assets.findIndex((a) => a.id === req.params.id);
+        if (i === -1) throw Object.assign(new Error(`no such asset: ${req.params.id}`), { status: 404 });
+        removed = registry.assets.splice(i, 1)[0];
+        return registry;
+      });
+
+      let purged = false;
+      if (req.query.purgeFiles === 'true') {
+        // Deleting generated files is destructive and opt-in, never the default.
+        await fs.rm(assetDir(req.params.id), { recursive: true, force: true });
+        purged = true;
+      }
+      res.json({ deleted: removed, purgedFiles: purged });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post('/assets/bulk', noWrites, async (req, res, next) => {
+    try {
+      const { mode = 'merge', assets = [] } = req.body ?? {};
+      const dryRun = req.query.dryRun === '1';
+      const inputs = z.array(CreateInput).parse(assets);
+
+      const registry = await readRegistry();
+      const taken = new Set(registry.assets.map((a) => a.id));
+      const byName = new Map(registry.assets.map((a) => [a.name.toLowerCase(), a]));
+
+      const created = [];
+      const updated = [];
+      const skipped = [];
+      for (const input of inputs) {
+        const existing = byName.get(input.name.toLowerCase());
+        if (existing && mode === 'merge') {
+          skipped.push({ name: input.name, reason: `already exists as ${existing.id}` });
+          continue;
+        }
+        if (existing && mode === 'replace') {
+          updated.push(input.name);
+          continue;
+        }
+        const asset = buildAsset(input, taken);
+        taken.add(asset.id);
+        created.push(asset);
+      }
+
+      if (dryRun) {
+        return res.json({ dryRun: true, created: created.map((a) => a.id), updated, skipped });
+      }
+
+      if (created.length) {
+        await updateRegistry((r) => {
+          r.assets.push(...created);
+          return r;
+        });
+      }
+      res.json({ created: created.map((a) => a.id), updated, skipped });
+    } catch (err) {
+      if (err instanceof z.ZodError) err.status = 400;
+      next(err);
+    }
+  });
+
+  return router;
+}

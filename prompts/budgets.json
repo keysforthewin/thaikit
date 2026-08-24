@@ -1,0 +1,93 @@
+{
+  "$comment": "Poly budgets by prop size class for a LOW-END browser FPS. targetTriangles does two jobs now: it is what Meshy is asked for when img2threejs generates the reference mesh, and it is written into the sculpt spec's performanceBudget.targetTriangles, which picks the tessellation tier for every primitive the procedural factory builds (low <=6k, standard <=60k, else hero). Quality and iteration are img2threejs's job -- thaikit has no rubric and no judge of its own any more.",
+  "limits": {
+    "maxCostPerAssetUsd": 3,
+    "maxCostPerRunUsd": 50,
+    "$comment": "maxCorrections is img2threejs's total correction ceiling, passed as `state.py init --max-total`. Its own default is 6; 10 buys a couple more rungs on a hard prop without letting a stuck loop run forever. --max-per-pass stays at the skill's default of 3.",
+    "maxCorrections": 10,
+    "maxCorrectionsPerPass": 3
+  },
+  "classes": {
+    "small": {
+      "examples": [
+        "bowl",
+        "sandal",
+        "bottle",
+        "cleaver",
+        "incense pot"
+      ],
+      "longestDimMeters": [
+        0,
+        0.5
+      ],
+      "targetTriangles": 800
+    },
+    "medium": {
+      "examples": [
+        "plastic stool",
+        "fan",
+        "cooler",
+        "helmet",
+        "sign board"
+      ],
+      "longestDimMeters": [
+        0.5,
+        2
+      ],
+      "targetTriangles": 2000
+    },
+    "large": {
+      "examples": [
+        "food cart",
+        "tuk-tuk",
+        "spirit house",
+        "power-pole cluster"
+      ],
+      "longestDimMeters": [
+        2,
+        5
+      ],
+      "targetTriangles": 4000
+    },
+    "hero": {
+      "examples": [
+        "shophouse facade section",
+        "market stall canopy"
+      ],
+      "longestDimMeters": [
+        5,
+        999
+      ],
+      "targetTriangles": 8000
+    },
+    "$comment": "Texture-size and VRAM budgets are gone with the GLB pipeline: a procedural factory ships no texture files, and what canvas textures it generates are measured after the fact by render-model.mjs rather than budgeted up front. meshyPolycount is gone too -- Meshy honours target_polycount closely, so the reference mesh is simply asked for targetTriangles. large shares medium's tier and differs only in triangle budget: a food cart is not denser than a stool, it just has more silhouette."
+  },
+  "meshy": {
+    "endpoint": "meshy/v7/image-to-3d",
+    "provider": "fal",
+    "falArgs": {
+      "should_remesh": true,
+      "should_texture": true,
+      "enable_pbr": true,
+      "ultra_mode": true,
+      "topology": "triangle",
+      "symmetry_mode": "auto"
+    },
+    "$comment": "The REFERENCE mesh only -- a structural and visual baseline that never ships. img2threejs calls this itself via `generate_reference_mesh.py --provider fal`; thaikit does not generate it separately. enable_pbr must stay true: those maps are the material evidence the spec's material pass reads. ultra_mode is v7-only and is the quality ask. topology stays 'triangle': 'quad' at the same target_polycount returned 3585 triangles against triangle's 752 on the same plate. The endpoint takes NO seed -- do not pass one, it is silently discarded. Rigging and pose are set per-asset from `subject`, not here: only a human character gets a-pose and enable_rigging, because Meshy rigs humanoids only."
+  },
+  "image": {
+    "endpoint": "fal-ai/flux/schnell",
+    "editEndpoint": "fal-ai/nano-banana-pro/edit",
+    "image_size": "square_hd",
+    "num_inference_steps": 4,
+    "output_format": "png",
+    "usdPerImage": 0.003,
+    "$comment": "flux/schnell at ~1/3 of a cent and ~1.5s. nano-banana-pro is 50x the price and is reserved for an escalation after three schnell failures WITH the user's consent -- it stays here only as editEndpoint."
+  },
+  "blender": {
+    "host": "127.0.0.1",
+    "port": 9876,
+    "minVersion": "4.2",
+    "$comment": "KEPT BUT UNUSED. No skill opens Blender any more -- generation is procedural Three.js code. The wiring stays for ad-hoc work. Historic note: both GLB tracks finished in Blender, reached through the `blender` MCP server talking to the BlenderMCP addon in a LIVE Blender session. There is no headless path here: if Blender is not open and connected, every Blender step fails. scripts/blender-preflight.mjs turns that into one clear message instead of a mid-build socket error. minVersion is 4.2 because shade-smooth-by-angle became a modifier there and the build scripts use it."
+  }
+}

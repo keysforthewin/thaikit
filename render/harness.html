@@ -1,0 +1,193 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>thaikit render harness</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #3a3a3a; overflow: hidden; }
+  canvas { display: block; }
+</style>
+<!-- Everything is local and version-pinned, so renders are reproducible and work
+     offline. This three instance is also the one handed to the model module:
+     the factory is bundled with `three` external, so it asks for three and gets
+     THIS one rather than loading a second copy. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const SIZE = 1024;
+const BACKGROUND = 0x3a3a3a;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);            // fixed, so renders are byte-comparable
+renderer.setSize(SIZE, SIZE, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(BACKGROUND);
+const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+
+// A fixed three-point rig in code -- no HDR file dependency, so every render of
+// the same GLB is identical.
+const lights = new THREE.Group();
+lights.add(new THREE.HemisphereLight(0xffffff, 0x404040, 1.6));
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 5, 4);
+const fill = new THREE.DirectionalLight(0xffffff, 0.9); fill.position.set(-4, 2, 3);
+const rim = new THREE.DirectionalLight(0xffffff, 1.1); rim.position.set(0, 3, -5);
+lights.add(key, fill, rim);
+scene.add(lights);
+
+let model = null;
+const sphere = new THREE.Sphere(new THREE.Vector3(), 1);
+const originalMaterials = new Map();
+
+// The UV-checker and albedo passes went with the GLB rubric they served: this
+// pipeline emits code, so there is no unwrap to inspect and no baked-in
+// lighting to isolate. Clay and wire survive because they are what a silhouette
+// and a topology read need.
+const MATERIALS = {
+  clay: function () { return new THREE.MeshStandardMaterial({ color: 0xb0b0b0, roughness: 0.85, metalness: 0 }); },
+  wire: function () { return new THREE.MeshBasicMaterial({ color: 0x8fd9ff, wireframe: true }); },
+  normal: function () { return new THREE.MeshNormalMaterial({ flatShading: true }); }
+};
+
+window.__thaikit = {
+  /**
+   * Run the built factory and put its Group in the scene.
+   *
+   * The module is CommonJS with `three` external (see build-model-module.mjs),
+   * so it is evaluated rather than imported and handed the THREE above. That is
+   * what makes the factory's Mesh the same class as the renderer's Mesh -- a
+   * second copy of three would render nothing and explain nothing.
+   */
+  async load(url, exportName) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('fetch ' + url + ': ' + res.status + ' ' + res.statusText);
+    const code = await res.text();
+
+    const mod = { exports: {} };
+    new Function('module', 'exports', 'require', code)(mod, mod.exports, function (name) {
+      if (name === 'three') return THREE;
+      // Anything else is a bundling mistake, not a runtime one: the factory is
+      // supposed to import three and nothing else. Say which, so the fix is
+      // obvious rather than a blank canvas.
+      throw new Error('model module required "' + name + '"; only "three" is provided');
+    });
+
+    const factory = mod.exports[exportName || 'createObjectModel'] || mod.exports.default;
+    if (typeof factory !== 'function') {
+      throw new Error(
+        'no factory export; expected "' + (exportName || 'createObjectModel') +
+        '" or a default, got: ' + Object.keys(mod.exports).join(', ')
+      );
+    }
+
+    if (model) scene.remove(model);
+    model = factory({}, {});
+    if (!model || !model.isObject3D) throw new Error('factory did not return an Object3D');
+    scene.add(model);
+    model.updateMatrixWorld(true);
+
+    let triangles = 0, vertices = 0, drawCalls = 0;
+    const materials = new Set();
+    const images = new Set();
+    let gpuBytes = 0;
+    model.traverse(function (o) {
+      if (!o.isMesh) return;
+      originalMaterials.set(o.uuid, o.material);
+      materials.add(o.material.uuid);
+      drawCalls++;
+      const g = o.geometry;
+      vertices += g.attributes.position ? g.attributes.position.count : 0;
+      triangles += g.index ? g.index.count / 3 : (g.attributes.position ? g.attributes.position.count : 0) / 3;
+
+      // A procedural factory has no texture files, but it can generate canvas
+      // textures -- and those cost VRAM exactly like loaded ones do.
+      var keys = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap'];
+      for (var i = 0; i < keys.length; i++) {
+        var tex = o.material[keys[i]];
+        var img = tex && tex.image;
+        if (!img || images.has(img)) continue;
+        images.add(img);
+        gpuBytes += Math.round((img.width || 0) * (img.height || 0) * 4 * (4 / 3));
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(model);
+    box.getBoundingSphere(sphere);
+
+    // sculptRuntime is the contract img2threejs is asked to honour: the named
+    // pivots and sockets for everything that moves. Reported here so the render
+    // pass is also what records them.
+    const rt = model.userData && model.userData.sculptRuntime;
+    return {
+      triangles: triangles, vertices: vertices, drawCalls: drawCalls,
+      materials: materials.size, textures: images.size, gpuBytesEstimate: gpuBytes,
+      bounds: { min: box.min.toArray(), max: box.max.toArray() },
+      radius: sphere.radius,
+      runtime: rt ? {
+        nodes: rt.nodes || 0,
+        sockets: (rt.sockets || []).map(function (s) { return s && s.name ? s.name : String(s); }),
+        pivots: (rt.pivots || []).map(function (s) { return s && s.name ? s.name : String(s); }),
+        colliders: (rt.colliders || []).map(function (s) { return s && s.name ? s.name : String(s); }),
+        destructionGroups: (rt.destructionGroups || []).map(function (s) { return s && s.name ? s.name : String(s); })
+      } : null
+    };
+  },
+
+  setMode(mode) {
+    model.traverse(function (o) {
+      if (!o.isMesh) return;
+      if (mode === 'beauty') {
+        o.material = originalMaterials.get(o.uuid);
+      } else {
+        o.material = MATERIALS[mode]();
+      }
+    });
+  },
+
+  /** Frame the bounding sphere identically at every angle, so passes align. */
+  setCamera(azimuthDeg, elevationDeg) {
+    const az = THREE.MathUtils.degToRad(azimuthDeg);
+    const el = THREE.MathUtils.degToRad(elevationDeg);
+    // r / sin(fov/2) is the distance at which the bounding sphere is exactly
+    // tangent to the frustum. Anything below ~1.0 crops props whose height
+    // approaches their bounding-sphere diameter -- a 0.88 m drum lost its rims
+    // at 0.62. Stay just inside the tangent fit so every prop is whole, with a
+    // little margin, and framed identically pass to pass.
+    const dist = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(35) / 2)) * 0.92;
+    camera.position.set(
+      sphere.center.x + dist * Math.cos(el) * Math.sin(az),
+      sphere.center.y + dist * Math.sin(el),
+      sphere.center.z + dist * Math.cos(el) * Math.cos(az)
+    );
+    camera.lookAt(sphere.center);
+    camera.updateProjectionMatrix();
+  },
+
+  render() {
+    renderer.render(scene, camera);
+    return true;
+  },
+
+  /** Mean luma, used to assert the GPU actually drew something. */
+  meanLuma() {
+    const gl = renderer.getContext();
+    const px = new Uint8Array(SIZE * SIZE * 4);
+    gl.readPixels(0, 0, SIZE, SIZE, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    let sum = 0;
+    for (let i = 0; i < px.length; i += 4) {
+      sum += 0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2];
+    }
+    return sum / (SIZE * SIZE);
+  }
+};
+
+window.__thaikitReady = true;
+</script>
