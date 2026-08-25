@@ -7,7 +7,8 @@
  * default, which is why this exists: the 7-Eleven shipped eight such pairs, including its whole
  * shopfront frame against the facade wall.
  *
- * SCOPE, and it matters: this compares BOUNDING-BOX faces only. It catches envelope coincidences —
+ * SCOPE, and it matters: this compares BOUNDING-BOX faces only -- one box per mesh, and one per
+ * INSTANCE of an instanced cluster. It catches envelope coincidences —
  * a panel flush on a wall, two boxes sharing a base plane — and is blind to interior profile edges,
  * such as the inner edge of an extruded ring. Two of the 7-Eleven's worst cases were exactly that
  * and had to be read off a zoomed render. A clean report here means the envelopes are clear, not
@@ -44,10 +45,30 @@ new Function('module', 'exports', 'require', readFileSync(file, 'utf8'))(mod, mo
 const root = mod.exports.createObjectModel(null, {});
 root.updateMatrixWorld(true);
 const items = [];
+const push = (name, box) =>
+  items.push({ name: name.slice(0, 30), min: box.min.toArray(), max: box.max.toArray() });
+const instMatrix = new THREE.Matrix4();
+const instBox = new THREE.Box3();
 root.traverse((o) => {
   if (!o.isMesh) return;
-  const b = new THREE.Box3().setFromObject(o);
-  items.push({ name: (o.name || '?').slice(0, 30), min: b.min.toArray(), max: b.max.toArray() });
+  // An InstancedMesh must be expanded to one box PER INSTANCE. `Box3.setFromObject` returns the
+  // envelope over every instance, so a cluster of forty scattered parts collapses into one box
+  // spanning all of them -- and this kit builds almost everything as instanced clusters, to hold
+  // the draw-call ceiling. That envelope is wrong in both directions: it invents coincidences
+  // between parts that are metres apart (the Makro store's coping at y=4.08 and its kerb at y=0.00
+  // share the x=+-4.000 plane but are disjoint regions of it, and were reported as three flickering
+  // pairs), and it hides real ones between two instances inside the same cluster.
+  if (o.isInstancedMesh) {
+    o.geometry.computeBoundingBox();
+    for (let i = 0; i < o.count; i++) {
+      o.getMatrixAt(i, instMatrix);
+      instBox.copy(o.geometry.boundingBox)
+        .applyMatrix4(instMatrix.premultiply(o.matrixWorld));
+      push(`${o.name || '?'}#${i}`, instBox);
+    }
+    return;
+  }
+  push(o.name || '?', new THREE.Box3().setFromObject(o));
 });
 const groundY = Math.min(...items.map((i) => i.min[1]));
 
