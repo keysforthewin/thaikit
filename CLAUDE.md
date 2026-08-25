@@ -151,6 +151,45 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   components, validated clean and shipped every mesh in blue enamel. img2threejs's
   `_shared/material_binding.py` now accepts both, and the validator errors on a
   component that names neither while the spec declares more than one material.
+- **Declare `textureless` on every material that does not need a texture — that is
+  the DEFAULT, and an opt-in is what needs arguing.** img2threejs's
+  `createSculptMaterial` otherwise synthesises FIVE canvases per material at
+  `textureResolution`, written pixel by pixel in JavaScript. Thirteen materials at
+  1024 cost **24 seconds inside `createObjectModel`**, before the drawer can show
+  anything, plus 34 textures, 35 megapixels and ~64 MB of VRAM on a kit aimed at
+  low-end integrated GPUs. Cost is the SQUARE of the resolution (256 → 1.6 s,
+  512 → 6.5 s, 1024 → 26 s), so turning the resolution down only makes a bad
+  default cheaper. `textureless: {declared: true, evidence: [...]}` skips it
+  outright: 24,180 ms → 23 ms on the 7-Eleven. The evidence array must NAME a
+  reference region or measurement, and the material must then carry no
+  `textureResolution`, `referencePbr`, `textureProjection` or
+  `surfaceFrequencyBands`; the validator enforces both halves.
+  It is a correctness fix too: whenever a texture set exists the generator forces
+  `color` to white and `roughness` to 1 and reads both from the generated maps,
+  discarding the authored albedo — which is what rendered a white building
+  mid-grey and sent a whole pass chasing palettes. Opt IN only where the detail is
+  resolvable at prop distance AND identity-defining: the oil drum's rust and worn
+  hoop crowns earn it at 1.0 s; flat paint, glass, mill-finish metal, render,
+  membrane and vinyl do not. A canvas texture assigned AFTER material construction
+  (a brand fascia) is unaffected and stays the right route for printed graphics.
+- **Never author two surfaces flush in the same plane facing the same way — they
+  z-fight.** Coincident co-facing faces tear into interleaved triangles as the
+  camera moves; the 7-Eleven shipped EIGHT such pairs, the visible one being the
+  whole shopfront frame against the facade wall at z=3.500 over 6.2 x 3.19 m. A
+  butt joint of OPPOSED faces is fine and is how solids are meant to meet. Make a
+  panel stand proud of what it sits on, and make a frame OVERLAP the opening it
+  fills rather than meeting its reveal edge — a frame whose hole is exactly the
+  wall's opening puts four coincident reveal faces in the model.
+  `node scripts/check-coplanar.mjs --id <id>` catches these; it exits 1 when it
+  finds any. It compares BOUNDING-BOX faces only, so it is blind to interior
+  profile edges — a ring's inner rail sitting on a plinth top, say — and two of the
+  7-Eleven's worst cases had to be read off a zoomed render instead. A clean report
+  means the envelopes are clear, not that the prop is.
+- **Buildings are exterior shells. No interior geometry.** A prop kit is only ever
+  looked at from outside, so an interior costs draw calls, geometries and VRAM for
+  something nobody sees. With nothing behind it the glazing then has to stop being
+  a window: author it as a tinted, mostly opaque pane (opacity ~0.92, low
+  roughness) so it reads as glass instead of a hole punched in the wall.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

@@ -167,7 +167,42 @@ never invent it.
 >   confidence below 0.7 is a stop signal, not a pass — then the material views /
 >   comparator / gate chain. Solid albedo for flat paint; a projected de-lit
 >   reference crop for anything patterned or printed. No baked lighting or AO in
->   base colour.
+>   base colour. Verify each crop sits on the part you think it does: three
+>   materials here were sampled off a crop of a different surface and only the
+>   confidence score gave it away.
+> - **Declare `textureless` on every material that does not need a texture — this
+>   is the default, and the exceptions are what need arguing.** `createSculptMaterial`
+>   otherwise synthesises FIVE canvases per material at `textureResolution`, written
+>   pixel by pixel in JavaScript. Thirteen materials at 1024 cost **24 seconds inside
+>   `createObjectModel`** — before the drawer can show anything — plus 34 textures,
+>   35 megapixels and ~64 MB of VRAM on a kit aimed at low-end integrated GPUs. It
+>   scales as the SQUARE of the resolution (256 → 1.6 s, 512 → 6.5 s, 1024 → 26 s),
+>   so lowering the resolution only makes a bad default cheaper. Declaring
+>   `textureless: {declared: true, evidence: [...]}` skips it: 24,180 ms → 23 ms.
+>   The evidence array must NAME a reference region or a measurement, and the
+>   material must then carry no `textureResolution`, `referencePbr`,
+>   `textureProjection` or `surfaceFrequencyBands` — the validator enforces both
+>   halves.
+>
+>   It is also a CORRECTNESS fix, not only a speed one: whenever a texture set
+>   exists the generator forces `color` to white and `roughness` to 1 and reads
+>   both from the generated maps, discarding the authored albedo and the
+>   reference-derived roughness. That is what renders a white building mid-grey.
+>
+>   Opt IN only where the surface carries detail a viewer resolves at prop
+>   distance and that detail is identity-defining — the oil drum's rust and worn
+>   hoop crowns earn it at 1.0 s; flat paint, bare glass, mill-finish metal,
+>   render, membrane and vinyl do not. A generated canvas texture assigned AFTER
+>   material construction (the way a brand fascia is) is unaffected by the
+>   declaration and stays the right route for printed graphics.
+> - **Do not author surfaces flush against one another — coincident co-facing faces
+>   z-fight.** Two surfaces in the same plane pointing the same way tear into
+>   interleaved triangles as the camera moves. An OPPOSED butt joint is fine. Make
+>   panels stand proud of what they sit on, and make a frame OVERLAP the opening it
+>   fills instead of meeting its reveal edge exactly. Check with
+>   `node scripts/check-coplanar.mjs --id <id>` after building, and by eye at high
+>   zoom on any seam — the check only sees bounding-box faces, not interior profile
+>   edges like a ring's inner rail.
 > - **Pivots and sockets are required where something moves, and nowhere else.**
 >   The default for a prop is **one** pivot — the root, at `<pivot>` — and **no**
 >   sockets. A named pivot is a promise that a part turns on that axis; a named

@@ -187,9 +187,16 @@ async function main() {
     log(`module : ${toRepoRelative(modulePath)}`);
 
     let stats;
+    let factoryMs = null;
     try {
+      // Timed, because the factory's own build cost is invisible in every other number here and
+      // is the thing a person actually waits on before the drawer shows anything. The 7-Eleven
+      // spent 24 SECONDS in createObjectModel synthesising procedural texture canvases while
+      // reporting a perfectly healthy 2,804 triangles.
+      const t0 = Date.now();
       stats = await page.evaluate(
         (url, name) => window.__thaikit.load(url, name), moduleUrl, exportName);
+      factoryMs = Date.now() - t0;
     } catch (err) {
       throw new Error(
         `the factory failed to run: ${err.message}` +
@@ -200,8 +207,23 @@ async function main() {
     log(`stats  : ${stats.triangles} tris, ${stats.drawCalls} draw calls, ` +
         `${stats.materials} materials, ${stats.uniqueGeometries} geometries, ` +
         `${stats.textures} textures`);
+    if (factoryMs !== null) {
+      log(`factory: built in ${factoryMs} ms` +
+          (stats.gpuBytesEstimate ? ` (${(stats.gpuBytesEstimate / 1048576).toFixed(1)} MB texture VRAM)` : ''));
+    }
     if (stats.triangles === 0) {
       throw new Error('the factory produced zero triangles; there is nothing to render');
+    }
+
+    // A slow factory is almost always synthesised procedural texture sets, not geometry:
+    // createSculptMaterial builds FIVE canvases per material at textureResolution, pixel by pixel
+    // in JavaScript, and the cost is the SQUARE of the resolution. Warned rather than thrown,
+    // because a prop whose surface detail IS its identity earns its textures -- the oil drum's
+    // rust and worn hoop crowns build in 1.0 s. What this catches is the default nobody chose.
+    if (factoryMs !== null && (factoryMs > 2000 || stats.textures > 8)) {
+      log(`WARN   : slow factory (${factoryMs} ms, ${stats.textures} textures). Almost always ` +
+          'procedural texture synthesis rather than geometry. Declare textureless on every ' +
+          'material whose surface a viewer does not resolve at prop distance -- see CLAUDE.md.');
     }
 
     // Measured against the class budget, and REPORTED rather than thrown. This
