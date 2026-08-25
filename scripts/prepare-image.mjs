@@ -168,6 +168,11 @@ async function inspect(buffer) {
     components: sizes.filter((s) => s > area * 0.005).length,
     largestComponentPct: sizes.length ? (Math.max(...sizes) / area) * 100 : 0,
     bbox: maxX < 0 ? null : { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 },
+    // How much of the FRAME the object's bounding box spans, on its longer
+    // axis. Area alone cannot tell "drawn too small" from "tall and thin":
+    // a sign plate on a post fills the height as asked and still covers under
+    // 15% of the pixels, and so does a tapering stupa or a dog lying flat.
+    bboxSpan: maxX < 0 ? 0 : Math.max((maxX - minX + 1) / width, (maxY - minY + 1) / height),
     backgroundMeanLuma: +bgMean.toFixed(1),
     backgroundStdev: +Math.sqrt(Math.max(0, bgVar)).toFixed(1),
     contactShadowPct: (darkBottom / (width * (height - bandStart))) * 100,
@@ -191,8 +196,19 @@ export async function prepareImage({ inPath, outPath, padding = 0.08, size = 102
       `${stats.components} separate objects in frame - Meshy fuses them into one lump`,
     );
   }
-  if (stats.coveragePct < 15) {
-    rejections.push(`the object fills only ${stats.coveragePct.toFixed(1)}% of the frame`);
+  // Low area is only "too small" when the object also fails to span the frame.
+  // A high-aspect silhouette is framed correctly at a fraction of the area, so
+  // the span is what decides; the 3% floor below still catches a genuinely
+  // tiny object, or one so thin there is nothing for Meshy to reconstruct.
+  if (stats.coveragePct < 15 && stats.bboxSpan < 0.55) {
+    rejections.push(
+      `the object fills only ${stats.coveragePct.toFixed(1)}% of the frame ` +
+        `and spans only ${(stats.bboxSpan * 100).toFixed(0)}% of it`,
+    );
+  } else if (stats.coveragePct < 3) {
+    rejections.push(
+      `the object fills only ${stats.coveragePct.toFixed(1)}% of the frame - too thin to reconstruct`,
+    );
   }
   if (stats.coveragePct > 75) {
     rejections.push(
