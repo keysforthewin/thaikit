@@ -58,7 +58,7 @@ too — you cannot improve a prompt you have not read:
 node -e "const r=require('./registry.json');for(const a of r.assets)console.log(
   [a.id,a.category,a.budgetClass,
    \`\${a.scale.declared.w}x\${a.scale.declared.h}x\${a.scale.declared.d}m\`,
-   \`img:\${a.status.image}/mesh:\${a.status.mesh}\`,a.tags.join('+'),
+   \`img:\${a.status.image}/model:\${a.status.model}\`,a.tags.join('+'),
    JSON.stringify(a.prompts.image)].join(' | '))"
 ```
 
@@ -163,8 +163,9 @@ than about ten edits, as with adding.
 
 **What you may change.** The authoring fields, and nothing else:
 `name`, `nameTh`, `description`, `category`, `tags`, `notes`, `hidden`,
-`subject`, `budgetClass`, `targetTriangles`, `pivot`,
-`placement`, `collider`, `prompts.image`, `prompts.texture`,
+`subject`, `budgetClass`, `targetTriangles`, `maxDrawCalls`, `maxMaterials`,
+`maxUniqueGeometries`, `pivot`,
+`placement`, `collider`, `destructionGroups`, `prompts.image`, `prompts.texture`,
 `prompts.styleProfileId`, `scale.declared.{w,h,d}`, `scale.primaryAxis`,
 `scale.tolerance`.
 
@@ -194,9 +195,38 @@ Requeueing spends money on the next generation run, so do it when the user asked
 for a regeneration or a fix to something visibly wrong — not as tidiness.
 
 **A resize reclassifies.** Changing `scale.declared` re-derives `budgetClass`
-from the new longest dimension, because size is what drives the triangle
+from the new longest dimension, because size is what drives the scene
 budget. The script reports the reclassification; pass an explicit
 `budgetClass` in the same edit to override it.
+
+**`collider` and `destructionGroups` are the runtime contract.** They are design
+INTENT, declared before the build and checked against it at promotion, not a
+description read off a finished model. `collider` is the shape of the cheap proxy
+a physics engine tests against instead of the mesh (`none` means nothing collides
+with this prop, and the model must then expose no colliders). `destructionGroups`
+names the assemblies the prop must break into — `["lid", "body", "base"]` for a
+crate whose lid comes off — and empty means not breakable, which is the right
+answer for most props.
+
+Both directions are a defect: a group declared and not built means the prop does
+not come apart the way its entry says, and a group built and not declared is
+contract a consumer may come to rely on that nobody asked for. So name only the
+assemblies that physically separate, and group by what actually stays together —
+a lid and the hinge it swings on are one assembly, not two.
+
+**The budget is four ceilings, not one number.** `budgetClass` sets all four in
+`prompts/budgets.json`: `targetTriangles` (rasterisation), `maxDrawCalls` (one
+CPU submission per component, per frame), `maxMaterials` (a shader and
+render-state switch each) and `maxUniqueGeometries` (VRAM and upload). They are
+separate costs, and a prop can sit at a third of its triangle budget and still be
+the thing that costs a low-end GPU its frame.
+
+Leave all four null and the class supplies them, which is right for nearly every
+prop. Set one only when a prop has genuinely earned a different ceiling than its
+size implies — a market-stall canopy that truly needs a third material, a bollard
+that should be one mesh even though it is `medium` — and say why in `notes`. An
+override is a standing exemption from the kit's own budget, so it wants a reason
+attached to it, not a number typed to make a build pass.
 
 **Auditing.** When asked to review or improve the list rather than change named
 entries, read the dump from step 1 and look for: image prompts carrying style,

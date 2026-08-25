@@ -1,5 +1,5 @@
 {
-  "$comment": "Poly budgets by prop size class for a LOW-END browser FPS. targetTriangles does two jobs now: it is what Meshy is asked for when img2threejs generates the reference mesh, and it is written into the sculpt spec's performanceBudget.targetTriangles, which picks the tessellation tier for every primitive the procedural factory builds (low <=6k, standard <=60k, else hero). Quality and iteration are img2threejs's job -- thaikit has no rubric and no judge of its own any more.",
+  "$comment": "Scene budgets by prop size class for a LOW-END browser FPS. FOUR axes, and they are not substitutes for each other: targetTriangles is what the GPU rasterises, maxDrawCalls is CPU submissions per frame, maxMaterials is shader/render-state switches, and maxUniqueGeometries is VRAM plus upload cost. targetTriangles additionally does two jobs of its own -- it is what Meshy is asked for when img2threejs generates the reference mesh, and it is written into the sculpt spec's performanceBudget.targetTriangles, which picks the tessellation tier for every primitive the procedural factory builds (low <=6k, standard <=60k, else hero). All four are written into performanceBudget, counted from the spec by img2threejs's validator under --strict-quality, and measured again off the built scene by scripts/render-model.mjs. Quality and iteration are img2threejs's job -- thaikit has no rubric and no judge of its own any more.",
   "limits": {
     "maxCostPerAssetUsd": 3,
     "maxCostPerRunUsd": 50,
@@ -20,7 +20,10 @@
         0,
         0.5
       ],
-      "targetTriangles": 800
+      "targetTriangles": 800,
+      "maxDrawCalls": 1,
+      "maxMaterials": 1,
+      "maxUniqueGeometries": 1
     },
     "medium": {
       "examples": [
@@ -34,7 +37,10 @@
         0.5,
         2
       ],
-      "targetTriangles": 2000
+      "targetTriangles": 2000,
+      "maxDrawCalls": 2,
+      "maxMaterials": 2,
+      "maxUniqueGeometries": 2
     },
     "large": {
       "examples": [
@@ -47,7 +53,10 @@
         2,
         5
       ],
-      "targetTriangles": 4000
+      "targetTriangles": 4000,
+      "maxDrawCalls": 4,
+      "maxMaterials": 3,
+      "maxUniqueGeometries": 3
     },
     "hero": {
       "examples": [
@@ -56,11 +65,56 @@
       ],
       "longestDimMeters": [
         5,
+        8
+      ],
+      "targetTriangles": 8000,
+      "maxDrawCalls": 6,
+      "maxMaterials": 4,
+      "maxUniqueGeometries": 4
+    },
+    "hero2x": {
+      "examples": [
+        "small standalone shop building",
+        "fuel station canopy"
+      ],
+      "longestDimMeters": [
+        8,
+        15
+      ],
+      "targetTriangles": 16000,
+      "maxDrawCalls": 12,
+      "maxMaterials": 8,
+      "maxUniqueGeometries": 8
+    },
+    "hero4x": {
+      "examples": [
+        "shophouse terrace run",
+        "covered market bay"
+      ],
+      "longestDimMeters": [
+        15,
+        30
+      ],
+      "targetTriangles": 32000,
+      "maxDrawCalls": 24,
+      "maxMaterials": 16,
+      "maxUniqueGeometries": 16
+    },
+    "hero8x": {
+      "examples": [
+        "whole street block shell",
+        "stadium stand section"
+      ],
+      "longestDimMeters": [
+        30,
         999
       ],
-      "targetTriangles": 8000
+      "targetTriangles": 64000,
+      "maxDrawCalls": 48,
+      "maxMaterials": 32,
+      "maxUniqueGeometries": 32
     },
-    "$comment": "Texture-size and VRAM budgets are gone with the GLB pipeline: a procedural factory ships no texture files, and what canvas textures it generates are measured after the fact by render-model.mjs rather than budgeted up front. meshyPolycount is gone too -- Meshy honours target_polycount closely, so the reference mesh is simply asked for targetTriangles. large shares medium's tier and differs only in triangle budget: a food cart is not denser than a stool, it just has more silhouette."
+    "$comment": "Texture-size and VRAM budgets are gone with the GLB pipeline: a procedural factory ships no texture files, and what canvas textures it generates are measured after the fact by render-model.mjs rather than budgeted up front. meshyPolycount is gone too -- Meshy honours target_polycount closely, so the reference mesh is simply asked for targetTriangles. large shares medium's tessellation tier and differs only in triangle budget: a food cart is not denser than a stool, it just has more silhouette. The draw-call ceilings are DELIBERATELY tight. A small prop is one mesh; a bowl that arrives as three is three CPU submissions forever, and a level builder places hundreds of them. maxUniqueGeometries is allowed to sit BELOW maxDrawCalls on large and hero because that gap is exactly what instancing buys: six draw calls off four geometries means a repeated part became one InstancedMesh instead of four copies. hero2x/4x/8x multiply ALL FOUR of hero's ceilings by 2, 4 and 8 -- they are for whole BUILDINGS, which hero (a facade section or a stall canopy) was never sized for. They are auto-assigned by size like every other class, so a resize past 8m escalates a prop's budget on its own; that is deliberate, but it means a careless resize can multiply a budget eightfold, and render-model.mjs measuring all four is what catches it. Note what 8x costs a level builder: 48 draw calls is one prop's worth of CPU submissions, so a street of twenty is 960 before anything else draws."
   },
   "meshy": {
     "endpoint": "meshy/v7/image-to-3d",

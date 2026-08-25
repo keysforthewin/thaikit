@@ -96,6 +96,11 @@ window.__thaikit = {
 
     let triangles = 0, vertices = 0, drawCalls = 0;
     const materials = new Set();
+    // Distinct geometries, not distinct meshes. Two meshes sharing one geometry
+    // cost one upload and one VRAM footprint between them, and the GAP between
+    // this count and drawCalls is the only visible evidence that a repeated part
+    // became an InstancedMesh rather than N copies.
+    const geometries = new Set();
     const images = new Set();
     let gpuBytes = 0;
     model.traverse(function (o) {
@@ -104,8 +109,15 @@ window.__thaikit = {
       materials.add(o.material.uuid);
       drawCalls++;
       const g = o.geometry;
-      vertices += g.attributes.position ? g.attributes.position.count : 0;
-      triangles += g.index ? g.index.count / 3 : (g.attributes.position ? g.attributes.position.count : 0) / 3;
+      geometries.add(g.uuid);
+      // An InstancedMesh is ONE draw call and ONE geometry but N copies on screen,
+      // and the GPU rasterises every one of them. Counting its geometry once would
+      // report a 40-spoke wheel as 300 triangles and make instancing look free on
+      // the axis where it is not.
+      const copies = o.isInstancedMesh ? (o.count || 0) : 1;
+      const meshVertices = g.attributes.position ? g.attributes.position.count : 0;
+      vertices += meshVertices * copies;
+      triangles += (g.index ? g.index.count / 3 : meshVertices / 3) * copies;
 
       // A procedural factory has no texture files, but it can generate canvas
       // textures -- and those cost VRAM exactly like loaded ones do.
@@ -128,7 +140,8 @@ window.__thaikit = {
     const rt = model.userData && model.userData.sculptRuntime;
     return {
       triangles: triangles, vertices: vertices, drawCalls: drawCalls,
-      materials: materials.size, textures: images.size, gpuBytesEstimate: gpuBytes,
+      materials: materials.size, uniqueGeometries: geometries.size,
+      textures: images.size, gpuBytesEstimate: gpuBytes,
       bounds: { min: box.min.toArray(), max: box.max.toArray() },
       radius: sphere.radius,
       runtime: rt ? {
@@ -177,6 +190,25 @@ window.__thaikit = {
   },
 
   /** Mean luma, used to assert the GPU actually drew something. */
+  // Fraction of pixels that differ from the BACKDROP. This is the real emptiness test:
+  // a blank frame is uniformly the backdrop and scores ~0 here whatever its brightness,
+  // whereas mean luma alone cannot tell "nothing was drawn" from "something dark was
+  // drawn". A correctly rendered dark prop pulls mean luma BELOW the empty-frame value,
+  // so a brightness threshold rejects exactly the props it should accept.
+  subjectCoverage() {
+    const gl = renderer.getContext();
+    const px = new Uint8Array(SIZE * SIZE * 4);
+    gl.readPixels(0, 0, SIZE, SIZE, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    // Backdrop sampled from a corner rather than hardcoded, so this keeps working if the
+    // harness background ever changes.
+    const br = px[0], bg = px[1], bb = px[2];
+    let differing = 0;
+    for (let i = 0; i < px.length; i += 4) {
+      if (Math.abs(px[i] - br) + Math.abs(px[i + 1] - bg) + Math.abs(px[i + 2] - bb) > 18) differing += 1;
+    }
+    return differing / (SIZE * SIZE);
+  },
+
   meanLuma() {
     const gl = renderer.getContext();
     const px = new Uint8Array(SIZE * SIZE * 4);

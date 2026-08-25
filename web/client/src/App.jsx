@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, mediaUrl } from './api.js';
 import { Drawer } from './Drawer.jsx';
 import { CreateDialog } from './CreateDialog.jsx';
+import { budgetRows, describeClassBriefly, useBudgetClasses } from './budgets.js';
 
 const PRESETS = [
   { key: 'all', label: 'All', params: {} },
@@ -18,7 +19,7 @@ function scoreClass(score) {
   return 'score-bad';
 }
 
-function Card({ asset, onOpen }) {
+function Card({ asset, budgetClasses, onOpen }) {
   const model = asset.model ?? {};
   // The rendered model, then the reference plate it was built from.
   const thumb = mediaUrl(model.thumb) ?? mediaUrl(asset.image?.file);
@@ -27,6 +28,7 @@ function Card({ asset, onOpen }) {
   const stale = Boolean(model.thumb) && !model.file;
   const score = model.review?.score;
   const modelStatus = model.quarantine ? 'quarantined' : model.status ?? 'pending';
+  const overBudget = budgetClasses ? budgetRows(asset, budgetClasses).filter((r) => r.over) : [];
   return (
     <div className="card" onClick={() => onOpen(asset.id)}>
       <div className="thumb">
@@ -38,7 +40,10 @@ function Card({ asset, onOpen }) {
           <span>
             awaiting generation
             <br />
-            <span className="mono" style={{ fontSize: 11 }}>{asset.budgetClass}</span>
+            {/* The class name alone said nothing about what it BUYS. */}
+            <span className="mono" style={{ fontSize: 11 }}>
+              {describeClassBriefly(asset.budgetClass, budgetClasses?.[asset.budgetClass])}
+            </span>
           </span>
         )}
       </div>
@@ -59,6 +64,21 @@ function Card({ asset, onOpen }) {
           {model.triangles ? (
             <span className="badge mono">{(model.triangles / 1000).toFixed(1)}k</span>
           ) : null}
+          {/*
+            Scanning the grid should show which props cost too much, and the
+            triangle count alone never did: a prop at a third of its triangle
+            budget can still be seven draw calls and three materials.
+          */}
+          {overBudget.length > 0 && (
+            <span
+              className="badge score-bad"
+              title={overBudget
+                .map((a) => `${a.measured} ${a.label} / ${a.limit}`)
+                .join('\n')}
+            >
+              over budget ×{overBudget.length}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -77,6 +97,7 @@ export default function App() {
   // together that is what makes a new build appear without a reload.
   const [rev, setRev] = useState(0);
   const [error, setError] = useState(null);
+  const budgetClasses = useBudgetClasses();
 
   const load = useCallback(async () => {
     try {
@@ -158,7 +179,9 @@ export default function App() {
         </div>
       ) : (
         <div className="grid">
-          {assets.map((a) => <Card key={a.id} asset={a} onOpen={setOpen} />)}
+          {assets.map((a) => (
+            <Card key={a.id} asset={a} budgetClasses={budgetClasses} onOpen={setOpen} />
+          ))}
         </div>
       )}
 

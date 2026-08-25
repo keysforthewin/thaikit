@@ -1,11 +1,20 @@
 name: thaikit
 
+# The DEFAULT stack is development: source is bind-mounted, not baked. Edit a
+# file under web/client/src and the page hot-reloads; edit one under
+# web/server/src and the process restarts. Nothing needs rebuilding.
+#
+# Rebuild the image ONLY when a dependency changes -- package.json or
+# package-lock.json -- because node_modules lives in the image, not the mount.
+#
+# To run the shipped production image instead (client compiled into the image,
+# no dev dependencies): docker compose -f compose.prod.yaml up -d --build
 services:
   web:
     build:
       context: .
-      target: runtime
-    image: thaikit/web:local
+      target: dev
+    image: thaikit/web:dev
     container_name: thaikit-web
     # Bound to loopback on purpose: this API has no auth and can delete files
     # from disk. Change it deliberately if you want it on the LAN.
@@ -13,7 +22,10 @@ services:
       - "127.0.0.1:${THAIKIT_PORT:-3733}:3733"
     user: "${THAIKIT_UID:-1000}:${THAIKIT_GID:-1000}"
     environment:
-      NODE_ENV: production
+      # NOT "production" is the entire dev switch: web/server/src/paths.js reads
+      # it as IS_DEV, and app.js then mounts Vite as middleware on this same
+      # port, so HMR needs no second port, no proxy and no CORS.
+      NODE_ENV: development
       PORT: "3733"
       THAIKIT_REPO_ROOT: /repo
       THAIKIT_REGISTRY_PATH: /repo/registry.json
@@ -21,16 +33,36 @@ services:
       THAIKIT_SCRATCH_DIR: /repo/scratch
       # Required on WSL2 and macOS: host writes do not deliver inotify events
       # across a bind mount, so without polling the UI never sees the
-      # generation skills' work at all.
+      # generation skills' work at all. Vite's own file watcher reads the same
+      # flag (web/client/vite.config.js), which is what makes HMR fire for an
+      # edit made on the host rather than inside the container.
       THAIKIT_WATCH_POLL: "1"
       THAIKIT_WATCH_INTERVAL: "1000"
+      # Keep Vite's dependency pre-bundle OUT of /app. Inside it, the optimizer's
+      # temp writes are seen by `node --watch` as a source change and the server
+      # restart-loops. See the comment in web/client/vite.config.js.
+      THAIKIT_VITE_CACHE: /tmp/vite-cache
     volumes:
+      # The repo twice, deliberately, because the app and its data are separate
+      # roots: /app is the code the server runs, /repo is the registry and the
+      # generated kit it reads and writes.
       - ./:/repo
+      - ./:/app
+      # Anonymous volumes masking the mount, so the container keeps the
+      # node_modules that was installed INSIDE it. Without these the host's
+      # tree shadows it, which is the classic bind-mount failure: native
+      # modules built against the wrong platform, or nothing installed at all.
+      - /app/node_modules
+      - /app/web/client/node_modules
+      - /app/web/server/node_modules
+      - /app/packages/registry-core/node_modules
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
       timeout: 3s
-      start_period: 10s
+      # Longer than production's: the first request compiles the client, and
+      # Vite's dependency pre-bundle is a cold-start cost paid once.
+      start_period: 30s
       retries: 3
     restart: unless-stopped
     init: true

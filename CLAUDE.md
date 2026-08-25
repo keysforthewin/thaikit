@@ -35,10 +35,36 @@ that still says "mesh" means the model.
   anatomy gate silently skipped. `character` is for HUMANS — its landmark gates
   are MediaPipe face and pose extractors, so an animal runs the generic profile
   with the chirality and swept-arc gates instead.
-- **Pivots and sockets are required on anything that moves.** Named for the
-  mechanism (`lid-hinge`, `wheel-front-l`, `handle-socket`) and exposed on
-  `root.userData.sculptRuntime`. The drawer's **pivots** toggle draws an axes
-  helper at each, which is the fastest way to see one in the wrong place.
+- **The scene budget is four ceilings, not one number.** `targetTriangles`,
+  `maxDrawCalls`, `maxMaterials`, `maxUniqueGeometries` — rasterisation, CPU
+  submissions, shader switches, VRAM. They live per class in `prompts/budgets.json`
+  and per asset as nullable overrides; `resolveBudget()` in `scripts/lib/config.mjs`
+  is the ONLY place they are combined. A prop at a third of its triangle budget can
+  still be what costs a low-end GPU its frame. `render-model.mjs` measures all four
+  and warns; `promote-model.mjs` is the gate that refuses to ship an overrun.
+- **Colliders and destruction groups are declared on the ASSET, not discovered on
+  the model.** `collider` is the physics proxy's shape; `destructionGroups` names
+  the assemblies the prop must break into, empty meaning not breakable.
+  `promote-model.mjs` checks built against declared as an EQUALITY in both
+  directions — a group declared and not built is a prop that does not come apart
+  as promised, and one built and not declared is contract nobody asked for.
+- **thaikit never scores a model, but it does carry the score.**
+  `scripts/lib/review.mjs` reads img2threejs's own verdict out of the sculpt
+  spec's `reviewHistory` (fidelity, layer scores, per-feature scores) and the
+  state file's `loops`, and `promote-model.mjs` records it. Never hand-write a
+  number into `model.review`: the drum wore a hand-entered 99.8 for as long as
+  nothing carried the real 0.90 across, and a number nobody generated still looks
+  like a measurement.
+- **Pivots and sockets are required on anything that moves — and forbidden on
+  anything that does not.** The default is one root pivot and no sockets. A named
+  pivot promises a part turns on that axis and a named socket promises something
+  attaches there; both are contract, and a sealed steel drum that declares eight
+  pivots and ten sockets has described a machine that does not exist. Name them
+  for the mechanism (`lid-hinge`, `wheel-front-l`, `handle-socket`), never for a
+  place on the surface, and expose them on `root.userData.sculptRuntime`. The
+  drawer's separate **pivots** and **sockets** toggles carry their counts, which is
+  the fastest way to see both a marker in the wrong place and a static prop that
+  was given axes nothing will ever turn.
 - **One reference image per prop, never a turnaround.** `assets/<id>/preview.jpg`,
   recorded as `image`. `thaikit-preview-image` is the only thing that writes it;
   everything downstream consumes it.
@@ -119,6 +145,12 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
 - **A studio vignette is not a scene.** Image models draw a soft corner falloff
   however hard the prompt argues, so a fixed foreground tolerance labels the four
   corners as extra objects. The tolerance follows the backdrop's own spread.
+- **A component's material is read under two spellings.** The generator read
+  `component["material"]` and fell back to the FIRST material in the spec when it
+  was absent — silently. The oil-drum spec spelled it `materialId` on all seven
+  components, validated clean and shipped every mesh in blue enamel. img2threejs's
+  `_shared/material_binding.py` now accepts both, and the validator errors on a
+  component that names neither while the spec declares more than one material.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, mediaUrl } from './api.js';
+import { budgetRows, describeClass, useBudgetClasses } from './budgets.js';
 import { Viewer } from './Viewer.jsx';
 
 /**
@@ -63,6 +64,7 @@ export function Drawer({ id, rev, onClose, onChanged }) {
   const [draft, setDraft] = useState({});
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const budgetClasses = useBudgetClasses();
 
   useEffect(() => {
     setError(null);
@@ -84,8 +86,13 @@ export function Drawer({ id, rev, onClose, onChanged }) {
         texture: a.prompts.texture,
         budgetClass: a.budgetClass,
         targetTriangles: a.targetTriangles ?? '',
+        maxDrawCalls: a.maxDrawCalls ?? '',
+        maxMaterials: a.maxMaterials ?? '',
+        maxUniqueGeometries: a.maxUniqueGeometries ?? '',
         subject: a.subject ?? 'prop',
         pivot: a.pivot,
+        collider: a.collider,
+        destructionGroups: (a.destructionGroups ?? []).join(', '),
         w: a.scale.declared.w, h: a.scale.declared.h, d: a.scale.declared.d,
       });
     }).catch((e) => setError(e.message));
@@ -133,9 +140,23 @@ export function Drawer({ id, rev, onClose, onChanged }) {
         notes: draft.notes,
         budgetClass: draft.budgetClass,
         // Blank means "use the class budget", which the schema stores as null.
-        targetTriangles: draft.targetTriangles === '' ? null : Number(draft.targetTriangles),
+        // The same rule on all four axes, so an override is always a deliberate
+        // number and never a copy of the class it came from.
+        ...Object.fromEntries(
+          ['targetTriangles', 'maxDrawCalls', 'maxMaterials', 'maxUniqueGeometries'].map((k) => [
+            k,
+            draft[k] === '' ? null : Number(draft[k]),
+          ]),
+        ),
         subject: draft.subject,
         pivot: draft.pivot,
+        collider: draft.collider,
+        // Blank means "not breakable", which is a decision and not an omission --
+        // the model must then expose no groups either.
+        destructionGroups: draft.destructionGroups
+          .split(',')
+          .map((g) => g.trim())
+          .filter(Boolean),
         prompts: { image: draft.image, texture: draft.texture },
         scale: { declared: { w: +draft.w, h: +draft.h, d: +draft.d } },
       });
@@ -223,9 +244,20 @@ export function Drawer({ id, rev, onClose, onChanged }) {
             </Field>
 
             <div className="row">
-              <Field label="Budget class">
-                <select value={draft.budgetClass} onChange={(e) => setDraft({ ...draft, budgetClass: e.target.value })}>
-                  {['small', 'medium', 'large', 'hero'].map((c) => <option key={c}>{c}</option>)}
+              {/*
+                The class carries its numbers in the label. "small / medium /
+                large / hero" on its own asked you to remember four ceilings per
+                class out of a file you are not looking at, which is how a drum
+                came to be built as seven meshes inside a one-mesh class.
+              */}
+              <Field label="Budget class — the ceilings a prop of this size gets">
+                <select
+                  value={draft.budgetClass}
+                  onChange={(e) => setDraft({ ...draft, budgetClass: e.target.value })}
+                >
+                  {Object.keys(budgetClasses ?? {}).map((c) => (
+                    <option key={c} value={c}>{describeClass(c, budgetClasses?.[c])}</option>
+                  ))}
                 </select>
               </Field>
               <Field label="Pivot">
@@ -235,17 +267,63 @@ export function Drawer({ id, rev, onClose, onChanged }) {
               </Field>
             </div>
 
+            {/*
+              Four axes, not one number in four costumes. A prop can sit at a
+              third of its triangle budget and still be what costs a low-end GPU
+              its frame: draw calls are CPU submissions, materials are shader
+              switches, and unique geometries are VRAM. Blank on any of them
+              means "use the class".
+            */}
+            <Field label="Scene budget overrides — blank uses the class">
+              <div className="row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+                {[
+                  ['targetTriangles', 'triangles', 50],
+                  ['maxDrawCalls', 'draw calls', 1],
+                  ['maxMaterials', 'materials', 1],
+                  ['maxUniqueGeometries', 'geometries', 1],
+                ].map(([key, label, step]) => (
+                  <label key={key} className="muted" style={{ fontSize: 11 }}>
+                    {label}
+                    <input
+                      type="number"
+                      min="1"
+                      step={step}
+                      placeholder={String(budgetClasses?.[draft.budgetClass]?.[key] ?? 'class')}
+                      value={draft[key]}
+                      onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+                    />
+                  </label>
+                ))}
+              </div>
+            </Field>
+
+            {/*
+              The runtime contract, declared before the build rather than read off
+              it afterwards. A collider is the cheap convex proxy a physics engine
+              tests against instead of the mesh; the destruction groups are the
+              assemblies the prop is meant to come apart into. Both are checked at
+              promotion, so a crate whose lid was supposed to detach and did not is
+              a failure rather than something you find out by orbiting the model.
+            */}
             <div className="row">
-              <Field label="Triangle target — drives the spec's performance budget. Blank uses the class.">
+              <Field label="Collider — the physics proxy, not the mesh">
+                <select
+                  value={draft.collider}
+                  onChange={(e) => setDraft({ ...draft, collider: e.target.value })}
+                >
+                  {['box', 'cylinder', 'convex', 'none'].map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </Field>
+              <Field label="Destruction groups — what it breaks into. Blank = not breakable.">
                 <input
-                  type="number"
-                  min="1"
-                  step="50"
-                  placeholder={`class default (${draft.budgetClass})`}
-                  value={draft.targetTriangles}
-                  onChange={(e) => setDraft({ ...draft, targetTriangles: e.target.value })}
+                  placeholder="lid, body, base"
+                  value={draft.destructionGroups}
+                  onChange={(e) => setDraft({ ...draft, destructionGroups: e.target.value })}
                 />
               </Field>
+            </div>
+
+            <div className="row">
               <Field label="Subject — selects the reconstruction profile and its gates">
                 <select
                   value={draft.subject}
@@ -311,8 +389,15 @@ export function Drawer({ id, rev, onClose, onChanged }) {
           (() => {
             const r = asset.model?.review ?? {};
             if (r.score == null && !r.passesComplete?.length) {
-              return <p className="muted">This prop has not been built or reviewed yet.</p>;
+              return (
+                <p className="muted">
+                  No review recorded. Every number on this tab is img2threejs's own — read off
+                  the sculpt spec's reviewHistory and the skill's loop counts by promote-model.mjs.
+                  thaikit does not score models, so nothing appears here until a build is promoted.
+                </p>
+              );
             }
+            const layers = Object.entries(r.layerScores ?? {});
             const done = new Set(r.passesComplete ?? []);
             return (
               <>
@@ -323,6 +408,39 @@ export function Drawer({ id, rev, onClose, onChanged }) {
                       (fidelity {r.fidelity?.toFixed(2) ?? '\u2014'}, pass mark {r.threshold})
                     </span>
                   </h3>
+                )}
+
+                {/*
+                  The five layers, kept beside the single number because the
+                  average hides which one is carrying the model: 0.90 made of a
+                  0.95 silhouette and a 0.35 material surface is a prop whose
+                  shape is right and whose surface has not been done yet.
+                */}
+                {layers.length > 0 && (
+                  <Field label="Layer scores — img2threejs's own, at the last reviewed pass">
+                    <table>
+                      <tbody>
+                        {layers.map(([layer, value]) => (
+                          <tr key={layer}>
+                            <td>{layer.replace(/([A-Z])/g, ' $1').toLowerCase()}</td>
+                            <td style={{ width: 150 }}>
+                              <div className="bar">
+                                <div style={{ width: `${Math.round((value ?? 0) * 100)}%` }} />
+                              </div>
+                            </td>
+                            <td
+                              className={`mono ${
+                                value < (r.threshold ?? 85) / 100 ? 'score-bad' : ''
+                              }`}
+                              style={{ width: 70 }}
+                            >
+                              {value?.toFixed(2) ?? '\u2014'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Field>
                 )}
 
                 {/*
@@ -380,7 +498,7 @@ export function Drawer({ id, rev, onClose, onChanged }) {
                 )}
 
                 {r.critique && (
-                  <Field label="Critique">
+                  <Field label="Review summary — the skill's own, at the last reviewed pass">
                     <div className="muted" style={{ whiteSpace: 'pre-wrap' }}>{r.critique}</div>
                   </Field>
                 )}
@@ -425,7 +543,10 @@ export function Drawer({ id, rev, onClose, onChanged }) {
                       <tbody>
                         {rows.map(([label, v]) => (
                           <tr key={label}>
-                            <td>{label}</td>
+                            {/* Counted as well as listed: "8 pivots" on a prop with
+                                no moving parts is the fault, and a comma-separated
+                                run of names does not show it. */}
+                            <td>{label} <span className="muted mono">({v?.length ?? 0})</span></td>
                             <td className="mono muted">{v?.length ? v.join(', ') : '\u2014'}</td>
                           </tr>
                         ))}
@@ -434,12 +555,32 @@ export function Drawer({ id, rev, onClose, onChanged }) {
                   )}
                 </Field>
 
-                <Field label="Cost">
+                {/*
+                  Measured against the ceiling, not reported bare. A row of four
+                  numbers with nothing to compare them to is why an oil drum
+                  could ship at seven draw calls inside a one-draw-call class and
+                  read as a finished prop.
+                */}
+                <Field label="Cost against budget">
                   <table>
                     <tbody>
-                      <tr><td>triangles</td><td className="mono">{m.triangles?.toLocaleString() ?? '\u2014'}</td></tr>
-                      <tr><td>draw calls</td><td className="mono">{m.drawCalls ?? '\u2014'}</td></tr>
-                      <tr><td>materials</td><td className="mono">{m.materials ?? '\u2014'}</td></tr>
+                      {budgetRows(asset, budgetClasses).map((row) => (
+                        <tr key={row.key}>
+                          <td>
+                            {row.label}
+                            {row.overridden && (
+                              <span className="muted" title="this asset overrides its class"> ·  set</span>
+                            )}
+                          </td>
+                          <td className={`mono ${row.over ? 'score-bad' : ''}`}>
+                            {row.measured?.toLocaleString() ?? '\u2014'}
+                            <span className="muted">
+                              {' / '}
+                              {row.limit?.toLocaleString() ?? 'unbudgeted'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                       <tr><td>textures</td><td className="mono">{m.textures ?? '\u2014'}</td></tr>
                       <tr>
                         <td>module size</td>

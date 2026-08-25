@@ -17,6 +17,7 @@
  * Usage:
  *   node scripts/render-model.mjs --id <id> [--module <file.js>] [--out <dir>]
  *                                 [--angles 0,90,180,270] [--modes beauty,clay]
+ *                                 [--elevation 20]
  */
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -26,11 +27,16 @@ import puppeteer from 'puppeteer-core';
 import { REPO_ROOT, workDir, toRepoRelative, readRegistry, updateAsset } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
+import { judgeAsset, formatAxis, overBudgetMessage } from './lib/budget.mjs';
 
 const SIZE = 1024;
 /** The azimuths turntable_gate.py expects, plus the 45 deg hero. */
 const TURNTABLE = [0, 90, 180, 270];
 const HERO = { azimuth: 45, elevation: 20 };
+/** Turntable elevation. Overridable with --elevation so a review capture can be taken
+ *  at the reference plate's own elevation; comparing a 20-degree render against a
+ *  7-degree photograph measures the two CAMERAS as much as the two shapes. */
+const TURNTABLE_ELEVATION = 20;
 
 const MIME = {
   '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
@@ -78,11 +84,17 @@ async function main() {
   let modulePath = args.module ? path.resolve(args.module) : null;
   let exportName = args.export ?? 'createObjectModel';
 
-  if (!modulePath) {
-    if (!id) return fail('need --id or --module');
+  // Looked up whenever there is an id, not only when the module path has to be
+  // derived from it: the scene budget lives on the asset, and rendering an
+  // explicit --module for a known prop should still be judged against it.
+  let asset = null;
+  if (id) {
     const registry = await readRegistry();
-    const asset = registry.assets.find((a) => a.id === id);
+    asset = registry.assets.find((a) => a.id === id) ?? null;
     if (!asset) return fail(`no asset with id ${id}`);
+  }
+  if (!modulePath) {
+    if (!asset) return fail('need --id or --module');
     exportName = args.export ?? asset.model.export ?? 'createObjectModel';
     const recorded = asset.model.file;
     modulePath = recorded
@@ -105,6 +117,7 @@ async function main() {
 
   const angles = (args.angles ? String(args.angles).split(',').map(Number) : TURNTABLE);
   const modes = (args.modes ? String(args.modes).split(',') : ['beauty']);
+  const elevation = args.elevation !== undefined ? Number(args.elevation) : TURNTABLE_ELEVATION;
 
   const executablePath = await findChrome();
   const { server, port } = await serve(REPO_ROOT);
@@ -150,7 +163,25 @@ async function main() {
     // the end of the harness module is the real readiness contract; wait on that
     // and let the lifecycle events be somebody else's problem.
     page.goto(harnessUrl).catch(() => {});
-    await page.waitForFunction('window.__thaikitReady === true', { timeout: 60_000 });
+    // Poll the flag with page.evaluate rather than page.waitForFunction, for the
+    // same class of reason the goto above is not awaited. waitForFunction never
+    // resolves on this page -- not on its default requestAnimationFrame polling and
+    // not with an explicit `polling` interval -- while page.evaluate reads the flag
+    // as true throughout. It failed as a 60s timeout on a page that was ready in
+    // about a second, which reads as a hung browser rather than a polling choice.
+    const readyDeadline = Date.now() + 60_000;
+    let ready = false;
+    while (Date.now() < readyDeadline) {
+      ready = await page.evaluate(() => window.__thaikitReady === true).catch(() => false);
+      if (ready) break;
+      await new Promise((r) => setTimeout(r, 150));
+    }
+    if (!ready) {
+      throw new Error(
+        'harness never signalled __thaikitReady within 60s' +
+          (errors.length ? `\n  page errors: ${errors.join(' | ')}` : ''),
+      );
+    }
 
     const moduleUrl = `${base}/${toRepoRelative(modulePath).split(path.sep).join('/')}`;
     log(`module : ${toRepoRelative(modulePath)}`);
@@ -167,15 +198,30 @@ async function main() {
     }
 
     log(`stats  : ${stats.triangles} tris, ${stats.drawCalls} draw calls, ` +
-        `${stats.materials} materials, ${stats.textures} textures`);
+        `${stats.materials} materials, ${stats.uniqueGeometries} geometries, ` +
+        `${stats.textures} textures`);
     if (stats.triangles === 0) {
       throw new Error('the factory produced zero triangles; there is nothing to render');
+    }
+
+    // Measured against the class budget, and REPORTED rather than thrown. This
+    // render is also what img2threejs's own review gates read, so failing here
+    // would withhold the pictures you need in order to see why a prop is heavy.
+    // promote-model.mjs is where an over-budget prop is actually stopped.
+    let budget = null;
+    if (asset) {
+      budget = await judgeAsset(asset, stats);
+      log(`budget : ${asset.budgetClass} — ${budget.axes.map(formatAxis).join(', ')}`);
+      if (!budget.ok) {
+        log(`WARN   : over budget on ${budget.over.length} axis/axes\n  ` +
+            overBudgetMessage(budget));
+      }
     }
 
     for (const mode of modes) {
       await page.evaluate((m) => window.__thaikit.setMode(m), mode);
       for (const azimuth of angles) {
-        await page.evaluate((az) => window.__thaikit.setCamera(az, 20), azimuth);
+        await page.evaluate(([az, el]) => window.__thaikit.setCamera(az, el), [azimuth, elevation]);
         await page.evaluate(() => window.__thaikit.render());
         const name = `${mode}-${String(azimuth).padStart(3, '0')}.png`;
         await page.screenshot({ path: path.join(outDir, name) });
@@ -188,33 +234,39 @@ async function main() {
     await page.evaluate((m) => window.__thaikit.setMode(m), 'beauty');
     await page.evaluate((h) => window.__thaikit.setCamera(h.azimuth, h.elevation), HERO);
     await page.evaluate(() => window.__thaikit.render());
-    const luma = await page.evaluate(() => window.__thaikit.meanLuma());
-    const heroName = `beauty-hero.png`;
+    const heroName = 'beauty-hero.png';
     await page.screenshot({ path: path.join(outDir, heroName) });
     written.push(heroName);
+    const luma = await page.evaluate(() => window.__thaikit.meanLuma());
+    const coverage = await page.evaluate(() => window.__thaikit.subjectCoverage());
 
-    // A valid PNG of the background is the failure mode that looks like success.
-    // The harness background is 0x3a3a3a, mean luma ~58; anything at or below it
-    // means nothing was drawn.
-    if (luma <= 59) {
+    // A valid PNG of the background is the failure that looks like success, so the run
+    // still fails on an empty frame -- but the test is COVERAGE, not brightness. The old
+    // check was `luma <= 59` against a ~58 backdrop, which assumed anything drawn makes
+    // the frame brighter. A dark prop does the opposite: this drum is a dark blue under
+    // ACES tone mapping and rendered a perfect turntable at mean luma 56.7, which the
+    // brightness test called blank. Coverage separates the two cases properly -- an empty
+    // frame is uniformly the backdrop and scores ~0 whatever its brightness.
+    if (coverage < 0.01) {
       throw new Error(
-        `render is blank (mean luma ${luma.toFixed(1)} against a ~58 background). ` +
-          'Usually SwiftShader: check the --use-angle flags and CHROME_PATH.',
+        `render is blank (subject coverage ${(coverage * 100).toFixed(2)}% of frame, ` +
+          `mean luma ${luma.toFixed(1)}). Usually SwiftShader: check the --use-angle flags and CHROME_PATH.`,
       );
     }
-    log(`luma   : ${luma.toFixed(1)} (background ~58, so something was drawn)`);
+    log(`luma   : ${luma.toFixed(1)}, subject covers ${(coverage * 100).toFixed(1)}% of frame`);
 
     if (id) {
-      await updateAsset(id, (asset) => {
-        asset.model.triangles = stats.triangles;
-        asset.model.vertices = stats.vertices;
-        asset.model.meshes = stats.drawCalls;
-        asset.model.materials = stats.materials;
-        asset.model.textures = stats.textures;
-        asset.model.drawCalls = stats.drawCalls;
-        asset.model.gpuBytesEstimate = stats.gpuBytesEstimate;
-        if (stats.runtime) asset.model.runtime = stats.runtime;
-        return asset;
+      await updateAsset(id, (entry) => {
+        entry.model.triangles = stats.triangles;
+        entry.model.vertices = stats.vertices;
+        entry.model.meshes = stats.drawCalls;
+        entry.model.materials = stats.materials;
+        entry.model.uniqueGeometries = stats.uniqueGeometries;
+        entry.model.textures = stats.textures;
+        entry.model.drawCalls = stats.drawCalls;
+        entry.model.gpuBytesEstimate = stats.gpuBytesEstimate;
+        if (stats.runtime) entry.model.runtime = stats.runtime;
+        return entry;
       });
     }
 
@@ -226,6 +278,11 @@ async function main() {
       renders: written,
       meanLuma: luma,
       stats,
+      budget: budget && {
+        class: asset.budgetClass,
+        ok: budget.ok,
+        axes: budget.axes,
+      },
       pageErrors: errors,
     });
   } finally {

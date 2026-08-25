@@ -19,7 +19,15 @@ export const StageState = z.enum([
 ]);
 
 /** Drives poly and texture budgets. Derived from the prop's longest dimension. */
-export const BudgetClass = z.enum(['small', 'medium', 'large', 'hero']);
+export const BudgetClass = z.enum([
+  'small',
+  'medium',
+  'large',
+  'hero',
+  'hero2x',
+  'hero4x',
+  'hero8x',
+]);
 
 /** Where the mesh origin sits, so props drop into a level at the right height. */
 export const Pivot = z.enum([
@@ -118,6 +126,15 @@ const ModelStats = z.object({
   textures: z.number().int().nonnegative().nullable().default(null),
   /** One per mesh, and the number a low-end GPU actually feels. */
   drawCalls: z.number().int().nonnegative().nullable().default(null),
+  /**
+   * Distinct BufferGeometry instances in the built scene.
+   *
+   * Budgeted separately from draw calls because it is a different cost -- VRAM
+   * and upload rather than CPU submissions -- and because the GAP between the
+   * two is the only visible evidence that instancing happened: six draw calls
+   * off four geometries means a repeated part became one InstancedMesh.
+   */
+  uniqueGeometries: z.number().int().nonnegative().nullable().default(null),
   /** Uncompressed VRAM footprint of generated canvas textures, if any. */
   gpuBytesEstimate: z.number().int().nonnegative().nullable().default(null),
   /** Size of the built JS module on disk. */
@@ -182,6 +199,16 @@ const Review = z.object({
   passed: z.boolean().default(false),
   /** blockout, structural-pass, form-refinement, material-pass, ... */
   passesComplete: z.array(z.string()).default([]),
+  /**
+   * The five layers img2threejs scores separately -- silhouette/proportion,
+   * component structure, form detail, material surface, lighting/camera.
+   *
+   * Kept beside the single fidelity number because the average hides which one
+   * is carrying the model: 0.90 overall reads as finished, and 0.90 overall made
+   * of 0.95 silhouette and 0.35 material is a prop whose shape is right and whose
+   * surface has not been done yet.
+   */
+  layerScores: z.record(z.number()).default({}),
   /** Per-feature verdicts; shape is the skill's, not ours. */
   featureReviews: z.array(z.record(z.any())).default([]),
   corrections: z
@@ -254,10 +281,43 @@ export const AssetSchema = z.object({
    * the class budget.
    */
   targetTriangles: z.number().int().positive().nullable().default(null),
+  /**
+   * The other three axes of the scene budget, each overriding the budget class
+   * the same way `targetTriangles` does, and each null to mean "use the class".
+   *
+   * They are separate axes, not one number in three costumes: draw calls are CPU
+   * submissions per frame, materials are shader and render-state switches, and
+   * unique geometries are VRAM plus upload. A prop can sit well inside its
+   * triangle budget and still be the thing that costs a low-end GPU its frame,
+   * which is what an oil drum built as seven meshes and three materials was.
+   *
+   * All four are written into the sculpt spec's `performanceBudget`, counted from
+   * the spec by img2threejs under --strict-quality, and measured again off the
+   * built scene by scripts/render-model.mjs.
+   */
+  maxDrawCalls: z.number().int().positive().nullable().default(null),
+  maxMaterials: z.number().int().positive().nullable().default(null),
+  maxUniqueGeometries: z.number().int().positive().nullable().default(null),
   scale: Scale,
   pivot: Pivot.default('base-center'),
   placement: z.array(Placement).default(['floor']),
   collider: Collider.default('box'),
+  /**
+   * The named assemblies this prop must break into, as DESIGN INTENT rather than
+   * as a measurement -- "lid, body, base" for a crate whose lid comes off.
+   *
+   * This is the half of the runtime contract nothing could state before. A prop
+   * either shipped breakable or it did not, and which way round was discovered by
+   * reading `model.runtime.destructionGroups` afterwards. Declaring it up front
+   * makes it something the build is asked for and something promotion can check:
+   * a crate whose lid was supposed to come off and did not is now a failure, not
+   * a surprise.
+   *
+   * Empty means not breakable, which is the right answer for most props and is
+   * deliberately distinct from "nobody thought about it": a prop with an empty
+   * list has been decided, and the model must then expose no groups either.
+   */
+  destructionGroups: z.array(z.string()).default([]),
 
   /** The two stages a prop moves through, in order. */
   status: z

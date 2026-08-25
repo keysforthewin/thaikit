@@ -11,6 +11,7 @@ import { assetsRouter } from './routes/assets.js';
 import { eventsRouter } from './routes/events.js';
 import { errorHandler } from './errors.js';
 import { CLIENT_DIST, IS_DEV } from './paths.js';
+import { budgets } from '../../../scripts/lib/config.mjs';
 
 export async function createApp(state) {
   const app = express();
@@ -45,7 +46,21 @@ export async function createApp(state) {
           status[k][a.status[k]] = (status[k][a.status[k]] ?? 0) + 1;
         }
       }
-      res.json({ categories, tags, status, total: registry.assets.length, etag: etagFor(registry) });
+      // The budget classes ride along so the UI can say what a class MEANS. A
+      // select that offers "small / medium / large / hero" and nothing else asks
+      // you to remember four numbers that live in a file you are not looking at.
+      const { classes } = await budgets();
+      const budgetClasses = Object.fromEntries(
+        Object.entries(classes).filter(([name]) => !name.startsWith('$')),
+      );
+      res.json({
+        categories,
+        tags,
+        status,
+        budgetClasses,
+        total: registry.assets.length,
+        etag: etagFor(registry),
+      });
     } catch (err) {
       next(err);
     }

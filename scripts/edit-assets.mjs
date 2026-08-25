@@ -22,7 +22,7 @@ import fs from 'node:fs/promises';
 import { updateRegistry, readRegistry, AssetSchema } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
-import { categories, classifyBySize } from './lib/config.mjs';
+import { BUDGET_AXES, categories, classifyBySize } from './lib/config.mjs';
 
 /**
  * Dotted paths a caller may write. Anything else is refused rather than merged,
@@ -40,9 +40,13 @@ const EDITABLE = new Set([
   'subject',
   'budgetClass',
   'targetTriangles',
+  'maxDrawCalls',
+  'maxMaterials',
+  'maxUniqueGeometries',
   'pivot',
   'placement',
   'collider',
+  'destructionGroups',
   'prompts.image',
   'prompts.texture',
   'prompts.styleProfileId',
@@ -82,8 +86,15 @@ const IMPACT = [
       p === 'prompts.texture' ||
       p === 'subject' ||
       p === 'budgetClass' ||
-      p === 'targetTriangles' ||
+      // All four budget axes, not just triangles: each one is written into the
+      // sculpt spec's performanceBudget, so a tighter ceiling on any of them is
+      // a different build, not the same build re-measured.
+      BUDGET_AXES.some(({ key }) => p === key) ||
       p === 'pivot' ||
+      // The runtime contract is an input to the build, not a description of it:
+      // asking for a lid that detaches changes what gets sculpted.
+      p === 'collider' ||
+      p === 'destructionGroups' ||
       p.startsWith('scale.declared'),
   },
   // The name and description are what fidelity is reviewed against, so a rewrite

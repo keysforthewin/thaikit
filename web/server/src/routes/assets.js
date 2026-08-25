@@ -20,11 +20,17 @@ const CreateInput = z.object({
   description: z.string().optional(),
   nameTh: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  budgetClass: z.enum(['small', 'medium', 'large', 'hero']).default('medium'),
+  budgetClass: z
+    .enum(['small', 'medium', 'large', 'hero', 'hero2x', 'hero4x', 'hero8x'])
+    .default('medium'),
   targetTriangles: z.number().int().positive().nullable().optional(),
+  maxDrawCalls: z.number().int().positive().nullable().optional(),
+  maxMaterials: z.number().int().positive().nullable().optional(),
+  maxUniqueGeometries: z.number().int().positive().nullable().optional(),
   subject: z.enum(['prop', 'animal', 'character']).optional(),
   pivot: z.enum(['base-center', 'center', 'back-center', 'top-center']).optional(),
   collider: z.enum(['box', 'cylinder', 'convex', 'none']).optional(),
+  destructionGroups: z.array(z.string()).optional(),
   placement: z.array(z.string()).optional(),
   notes: z.string().optional(),
   prompts: z
@@ -74,6 +80,11 @@ function buildAsset(input, taken) {
     subject: input.subject ?? 'prop',
     budgetClass: input.budgetClass,
     targetTriangles: input.targetTriangles ?? null,
+    // Null on all four means "use the class". They are stored per-asset only when
+    // a prop genuinely earns a different ceiling than its size class implies.
+    maxDrawCalls: input.maxDrawCalls ?? null,
+    maxMaterials: input.maxMaterials ?? null,
+    maxUniqueGeometries: input.maxUniqueGeometries ?? null,
     scale: {
       declared: input.scale?.declared ?? { w: 0.5, h: 0.5, d: 0.5 },
       measured: null,
@@ -83,6 +94,7 @@ function buildAsset(input, taken) {
     pivot: input.pivot ?? 'base-center',
     placement: input.placement ?? ['floor'],
     collider: input.collider ?? 'box',
+    destructionGroups: input.destructionGroups ?? [],
     status: { image: 'pending', model: 'pending' },
     image: null,
     model: {},

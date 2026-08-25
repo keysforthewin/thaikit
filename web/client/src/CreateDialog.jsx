@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from './api.js';
+import { describeClass, useBudgetClasses } from './budgets.js';
 
 const CATEGORIES = [
   'street-furniture', 'vendor', 'food', 'signage', 'vehicle', 'utility',
@@ -7,6 +8,7 @@ const CATEGORIES = [
 ];
 
 export function CreateDialog({ onClose, onCreated }) {
+  const budgetClasses = useBudgetClasses();
   const [form, setForm] = useState({
     name: '', category: 'street-furniture', description: '',
     texture: '', w: 0.4, h: 0.5, d: 0.4, budgetClass: 'medium', subject: 'prop',
@@ -77,8 +79,12 @@ export function CreateDialog({ onClose, onCreated }) {
         <div className="row">
           <div className="field">
             <label>Budget class</label>
+            {/* The ceilings ride in the label. Choosing a class blind is choosing
+                four numbers you cannot see. */}
             <select value={form.budgetClass} onChange={set('budgetClass')}>
-              {['small', 'medium', 'large', 'hero'].map((c) => <option key={c}>{c}</option>)}
+              {Object.keys(budgetClasses ?? {}).map((c) => (
+                <option key={c} value={c}>{describeClass(c, budgetClasses?.[c])}</option>
+              ))}
             </select>
           </div>
           <div className="field">

@@ -19,7 +19,7 @@ import {
 } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
-import { categories, classifyBySize } from './lib/config.mjs';
+import { BUDGET_AXES, categories, classifyBySize } from './lib/config.mjs';
 
 function slugify(name) {
   return name
@@ -103,6 +103,13 @@ async function normalize(draft, taken, catalogue) {
       styleProfileId: draft.prompts?.styleProfileId ?? 'thai-street-photoreal-v1',
     },
     budgetClass,
+    // Per-asset ceilings pass through when a draft names them, and stay null
+    // otherwise so the class stays the single place the numbers live. An
+    // override is only ever a prop that has earned a different ceiling than its
+    // size implies -- a bare mesh sphere, or a stall roof that has to be four.
+    ...Object.fromEntries(
+      BUDGET_AXES.map(({ key }) => [key, draft[key] ?? null]),
+    ),
     scale: {
       declared,
       measured: null,
@@ -116,6 +123,7 @@ async function normalize(draft, taken, catalogue) {
     pivot: draft.pivot ?? 'base-center',
     placement: draft.placement ?? catSpec.defaultPlacement ?? ['floor'],
     collider: draft.collider ?? catSpec.defaultCollider ?? 'box',
+    destructionGroups: draft.destructionGroups ?? [],
     status: { image: 'pending', model: 'pending' },
     image: null,
     model: {},
