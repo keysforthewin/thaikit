@@ -100,9 +100,23 @@ your own batch. When two candidates would produce near-identical meshes, keep on
 | `prompts.image` | **The object description only** — see below. |
 | `prompts.texture` | Materials and wear only: "soot-blackened steel, rusted legs". |
 | `subject` | `prop` (the default and almost always right), `animal`, or `character` for a **human** figure. |
+| `notes` | Free text, and **self-contained** — see below. Why an override, why a reinterpretation, what is deliberately missing. |
 
 `budgetClass`, `placement` and `collider` are derived automatically; only set them
 to override.
+
+**Every `notes` field must stand on its own.** Never write "see the 7-Eleven
+note", "as above", "same as the others" or any other pointer to a different
+asset's notes. An asset is read one at a time — in the drawer, in a diff, by the
+next skill down the pipeline — and a note that only makes sense beside its
+siblings is empty exactly when someone needs it. When a batch shares a
+constraint, repeat it in full in every entry; the duplication is the point, and
+it survives one of them being renamed, hidden or deleted.
+
+Referring to another asset as a *fact* is fine — "shares the module and massing
+with the 7-Eleven building" tells you something on its own. Referring to another
+asset's *notes* for information you did not write down here is not.
+
 
 **`subject` changes the pipeline, not just the label.** It selects the
 reconstruction profile `thaikit-model` uses: `character` turns on the anatomy
@@ -233,9 +247,10 @@ entries, read the dump from step 1 and look for: image prompts carrying style,
 lighting or quality words that belong to the profile scaffold (step 5); metre
 estimates that fight the category prior; a `category` that no longer matches what
 the prompt describes; missing or inconsistent tags; near-duplicate entries that
-slipped through (step 3); and empty `nameTh` where you are confident of the Thai
-name. Propose the edits as a list first and let the user pick, unless they
-already said to go ahead — a sweeping rewrite of prompts across the kit is not a
+slipped through (step 3); `notes` that point at another asset's notes instead of
+saying the thing (step 4), which should be rewritten to stand alone; and empty
+`nameTh` where you are confident of the Thai name. Propose the edits as a list
+first and let the user pick, unless they already said to go ahead — a sweeping rewrite of prompts across the kit is not a
 change to make unasked.
 
 ### 8. Report
