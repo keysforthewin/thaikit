@@ -195,7 +195,7 @@
     {
       "budgetClass": "hero2x",
       "category": "building-part",
-      "collider": "box",
+      "collider": "convex",
       "createdAt": "2026-08-25T01:23:54.876Z",
       "description": "",
       "destructionGroups": [],
@@ -220,13 +220,13 @@
       "maxMaterials": null,
       "maxUniqueGeometries": null,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 12,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/ais-shop-building/model.bundle.js",
+        "fileBytes": 596102,
+        "gpuBytesEstimate": 3260416,
+        "materials": 8,
+        "meshes": 12,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -238,39 +238,104 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "scratch/ais-shop-building/renders-optimization-pass/cmp.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "Optimization pass. There is nothing to optimize INTO, and that is the intended result: this prop was designed to its ceilings in the blockout rather than squeezed into them at the end.\n\nFINAL BUDGET, measured on the built model by render-model.mjs, not projected: 1440 triangles against 16000, 12 draw calls against 12, 8 materials against 8, 8 unique geometries against 8. Three of the four axes sit exactly at their ceiling and none is over.\n\nThe binding axis was never triangles -- the prop uses 9% of its triangle budget -- it was UNIQUE GEOMETRIES, because the generator bakes each component's real dimensions into vertex data via geometry.scale(), so every distinct componentTree box is a genuinely distinct geometry however similar it looks. hero2x allows eight. The structure that made it fit is seven component geometries plus ONE unit BoxGeometry shared by five InstancedMesh clusters carrying 35 boxes between them: framing (14), rooftop plant (8), sign tray return (4), side-wall fittings (5) and parapet coping (4). Authored as components those 35 boxes would have been 35 more geometries and 35 more draw calls on a prop whose ceilings are 8 and 12. That decision had to be made in the blockout: a pivot hung off a part cannot be merged afterwards.\n\nThe large triangle headroom is deliberately available for silhouette work and is NOT an invitation to split components, which would spend the axis that is actually scarce. Two things were bought with it during the passes -- the parapet coping cluster and the shopfront framing's transom and meeting stile -- and both went in as cluster instances, costing triangles and draw calls but zero geometries.\n\nTIME TO FIRST DRAW is 22 ms. All seven materials declare textureless on measured evidence, so createSculptMaterial skips makeProceduralTextureSet entirely; seven materials at 1024 would have cost roughly 13 seconds of pixel-by-pixel canvas writing inside createObjectModel before anything could be shown. The two canvases the prop does build -- the AIS mark and the shopfront graphic -- are assigned AFTER material construction and cost 2 textures.\n\nA three-tier LOD plan is recorded, and it buys back DRAW CALLS rather than triangles, which is the axis that is actually scarce: LOD1 drops the side-wall fittings and the fan-grille plates to 10, LOD2 keeps only shell, facade, fascia band, sign face and glazing at 5.\n\nFINAL GATE STATE. check-coplanar.mjs: clean at 0.001 m. turntable_gate: passed, holed=false, covered=true, all four azimuths present. check_part_coverage: 7 specified, 12 built, 0 errors, 0 warnings, 0 unnamed meshes. attachment_anchor: passed, 0 unmeasured. material_gate: passed. Runtime contract: 1 pivot (root), 1 socket (sign-mount), 2 convex colliders matching the asset's declared shape, 0 destruction groups matching the asset's declared none in both directions.\n\ndiagnose_render reports IoU 0.842 against a 0.85 threshold, with aspectRatioDelta 0.042, scaleDelta 0.042, bilateralSymmetryError 0.039 and maxDeltaE 14.7 all inside. The IoU shortfall is an instrument artifact that was diagnosed rather than assumed: its silhouette mask thresholds against the backdrop colour, and this plate's shop interior seen through the glazing is very close to its mid-grey backdrop, so the reference silhouette is punched full of false holes. A difference overlay showed them directly. Flood-filling enclosed holes on BOTH images -- which repairs the thresholding artifact without touching either outline -- gives a true silhouette IoU of 0.9079. Two independent signals agree: the rendered bounds are the declared 8.0 x 4.6 x 7.0 m module, and the projected aspect at the solved review pose is 1.391 against the plate's 1.339.\n\nNO DEFECT was found at this pass and no geometry, material or transform changed.",
+          "decision": "continue",
+          "featureReviews": [
+            {
+              "id": "ais-brand-fascia",
+              "notes": "Green face deltaE00 3.349, the closest of the seven materials. Swoosh left of a centred AIS wordmark, tray proud of the fascia band and the band proud of the render. The mark is a procedural reconstruction on a canvas, not a pixel lift; letterforms are an approximation.",
+              "score": 0.86,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "two-tone-front-elevation",
+              "notes": "render-cream deltaE 5.778, white-panel 5.919. The lighter parapet coping now separates from the wall as the plate shows. The cream survived only because textureless kept the authored albedo.",
+              "score": 0.88,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "shopfront-bay-rhythm",
+              "notes": "Eight 0.85 m bays across the 6.80 m opening, 0.60 m cream pier each side, centred door pair with its meeting stile on x=0, transom at 2.34 m, green spandrel bays and poster panels at both ends.",
+              "score": 0.84,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "glazing-reads-as-surface",
+              "notes": "deltaE 8.846, opacity 0.94, roughness 0.08, no interior modelled. Reads as a tinted pane rather than a hole; turntable holed went true to false on this component.",
+              "score": 0.82,
+              "threshold": 0.75,
+              "tier": "important"
+            },
+            {
+              "id": "parapet-and-roof-plant",
+              "notes": "galvanised deltaE 4.613. Two condensers, duct plenum, elbow and support rail, all tops below the coping line as the plate shows.",
+              "score": 0.8,
+              "threshold": 0.7,
+              "tier": "important"
+            },
+            {
+              "id": "no-coincident-surfaces",
+              "notes": "check-coplanar.mjs clean at 0.001 m. Three real pairs were found at the surface pass and all three fixed. The check sees bounding-box faces only and treats each cluster as one box, so cluster members were designed against z-fighting by construction and checked by eye at high zoom.",
+              "score": 0.95,
+              "threshold": 0.9,
+              "tier": "critical"
+            }
+          ],
+          "fidelity": 0.87,
+          "judgedAt": "2026-08-25T15:38:09.835Z",
+          "layerScores": {
+            "componentStructure": 0.93,
+            "formDetail": 0.84,
+            "lightingCamera": 0.84,
+            "materialSurface": 0.87,
+            "silhouetteProportion": 0.9
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "surface-pass",
+            "lighting-pass",
+            "interaction-pass",
+            "optimization-pass"
+          ],
+          "score": 87,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "building-shell",
+            "facade-wall"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
-          "sockets": []
+          "nodes": 8,
+          "pivots": [
+            "root"
+          ],
+          "sockets": [
+            "sign-mount"
+          ]
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/ais-shop-building/src/createObjectModel.ts",
+        "spec": "assets/ais-shop-building/object-sculpt-spec.json",
+        "state": "scratch/ais-shop-building/.img2threejs/state.json",
+        "status": "done",
+        "textures": 2,
+        "thumb": "assets/ais-shop-building/thumb.webp",
+        "triangles": 1440,
+        "uniqueGeometries": 8,
+        "vertices": 1770
       },
       "name": "AIS Shop Building",
       "nameTh": "เอไอเอส",
@@ -297,7 +362,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "prop",
       "tags": [
@@ -309,7 +374,7 @@
         "hero"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T02:02:31.897Z"
+      "updatedAt": "2026-08-25T13:50:22.593Z"
     },
     {
       "budgetClass": "hero2x",
@@ -550,7 +615,7 @@
       "updatedAt": "2026-08-25T02:02:31.190Z"
     },
     {
-      "budgetClass": "hero",
+      "budgetClass": "hero2x",
       "category": "building-part",
       "collider": "box",
       "createdAt": "2026-08-25T02:45:13.748Z",
@@ -574,16 +639,16 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 12,
+      "maxUniqueGeometries": 12,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 11,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/brahman-street-shrine/model.bundle.js",
+        "fileBytes": 404771,
+        "gpuBytesEstimate": 0,
+        "materials": 3,
+        "meshes": 11,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -595,39 +660,112 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "scratch/brahman-street-shrine/cmp-optimization.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "Marigold garlands removed at the user's direction: noise-displaced spheres read as orange blobs rather than flowers, and a detail that reads wrong is worse than one that is absent.",
+          "decision": "stop",
+          "featureReviews": [
+            {
+              "id": "open-canopy-silhouette",
+              "name": "Open four-post canopy and stepped-podium silhouette",
+              "notes": "Unaffected by the garland removal. Open on all four sides, envelope 4.70 x 6.00 x 4.70 m.",
+              "passed": true,
+              "score": 0.87,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "roof-concave-flare",
+              "name": "Concave kick in the roof slope",
+              "notes": "Unaffected. 0.16 m flare at the eave over the lower 28% of the slope.",
+              "passed": true,
+              "score": 0.79,
+              "threshold": 0.78,
+              "tier": "critical"
+            },
+            {
+              "id": "votive-ring",
+              "name": "Elephant figurine ring",
+              "notes": "RESCOPED: this target covered the elephant ring AND the garlands; it now covers the ring alone. 48 figurines, 12 per side on a square ring, each embedded 0.015 m into the cap-slab ledge. Scored down from 0.80 to 0.76 because the ring is now the only accumulated-offering cue the prop carries, so it bears more of that read on its own.",
+              "passed": true,
+              "score": 0.76,
+              "threshold": 0.72,
+              "tier": "critical"
+            },
+            {
+              "id": "gilt-response",
+              "name": "Gilt metalness and roughness response",
+              "notes": "Unaffected. Rendered [126,103,62] against the plate's [120,102,74].",
+              "passed": true,
+              "score": 0.82,
+              "threshold": 0.75,
+              "tier": "critical"
+            },
+            {
+              "id": "balustrade-transparency",
+              "name": "See-through turned balustrade",
+              "notes": "Unaffected.",
+              "passed": true,
+              "score": 0.82,
+              "threshold": 0.7,
+              "tier": "important"
+            },
+            {
+              "id": "four-faced-head",
+              "name": "Four-faced head block and tiered crown",
+              "notes": "BELOW THRESHOLD, and lower than before at 0.55. The garlands were draped over exactly the shoulder region that hides the figure's unmodelled arms in the plate; with them gone the bare shoulder and the absent arms are fully exposed. Reported as a real consequence of the removal rather than held at its old score.",
+              "passed": false,
+              "score": 0.55,
+              "threshold": 0.62,
+              "tier": "important"
+            }
+          ],
+          "fidelity": 0.8,
+          "judgedAt": "2026-08-26T02:23:29.110Z",
+          "layerScores": {
+            "componentStructure": 0.9,
+            "formDetail": 0.66,
+            "lightingCamera": 0.82,
+            "materialSurface": 0.84,
+            "silhouetteProportion": 0.85
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "surface-pass",
+            "lighting-pass",
+            "interaction-pass"
+          ],
+          "score": 80,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "stone-podium"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
+          "nodes": 8,
+          "pivots": [
+            "root"
+          ],
           "sockets": []
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/brahman-street-shrine/src/createObjectModel.ts",
+        "spec": "assets/brahman-street-shrine/object-sculpt-spec.json",
+        "state": "scratch/brahman-street-shrine/.img2threejs/state.json",
+        "status": "done",
+        "textures": 0,
+        "thumb": "assets/brahman-street-shrine/thumb.webp",
+        "triangles": 10704,
+        "uniqueGeometries": 11,
+        "vertices": 7052
       },
       "name": "Brahman Street Shrine",
       "nameTh": "ศาลพระพรหม",
@@ -654,7 +792,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "prop",
       "tags": [
@@ -666,7 +804,7 @@
         "landmark"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:45.864Z"
+      "updatedAt": "2026-08-26T00:37:42.639Z"
     },
     {
       "budgetClass": "hero2x",
@@ -694,15 +832,15 @@
       },
       "maxDrawCalls": null,
       "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxUniqueGeometries": 16,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 10,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/cafe-amazon-store-building/model.bundle.js",
+        "fileBytes": 336564,
+        "gpuBytesEstimate": 1288875,
+        "materials": 8,
+        "meshes": 10,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -714,39 +852,115 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "scratch/cafe-amazon-store-building/renders/cmp.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "Final measured budgets, off the built model rather than estimated off the spec: 2,168 triangles / 16,000 (14%), 10 draw calls / 12, 8 materials / 8, 8 unique geometries / 16. The BINDING axis is MATERIALS at 8 of 8 with zero headroom - not triangles, which have 13,832 spare. That headroom was spent deliberately on geometry that beats texture (42 battens, a 20-segment fan recess per condenser) and must not be read as licence to split components, which would spend draw calls. Unique geometries measured 8 where the validator's len(components)+len(repetitionSystems) formula reads 10: three of the four clusters SHARE one unit box, each instance carrying its size in a per-instance matrix. Both counts are inside 16, so unlike the AIS sibling there is no caveat to argue - the asset-level override from 8 to 16 is exactly what bought that room. Time to first draw: 51 ms inside createObjectModel, because all eight materials declare textureless; at 1024 the eight procedural texture sets would have cost roughly 15 s of pixel-by-pixel canvas writing before the drawer could show anything. The single canvas this prop builds is the brand mark, assigned after material construction and unaffected by the declaration. No decimation and no LOD tiers were needed at 14% of the triangle ceiling.",
+          "decision": "continue",
+          "featureReviews": [
+            {
+              "id": "fascia-band-wrap",
+              "notes": "Band wraps the front-right corner and terminates on the side elevation at z=1.30, as the plate shows. Top sits under the coping.",
+              "score": 0.92,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "id": "brand-sign",
+              "notes": "Position, proportion, tray edge and the light-green-on-dark-green wordmark are right. The roundel is a STYLISED canvas approximation -- white/orange ring, foliage, toucan with an orange beak -- not the registered artwork, which this pipeline has no vector for. Improved once from a much cruder first draft; still below its 0.85 threshold and reported as the one critical feature that does not clear.",
+              "score": 0.8,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "id": "timber-dado",
+              "notes": "14 real batten courses with real 0.0166 m gaps over three runs, interrupted by the entrance and returning around the corner. Geometry, not texture, so it self-shadows at grazing angles.",
+              "score": 0.88,
+              "threshold": 0.82,
+              "tier": "critical"
+            },
+            {
+              "id": "shopfront-glazing",
+              "notes": "Dark tinted field between the pilasters with slim near-black members. Reads as glass, not as a hole. Opaque by design -- there is a cream wall directly behind it.",
+              "score": 0.85,
+              "threshold": 0.82,
+              "tier": "critical"
+            },
+            {
+              "id": "shell-proportion",
+              "notes": "8.0 x 4.6 x 7.0 m. Meshy proxy independently gives h/w 0.573 against the declared 0.575. Coping slimmed and deck dropped after the first side-by-side showed the parapet reading as a thick white frame rather than an upstand.",
+              "score": 0.91,
+              "threshold": 0.88,
+              "tier": "critical"
+            },
+            {
+              "id": "rooftop-plant",
+              "notes": "Three identical units in a row, tops 0.19 m above the coping so they break the parapet line. Fan recess is a real square recess with ring and hub -- cavity shading, never albedo.",
+              "score": 0.84,
+              "threshold": 0.75,
+              "tier": "important"
+            },
+            {
+              "id": "canopy-cantilever",
+              "notes": "Slim slab projecting 0.55 m, overhanging the left corner, wrapping the right. Thinned 0.20 -> 0.14 after the side-by-side. Its TOP is timber where the plate shows dark grey-blue: the visible cost of the 8-of-8 material ceiling, and invisible from an eye-level camera.",
+              "score": 0.78,
+              "threshold": 0.75,
+              "tier": "important"
+            },
+            {
+              "id": "side-elevation",
+              "notes": "Unbroken cream render with one service door and the coping return. No invented openings.",
+              "score": 0.86,
+              "threshold": 0.72,
+              "tier": "important"
+            }
+          ],
+          "fidelity": 0.86,
+          "judgedAt": "2026-08-25T16:42:58.625Z",
+          "layerScores": {
+            "componentStructure": 0.94,
+            "formDetail": 0.85,
+            "lightingCamera": 0.76,
+            "materialSurface": 0.78,
+            "silhouetteProportion": 0.91
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "surface-pass",
+            "lighting-pass",
+            "interaction-pass",
+            "optimization-pass"
+          ],
+          "score": 86,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "building-shell"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
+          "nodes": 11,
+          "pivots": [
+            "root"
+          ],
           "sockets": []
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/cafe-amazon-store-building/src/createObjectModel.ts",
+        "spec": "assets/cafe-amazon-store-building/object-sculpt-spec.json",
+        "state": "scratch/cafe-amazon-store-building/.img2threejs/state.json",
+        "status": "done",
+        "textures": 1,
+        "thumb": "assets/cafe-amazon-store-building/thumb.webp",
+        "triangles": 2168,
+        "uniqueGeometries": 8,
+        "vertices": 6504
       },
       "name": "Cafe Amazon Store Building",
       "nameTh": "คาเฟ่ อเมซอน",
@@ -773,7 +987,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "prop",
       "tags": [
@@ -785,7 +999,7 @@
         "hero"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T02:02:32.137Z"
+      "updatedAt": "2026-08-25T15:43:39.248Z"
     },
     {
       "budgetClass": "hero2x",
@@ -1141,7 +1355,7 @@
       "updatedAt": "2026-08-24T04:21:50.849Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.517Z",
@@ -1164,61 +1378,137 @@
         "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
         "spdx": "MIT"
       },
-      "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxDrawCalls": 2,
+      "maxMaterials": 3,
+      "maxUniqueGeometries": 3,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 2,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/elephant-crossing-sign/model.bundle.js",
+        "fileBytes": 356488,
+        "gpuBytesEstimate": 2796203,
+        "materials": 2,
+        "meshes": 2,
         "quarantine": null,
         "reference": {
-          "at": null,
+          "at": "2026-08-25T20:58:18.108Z",
           "compressed": false,
-          "glb": null,
-          "params": {},
+          "glb": "https://v3b.fal.media/files/b/0aa7ccfc/JmUciIjH9vv_cR5stx8_n_model.glb",
+          "params": {
+            "enable_pbr": true,
+            "image_url": "https://v3b.fal.media/files/b/0aa7b50c/HSjqoQSgwZFZhgUsn4Hug_preview.jpg",
+            "should_remesh": true,
+            "symmetry_mode": "auto",
+            "target_polycount": 800,
+            "topology": "triangle",
+            "ultra_mode": true
+          },
           "provider": "fal:meshy/v7/image-to-3d",
-          "requestId": null,
-          "seed": null
+          "requestId": "01a03ab4-5783-7f01-9adf-9f91c4eb0898",
+          "seed": 141948059
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "scratch/elephant-crossing-sign/cmp-final.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "Measured, not estimated, by the render harness: 220 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture at 2.7 MB, and createObjectModel returning in 34 ms. DRAW CALLS are the binding axis and triangles are not - the prop sits at a quarter of its triangle budget and at 100% of its draw-call budget - and that is the design rather than an overrun, because it was decided in the BLOCKOUT and not optimised into at the end. Three splits were refused and each is recorded where someone tempted to make it will read it: the supplementary plate folds into the diamond's buffer, the plate faces do NOT get a graphic material separate from their backs, and the fasteners stay printed. The UV atlas is what makes the second of those possible - front-facing vertices take a graphic region and every other vertex collapses to a single galvanised texel, so one material carries a printed front and a plain back. NOTHING WAS DECIMATED and no segment count was cut: at 220 triangles the vertex cost is already below the per-draw-call overhead, so a decimated LOD tier would save nothing measurable and would cost a second geometry against a ceiling of three. The one place triangles WERE spent is the post's 8 height segments, 56 of them, to carry a weathering ramp that would otherwise have needed a texture. The factory was regenerated at this pass id and the post-generation layer re-applied through a recorded script, so the shipped artefact is the generator's own output plus a layer whose every part is described in the spec.",
+          "decision": "continue",
+          "featureReviews": [
+            {
+              "evidence": "Unchanged by optimisation: nothing was decimated and no segment count was reduced. 220 triangles measured in the harness against a budget of 800.",
+              "id": "plate-outline-system",
+              "passed": true,
+              "score": 0.95,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Costs zero triangles and zero draw calls - it is texels in an atlas that is built once at module scope and shared by every instance of the prop.",
+              "id": "elephant-pictogram",
+              "passed": true,
+              "score": 0.92,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Same atlas, same zero marginal cost. 1024x512 at 2.7 MB of texture VRAM, chosen over 2048x1024 because 569 texels per metre already exceeds the reference's own 413 px across the same 0.90 m.",
+              "id": "legend-system",
+              "passed": true,
+              "score": 0.86,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Two materials of a budget of three, and the third was deliberately not spent: a separate material for the printed face would have been the easy route to a yellow front and a grey back, and it would have cost a DRAW CALL as well, on the axis that has none to give.",
+              "id": "sheeting-and-galvanising",
+              "passed": true,
+              "score": 0.84,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Two unique geometries of a budget of three. Both are shared across every instance.",
+              "id": "mounting-and-stance",
+              "passed": true,
+              "score": 0.92,
+              "threshold": 0.7,
+              "tier": "important"
+            },
+            {
+              "evidence": "The post's rust ramp costs 56 triangles - the box is rebuilt at 8 height segments instead of 1, because two rows of vertices can only carry a linear ramp from top to bottom, which would rust the whole post. Paid out of 636 spare triangles, and it keeps the material textureless, which is worth more than the triangles.",
+              "id": "weathering-gradient",
+              "passed": true,
+              "score": 0.8,
+              "threshold": 0.65,
+              "tier": "important"
+            }
+          ],
+          "fidelity": 0.87,
+          "judgedAt": "2026-08-25T22:03:35.653Z",
+          "layerScores": {
+            "componentStructure": 0.94,
+            "formDetail": 0.9,
+            "lightingCamera": 0.78,
+            "materialSurface": 0.86,
+            "silhouetteProportion": 0.92
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "surface-pass",
+            "lighting-pass",
+            "interaction-pass",
+            "optimization-pass"
+          ],
+          "score": 87,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "post"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
+          "nodes": 3,
+          "pivots": [
+            "root"
+          ],
           "sockets": []
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/elephant-crossing-sign/src/createObjectModel.ts",
+        "spec": "assets/elephant-crossing-sign/object-sculpt-spec.json",
+        "state": "scratch/elephant-crossing-sign/.img2threejs/state.json",
+        "status": "done",
+        "textures": 1,
+        "thumb": "assets/elephant-crossing-sign/thumb.webp",
+        "triangles": 220,
+        "uniqueGeometries": 2,
+        "vertices": 536
       },
       "name": "Elephant Crossing Sign",
       "nameTh": "ป้ายระวังช้าง",
@@ -1245,7 +1535,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "prop",
       "tags": [
@@ -1256,10 +1546,10 @@
         "wildlife"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:56:50.403Z"
+      "updatedAt": "2026-08-25T20:53:06.948Z"
     },
     {
-      "budgetClass": "large",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "box",
       "createdAt": "2026-08-25T03:11:50.517Z",
@@ -1282,9 +1572,9 @@
         "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
         "spdx": "MIT"
       },
-      "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxDrawCalls": 3,
+      "maxMaterials": 3,
+      "maxUniqueGeometries": 4,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -1375,7 +1665,7 @@
         "modular"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:52.342Z"
+      "updatedAt": "2026-08-26T00:26:59.272Z"
     },
     {
       "budgetClass": "hero2x",
@@ -1497,7 +1787,7 @@
       "updatedAt": "2026-08-25T02:02:31.308Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "hero4x",
       "category": "animal",
       "collider": "convex",
       "createdAt": "2026-08-25T02:31:01.245Z",
@@ -1524,13 +1814,13 @@
       "maxMaterials": null,
       "maxUniqueGeometries": null,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 16,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/fighting-cock/model.bundle.js",
+        "fileBytes": 993651,
+        "gpuBytesEstimate": 0,
+        "materials": 10,
+        "meshes": 16,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -1542,39 +1832,114 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "cmp-final.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "POST-SHIP CORRECTION 2 AND 3: THE LEGS WERE NOT JOINED TO THE BODY, AND THEN SHOWED A FLAT FACE. Both reported by eye, both then measured. Correction 2: the thigh root sat at y 0.205 while the body's surface at the thigh's own position is y 0.214 -- the bbox minimum of 0.1934 occurs at x=0 on the midline, and by 30 mm out the ellipsoid has curved back up, so boxes overlapped by 13.6 mm while surfaces grazed by 2.5. Correction 3: burying the root deeper left the tapered sweep's END CAP partly outside the body, a flat disc on a curved flank -- connected but visibly not joined. Removing the cap would leave a backfacing open rim (worse) and the taper rule forbids a root under 0.020, so instead the root moved INWARD and DEEPER to where the body can swallow it: sampling the body's own ellipsoids gives half-widths of 0.037 at y 0.228 but 0.040 at y 0.250, so the root rises to y 0.250 and moves in to x 0.010, and the sweep walks back out to x 0.030 as it descends. All 13 root-cap vertices now measure inside the body. THE MOST IMPORTANT FINDING WAS IN MY OWN INSTRUMENT. The new attachment checker used THREE.Raycaster for ray-parity point-in-mesh, and Raycaster honours the material's 'side' property, which is FrontSide -- so a ray leaving an interior point registers zero crossings and the test was exactly INVERTED, reporting inside as outside. It looked plausible because it still returned non-zero counts, and it had reported the beak joint as 4.6 mm. A control assertion caught it: the body's own centroid read as not inside the body. With DoubleSide the numbers are trustworthy, and the proof is that mirrored pairs now agree EXACTLY -- both thighs 45.3 mm, both wings 40.5 mm -- where before they differed 6.1 against 2.5. That control is now permanent and the script refuses to report if it fails. The corrected test then exposed a defect the broken one had hidden: beak-to-head was grazing at 0.4 mm, now 8.4 mm. The hock joint, marginal at 4.1 against 3.8 for a mirrored pair, is now 12.2 and 11.8. Every declared attachment measures at least 8.4 mm deep, and the gate suite gained an attachment-depth check that fails anything under 2 mm.",
+          "decision": "continue",
+          "featureReviews": [
+            {
+              "id": "dressed-comb-silhouette",
+              "note": "Unchanged; geometry was not touched in this pass.",
+              "score": 0.86,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "swept-sickle-tail-arc",
+              "note": "Unchanged; both sweeps still pass swept_arc_gate.",
+              "score": 0.88,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "pose-silhouette",
+              "note": "Unchanged.",
+              "score": 0.86,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "id": "long-tarsus-and-hock-line",
+              "note": "Improved by the leg-scale lift: the tarsus was rendering mid-grey at P50 108 against the plate's 157 and now reads 130, so the pale scale reads as pale against the dark plumage and the hock boundary is legible.",
+              "score": 0.88,
+              "threshold": 0.75,
+              "tier": "critical"
+            },
+            {
+              "id": "anatomy-proportion",
+              "note": "Mean absolute band error 0.0538 of height, about 30 mm on a 0.55 m bird, over 19 bands. Envelope 0.184 x 0.5513 x 0.449 against a declared 0.25 x 0.55 x 0.45 -- inside on every axis. Every declared attachment now measures 8.4 mm deep or more, and mirrored pairs agree EXACTLY (both thighs 45.3 mm, both wings 40.5 mm), which is what proves the measurement sound.",
+              "score": 0.85,
+              "threshold": 0.75,
+              "tier": "critical"
+            },
+            {
+              "id": "outfit-and-palette",
+              "note": "Unchanged from material-pass and re-verified under the same lighting. The lighting entries themselves are now measured rather than asserted -- notably the RIM light, which is declared ABSENT because the plate has none: the aft silhouette edge lifts 0.3 luma over 43 rows.",
+              "score": 0.86,
+              "threshold": 0.7,
+              "tier": "important"
+            },
+            {
+              "id": "face-landmark-placement",
+              "note": "Eye, nostril line, gape and beak hook all read. The beak joint was grazing at 0.4 mm -- its root sat half a millimetre inside a skull surface at z 0.1205 -- and is now buried 8.4 mm with the tip unmoved at z 0.146, so the silhouette is unchanged and the cap is swallowed.",
+              "score": 0.84,
+              "threshold": 0.7,
+              "tier": "important"
+            },
+            {
+              "id": "foot-and-toe-structure",
+              "note": "Feet attached (one connected surface per leg) and resting on y = 0. The hock joint was also firmed up: measured at 4.1 and 3.8 mm for a mirrored pair, which is the signature of a marginal overlap, the tarsus now runs 18 mm up inside the drumstick and measures 12.2 / 11.8 mm.",
+              "score": 0.9,
+              "threshold": 0.7,
+              "tier": "important"
+            }
+          ],
+          "fidelity": 0.89,
+          "judgedAt": "2026-08-26T00:16:01.397Z",
+          "layerScores": {
+            "componentStructure": 0.94,
+            "formDetail": 0.86,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.86,
+            "silhouetteProportion": 0.88
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "lighting-pass",
+            "interaction-pass",
+            "optimization-pass"
+          ],
+          "score": 89,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "body-shell"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
+          "nodes": 16,
+          "pivots": [
+            "root"
+          ],
           "sockets": []
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/fighting-cock/src/createObjectModel.ts",
+        "spec": "assets/fighting-cock/object-sculpt-spec.json",
+        "state": "scratch/fighting-cock/.img2threejs/state.json",
+        "status": "done",
+        "textures": 0,
+        "thumb": "assets/fighting-cock/thumb.webp",
+        "triangles": 20732,
+        "uniqueGeometries": 16,
+        "vertices": 10629
       },
       "name": "Fighting Cock",
       "nameTh": "ไก่ชน",
@@ -1601,7 +1966,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "animal",
       "tags": [
@@ -1612,7 +1977,7 @@
         "animal-husbandry"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:48.112Z"
+      "updatedAt": "2026-08-25T22:10:46.617Z"
     },
     {
       "budgetClass": "hero2x",
@@ -3062,13 +3427,13 @@
       "maxMaterials": null,
       "maxUniqueGeometries": null,
       "model": {
-        "drawCalls": null,
+        "drawCalls": 12,
         "export": "createObjectModel",
-        "file": null,
-        "fileBytes": null,
-        "gpuBytesEstimate": null,
-        "materials": null,
-        "meshes": null,
+        "file": "assets/makro-store-building/model.bundle.js",
+        "fileBytes": 431397,
+        "gpuBytesEstimate": 802816,
+        "materials": 8,
+        "meshes": 12,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -3080,39 +3445,99 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": null,
+          "comparisonImage": "scratch/makro-store-building/cmp-optimization.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "",
-          "decision": "",
-          "featureReviews": [],
-          "fidelity": null,
-          "judgedAt": null,
-          "layerScores": {},
-          "passed": false,
-          "passesComplete": [],
-          "score": null,
-          "threshold": 85
+          "critique": "Closing entry for the final pass. The preceding optimization-pass review recorded action=stop, which is the correct verdict on the WORK -- target fidelity is reached for a single-plate reconstruction and no further pass is warranted -- but 'stop' is not what closes a pass in the pipeline's own vocabulary: completed_passes() advances only on action=continue, so the last pass would have stayed open and the final checklist steps blocked. This entry closes it. Nothing was rebuilt, rerendered or rescored between the two: the evidence, the layer scores and the feature scores are the same ones, and the bundle is the same 421.3 KB build.",
+          "decision": "continue",
+          "featureReviews": [
+            {
+              "id": "overall-silhouette",
+              "notes": "Module holds 8.00 x 4.60 x 7.00 m exactly and the normalised pair passes scale (0.011) and aspect (0.0225). Residual silhouette IoU 0.742 is the plate's lens perspective and ground contact, not massing.",
+              "score": 0.86
+            },
+            {
+              "id": "brand-livery-split",
+              "notes": "Blue front against white ribbed returns reads as the plate's second identity feature. Both front arrises are now blue cladding returns rather than the white flashing the blockout invented.",
+              "score": 0.85
+            },
+            {
+              "id": "fascia-wordmark",
+              "notes": "On. Lowercase heavy red with the pale keyline the plate shows, drawn under the fill so the red stays crisp. Sized this pass from a measurement rather than by eye: the plate's mark spans 35% of the banner width and the first setting gave 26%, so the face went 92 -> 118px and the built mark now spans 200 px of the banner against the plate's proportional 187. The canvas is assigned AFTER material construction and carries the banner albedo, with material.color forced to white because a map multiplies colour.",
+              "score": 0.86
+            },
+            {
+              "id": "shopfront-system",
+              "notes": "Mullion rhythm matches -- six mullions over eight bays with transom, sill and door pair -- and the pane reads as glass. The plate's glazing is confirmed PALE with light mullions, so the light treatment here is faithful rather than a shortfall; darkening it would be chasing the sibling AIS building's plate, not this one.",
+              "score": 0.85
+            },
+            {
+              "id": "canopy-and-parapet",
+              "notes": "Canopy cantilevers to the module face with its pale top slab. The coping was thinned from 0.16 to 0.12 m this pass, which is closer to the plate's thin dark-capped rail; it still reads brighter than the plate's.",
+              "score": 0.84
+            },
+            {
+              "id": "roof-plant-cluster",
+              "notes": "Rebuilt this pass: bodies shortened to 0.91 m and lifted onto 0.15 m mounting feet, fan cowls cut from 0.15 m pucks to 0.04 m guards capping the prop at exactly 4.60, and five louvre slats added across each unit's front face. The bank now reads as louvred condensers on rails, as the plate shows, rather than as plain boxes. Paid entirely in triangles -- same cluster, same unit box, same material.",
+              "score": 0.85
+            },
+            {
+              "id": "cladding-rib-relief",
+              "notes": "Rib relief now runs on all four elevations plus the parapet band, all carried as geometry: castellation in the shell's plan profile, the blue-trim parapet ribs, condenser louvres and shutter slats. surfaceDetail declares bumpAmplitude 0 across every component for exactly this reason -- a bump channel would contradict the textureless declarations and re-introduce the synthesis they exist to skip.",
+              "score": 0.94
+            },
+            {
+              "id": "service-shutter",
+              "notes": "Twelve slats now run across the shutter at 0.2 m pitch, so it reads as a ribbed roller rather than a flat grey panel. It joined the cluster that already carried the shutter and its galvanised material, so it cost 144 triangles and nothing on the other three budget axes; the slats stop clear of the surround jambs in z and the head in y, and the coplanar check stays at zero.",
+              "score": 0.86
+            }
+          ],
+          "fidelity": 0.82,
+          "judgedAt": "2026-08-25T20:19:46.571Z",
+          "layerScores": {
+            "componentStructure": 0.9,
+            "formDetail": 0.86,
+            "lightingCamera": 0.82,
+            "materialSurface": 0.84,
+            "silhouetteProportion": 0.86
+          },
+          "passed": true,
+          "passesComplete": [
+            "blockout",
+            "structural-pass",
+            "form-refinement",
+            "material-pass",
+            "surface-pass",
+            "lighting-pass",
+            "interaction-pass",
+            "optimization-pass"
+          ],
+          "score": 82,
+          "threshold": 70
         },
         "runtime": {
-          "colliders": [],
+          "colliders": [
+            "building-shell"
+          ],
           "destructionGroups": [],
-          "nodes": 0,
-          "pivots": [],
+          "nodes": 7,
+          "pivots": [
+            "root"
+          ],
           "sockets": []
         },
-        "source": null,
-        "spec": null,
-        "state": null,
-        "status": "pending",
-        "textures": null,
-        "thumb": null,
-        "triangles": null,
-        "uniqueGeometries": null,
-        "vertices": null
+        "source": "assets/makro-store-building/src/createObjectModel.ts",
+        "spec": "assets/makro-store-building/object-sculpt-spec.json",
+        "state": "scratch/makro-store-building/.img2threejs/state.json",
+        "status": "done",
+        "textures": 1,
+        "thumb": "assets/makro-store-building/thumb.webp",
+        "triangles": 3404,
+        "uniqueGeometries": 8,
+        "vertices": 6728
       },
       "name": "Makro Store Building",
       "nameTh": "แม็คโคร",
@@ -3139,7 +3564,7 @@
       },
       "status": {
         "image": "done",
-        "model": "pending"
+        "model": "done"
       },
       "subject": "prop",
       "tags": [
@@ -3626,7 +4051,7 @@
       "updatedAt": "2026-08-25T03:54:15.855Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.518Z",
@@ -3650,8 +4075,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 2,
+      "maxUniqueGeometries": 2,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -3742,10 +4167,10 @@
         "motorcycle"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:50.348Z"
+      "updatedAt": "2026-08-26T00:27:26.342Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.517Z",
@@ -3769,8 +4194,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 3,
+      "maxUniqueGeometries": 3,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -3860,7 +4285,7 @@
         "circular"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:56:51.456Z"
+      "updatedAt": "2026-08-26T00:27:51.768Z"
     },
     {
       "budgetClass": "medium",
@@ -6412,7 +6837,7 @@
       "updatedAt": "2026-08-25T03:54:34.541Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.516Z",
@@ -6436,8 +6861,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 2,
+      "maxUniqueGeometries": 2,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -6527,7 +6952,7 @@
         "soi"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:06.561Z"
+      "updatedAt": "2026-08-26T00:28:21.051Z"
     },
     {
       "budgetClass": "medium",
@@ -6764,7 +7189,7 @@
       "updatedAt": "2026-08-25T03:54:08.497Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.517Z",
@@ -6788,8 +7213,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 2,
+      "maxUniqueGeometries": 2,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -6879,7 +7304,7 @@
         "circular"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:56:46.921Z"
+      "updatedAt": "2026-08-26T00:28:45.394Z"
     },
     {
       "budgetClass": "medium",
@@ -7118,7 +7543,7 @@
       "updatedAt": "2026-08-25T03:54:42.410Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.517Z",
@@ -7142,8 +7567,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 3,
+      "maxUniqueGeometries": 3,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -7233,7 +7658,7 @@
         "post-mounted"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:54:51.345Z"
+      "updatedAt": "2026-08-26T00:28:34.513Z"
     },
     {
       "budgetClass": "hero",
@@ -7705,7 +8130,7 @@
       "updatedAt": "2026-08-25T03:54:00.948Z"
     },
     {
-      "budgetClass": "medium",
+      "budgetClass": "small",
       "category": "signage",
       "collider": "cylinder",
       "createdAt": "2026-08-25T03:11:50.518Z",
@@ -7729,8 +8154,8 @@
         "spdx": "MIT"
       },
       "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
+      "maxMaterials": 2,
+      "maxUniqueGeometries": 2,
       "model": {
         "drawCalls": null,
         "export": "createObjectModel",
@@ -7820,7 +8245,7 @@
         "blue-plate"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-25T03:56:52.355Z"
+      "updatedAt": "2026-08-26T00:28:53.522Z"
     },
     {
       "budgetClass": "hero4x",
@@ -7943,5 +8368,5 @@
   ],
   "license": "MIT",
   "schemaVersion": 3,
-  "updatedAt": "2026-08-25T13:08:44.552Z"
+  "updatedAt": "2026-08-26T02:23:41.280Z"
 }

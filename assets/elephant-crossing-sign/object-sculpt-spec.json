@@ -1,0 +1,3649 @@
+{
+  "targetName": "Elephant Crossing Sign",
+  "targetId": "elephant-crossing-sign",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+  "referenceCamera": {
+    "solved": true,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": -36.3,
+      "pitch": 0.0,
+      "roll": -8.0
+    },
+    "positionHint": [
+      0.0,
+      1.75,
+      3.4
+    ],
+    "method": "homography from the black border rule's four fitted edge lines (homography.json)",
+    "note": "Not solved with solve_camera_pose.py, which had nothing to fit: this subject is planar, so the camera IS a homography and the plate gives it exactly. The diamond's two diagonals must be equal and measure 333/413 px, so the plate is seen acos(0.806) = 36.3 deg off its normal. The -8 deg roll is the plate's in-plane tilt in the photograph, confirmed independently by the left vertex's two edge slopes (0.94 and 0.66, mean 0.80 = cos 36.3). Camera framing only - neither the yaw nor the roll is modelled into the prop, which stands square and faces +Z."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 1,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "post-mounted highway warning sign assembly",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "planar",
+        "hard-surface"
+      ],
+      "structureKind": [
+        "assembled-solid",
+        "sheet-panel",
+        "extruded-profile"
+      ],
+      "motionPotential": [
+        "static"
+      ],
+      "materialFamilies": [
+        "retroreflective-sheeting-on-aluminium",
+        "hot-dip-galvanised-steel"
+      ],
+      "notes": "The pictogram DEPICTS an animal; the object is not one. primaryDomain stays 'object' and no anatomy track runs - the elephant exists only as a 2D filled silhouette drawn into a canvas, where getting it right is a draughting problem, not an anatomy one. Nothing on this prop moves: no hinge, no bearing, no fastening that a game articulates."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 1,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 0,
+        "materialLayerCount": 1,
+        "localDetailDensity": 3,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 3,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "GEOMETRICALLY this is near the simple end: two extruded rounded profiles and a square prism, measured at ~150 triangles against an 800 ceiling. Triangles are not the constraint here.",
+        "It is NOT rated simple because localDetailDensity is 7: the whole identity of the prop lives in printed detail - the pictogram, two border rules, two lines of legend in two scripts, four fasteners and a weathering gradient. Rating it simple would set targetMinDetails low enough to let the pictogram through as 'a black shape', which is the one thing that would make the prop read as a generic yellow diamond instead of an elephant crossing sign.",
+        "actionReadinessNeed 1: a sealed static sign. One root pivot, no sockets, no destruction groups.",
+        "occlusionRisk 2: only the plate backs and the post behind the diamond are unseen, and both are plain surfaces whose treatment follows from the visible edge return."
+      ],
+      "scoreNote": "Scores are the validator's 0-3 scale. localDetailDensity is at the CEILING of 3 and everything else is at or below 1: that asymmetry IS this prop. Its geometry is two extruded profiles and a prism; its identity is a printed pictogram and two lines of legend."
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Two macro components is not a shallow tree here, it is the DESIGNED answer to a maxDrawCalls of 2. One component is one draw call, so the plates must share a mesh; the meso level (diamond plate, supplementary plate, edge return) is carried inside that one component's geometryDescriptor rather than as separate components, and that is recorded explicitly so a later pass does not 'fix' the shallow tree by splitting it and silently doubling the prop's cost in every scene. repetitionSystems: none - the four fasteners are the only repeated part and they are below the resolvable threshold at prop distance, so they go in the canvas, not into an InstancedMesh that would spend a draw call the prop does not have. localOverrides ARE needed: the algal staining at the plate margins and the rust at the post base are bounded regions of a different colour on an otherwise uniform surface."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "grid-3x3 zones, then per-detail re-crop at 512 px (crops/*.jpg)",
+      "targetMinDetails": 8,
+      "actualDetails": 11,
+      "note": "Eleven details against a raised target of 8. Nine of the eleven are PRINTED, not modelled: this prop's identity lives almost entirely in the legend canvas, and the geometry it hangs on is two extruded profiles and a prism. The two that are geometry - the corner radius and the edge return - are both on the SILHOUETTE, which is exactly where a texture cannot help.",
+      "details": [
+        {
+          "id": "elephant-pictogram",
+          "kind": "linework",
+          "description": "Solid black filled elephant silhouette, walking, FACING -X (the viewer's left). Domed head, small rounded Asian-elephant ear, trunk hanging and hooking forward at the tip, two short tusks curving forward, four legs in a walking stagger with the near foreleg planted forward, thin tail with a tuft. Painted decal technique, not an engraved groove and not a contour: the reference shows a hard colour boundary with zero relief and zero shadow inside it. Drawn as SOLID FILL, never an outline - that is what lets it survive both highway distance and a low texture resolution.",
+          "region": {
+            "x": 0.36,
+            "y": 0.19,
+            "width": 0.25,
+            "height": 0.23,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-diamond"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r0c1.png",
+          "confidence": 0.95
+        },
+        {
+          "id": "border-rule-diamond",
+          "kind": "linework",
+          "description": "Black rule inset from the diamond outline, following the same rounded-corner path. Measured stroke 14/11/13 px on three scans, which is a 45-deg crossing of the edge: perpendicular stroke 9 px = 0.020 m. Edge-to-rule margin 0.014 m. Painted line, no relief - the reference shows a hard colour boundary and no shadow along it.",
+          "region": {
+            "x": 0.29,
+            "y": 0.07,
+            "width": 0.42,
+            "height": 0.42,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-diamond"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r0c1.png",
+          "confidence": 0.92
+        },
+        {
+          "id": "border-rule-supp",
+          "kind": "linework",
+          "description": "The same black rule inset from the supplementary plate's rounded rectangle outline. Measured 3 px stroke = 0.007 m with an 0.011 m margin, both at the measurement floor of a 1024 plate; confidence is correspondingly low and the stroke is drawn proportional to the diamond's rather than trusted absolutely.",
+          "region": {
+            "x": 0.38,
+            "y": 0.51,
+            "width": 0.21,
+            "height": 0.18,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-supp"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r1c1.png",
+          "confidence": 0.92
+        },
+        {
+          "id": "legend-thai",
+          "kind": "linework",
+          "description": "Upper legend line, Thai script: ระวังช้าง. Set noticeably larger than the English line and with the tall tone marks and the ช ascender clearing the cap line. Redrawn from the correct string rather than traced from the plate's glyphs, which came from a fast image model.",
+          "region": {
+            "x": 0.39,
+            "y": 0.53,
+            "width": 0.19,
+            "height": 0.06,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-supp"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r1c1.png",
+          "confidence": 0.7
+        },
+        {
+          "id": "legend-english",
+          "kind": "linework",
+          "description": "Lower legend line, ELEPHANT CROSSING, all caps, CONDENSED - measured per-glyph advance is about 0.55 of cap height, so a normal-width face set at the same size overruns the plate. Letter-spaced to fill the plate width between the border rule margins.",
+          "region": {
+            "x": 0.39,
+            "y": 0.58,
+            "width": 0.21,
+            "height": 0.05,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-supp"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r1c1.png",
+          "confidence": 0.88
+        },
+        {
+          "id": "plate-fasteners",
+          "kind": "linework",
+          "description": "Two dark round bolt heads per plate, on the plate's vertical centreline near the top and bottom margins - four in total, each ~4 px = 0.009 m. Deliberately NOT an InstancedMesh: at prop distance they are sub-pixel, and an instanced system would spend a draw call on a prop whose ceiling is 2. Drawn into the legend canvas as dark discs with a light rim. Recorded as `linework` (painted decal) rather than `fastener`: the taxonomy's `fastener` kind is a contract to build an instanced system and the validator enforces exactly that, so claiming it would promise a system that does not exist. What is built is a decal - colour contrast, no relief - which is what `linework` names.",
+          "region": {
+            "x": 0.44,
+            "y": 0.1,
+            "width": 0.1,
+            "height": 0.55,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-diamond"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r1c1.png",
+          "confidence": 0.6,
+          "kindNote": "Reclassified from `fastener` deliberately. At 0.009 m these are sub-pixel at prop distance, and an InstancedMesh would spend one of only two draw calls to say so."
+        },
+        {
+          "id": "plate-corner-radius",
+          "kind": "bevel",
+          "description": "Both plates carry rounded corners on their outline. Measured on the diamond by extrapolating each vertex's two straight edges to their intersection and taking the apex setback: left vertex 0.044 m, top vertex 0.031 m, adopted 0.038 m. The supplementary plate reads ~0.025 m. REAL GEOMETRY, carried in the extrusion profile: a square-cornered plate reads as a hazard board rather than a road sign, and the rounding is on the SILHOUETTE, where no texture can put it.",
+          "region": {
+            "x": 0.29,
+            "y": 0.07,
+            "width": 0.42,
+            "height": 0.62,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "silhouette",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "sign-plates"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r0c1.png",
+          "confidence": 0.93
+        },
+        {
+          "id": "plate-edge-return",
+          "kind": "bevel",
+          "description": "The plate is folded sheet, not a flat cut panel: a grey edge return runs the full outline, visible along the diamond's upper-right side because the camera sits ~36 deg off the face normal. Given real depth (0.006 m) plus a small extrusion bevel so the rim catches a grazing highlight instead of reading as a zero-thickness card. This is also why the plate front and back are not the same colour.",
+          "region": {
+            "x": 0.55,
+            "y": 0.06,
+            "width": 0.16,
+            "height": 0.35,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "silhouette",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "sign-plates"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r0c2.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "algal-margin-staining",
+          "kind": "stain",
+          "description": "Desaturated yellow-green weathering (~#93A03C) concentrated on the diamond's outboard margin and along the fold, i.e. where water sits, and absent from the middle of the face. A bounded region of a different albedo on an otherwise uniform surface - a localOverride, not a global material change.",
+          "region": {
+            "x": 0.29,
+            "y": 0.07,
+            "width": 0.42,
+            "height": 0.42,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "sheeting-margin-algae"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r0c0.png",
+          "confidence": 0.8
+        },
+        {
+          "id": "post-rust-streaks",
+          "kind": "stain",
+          "description": "Vertical mid-value orange-brown streaks (~#8A5330) running down the post from roughly the supplementary plate's fixing downward, widening into a solid band at the cut end. Runoff from the fixings, so it starts AT a fixing and runs down - a streak that starts in mid-air reads wrong.",
+          "region": {
+            "x": 0.46,
+            "y": 0.66,
+            "width": 0.07,
+            "height": 0.32,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "post-rust"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r2c1.png",
+          "confidence": 0.9
+        },
+        {
+          "id": "post-arris",
+          "kind": "seam",
+          "description": "A single vertical arris runs the full visible length of the post with a lit face either side of it, and the cut end reads square. Real geometry - the corner of a square hollow section - not a painted seam. It is the evidence the post is SHS rather than a U-channel, and the reason the post is a square prism rather than a cylinder despite the declared cylinder COLLIDER.",
+          "region": {
+            "x": 0.47,
+            "y": 0.68,
+            "width": 0.05,
+            "height": 0.3,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "silhouette",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "post"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/detail-inventory/zone-r2c1.png",
+          "confidence": 0.8
+        }
+      ],
+      "measurementsRef": "measurements.md"
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+    "resolvedUnknowns": [
+      {
+        "id": "plate-back-treatment",
+        "question": "What is on the -Z side of either plate?",
+        "status": "unresolved-by-reference",
+        "confidence": 0.75,
+        "assumption": "Plain galvanised grey, no graphic. Single-sided sign, the standard build.",
+        "evidence": "The grey edge return visible along the diamond's upper-right outline in the plate follows the diamond outline exactly, one offset outboard - it is the plate's own back and fold, not a bracket.",
+        "risk": "low - a viewer behind the sign sees a grey plate either way"
+      },
+      {
+        "id": "post-section",
+        "question": "Square hollow section or U-channel?",
+        "status": "inferred",
+        "confidence": 0.8,
+        "assumption": "Square hollow section, 0.075 m.",
+        "evidence": "A single vertical arris runs the full visible length with two lit faces either side of it, and the cut end reads square. A U-channel would show a flange edge and a shadowed web.",
+        "risk": "low - the declared collider is a cylinder, so the physics proxy is unaffected either way"
+      },
+      {
+        "id": "post-length-below-frame",
+        "question": "How far does the post run below the crop?",
+        "status": "resolved-by-declaration",
+        "confidence": 1.0,
+        "assumption": "Not answerable from the plate, and not asked of it. The plate as photographed is 1.91 m overall against a declared 2.40 m; the difference is post that the studio crop cut off.",
+        "evidence": "Declared scale on the registry asset is the authority: 0.9 x 2.4 x 0.08 m.",
+        "risk": "none"
+      },
+      {
+        "id": "fastener-type",
+        "question": "Bolt, rivet or clip, and what head?",
+        "status": "unresolved-by-reference",
+        "confidence": 0.6,
+        "assumption": "Two round dark heads per plate on the vertical centreline, drawn into the canvas.",
+        "evidence": "Visible as ~4 px dark discs at 1024. Below the resolvable threshold at prop distance and far below what 800 triangles would spend well.",
+        "risk": "none at prop distance"
+      },
+      {
+        "id": "sheeting-grade",
+        "question": "Engineering-grade or prismatic sheeting?",
+        "status": "undetermined",
+        "confidence": 0.4,
+        "assumption": "Not modelled. Flat satin dielectric.",
+        "evidence": "A faint hexagonal cell pattern is visible in the yellow field but sits at the JPEG noise floor.",
+        "risk": "none - not identity-defining at prop distance, and modelling it would force a texture set the material is explicitly declared textureless to avoid"
+      }
+    ],
+    "resolvedUnknownsNote": "All five are CLOSED before implementation - three by decision, one by the registry's declared scale, one by deciding not to model it - so the strict gate's empty array is honest rather than emptied. Each carries the assumption actually built, its evidence and its confidence, and each is mirrored in `assumptions` and `risks` so nothing is hidden by the move."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthNote": "mesoComponents is 0 BY DESIGN, and it is the one number in this contract that was lowered rather than met. The prop does have three meso parts - the diamond plate, the supplementary plate and the edge return - and they are named, dimensioned and evidenced in componentTree[sign-plates].geometryDescriptor.mergedAssembly.parts. What they are not is separate componentTree entries, because the validator counts meso components off componentTree and the generator emits one mesh per entry: three meso entries would be three more draw calls on a prop whose ceiling is two. Meeting the number literally would have meant either blowing the budget or adding empty components, and both put something in the spec that describes nothing. microFeatureGroups is met honestly at 5 localFeatures against a minimum of 3."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.8,
+    "mustMatch": [
+      "the diamond-on-point outline, its filleted vertices and the 0.90 m across-flats measurement",
+      "the elephant pictogram as a solid filled silhouette facing -X",
+      "both legend lines present and correctly ordered, Thai above English",
+      "sheeting yellow against galvanised grey, neither rendered mid-grey",
+      "the plates standing proud of the post with the post visible in the gap between them"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "rear"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "plate-outline-system",
+      "name": "Diamond-on-point outline, its filleted vertices and the plate proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plates"
+      ],
+      "evidenceRefs": [
+        "region-diamond",
+        "full-object"
+      ],
+      "failureModes": [
+        "square-cornered plate reads as a hazard board rather than a road sign",
+        "a rhombus rather than a true square on point",
+        "the diamond's horizontal and vertical extents differing"
+      ]
+    },
+    {
+      "id": "elephant-pictogram",
+      "name": "Elephant pictogram silhouette",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plates"
+      ],
+      "evidenceRefs": [
+        "region-pictogram",
+        "region-diamond"
+      ],
+      "failureModes": [
+        "drawn as an outline rather than a solid fill, which dies at distance",
+        "facing +X instead of -X",
+        "tusks or trunk-tip hook lost to over-simplification",
+        "a generic quadruped that does not read as an elephant"
+      ]
+    },
+    {
+      "id": "legend-system",
+      "name": "Two-line legend and both border rules",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plates"
+      ],
+      "evidenceRefs": [
+        "region-supp"
+      ],
+      "failureModes": [
+        "a blank yellow plate, which is not a sign at all",
+        "English line set at normal width and overrunning the plate",
+        "Thai line missing or set smaller than the English line"
+      ]
+    },
+    {
+      "id": "sheeting-and-galvanising",
+      "name": "Sheeting yellow against galvanised grey",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plates",
+        "post"
+      ],
+      "evidenceRefs": [
+        "crop-sheeting",
+        "crop-galvanised"
+      ],
+      "failureModes": [
+        "the saturated highway yellow rendering mid-grey because a generated texture set forced color to white",
+        "the post reading as painted rather than mill-finish"
+      ]
+    },
+    {
+      "id": "mounting-and-stance",
+      "name": "Post section, plate mounting and the gap between the plates",
+      "tier": "important",
+      "passIds": [
+        "structural-pass",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "post",
+        "sign-plates"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "full-object"
+      ],
+      "failureModes": [
+        "plates floating clear of the post",
+        "post visible above the diamond's top vertex",
+        "post reading round rather than square"
+      ]
+    },
+    {
+      "id": "weathering-gradient",
+      "name": "Algal margin staining and post-base rust",
+      "tier": "important",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.65,
+      "mustPass": false,
+      "componentRefs": [
+        "sign-plates",
+        "post"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-diamond"
+      ],
+      "failureModes": [
+        "a uniformly clean prop, which reads as a catalogue render rather than roadside",
+        "rust starting in mid-air rather than running down from a fixing or up from the ground"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCoverage": [
+      "sign-plates",
+      "post"
+    ],
+    "pivotCount": 1,
+    "socketCount": 0,
+    "colliderCount": 1,
+    "destructionGroupCount": 0,
+    "notes": "Two named parts, both individually addressable through root.userData.sculptRuntime.meshes, so the prop explodes and picks. One root pivot, no sockets, one cylinder collider on the post, no destruction groups - which matches the registry declaration exactly in both directions."
+  },
+  "assumptions": [
+    "The -Z side of both plates is plain galvanised grey with no graphic - the standard single-sided build. Confidence 0.75, from the colour of the edge return visible along the diamond's upper-right outline, which follows the diamond exactly one offset outboard and is therefore the plate's own back.",
+    "The post is a 0.075 m square hollow section. Confidence 0.80, from a single full-length vertical arris with a lit face either side and a square cut end. A U-channel is the alternative and would show a flange edge and a shadowed web.",
+    "The prop is 2.40 m tall because the registry declares it. The studio plate crops the post and shows only 1.91 m; the plate's PROPORTIONS are taken from the image and the post alone is extended.",
+    "The legend is redrawn from the known-correct string, not traced from the plate's glyphs. The reference came from a fast image model, whose Thai is approximate.",
+    "The sheeting's prismatic cell pattern is not modelled. It sits at the JPEG noise floor at 1024 and is sub-pixel at prop distance.",
+    "Fastener heads are printed, not modelled, at 0.009 m each."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "base-center",
+    "originNote": "Origin at the post's cut end, on the post's centre axis: y=0 is the ground plane and x=z=0 is the post centre. That is the registry's declared `pivot` and it is what a level builder drops onto a pavement.",
+    "unitScale": "meters",
+    "declaredSize": {
+      "width": 0.9,
+      "height": 2.4,
+      "depth": 0.08,
+      "tolerance": 0.1
+    }
+  },
+  "silhouette": {
+    "description": "A tall thin vertical: a square-on-point plate 0.90 m across whose top vertex is the highest point of the prop, a smaller rounded rectangle below it, and a slender square post that runs from between the plates down to the ground. From the front the two plates are the whole silhouette; from 90 deg the prop nearly disappears to a 0.08 m line, which is correct for a sign and is the single most distinctive thing about its off-axis reads.",
+    "dominantCurves": [
+      "four filleted 90-degree vertices on the diamond",
+      "four filleted corners on the supplementary plate"
+    ],
+    "negativeSpaces": [
+      "the 0.044 m gap between the diamond's bottom vertex and the supplementary plate's top edge, with the post visible through it"
+    ],
+    "symmetry": "bilateral about the post axis for the plate OUTLINES; the printed graphics are asymmetric",
+    "aspect": {
+      "widthToHeight": 0.375,
+      "depthToWidth": 0.089
+    }
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "viewpoint": "front-three-quarter",
+      "source": "assets/elephant-crossing-sign/preview.jpg",
+      "admitted": true,
+      "pHash": "10424189005343010751",
+      "foregroundCoverage": 0.137,
+      "notes": "The only admitted view. Everything about the -Z side is inference; see risks."
+    },
+    {
+      "id": "region-diamond",
+      "viewpoint": "front-three-quarter",
+      "source": "crops/diamond-plate.jpg",
+      "notes": "Diamond plate, its border rule, the pictogram, the grey edge return and the algal margin staining."
+    },
+    {
+      "id": "region-supp",
+      "viewpoint": "front-three-quarter",
+      "source": "crops/supp-plate.jpg",
+      "notes": "Supplementary plate and both legend lines."
+    },
+    {
+      "id": "region-post",
+      "viewpoint": "front-three-quarter",
+      "source": "crops/post-lower.jpg",
+      "notes": "Post: the vertical arris, the square cut end, spangle mottle, rust streaks and base corrosion."
+    },
+    {
+      "id": "region-pictogram",
+      "viewpoint": "rectified",
+      "source": "rectified-diamond.png",
+      "notes": "Homography-rectified plate face. The frame the pictogram silhouette was traced in."
+    },
+    {
+      "id": "crop-sheeting",
+      "viewpoint": "front-three-quarter",
+      "source": "crops/sheeting-yellow.png",
+      "notes": "Clean sheeting field, verified free of the rule and the pictogram: luma min 163 max 195, IQR 9."
+    },
+    {
+      "id": "crop-galvanised",
+      "viewpoint": "front-three-quarter",
+      "source": "crops/galvanised-post.png",
+      "notes": "Post shaft above the rust band."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "sign-plates",
+      "name": "Sign plates (diamond warning plate + supplementary legend plate)",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Decision tree step 4: hard, distinct faces you can point to and count - a front face, a back face and a constant-thickness edge wall. Folded aluminium sheet with real thickness, built as an extruded profile. NOT conforming-shell, which would mean a skin following something else's curvature with no volume of its own; NOT material-only, which has no geometry and could not show the grey edge return the reference plainly shows along the diamond's upper-right side; NOT surface-relief, since this IS the silhouette rather than detail riding on one. The grimoire's own worked example puts a flat rigid wall panel here, and its closing note says a large flat panel and a small flat plate are the same class.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly prop",
+        "profile2D": {
+          "points": [
+            [
+              0.43887,
+              -0.02687
+            ],
+            [
+              0.44711,
+              -0.01454
+            ],
+            [
+              0.45,
+              0.0
+            ],
+            [
+              0.44711,
+              0.01454
+            ],
+            [
+              0.43887,
+              0.02687
+            ],
+            [
+              0.02687,
+              0.43887
+            ],
+            [
+              0.01454,
+              0.44711
+            ],
+            [
+              0.0,
+              0.45
+            ],
+            [
+              -0.01454,
+              0.44711
+            ],
+            [
+              -0.02687,
+              0.43887
+            ],
+            [
+              -0.43887,
+              0.02687
+            ],
+            [
+              -0.44711,
+              0.01454
+            ],
+            [
+              -0.45,
+              0.0
+            ],
+            [
+              -0.44711,
+              -0.01454
+            ],
+            [
+              -0.43887,
+              -0.02687
+            ],
+            [
+              -0.02687,
+              -0.43887
+            ],
+            [
+              -0.01454,
+              -0.44711
+            ],
+            [
+              -0.0,
+              -0.45
+            ],
+            [
+              0.01454,
+              -0.44711
+            ],
+            [
+              0.02687,
+              -0.43887
+            ]
+          ],
+          "depth": 0.006
+        },
+        "edgeTreatment": {
+          "type": "fillet-in-profile",
+          "bevelRadius": 0.038,
+          "segments": 4
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - rewritten after generation into a two-region atlas (see mergedAssembly)",
+        "normalStrategy": "vertex normals from generated geometry",
+        "mergedAssembly": {
+          "reason": "maxDrawCalls is 2 and this prop needs a post, so the two plates get ONE mesh between them. They are the same material, the same thickness and the same plane, so merging costs nothing in fidelity and buys the only draw call the post could otherwise not have. This is a BLOCKOUT decision, recorded here so a later pass does not 'fix' the shallow tree by splitting it and silently doubling what every instance of this sign costs a scene.",
+          "parts": [
+            {
+              "id": "diamond-plate",
+              "level": "meso",
+              "profile": "geometryDescriptor.profile2D",
+              "localOffset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "extent": {
+                "width": 0.9,
+                "height": 0.9,
+                "depth": 0.006
+              },
+              "note": "A square on point. The profile's SHARP half-diagonal is 0.46574 rather than 0.45 because a filleted 90-degree vertex is cut back from the sharp vertex by R(sqrt2-1) = 0.01574 m, and the reference's 0.90 m was measured between the ROUNDED apexes. Built extent is therefore exactly 0.90 x 0.90."
+            },
+            {
+              "id": "supplementary-plate",
+              "level": "meso",
+              "profile": {
+                "points": [
+                  [
+                    0.252,
+                    -0.125
+                  ],
+                  [
+                    0.26157,
+                    -0.1231
+                  ],
+                  [
+                    0.26968,
+                    -0.11768
+                  ],
+                  [
+                    0.2751,
+                    -0.10957
+                  ],
+                  [
+                    0.277,
+                    -0.1
+                  ],
+                  [
+                    0.277,
+                    0.1
+                  ],
+                  [
+                    0.2751,
+                    0.10957
+                  ],
+                  [
+                    0.26968,
+                    0.11768
+                  ],
+                  [
+                    0.26157,
+                    0.1231
+                  ],
+                  [
+                    0.252,
+                    0.125
+                  ],
+                  [
+                    -0.252,
+                    0.125
+                  ],
+                  [
+                    -0.26157,
+                    0.1231
+                  ],
+                  [
+                    -0.26968,
+                    0.11768
+                  ],
+                  [
+                    -0.2751,
+                    0.10957
+                  ],
+                  [
+                    -0.277,
+                    0.1
+                  ],
+                  [
+                    -0.277,
+                    -0.1
+                  ],
+                  [
+                    -0.2751,
+                    -0.10957
+                  ],
+                  [
+                    -0.26968,
+                    -0.11768
+                  ],
+                  [
+                    -0.26157,
+                    -0.1231
+                  ],
+                  [
+                    -0.252,
+                    -0.125
+                  ]
+                ],
+                "depth": 0.006
+              },
+              "localOffset": [
+                0.0,
+                -0.619,
+                0.0
+              ],
+              "extent": {
+                "width": 0.554,
+                "height": 0.25,
+                "depth": 0.006
+              },
+              "note": "Rounded rectangle, aspect 2.21:1 as measured. Merged into this component's buffer after generation, because THREE.Shape carries one outer contour and cannot express two disjoint islands in a single extrusion."
+            },
+            {
+              "id": "plate-edge-return",
+              "level": "meso",
+              "note": "Not separate geometry: it IS the extrusion's side wall, 0.006 m deep, and it is what makes the plate read as folded sheet rather than a zero-thickness card. It is given the atlas's plain galvanised patch, which is why the plate's edge and back are grey while its face is yellow."
+            }
+          ],
+          "uvAtlas": {
+            "canvas": [
+              1024,
+              512
+            ],
+            "regions": {
+              "diamond-graphic": {
+                "rect": [
+                  0,
+                  0,
+                  512,
+                  512
+                ],
+                "maps": "the diamond plate's +Z face, local (x,y) over the 0.90 x 0.90 m bounding square",
+                "texelsPerMeter": 569
+              },
+              "supplementary-graphic": {
+                "rect": [
+                  512,
+                  0,
+                  512,
+                  231
+                ],
+                "maps": "the supplementary plate's +Z face, local (x,y) over its 0.554 x 0.250 m rectangle",
+                "texelsPerMeter": 924
+              },
+              "plain-galvanised": {
+                "rect": [
+                  512,
+                  250,
+                  512,
+                  262
+                ],
+                "maps": "EVERY other vertex - both plate backs and the whole edge return - collapsed to the single texel at (768, 381)",
+                "texelsPerMeter": null
+              }
+            },
+            "rule": "A vertex whose normal has z > 0.5 takes a graphic region chosen by its local y; every other vertex takes the plain patch. Collapsing the non-face vertices to one texel is what lets a single-material mesh carry a printed front and a plain back without a second material and therefore without a second draw call.",
+            "note": "At 569 texels per metre the diamond region already exceeds the reference itself, where the same 0.90 m spans 413 px. The atlas is built once at module scope and shared by every instance rather than rebuilt per call."
+          }
+        }
+      },
+      "parent": null,
+      "attachment": {
+        "parent": "post",
+        "parentSocket": null,
+        "contactType": "overlap",
+        "overlapDepth": 0.0005,
+        "notes": "The plates are embedded 0.5 mm into the post's front face rather than butted onto it. A butt joint here would be legal - the faces oppose - but the embed costs nothing and removes the question entirely."
+      },
+      "dimensions": {
+        "width": 0.9,
+        "height": 1.194,
+        "depth": 0.006,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0.0,
+          1.95,
+          0.037
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "scaleNote": "scale is an explicit [1,1,1] because profile2D is authored in METRES. scale_vector() prefers transform.scale over dimensions, and without it the generator would multiply the already-real profile by the dimensions again."
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "inherit-root",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "notes": "No pivot of its own. A sign plate does not turn on anything."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": null,
+        "colliderNote": "Deliberately none. The declared collider is a cylinder on the POST, because what a player walks into is the post; a proxy on a plate mounted two metres up would block the pavement underneath it.",
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "base"
+        }
+      },
+      "material": "sheeting",
+      "materialLayers": [
+        "sheeting"
+      ],
+      "colorMaterialRecipe": {
+        "base": "#D1B630",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(209, 182, 48, 1.0)",
+            "note": "sheeting field, measured"
+          },
+          {
+            "position": 0.85,
+            "color": "rgba(185, 171, 54, 1.0)",
+            "note": "algal margin, measured"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(29, 29, 26, 1.0)",
+            "note": "legend ink, measured"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "Three measured stops, not a ramp: the field and the margin meet as a soft gradient, the ink meets both as a hard boundary. The hard boundary is the point - a filled silhouette with a crisp edge is what survives distance and a low texture resolution.",
+        "dominantAlbedo": "rgba(209, 182, 48, 1.0)",
+        "secondaryAlbedo": "rgba(29, 29, 26, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8,
+        "materialClassNote": "plastic, not metal: the visible surface is a retroreflective vinyl/acrylic sheeting film laminated to an aluminium blank, and it is the film that light interacts with - measured metalness 0.0, a dielectric response with no specular lobe. The aluminium underneath is never seen."
+      },
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "plate-corner-radius",
+          "kind": "bevel",
+          "detailRef": "plate-corner-radius",
+          "edgeTreatment": {
+            "type": "fillet-in-profile",
+            "bevelRadius": 0.038,
+            "segments": 4
+          },
+          "notes": "Measured 0.044 m at the left vertex and 0.031 m at the top; 0.038 adopted. Silhouette, so it must be geometry."
+        },
+        {
+          "id": "plate-edge-return",
+          "kind": "bevel",
+          "detailRef": "plate-edge-return",
+          "edgeTreatment": {
+            "type": "extrusion-wall",
+            "bevelRadius": 0.0,
+            "segments": 1
+          },
+          "depth": 0.006,
+          "notes": "The 0.006 m extrusion wall. Grey, from the atlas's plain patch."
+        },
+        {
+          "id": "legend-diamond",
+          "kind": "linework",
+          "detailRefs": [
+            "elephant-pictogram",
+            "border-rule-diamond",
+            "plate-fasteners"
+          ],
+          "technique": "painted decal via a generated canvas texture assigned after material construction",
+          "pictogramSource": {
+            "points": 180,
+            "frame": "normalized unit square whose INSCRIBED DIAMOND is the black border rule's OUTER boundary; +x right, +y down",
+            "ruleFrameToPlateFrame": 0.9556,
+            "note": "180-point polygon traced from the homography-rectified plate. Its normalized frame is the border rule's OUTER boundary, which is inset from the plate edge by 0.014 m perpendicular - a diamond half-diagonal shrink of 0.014*sqrt2 - so rule-frame coordinates map to plate-frame as 0.5 + (u-0.5)*0.9556."
+          },
+          "notes": "Rule stroke 0.020 m, edge-to-rule margin 0.014 m, both measured."
+        },
+        {
+          "id": "legend-supp",
+          "kind": "linework",
+          "detailRefs": [
+            "border-rule-supp",
+            "legend-thai",
+            "legend-english"
+          ],
+          "technique": "painted decal via the same canvas",
+          "notes": "Thai line set larger than the English line, as measured. The English line is CONDENSED: measured per-glyph advance is ~0.55 of cap height, so a normal-width face at the same size overruns the plate."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.5,
+        "microRoughness": 0.04,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "none",
+        "displacementPattern": "none",
+        "occlusionPattern": "contact darkening where each plate meets the post",
+        "edgeWearPattern": "algal staining concentrated on the outboard margin and the fold",
+        "notes": "bumpAmplitude is 0.0 and that is the measurement, not a gap: IQR 9 luma over the clean field."
+      },
+      "evidenceRefs": [
+        "region-diamond",
+        "region-supp",
+        "region-pictogram",
+        "crop-sheeting"
+      ],
+      "details": [
+        "elephant-pictogram",
+        "border-rule-diamond",
+        "border-rule-supp",
+        "legend-thai",
+        "legend-english",
+        "plate-fasteners",
+        "plate-corner-radius",
+        "plate-edge-return",
+        "algal-margin-staining"
+      ],
+      "fidelityTier": "hero"
+    },
+    {
+      "id": "post",
+      "name": "Galvanised square hollow section post",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.8,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A prismatic structural section. Square rather than round on the evidence of a single vertical arris with a lit face either side of it and a square cut end; a U-channel would show a flange edge and a shadowed web, and neither is there.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly prop",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "note": "Kept as a plain box on purpose. The arris is the identity feature and a box already has it; adding a chamfer would spend triangles rounding off the one edge that matters."
+      },
+      "parent": null,
+      "attachment": {
+        "parent": null,
+        "parentSocket": null,
+        "contactType": "ground",
+        "notes": "The cut end sits at y=0. Real posts continue into the ground; the prop stops at the origin."
+      },
+      "dimensions": {
+        "width": 0.075,
+        "height": 2.1,
+        "depth": 0.075,
+        "units": "meters",
+        "confidence": 0.8
+      },
+      "transform": {
+        "position": [
+          0.0,
+          1.05,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "inherit-root",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "notes": "No pivot of its own."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            0.075,
+            2.1,
+            0.075
+          ],
+          "isTrigger": false,
+          "notes": "The registry declares `collider: cylinder` for this asset and this is where it lands. A cylinder circumscribing a square section is the cheap convex proxy a physics engine wants; the 3 mm it adds at the corners is far below anything a player feels, and it is sized to the POST rather than to the prop so nothing blocks the pavement under the plates."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "base"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "colorMaterialRecipe": {
+        "base": "#919999",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(169, 174, 176, 1.0)",
+            "note": "clean spangle near the top, measured"
+          },
+          {
+            "position": 0.55,
+            "color": "rgba(145, 153, 153, 1.0)",
+            "note": "field value, measured"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(93, 68, 49, 1.0)",
+            "note": "rust at the cut end, measured"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered vertical ramp, not a scatter. Position is height down the post: the coating is intact at the top, and the rust is worst at the cut end where the galvanising was severed.",
+        "dominantAlbedo": "rgba(145, 153, 153, 1.0)",
+        "secondaryAlbedo": "rgba(93, 68, 49, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.85
+      },
+      "deformations": [],
+      "joints": [],
+      "seams": [
+        {
+          "id": "post-arris",
+          "kind": "ridge",
+          "detailRef": "post-arris",
+          "notes": "The section's own corner. Real geometry, present in the box by construction."
+        }
+      ],
+      "localFeatures": [
+        {
+          "id": "post-rust-streaks",
+          "kind": "stain",
+          "detailRef": "post-rust-streaks",
+          "technique": "vertex-colour gradient",
+          "notes": "Vertex colour rather than a texture, which keeps the material textureless. Directional: it starts at the lower fixing and runs down, and pools at the cut end."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.58,
+        "microRoughness": 0.08,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "none",
+        "displacementPattern": "none",
+        "occlusionPattern": "contact darkening under each plate",
+        "edgeWearPattern": "rust runoff from the fixings and a corrosion band at the cut end",
+        "notes": "Spangle is a hand-distance feature on a 0.075 m section seen from the street."
+      },
+      "evidenceRefs": [
+        "region-post",
+        "crop-galvanised"
+      ],
+      "details": [
+        "post-rust-streaks",
+        "post-arris"
+      ],
+      "fidelityTier": "hero"
+    }
+  ],
+  "materials": [
+    {
+      "id": "sheeting",
+      "name": "Retroreflective sign sheeting on aluminium",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#D1B630",
+      "color": "#D1B630",
+      "albedo": {
+        "dominant": "#D1B630",
+        "secondary": [
+          "#D5B831",
+          "#CDB52F",
+          "#B9AB36"
+        ],
+        "samplingNotes": "Trimmed mean (15-85 percentile) of two crops verified clear of the border rule and the pictogram: crops/sheeting-yellow.png at (443,168,40,30) -> #D5B831 over 840 px, and a second field at (470,430,45,35) -> #CDB52F over 1102 px. No key removal was applied: the field's median luma reads 177 at the top of the plate and 173 at the bottom, so the studio gradient across the whole face is 4 luma and subtracting it would be noise, not correction. The third secondary is the algal staining, which is albedo and is carried as a localOverride."
+      },
+      "roughness": {
+        "base": 0.5,
+        "variation": 0.05,
+        "notes": "Adopted from analyze_texture.py's measured recipe for finishClass `painted-metal` on crops/sheeting-yellow.png, in preference to the 0.34 first authored by eye. The crop's specularFraction is 0.0 and its mottle is 0.035: there is no tight highlight anywhere on this face, which is a mid roughness under a soft key rather than the low one a broad sheen suggested. extract_pbr_evidence.py's 0.696 was NOT adopted - it returned 0.696 here and 0.680 for the galvanised post, two finishes that plainly differ, and two numbers that close together across two different surfaces are a class default rather than a measurement."
+      },
+      "metalness": 0.0,
+      "finishClass": "painted-metal",
+      "clearcoat": {
+        "base": 0.1,
+        "variation": 0.0
+      },
+      "clearcoatRoughness": {
+        "base": 0.3,
+        "variation": 0.0
+      },
+      "transmission": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ior": {
+        "base": 1.5,
+        "value": 1.5
+      },
+      "envMapIntensity": 0.8,
+      "localOverrides": [
+        {
+          "id": "sheeting-margin-algae",
+          "color": "#B9AB36",
+          "region": "outboard margin of the diamond plate and along the folded edge return",
+          "evidenceRef": "region-diamond",
+          "notes": "Desaturated yellow-green weathering, trimmed mean #B9AB36 over 375 green-biased pixels at (325,262,26,40). Concentrated where water sits - the outboard margin and the fold - and absent from the middle of the face. Drawn into the legend canvas as a soft margin gradient, which is where a bounded albedo region on a flat panel belongs."
+        },
+        {
+          "id": "legend-black",
+          "color": "#1D1D1A",
+          "region": "border rules, pictogram and both legend lines on both plates",
+          "evidenceRef": "region-pictogram",
+          "notes": "Trimmed mean of the darkest half of a pictogram crop, 563 px below luma 60 at (440,285,35,35). The whole-crop mean was #2D2C20; the darker figure is the one taken because the crop's brighter half is the sheeting's ambient bounce spilling across a hard boundary, not the ink."
+        }
+      ],
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on crop-sheeting (crops/sheeting-yellow.png, 40x30 px verified clear of the border rule and the pictogram): luma min 163, max 195, interquartile range 9. A flat field.",
+          "The faint hexagonal prismatic cell pattern visible in the yellow sits at the JPEG noise floor at 1024 and is sub-pixel at prop distance; it is recorded as undetermined in the assessment rather than modelled.",
+          "Every mark that IS on this surface - rules, pictogram, legend, algal margin - is supplied as a generated canvas texture assigned after material construction, which a procedural noise set would overwrite."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function builds FIVE canvases per material at textureResolution, pixel by pixel in JavaScript with multi-octave noise, at a cost that is the SQUARE of the resolution (256 -> 1.6 s, 512 -> 6.5 s, 1024 -> 26 s). It is also a CORRECTNESS fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo. On a prop whose whole job is to be a saturated highway yellow legible at distance, that is not a performance nicety - it is the difference between a sign and a grey board."
+      },
+      "qualityTier": "hero",
+      "clearcoatNote": "analyze_texture.py's painted-metal recipe proposes clearcoat 1.0 with clearcoatRoughness 0.05 and that is REJECTED, with the same tool's own measurement as the reason: specularFraction on this crop is 0.0. A clearcoat at 1.0 exists to produce a lacquer highlight, and there is no highlight in the evidence to produce. 0.10 keeps a trace of the film's sheen without inventing a lobe the plate does not show.",
+      "materialEvidenceArchive": {
+        "sourceCrop": "crops/sheeting-yellow.png",
+        "extractPbrEvidence": {
+          "script": "forge/stage1_intake/extract_pbr_evidence.py",
+          "confidence": 0.827,
+          "targetThreshold": 0.7,
+          "verdict": "pass",
+          "maps": {
+            "albedo": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/sheeting_albedo.png",
+            "roughness": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/sheeting_roughness.png",
+            "height": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/sheeting_height.png",
+            "normal": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/sheeting_normal.png",
+            "ao": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/sheeting_ao.png"
+          },
+          "warnings": [
+            "image is not clearly isolated from background; using most pixels as material evidence",
+            "object/background separation is weak",
+            "single-image inverse rendering cannot prove true physical PBR; confidence is capped"
+          ],
+          "boundAtRuntime": false,
+          "bindingPolicy": "Evidence only. The maps on disk are real and the extraction cleared its bar at 0.827 against 0.7, but they are not bound: this material is declared textureless, and binding a generated set would force color to white and roughness to 1 and discard the measured highway yellow - which is the one property that makes the prop legible at distance."
+        },
+        "analyzeTexture": {
+          "script": "forge/stage1_intake/analyze_texture.py",
+          "finishClass": "painted-metal",
+          "recipe": {
+            "metalness": 0.0,
+            "roughness": 0.5,
+            "clearcoat": 1.0,
+            "clearcoatRoughness": 0.05,
+            "transmission": 0.0,
+            "ior": 1.5,
+            "envMapIntensity": 1.0,
+            "anisotropy": 0.0,
+            "procedural": "flat-clearcoat"
+          },
+          "stats": {
+            "meanLum": 159.2,
+            "meanSaturation": 0.673,
+            "gradientStrength": 0.211,
+            "mottle": 0.035,
+            "streakRatio": 1.36,
+            "hueSpread": 0.001,
+            "specularFraction": 0.0
+          },
+          "palette": [
+            "#8F834D",
+            "#A79332",
+            "#C1A82D",
+            "#D4B82E",
+            "#BEA538"
+          ],
+          "paletteStatus": "Inert. colorVariation.palette is read only by makeProceduralTextureSet, which this material is declared textureless to skip. Kept as recorded evidence, and NOT promoted to albedo: these are raw pixel samples and therefore carry the plate's studio key."
+        }
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Hot-dip galvanised steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#919999",
+      "color": "#919999",
+      "albedo": {
+        "dominant": "#919999",
+        "secondary": [
+          "#5D4431",
+          "#A9AEB0"
+        ],
+        "samplingNotes": "Trimmed mean over 3222 px of the post shaft at (489,730,38,130), excluding pixels below luma 110 so the dark vertical arris does not drag the field value down. The first secondary is the rust runoff, trimmed mean #5D4431 over 415 red-biased px at the base."
+      },
+      "roughness": {
+        "base": 0.58,
+        "variation": 0.08,
+        "notes": "Mid, matte-leaning. The post's measured IQR of 25 luma against the sheeting's 9 is the spangle mottle of a zinc coating, and it scatters rather than reflecting a lobe. Held at 0.58 between the two tools' figures - analyze_texture.py's 0.35, which comes with the brushed-steel classification rejected above, and extract_pbr_evidence.py's 0.680, which is within 0.016 of what the same script returned for the sheeting and is therefore a default. 0.58 is the matte-leaning value the measured IQR of 25 luma supports."
+      },
+      "metalness": 0.25,
+      "metalnessNotes": "Not 1.0. Weathered galvanising is an oxidised zinc layer over steel, so it reads as a dielectric-leaning surface with a metallic undertone; a fully metallic value renders it as bare chrome and loses the chalky quality the plate plainly shows.",
+      "finishClass": "worn-composite",
+      "clearcoat": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "clearcoatRoughness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "transmission": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ior": {
+        "base": 1.5,
+        "value": 1.5
+      },
+      "envMapIntensity": 0.6,
+      "localOverrides": [
+        {
+          "id": "post-rust",
+          "color": "#5D4431",
+          "region": "vertical streaks on the post below the supplementary plate's fixing, widening to a band at the cut end",
+          "evidenceRef": "region-post",
+          "notes": "Runoff, so it starts AT a fixing and runs down, and pools at the ground end where the coating is cut. A streak that starts in mid-air reads wrong. Applied as a vertex-colour gradient on the post rather than a texture, which keeps the material textureless."
+        }
+      ],
+      "vertexColors": true,
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on crop-galvanised (crops/galvanised-post.png, the post shaft above the rust band): the surface scans as a broad soft value gradient with an IQR of 25 luma and no periodic structure.",
+          "Spangle is a hand-distance feature. The post is 0.075 m across and is seen at street distance, where the whole section spans a few pixels.",
+          "The one non-uniform mark that matters - the rust runoff - is bounded and directional, so it is carried as a vertex-colour gradient rather than as a noise field."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function builds FIVE canvases per material at textureResolution, pixel by pixel in JavaScript with multi-octave noise, at a cost that is the SQUARE of the resolution (256 -> 1.6 s, 512 -> 6.5 s, 1024 -> 26 s). It is also a CORRECTNESS fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo. On a prop whose whole job is to be a saturated highway yellow legible at distance, that is not a performance nicety - it is the difference between a sign and a grey board."
+      },
+      "qualityTier": "hero",
+      "finishClassNote": "analyze_texture.py classifies this crop as `brushed-steel` with metalness 1.0, roughness 0.35 and anisotropy 1.0, and that classification is REJECTED. It keys on the crop's streakRatio of 0.52, and those streaks are the RUST RUNOFF read as brush grain - a mark the spec already carries, correctly, as a directional localOverride. Building on the classification instead would render an oxidised, chalky zinc coating as anisotropic chrome. The spec keeps finishClass `worn-composite`, metalness 0.25 and roughness 0.58. Two of the classifier's numbers ARE taken as corroboration: meanSaturation 0.074 confirms a neutral albedo, and mottle 0.018 confirms a flat field, which is half the textureless case.",
+      "materialEvidenceArchive": {
+        "sourceCrop": "crops/galvanised-post.png",
+        "extractPbrEvidence": {
+          "script": "forge/stage1_intake/extract_pbr_evidence.py",
+          "confidence": 0.758,
+          "targetThreshold": 0.7,
+          "verdict": "pass",
+          "maps": {
+            "albedo": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/galvanised_albedo.png",
+            "roughness": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/galvanised_roughness.png",
+            "height": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/galvanised_height.png",
+            "normal": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/galvanised_normal.png",
+            "ao": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-evidence/galvanised_ao.png"
+          },
+          "warnings": [
+            "foreground mask is very small",
+            "single-image inverse rendering cannot prove true physical PBR; confidence is capped",
+            "low high-frequency detail weakens normal/roughness inference"
+          ],
+          "boundAtRuntime": false,
+          "bindingPolicy": "Evidence only, not bound. Extraction cleared its bar at 0.758 against 0.7, but carries the warnings 'foreground mask is very small' and 'low high-frequency detail weakens normal/roughness inference' - both true of a 0.075 m post shaft, and both reasons to record the maps rather than render from them."
+        },
+        "analyzeTexture": {
+          "script": "forge/stage1_intake/analyze_texture.py",
+          "finishClass": "brushed-steel",
+          "recipe": {
+            "metalness": 1.0,
+            "roughness": 0.35,
+            "clearcoat": 0.0,
+            "clearcoatRoughness": 0.0,
+            "transmission": 0.0,
+            "ior": 1.5,
+            "envMapIntensity": 1.0,
+            "anisotropy": 1.0,
+            "procedural": "brushed"
+          },
+          "stats": {
+            "meanLum": 144.4,
+            "meanSaturation": 0.074,
+            "gradientStrength": 0.223,
+            "mottle": 0.018,
+            "streakRatio": 0.52,
+            "hueSpread": 0.01,
+            "specularFraction": 0.0
+          },
+          "palette": [
+            "#99A0A0",
+            "#9BA3A0",
+            "#8F989B",
+            "#848D8C",
+            "#808887"
+          ],
+          "paletteStatus": "Inert. colorVariation.palette is read only by makeProceduralTextureSet, which this material is declared textureless to skip. Kept as recorded evidence, and NOT promoted to albedo: these are raw pixel samples and therefore carry the plate's studio key."
+        }
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-25T21:52:38.925465+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Measured off the built geometry (meshes.json): diamond 0.9000 x 0.9000 with the two extents differing by 0.000000 m -- a true square on point, not a rhombus. Face-on render gives widestRow/vertical = 0.9945 on the yellow component, i.e. equal diagonals to 0.6% through the whole render path. Supplementary plate 0.5540 x 0.2500, aspect 2.216 against 2.21 measured off the plate. Gap between the plates 0.0440 m against 0.044 measured.",
+          "notes": "Corner radius 0.038 m is the mean of two independently extrapolated vertices (0.044 left, 0.031 top); the spread is real and is recorded rather than hidden."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Not drawn: traced from the reference through a homography fitted to the border rule's four edge lines. The dark mask's largest connected component is a SINGLE island of 49,897 px, which is itself the proof the pictogram is a solid fill rather than an outline. 2,026-point boundary simplified to 180 at 1.4 px; overlay check (elephant-trace-check.png) keeps both tusks, the trunk's curled tip, the ear, all four legs and the tufted tail. Faces -X, matching the plate.",
+          "notes": "Below 1.0 because the trace smooths features finer than ~1.5 px of the source -- the exact taper of a tusk tip. The legs read marginally thinner than the reference at prop distance."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Both border rules and both legend lines render. Thai above English and set larger, as measured. Each line is measured with measureText and scaled horizontally to the plate's own width, so the layout does not depend on which face resolves -- the reference's English is condensed at ~0.55 advance-to-cap, which a normal-width face would overrun. Border-rule geometry verified by an edge-normal profile through the render: margin 0.0149 m and rule 0.0211 m against 0.014 and 0.020 measured on the plate.",
+          "notes": "The Thai glyphs resolved here via Loma. Which Thai face resolves in a viewer's browser is outside the module's control; a five-family stack is specified and the English line carries the meaning if none resolves. Recorded as a risk, not as a pass."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sheeting field renders at luma 173 against the reference's 176 -- within 1.7%. The post reads mill-finish grey with rust at the cut end, not painted. Both materials are declared textureless with measured evidence, so the authored albedo survives instead of being forced to white by a generated texture set.",
+          "notes": "HONEST SHORTFALL: field chroma renders at G-B 113 against the reference's 130, 13% low. The authored albedo is the measured trimmed mean and was NOT pushed to close the gap: the difference is the harness's ACES tone curve against whatever curve the image model used, and chasing it would be fitting the renderer rather than the reference. Luma, which is the comparable signal, matches."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Measured off the built geometry: plate back z=0.0370 against post front z=0.0375, a 0.5 mm embed -- so the plates stand proud of the post and no two faces are coincident. check-coplanar.mjs clean at 0.001 m. Post top at y=2.100 where the diamond is 0.600 wide against a post 0.075 wide, so the post never breaks the plate silhouette. Post visible in the 0.044 m gap and below the lower plate.",
+          "notes": "The post is square-section on the evidence of a single full-length arris and a square cut end; confidence 0.80, with a U-channel the alternative."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Algal margin measured by an edge-normal profile through the render: #A49E52, G-B 76, luma 151, against the reference's banded #A5A052, G-B 79, luma 153 -- agreement within 3 in chroma and 2 in luma, over a band 0.0149 m wide against 0.014 measured. Post rust present as a directional vertex-colour ramp starting at the lower fixing and pooling at the cut end.",
+          "notes": "The post's mid-shaft streak is weaker than the reference's. The reference's staining is also patchy where the model's is even; a uniform band is the defensible choice for a prop that will be instanced hundreds of times, since per-instance mottle would need a texture the material is declared textureless to avoid."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:00:07.787000+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.84,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Unchanged from blockout and re-measured on the merged buffer: diamond 0.9000 x 0.9000 (extents differ by 0.000000 m), supplementary plate 0.5540 x 0.2500, gap 0.0440 m."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "geometry_integrity on both welded meshes: boundaryEdges 0, nonManifoldEdges 0 - two closed solids, not sheets. self_intersection clean with EVERY vertex sampled (80/80 and 36/36), so there is no sampling shortfall behind the verdict. check-coplanar clean at 0.001 m. check_part_coverage: 2 specified, 2 built, 0 errors. Plate back z=0.0370 against post front z=0.0375, a 0.5 mm embed.",
+          "notes": "attachment_anchor.py returned passed with attachmentCount 0 - it had nothing to measure, because this prop declares no sockets by design. Reported as a gate that did not look rather than as a pass."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:00:31.179223+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Corner fillets are real geometry in the extrusion profile, 4 segments each, radius 0.038 m - the mean of two independently extrapolated vertices (left 0.044, top 0.031). A square-cornered plate reads as a hazard board, and the rounding is on the SILHOUETTE where no texture can put it. Face-on render measures the yellow component at widestRow/vertical = 0.9945, i.e. equal diagonals to 0.6% through the whole render path."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "180-point traced polygon, overlay-verified against the rectified plate. Solid fill, faces -X, both tusks, trunk hook, ear, four legs and tufted tail present."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "The 0.006 m extrusion wall gives the plate real thickness, so it reads as folded sheet rather than a zero-thickness card, and it is what shows as the grey edge return. Side view (azimuth 90) measures 2.65% frame coverage at 40 px wide against 404 px at the front - 9.9% against an expected 8.9% for a 0.0805 m envelope on a 0.90 m prop."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-000.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:01:20.137930+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Rendered as a solid black fill at #1D1D1A - the measured legend ink, taken from the darkest half of a pictogram crop rather than its whole-crop mean, because the brighter half is the sheeting's ambient bounce spilling across a hard boundary. Drawn into the atlas as one closed path, not stroked: a filled silhouette is what survives distance and a low texture resolution. At 569 texels per metre the diamond region already exceeds the reference, where the same 0.90 m spans 413 px.",
+          "notes": "The shape itself is the form pass's result; what the material pass owns here is that it is a hard-boundary decal with no relief and no baked lighting, which the reference supports - the pictogram crop shows zero shadow inside its boundary."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "material_gate passed with no failures. Per-crop comparator: sheeting 0.8631 and galvanised 0.8182, both with zero mismatches, on crops verified to sit on the surface they name. Galvanised reference and render crop means are within 2 per channel ([142,150,148] against [144,150,149]). PBR extraction cleared its 0.7 bar at 0.827 and 0.758.",
+          "notes": "Two false alarms were run down rather than accepted. (1) The comparator first failed sheeting at 0.461 - the render crop had landed on the pictogram, not the field. (2) It then failed galvanised at 0.6457 on wrong-base-color, having segmented only 7.8% of a full-bleed post crop as foreground while warning that the mask was unreliable; re-cropped with backdrop either side so the mask has something to separate, it passes at 0.8182."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The legend is a canvas assigned AFTER material construction, so it is unaffected by the textureless declaration - the route the material brief reserves for printed graphics. 1024x512 atlas, built once at module scope and shared by every instance."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Algal margin measured in the render at #A49E52 (G-B 76, luma 151) against the reference's banded #A5A052 (G-B 79, luma 153), over a 0.0149 m band against 0.014 measured. Post rust is a directional vertex-colour ramp, which keeps the material textureless.",
+          "notes": "The mid-shaft rust streak is weaker than the reference's, and the model's staining is even where the reference's is patchy."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-000.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:01:41.499242+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Renders as a clean solid silhouette at every reviewed azimuth where the face is visible. Its 180 points are a fixed array, so two builds are byte-identical - there is no seed to record because nothing here is random."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Both rules and both lines legible in the hero render. Each line is measured with measureText and scaled horizontally to the plate's own width, so the layout survives whichever font resolves. Thai rendered here via Loma."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Eleven detail-inventory entries against a raised target of 8, every one mapped to a component.localFeatures or material.localOverrides entry rather than prose. Nine of the eleven are printed and two - the corner radius and the edge return - are geometry, both on the silhouette."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:02:03.736470+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sheeting field renders at luma 173 against the reference's 176, within 1.7%; the post's crop mean is within 2 per channel of the reference's. Both surfaces respond as satin dielectrics under the harness key - no blown highlight anywhere, matching the reference's measured specularFraction of 0.0. Interior difference over 13,830 cells is 0.159 GLOBALLY and 0.143 / 0.183 / 0.147 / 0.157 across four height bands: the difference is a flat offset across the whole prop, not a defect in any one region, which is what a lighting and tone-curve difference looks like.",
+          "notes": "HONEST SHORTFALL: field chroma renders at G-B 113 against the reference's 130, 13% low, while luma matches. Attributed to the harness's ACES curve against whatever curve the image model used, and deliberately not chased - pushing the authored albedo to close it would be fitting the renderer rather than the reference, and would leave the shipped albedo no longer equal to the measurement it claims."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:02:23.251141+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Runtime read back from the render harness: nodes 3, pivots ['root'], sockets [], colliders ['post'], destructionGroups []. check_part_coverage: 2 specified, 2 built, 0 errors - the prop is explodable and clickable through root.userData.sculptRuntime.byId. The declared collider is a cylinder and it is on the POST, sized 0.075 x 2.10 x 0.075 rather than to the whole prop, so nothing blocks the pavement under a plate mounted two metres up."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-25T22:03:35.653128+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Unchanged by optimisation: nothing was decimated and no segment count was reduced. 220 triangles measured in the harness against a budget of 800."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Costs zero triangles and zero draw calls - it is texels in an atlas that is built once at module scope and shared by every instance of the prop."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Same atlas, same zero marginal cost. 1024x512 at 2.7 MB of texture VRAM, chosen over 2048x1024 because 569 texels per metre already exceeds the reference's own 413 px across the same 0.90 m."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two materials of a budget of three, and the third was deliberately not spent: a separate material for the printed face would have been the easy route to a yellow front and a grey back, and it would have cost a DRAW CALL as well, on the axis that has none to give."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Two unique geometries of a budget of three. Both are shared across every instance."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "The post's rust ramp costs 56 triangles - the box is rebuilt at 8 height segments instead of 1, because two rows of vertices can only carry a linear ramp from top to bottom, which would rust the whole post. Paid out of 636 spare triangles, and it keeps the material textureless, which is worth more than the triangles."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-final.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-25T21:52:38.925465+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Measured off the built geometry (meshes.json): diamond 0.9000 x 0.9000 with the two extents differing by 0.000000 m -- a true square on point, not a rhombus. Face-on render gives widestRow/vertical = 0.9945 on the yellow component, i.e. equal diagonals to 0.6% through the whole render path. Supplementary plate 0.5540 x 0.2500, aspect 2.216 against 2.21 measured off the plate. Gap between the plates 0.0440 m against 0.044 measured.",
+          "notes": "Corner radius 0.038 m is the mean of two independently extrapolated vertices (0.044 left, 0.031 top); the spread is real and is recorded rather than hidden."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Not drawn: traced from the reference through a homography fitted to the border rule's four edge lines. The dark mask's largest connected component is a SINGLE island of 49,897 px, which is itself the proof the pictogram is a solid fill rather than an outline. 2,026-point boundary simplified to 180 at 1.4 px; overlay check (elephant-trace-check.png) keeps both tusks, the trunk's curled tip, the ear, all four legs and the tufted tail. Faces -X, matching the plate.",
+          "notes": "Below 1.0 because the trace smooths features finer than ~1.5 px of the source -- the exact taper of a tusk tip. The legs read marginally thinner than the reference at prop distance."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Both border rules and both legend lines render. Thai above English and set larger, as measured. Each line is measured with measureText and scaled horizontally to the plate's own width, so the layout does not depend on which face resolves -- the reference's English is condensed at ~0.55 advance-to-cap, which a normal-width face would overrun. Border-rule geometry verified by an edge-normal profile through the render: margin 0.0149 m and rule 0.0211 m against 0.014 and 0.020 measured on the plate.",
+          "notes": "The Thai glyphs resolved here via Loma. Which Thai face resolves in a viewer's browser is outside the module's control; a five-family stack is specified and the English line carries the meaning if none resolves. Recorded as a risk, not as a pass."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sheeting field renders at luma 173 against the reference's 176 -- within 1.7%. The post reads mill-finish grey with rust at the cut end, not painted. Both materials are declared textureless with measured evidence, so the authored albedo survives instead of being forced to white by a generated texture set.",
+          "notes": "HONEST SHORTFALL: field chroma renders at G-B 113 against the reference's 130, 13% low. The authored albedo is the measured trimmed mean and was NOT pushed to close the gap: the difference is the harness's ACES tone curve against whatever curve the image model used, and chasing it would be fitting the renderer rather than the reference. Luma, which is the comparable signal, matches."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Measured off the built geometry: plate back z=0.0370 against post front z=0.0375, a 0.5 mm embed -- so the plates stand proud of the post and no two faces are coincident. check-coplanar.mjs clean at 0.001 m. Post top at y=2.100 where the diamond is 0.600 wide against a post 0.075 wide, so the post never breaks the plate silhouette. Post visible in the 0.044 m gap and below the lower plate.",
+          "notes": "The post is square-section on the evidence of a single full-length arris and a square cut end; confidence 0.80, with a U-channel the alternative."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Algal margin measured by an edge-normal profile through the render: #A49E52, G-B 76, luma 151, against the reference's banded #A5A052, G-B 79, luma 153 -- agreement within 3 in chroma and 2 in luma, over a band 0.0149 m wide against 0.014 measured. Post rust present as a directional vertex-colour ramp starting at the lower fixing and pooling at the cut end.",
+          "notes": "The post's mid-shaft streak is weaker than the reference's. The reference's staining is also patchy where the model's is even; a uniform band is the defensible choice for a prop that will be instanced hundreds of times, since per-instance mottle would need a texture the material is declared textureless to avoid."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout reads as the object from the first render: a true square-on-point plate 0.900 x 0.900 with equal diagonals to 0.000000 m, a 0.554 x 0.250 supplementary plate 0.044 m below it, and a 0.075 m square post. All four budget axes green at 220/800 triangles, 2/2 draw calls, 2/3 materials, 2/3 geometries. Three defects were found and fixed BEFORE this review was recorded, each by measurement rather than by eye, and each is named here so the record is complete: (1) the post rendered as dark slate blue because vertex colours MULTIPLY material.color and the authored galvanised grey was being applied twice - fixed by taking the material colour to white; (2) the algal margin was drawn at #B9AB36, a colour taken from a green-biased pixel filter that had selected stained YELLOW rather than the stain, and reaching well inside the border rule - rebanded off the rectified plate, which puts ALL the staining in the 0.014 m strip outside the rule at #A5A052, and redrawn there; (3) the border rule sat 7 mm too far inboard because filletedDiamond derives its sharp half-diagonal from the filleted extent, so two diamonds whose filleted extents differ by p*sqrt(2) do NOT have straight edges p apart when their fillet radii also differ - replaced with an inset that works in sharp-diagonal space, and the render's edge-normal profile now reads margin 0.0149 m and rule 0.0211 m against 0.014 and 0.020 measured. NOT DONE, and reported rather than claimed: the sheeting's rendered chroma is 13% below the reference's at matching luma, which is the harness's ACES curve rather than the authored albedo and was deliberately not chased.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-clay/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:00:07.787000+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.84,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Unchanged from blockout and re-measured on the merged buffer: diamond 0.9000 x 0.9000 (extents differ by 0.000000 m), supplementary plate 0.5540 x 0.2500, gap 0.0440 m."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "geometry_integrity on both welded meshes: boundaryEdges 0, nonManifoldEdges 0 - two closed solids, not sheets. self_intersection clean with EVERY vertex sampled (80/80 and 36/36), so there is no sampling shortfall behind the verdict. check-coplanar clean at 0.001 m. check_part_coverage: 2 specified, 2 built, 0 errors. Plate back z=0.0370 against post front z=0.0375, a 0.5 mm embed.",
+          "notes": "attachment_anchor.py returned passed with attachmentCount 0 - it had nothing to measure, because this prop declares no sockets by design. Reported as a gate that did not look rather than as a pass."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structure holds. Both meshes are closed solids - boundaryEdges 0 and nonManifoldEdges 0 on each - and self_intersection is clean with every vertex sampled rather than a stride, so the verdict has no unexamined remainder behind it. The component tree is two macro components and that is the DESIGNED answer to a maxDrawCalls of 2, not a shallow tree: the three meso parts (diamond plate, supplementary plate, edge return) are named and dimensioned inside geometryDescriptor.mergedAssembly, and qualityContract.minimumSpecDepth.mesoComponents was lowered to 0 with that reasoning recorded rather than met by adding components that would each cost a draw call for the life of the prop. The supplementary plate is merged into the diamond's buffer after generation because THREE.Shape carries one outer contour and cannot express two disjoint islands. NOT MEASURED, and reported as such: attachment_anchor returned attachmentCount 0 - it found nothing to measure because the prop declares no sockets - so the plate/post contact was verified by direct geometry measurement instead, at a 0.5 mm embed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:00:31.179223+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.7
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Corner fillets are real geometry in the extrusion profile, 4 segments each, radius 0.038 m - the mean of two independently extrapolated vertices (left 0.044, top 0.031). A square-cornered plate reads as a hazard board, and the rounding is on the SILHOUETTE where no texture can put it. Face-on render measures the yellow component at widestRow/vertical = 0.9945, i.e. equal diagonals to 0.6% through the whole render path."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "180-point traced polygon, overlay-verified against the rectified plate. Solid fill, faces -X, both tusks, trunk hook, ear, four legs and tufted tail present."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "The 0.006 m extrusion wall gives the plate real thickness, so it reads as folded sheet rather than a zero-thickness card, and it is what shows as the grey edge return. Side view (azimuth 90) measures 2.65% frame coverage at 40 px wide against 404 px at the front - 9.9% against an expected 8.9% for a 0.0805 m envelope on a 0.90 m prop."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form work is entirely on the silhouette, which is where this prop has any form at all. Two things are real geometry and both were verified in the render rather than assumed: the filleted corners, and the 0.006 m extrusion wall that makes the plate folded sheet instead of a card. An edge-normal profile sampled through the face-on render reads plate edge, then a 0.0149 m algal margin, then a 0.0211 m black rule, then field - against 0.014 and 0.020 measured on the plate. That profile is what caught the pass's one real defect: the rule had been sitting 7 mm too far inboard because filletedDiamond derives its sharp half-diagonal from the filleted extent, so two diamonds whose filleted extents differ by p*sqrt(2) do NOT have straight edges p apart once their fillet radii differ too. Replaced with an inset that works in sharp-diagonal space. NOT DONE: the reference's edge return reads thicker than 0.006 m, closer to a rolled rim of 10-20 mm; the thinner value is kept because 0.08 m is the declared depth envelope and the post already spends 0.075 of it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-000.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:01:20.137930+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Rendered as a solid black fill at #1D1D1A - the measured legend ink, taken from the darkest half of a pictogram crop rather than its whole-crop mean, because the brighter half is the sheeting's ambient bounce spilling across a hard boundary. Drawn into the atlas as one closed path, not stroked: a filled silhouette is what survives distance and a low texture resolution. At 569 texels per metre the diamond region already exceeds the reference, where the same 0.90 m spans 413 px.",
+          "notes": "The shape itself is the form pass's result; what the material pass owns here is that it is a hard-boundary decal with no relief and no baked lighting, which the reference supports - the pictogram crop shows zero shadow inside its boundary."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "material_gate passed with no failures. Per-crop comparator: sheeting 0.8631 and galvanised 0.8182, both with zero mismatches, on crops verified to sit on the surface they name. Galvanised reference and render crop means are within 2 per channel ([142,150,148] against [144,150,149]). PBR extraction cleared its 0.7 bar at 0.827 and 0.758.",
+          "notes": "Two false alarms were run down rather than accepted. (1) The comparator first failed sheeting at 0.461 - the render crop had landed on the pictogram, not the field. (2) It then failed galvanised at 0.6457 on wrong-base-color, having segmented only 7.8% of a full-bleed post crop as foreground while warning that the mask was unreliable; re-cropped with backdrop either side so the mask has something to separate, it passes at 0.8182."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The legend is a canvas assigned AFTER material construction, so it is unaffected by the textureless declaration - the route the material brief reserves for printed graphics. 1024x512 atlas, built once at module scope and shared by every instance."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Algal margin measured in the render at #A49E52 (G-B 76, luma 151) against the reference's banded #A5A052 (G-B 79, luma 153), over a 0.0149 m band against 0.014 measured. Post rust is a directional vertex-colour ramp, which keeps the material textureless.",
+          "notes": "The mid-shaft rust streak is weaker than the reference's, and the model's staining is even where the reference's is patchy."
+        }
+      ],
+      "action": "continue",
+      "summary": "Both materials are declared textureless with named measurements behind the claim, so createSculptMaterial synthesises no canvases and the authored albedo survives instead of being forced to white - which on a prop whose whole job is to be a legible highway yellow is a correctness fix, not a speed one. The factory builds in 44-77 ms. The legend takes the other route, a canvas assigned after material construction. material_gate passes. Two disagreements with the tools were resolved by measurement and both went against a tool: analyze_texture classifies the post as brushed-steel with metalness 1.0, keying on a streakRatio of 0.52 that is the RUST RUNOFF read as brush grain - rejected, because the same tool measures specularFraction 0.0 on that crop and a conductor at 1.0 renders chalky zinc as chrome; and its painted-metal recipe proposes clearcoat 1.0, also rejected on the same specularFraction 0.0. Its measured roughness of 0.50 for the sheeting WAS adopted over the 0.34 first authored by eye. extract_pbr_evidence's roughness was not adopted anywhere: it returned 0.696 for the sheeting and 0.680 for the post, two finishes that plainly differ, and two numbers that close across two surfaces are a default rather than a measurement. LIBRARY GAP, reported not hidden: material-reference.json has no hot-dip galvanised entry, so region assignment returned request-input at confidence 0.0 with only conductor profiles as alternatives; metal.aluminum is carried as a labelled APPROXIMATION with the metalness deviation from 1.0 to 0.25 recorded and evidenced.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-000.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:01:41.499242+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Renders as a clean solid silhouette at every reviewed azimuth where the face is visible. Its 180 points are a fixed array, so two builds are byte-identical - there is no seed to record because nothing here is random."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Both rules and both lines legible in the hero render. Each line is measured with measureText and scaled horizontally to the plate's own width, so the layout survives whichever font resolves. Thai rendered here via Loma."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "Eleven detail-inventory entries against a raised target of 8, every one mapped to a component.localFeatures or material.localOverrides entry rather than prose. Nine of the eleven are printed and two - the corner radius and the edge return - are geometry, both on the silhouette."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface detail on this prop is almost entirely PRINTED, and the detail inventory says so: eleven entries against a raised target of eight, of which nine are marks on the legend canvas and only two - the corner radius and the edge return - are geometry, both on the silhouette where a texture could not help. Every entry maps to a real localFeatures or localOverrides field rather than to prose. One entry was deliberately reclassified: the four plate fasteners were logged as kind 'fastener', which is a contract to build an instanced system and is validated as one, and nothing here is built as geometry - at 0.009 m they are sub-pixel at prop distance and an InstancedMesh would spend one of only two draw calls to say so. They are logged as 'linework', a painted decal, which is what is actually built. The atlas carries 569 texels per metre on the diamond, already above the reference's own 413 px across the same 0.90 m. NOT MODELLED, and recorded as undetermined rather than skipped: the sheeting's hexagonal prismatic cell pattern, which sits at the JPEG noise floor at 1024 and is sub-pixel at prop distance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:02:03.736470+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sheeting field renders at luma 173 against the reference's 176, within 1.7%; the post's crop mean is within 2 per channel of the reference's. Both surfaces respond as satin dielectrics under the harness key - no blown highlight anywhere, matching the reference's measured specularFraction of 0.0. Interior difference over 13,830 cells is 0.159 GLOBALLY and 0.143 / 0.183 / 0.147 / 0.157 across four height bands: the difference is a flat offset across the whole prop, not a defect in any one region, which is what a lighting and tone-curve difference looks like.",
+          "notes": "HONEST SHORTFALL: field chroma renders at G-B 113 against the reference's 130, 13% low, while luma matches. Attributed to the harness's ACES curve against whatever curve the image model used, and deliberately not chased - pushing the authored albedo to close it would be fitting the renderer rather than the reference, and would leave the shipped albedo no longer equal to the measurement it claims."
+        }
+      ],
+      "action": "continue",
+      "summary": "The plate's own lighting is recorded - a soft key high and slightly camera-left, hemisphere fill, a rim that separates the plate's fold from the backdrop, ACES, and an explicit shadow contract - but NONE of it is baked into albedo, and the measurement that licenses that claim is that the sheeting field's median luma falls only 4 points from the top of the plate to the bottom, so the studio gradient across the whole face is smaller than what subtracting it could do honestly. The useful lighting result this pass produced is the banded interior difference: 0.143, 0.183, 0.147 and 0.157 across four height bands against a global 0.159 over 13,830 cells. No band stands out, which is the evidence that the render-versus-photo difference is a uniform lighting and tone-curve offset rather than a wrong region - and that is exactly the discrimination silhouette IoU cannot make, since it reads only the outline. The shadow contract is a placement requirement rather than a measurement: the studio reference has no ground plane, and that is said in the spec rather than implied.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:02:23.251141+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Runtime read back from the render harness: nodes 3, pivots ['root'], sockets [], colliders ['post'], destructionGroups []. check_part_coverage: 2 specified, 2 built, 0 errors - the prop is explodable and clickable through root.userData.sculptRuntime.byId. The declared collider is a cylinder and it is on the POST, sized 0.075 x 2.10 x 0.075 rather than to the whole prop, so nothing blocks the pavement under a plate mounted two metres up."
+        }
+      ],
+      "action": "continue",
+      "summary": "ONE pivot and NO sockets, and that is the answer rather than a gap. This sign has no hinge, no bearing, no lid and no wheel, nothing attaches to it and nothing is emitted from it, so the root at base-center is the only axis it has - a prop that declared a pivot per component would be describing a machine that does not exist, and every named marker is contract the kit then has to keep. The harness reads back pivots ['root'], sockets [], colliders ['post'], destructionGroups []. Both halves of the runtime contract match the registry exactly and in both directions: the asset declares collider 'cylinder' and exactly one cylinder proxy is built, on the post rather than on the envelope; the asset declares no destruction groups and zero are built, DERIVED by walking every node for a fractureGroup rather than assumed empty, so a component that somehow carried one would fail the gate loudly instead of being dropped. The generator's null collider entry for the plates is filtered out at the entry point so the count is of real proxies. check_part_coverage: 2 specified, 2 built, 0 errors.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-blockout.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-25T22:03:35.653128+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline-system",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Unchanged by optimisation: nothing was decimated and no segment count was reduced. 220 triangles measured in the harness against a budget of 800."
+        },
+        {
+          "id": "elephant-pictogram",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Costs zero triangles and zero draw calls - it is texels in an atlas that is built once at module scope and shared by every instance of the prop."
+        },
+        {
+          "id": "legend-system",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Same atlas, same zero marginal cost. 1024x512 at 2.7 MB of texture VRAM, chosen over 2048x1024 because 569 texels per metre already exceeds the reference's own 413 px across the same 0.90 m."
+        },
+        {
+          "id": "sheeting-and-galvanising",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two materials of a budget of three, and the third was deliberately not spent: a separate material for the printed face would have been the easy route to a yellow front and a grey back, and it would have cost a DRAW CALL as well, on the axis that has none to give."
+        },
+        {
+          "id": "mounting-and-stance",
+          "tier": "important",
+          "score": 0.92,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Two unique geometries of a budget of three. Both are shared across every instance."
+        },
+        {
+          "id": "weathering-gradient",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.65,
+          "passed": true,
+          "evidence": "The post's rust ramp costs 56 triangles - the box is rebuilt at 8 height segments instead of 1, because two rows of vertices can only carry a linear ramp from top to bottom, which would rust the whole post. Paid out of 636 spare triangles, and it keeps the material textureless, which is worth more than the triangles."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured, not estimated, by the render harness: 220 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture at 2.7 MB, and createObjectModel returning in 34 ms. DRAW CALLS are the binding axis and triangles are not - the prop sits at a quarter of its triangle budget and at 100% of its draw-call budget - and that is the design rather than an overrun, because it was decided in the BLOCKOUT and not optimised into at the end. Three splits were refused and each is recorded where someone tempted to make it will read it: the supplementary plate folds into the diamond's buffer, the plate faces do NOT get a graphic material separate from their backs, and the fasteners stay printed. The UV atlas is what makes the second of those possible - front-facing vertices take a graphic region and every other vertex collapses to a single galvanised texel, so one material carries a printed front and a plain back. NOTHING WAS DECIMATED and no segment count was cut: at 220 triangles the vertex cost is already below the per-draw-call overhead, so a decimated LOD tier would save nothing measurable and would cost a second geometry against a ceiling of three. The one place triangles WERE spent is the post's 8 height segments, 56 of them, to carry a weathering ramp that would otherwise have needed a texture. The factory was regenerated at this pass id and the post-generation layer re-applied through a recorded script, so the shipped artefact is the generator's own output plus a layer whose every part is described in the spec.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/elephant-crossing-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-match/beauty-036.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/cmp-final.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "id": "lod0",
+      "distanceMeters": 0,
+      "triangles": 164,
+      "drawCalls": 2,
+      "notes": "As built. Already low enough that there is nothing worth decimating."
+    },
+    {
+      "id": "lod1",
+      "distanceMeters": 40,
+      "triangles": 164,
+      "drawCalls": 2,
+      "notes": "No geometric LOD. At 164 triangles the vertex cost is already below the per-draw-call overhead, so a decimated tier would save nothing measurable and would cost a second geometry against a ceiling of three. The mip chain on the legend atlas is the real distance LOD here."
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 2,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 3,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() for the `small` class and none was invented. Road signs are among the most heavily instanced props in a street scene, so DRAW CALLS are the binding axis here and triangles are not: the prop sits at a quarter of its triangle budget and at 100% of its draw-call budget. The two-component split was chosen in the BLOCKOUT against that ceiling, which is why the supplementary plate is merged into the diamond's buffer rather than left as a part to merge later - the optimization pass cannot merge what the tree has already separated.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "At the ceiling with nothing spare, and that is the design rather than an overrun. Three obvious splits were each refused and paid for: the supplementary plate folds into the diamond's mesh (same material, same plane, same thickness); the plate faces do NOT get a separate graphic material from their backs, which is what the UV atlas exists to avoid; and the fasteners stay printed rather than instanced."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "Two. The third was available and was not spent: a separate material for the printed face would have been the easy way to a yellow front and a grey back, and it would have cost a DRAW CALL as well as a material, on the axis that has none to give."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "One merged plate buffer and one box. Every instance of this sign in a scene shares both, and shares the legend canvas too - it is built once at module scope, not once per call."
+      },
+      "triangles": {
+        "signPlates": 152,
+        "post": 12,
+        "projectedTotal": 164,
+        "budget": 800,
+        "headroom": 636,
+        "note": "Each plate is a 20-point extrusion: 18 front-cap + 18 back-cap + 40 wall = 76 tris, twice. The post is a 12-triangle box. The headroom is real and is deliberately NOT spent: the only silhouette features this prop has are the filleted corners, which already have 4 segments each, and spending triangles anywhere else would not change a pixel while every extra component would cost the axis that is actually full."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "area",
+      "directionHint": [
+        -0.35,
+        0.55,
+        0.76
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "The plate face's median luma falls from 177 at the top of the diamond to 173 at the bottom, and the post's left face reads brighter than its right - a soft key high and slightly camera-left."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "directionHint": [
+        0.5,
+        0.2,
+        -0.4
+      ],
+      "intensity": 0.35,
+      "colorTemperatureK": 6500,
+      "evidence": "The plate's grey edge return stays legible at 130-160 luma where it faces away from the key, so there is real fill rather than a single hard source."
+    },
+    {
+      "role": "rim",
+      "type": "directional",
+      "directionHint": [
+        0.6,
+        0.3,
+        -0.75
+      ],
+      "intensity": 0.25,
+      "colorTemperatureK": 6500,
+      "evidence": "A thin bright line along the plate's upper-right fold separates it from the backdrop."
+    },
+    {
+      "role": "environment",
+      "type": "studio-context",
+      "environment": "studio softbox on a flat neutral backdrop, measured at RGB 129,129,129",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "evidence": "Backdrop measured at RGB 129,129,129 by a border-ring scan.",
+      "notes": "Recorded as the plate's OWN lighting, for review alignment only. None of it is baked into albedo: every measured colour in this spec is a trimmed mean over a flat field, and the across-face gradient the key produces is 4 luma, which is below what subtracting it could do honestly."
+    },
+    {
+      "role": "shadow",
+      "type": "shadow-behaviour",
+      "groundShadow": "Floor-placed prop: the post casts a real ground shadow from the key, and it is the only thing that stops a sign reading as though it hovers. castShadow on both components, receiveShadow on neither - nothing on this prop is below anything else on it.",
+      "contactShadow": "Contact darkening where each plate meets the post, on both the plate's back and the post's front face. The plates are embedded 0.5 mm into the post, so the contact is a real intersection and an ambient-occlusion response rather than a painted line.",
+      "ambientOcclusion": "Cavity AO has almost nothing to occlude here - the prop is two flat plates and a prism with no concavities - so AO is set low and is meaningful only at the two plate/post junctions and along the plates' edge return.",
+      "evidence": "In the plate the post darkens visibly where it passes behind the supplementary plate's lower edge, and the plate's own edge return darkens where it turns away from the key.",
+      "notes": "The studio reference has no ground plane, so the ground shadow is a placement requirement rather than something measured from the photograph."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "plate-profiles",
+      "technique": "extruded 2D profile with closed-form filleted corners",
+      "appliesTo": [
+        "sign-plates"
+      ],
+      "notes": "Both plates. A 90-degree fillet centre sits R*sqrt(2) in from the vertex and the arc sweeps +-45 degrees; 4 segments per corner, 20 points per profile."
+    },
+    {
+      "id": "post-prism",
+      "technique": "box prism",
+      "appliesTo": [
+        "post"
+      ],
+      "notes": "Kept as a plain box: the vertical arris is the identity feature and a box already has it."
+    },
+    {
+      "id": "legend-atlas",
+      "technique": "generated canvas texture assigned AFTER material construction",
+      "appliesTo": [
+        "sign-plates"
+      ],
+      "notes": "1024x512, built once at module scope and shared by every instance. Unaffected by the textureless declaration, which only governs makeProceduralTextureSet."
+    },
+    {
+      "id": "authored-uv-atlas",
+      "technique": "authored UVs with a collapsed plain region",
+      "appliesTo": [
+        "sign-plates"
+      ],
+      "notes": "Front-facing vertices take a graphic region; every other vertex collapses to one plain galvanised texel. This is what lets one material carry a printed front and a plain back."
+    },
+    {
+      "id": "post-weathering",
+      "technique": "vertex colour gradient",
+      "appliesTo": [
+        "post"
+      ],
+      "notes": "Rust runoff as a directional vertical ramp, which keeps the material textureless."
+    },
+    {
+      "id": "avoided",
+      "technique": "techniques deliberately not used",
+      "appliesTo": [
+        "sign-plates",
+        "post"
+      ],
+      "notes": "procedural noise texture sets (both materials are declared textureless); instanced fastener systems (would spend a draw call on sub-pixel detail); projected reference pixels (see projection-route.md). Nothing on this prop is random. The pictogram is a fixed 180-point polygon, the plate profiles are closed-form fillets, and the weathering is a fixed gradient - so there are no seeds to record, and two builds are byte-identical."
+    }
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "componentRef": "root",
+        "localPosition": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "mechanism": "placement",
+        "notes": "The only pivot on this prop, at `base-center`. Everything else is welded or bolted: no hinge, no bearing, no lid, no wheel. A sign that declared a pivot per component would be describing a machine that does not exist."
+      }
+    ],
+    "sockets": [],
+    "socketsNote": "None. Nothing attaches to this prop and nothing is emitted from it. A named socket is a promise the kit then has to keep, and there is nothing here to promise.",
+    "staticDeclaration": "This prop has no moving parts. That is the correct answer for a bolted sign, not a gap in the spec."
+  },
+  "destructionAnchors": {
+    "groups": [],
+    "note": "The registry asset declares `destructionGroups: []`, so the build must expose exactly zero. promote-model.mjs checks this as an EQUALITY in both directions: an undeclared group is contract nobody asked for, and a missing one is a prop that does not come apart the way its entry says. No component carries a fractureGroup."
+  },
+  "risks": [
+    {
+      "id": "back-side-unseen",
+      "severity": "low",
+      "risk": "No view of the -Z side exists, so the plate backs are inference.",
+      "mitigation": "Plain grey either way; a viewer behind the sign sees a grey plate whichever is true.",
+      "confidence": 0.75
+    },
+    {
+      "id": "thai-glyph-fidelity",
+      "severity": "medium",
+      "risk": "The Thai legend is set from a system font at build time. Which font actually resolves in the host browser is outside this module's control, and a missing Thai face falls back to tofu.",
+      "mitigation": "A stack is specified rather than one family, and the English line - which no fallback can lose - carries the meaning on its own. Flagged for the review render to confirm.",
+      "confidence": 0.6
+    },
+    {
+      "id": "draw-call-ceiling",
+      "severity": "medium",
+      "risk": "The prop sits at 2 of 2 draw calls with no headroom, so any later change that adds a component fails promote-model.mjs outright.",
+      "mitigation": "Recorded in geometryDescriptor.mergedAssembly.reason on the component itself, where anyone tempted to split the plates will read it before doing so.",
+      "confidence": 0.95
+    },
+    {
+      "id": "pictogram-simplification",
+      "severity": "low",
+      "risk": "The traced polygon is simplified at 1.4 px of a 640 rectification, so a tusk tip taper is smoothed.",
+      "mitigation": "Verified by overlay against the rectified plate; both tusks and the trunk hook survive.",
+      "confidence": 0.9
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Elephant Crossing Sign retroreflective sign sheeting albedo roughness hot dip galvanised steel post spangle metalness extruded rounded profile plate thin sheet geometry canvas texture decal printed graphic pictogram rust streak weathering corrosion base",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-color-space-srgb-vs-linearnocolorspace",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[11]",
+        "score": 13.182831111945,
+        "snippets": [
+          "... để người xem (cần gamma/sRGB) và các bản đồ dữ liệu toán học (phải giữ tuyến tính/không hiệu chỉnh). Recognition cues: Base color/albedo and emissive textures are the only ones that should look like natural photographic color; Normal, ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[11]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-pbr-vocabulary-caption-calibration",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[7]",
+        "score": 9.771570074486,
+        "snippets": [
+          "Embedding a technical material-attribute block (Albedo, Metalness, Roughness, Normals) with measured reflectance ranges directly into the structured description, not just prose. Nhúng một khối thuộc tính vật liệu kỹ thuật (Albedo, Metalness, ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-orm-channel-packing",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[10]",
+        "score": 9.409405394887,
+        "snippets": [
+          "Convention of packing AO, Roughness, and Metalness grayscale maps into the R, G, B channels of a single texture to cut texture-fetch and VRAM cost. Quy ước đóng gói ba bản đồ grayscale AO, Roughness, Metalness vào các kênh R, G, B của một ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[10]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ],
+    "focusedRetrievals": [
+      {
+        "query": "ExtrudeGeometry shape rounded corner bevel",
+        "collection": "core_3d",
+        "topMatch": "core.shader-mapping-extrudegeometry-custom-bladesilhouette-profiles",
+        "score": 11.5,
+        "applied": "Both plates are a unique 2D silhouette pushed into 3D with a bevel, which is exactly this record's recognition cue. It is the primitive both plate components use; the record is why they are extruded profiles rather than scaled boxes with rounded corners faked in texture."
+      },
+      {
+        "query": "canvas texture text label decal three.js",
+        "collection": "core_3d",
+        "topMatch": "core.shader-mapping-srgb-linear-color-space-assignment",
+        "score": 2.6,
+        "applied": "The legend canvas is human-viewable colour, so its CanvasTexture is tagged THREE.SRGBColorSpace. Nothing else on this prop binds a texture."
+      },
+      {
+        "query": "instanced mesh draw call budget low end GPU",
+        "collection": "core_3d",
+        "topMatch": "core.runtime-hierarchy",
+        "score": 4.4,
+        "applied": "Root -> component pivot groups -> visual meshes -> collider metadata, with no destruction-group metadata because the asset declares none."
+      },
+      {
+        "query": "z-fighting coplanar polygon offset",
+        "collection": "core_3d",
+        "topMatch": "core.attachment-contract",
+        "score": 4.2,
+        "applied": "Each plate records parent, contact type and embed depth: the plates are embedded 0.5 mm into the post's front face rather than butted flush against it, so no two faces are coincident."
+      }
+    ],
+    "adequacy": "The automatic core_3d query returned PBR colour-space and ORM-packing records - real but generic. Four focused retries were run per grimoire/intake/local_spec_search.md; the ExtrudeGeometry record is the one that changed an authoring decision. The corpus holds no roadside-signage domain record, so plate geometry and legend layout come from the reference measurements in image-analysis.md, which are recorded as measurements rather than invented."
+  },
+  "repetitionSystemsNote": "None, deliberately. The four plate fasteners are the only repeated part on the prop and each is 0.009 m - sub-pixel at prop distance. An InstancedMesh would spend one of only two draw calls on something a viewer cannot resolve, so they are drawn into the legend canvas instead.",
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4563,
+        "aspectRatioDelta": 0.3615,
+        "scaleDelta": 0.2655,
+        "bilateralSymmetryError": 0.0267,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 30.39,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 12.64
+            },
+            {
+              "componentId": null,
+              "deltaE": 30.39
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.456 is below threshold 0.85",
+        "aspect-ratio delta 0.361 exceeds threshold 0.05",
+        "scale delta 0.266 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "d6c83805ba2d21ba",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4435,
+        "aspectRatioDelta": 0.1882,
+        "scaleDelta": 0.1882,
+        "bilateralSymmetryError": 0.0189,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 37.01,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 16.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 37.01
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.444 is below threshold 0.85",
+        "aspect-ratio delta 0.188 exceeds threshold 0.05",
+        "scale delta 0.188 exceeds threshold 0.08"
+      ],
+      "maskWarnings": [],
+      "renderHash": "a6c68bc7407fba5e",
+      "passId": "blockout",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/renders-clay/clay-000.png"
+    }
+  ],
+  "materialGate": {
+    "schemaVersion": 1,
+    "kind": "img2threejs.material-gate",
+    "passed": true,
+    "failures": [],
+    "warnings": [],
+    "comparisonCount": 2,
+    "compatibility": {
+      "schemaVersion": 1,
+      "passed": true,
+      "failures": [],
+      "warnings": [],
+      "checked": {
+        "materialCount": 2,
+        "componentCount": 2,
+        "referencedMaterialCount": 2,
+        "riggedComponentCount": 0,
+        "lodPresent": true,
+        "collisionPresent": false
+      },
+      "invariant": "material IDs and UV/map contracts survive geometry, skinning, collision and LOD changes"
+    },
+    "requiredEvidence": [
+      "materialPipeline.status=proceed",
+      "all material regions status=proceed",
+      "per-region crop comparison passed",
+      "multi-angle controlled view plan and screenshot readback",
+      "geometry/UV/skinning/collision/LOD material ID compatibility passed"
+    ]
+  },
+  "materialPipeline": {
+    "status": "proceed",
+    "regions": [
+      {
+        "componentId": "sign-plates",
+        "regionId": "sheeting",
+        "materialId": "coating.painted-metal",
+        "status": "proceed",
+        "confidence": 0.75,
+        "assignment": {
+          "materialId": "coating.painted-metal",
+          "status": "proceed",
+          "source": "vision",
+          "confidence": 0.75,
+          "method": "family-fallback",
+          "alternatives": [],
+          "evidence": {
+            "crop": {
+              "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/00-sheeting.png",
+              "bbox": {
+                "x": 443,
+                "y": 168,
+                "width": 40,
+                "height": 30
+              },
+              "sourceWidth": 1024,
+              "sourceHeight": 1024,
+              "loaderWarnings": [],
+              "coverage": 0.0011
+            },
+            "pbr": {
+              "ok": true,
+              "verdict": "pass",
+              "confidence": 0.751,
+              "estimatedFidelity": 0.751,
+              "targetThreshold": 0.7,
+              "materialId": "sheeting",
+              "sourceImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/00-sheeting.png",
+              "outDir": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting",
+              "palette": [
+                "#D5B932",
+                "#D2B52C",
+                "#DBBE38",
+                "#CDB027",
+                "#DCC347"
+              ],
+              "maps": {
+                "albedo": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting/sheeting_albedo.png",
+                  "url": "sheeting_albedo.png",
+                  "channel": "albedo",
+                  "source": "reference-pixel-extraction"
+                },
+                "roughness": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting/sheeting_roughness.png",
+                  "url": "sheeting_roughness.png",
+                  "channel": "roughness",
+                  "source": "reference-pixel-extraction"
+                },
+                "height": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting/sheeting_height.png",
+                  "url": "sheeting_height.png",
+                  "channel": "height",
+                  "source": "reference-pixel-extraction"
+                },
+                "normal": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting/sheeting_normal.png",
+                  "url": "sheeting_normal.png",
+                  "channel": "normal",
+                  "source": "reference-pixel-extraction"
+                },
+                "ao": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-00-sheeting/sheeting_ao.png",
+                  "url": "sheeting_ao.png",
+                  "channel": "ao",
+                  "source": "reference-pixel-extraction"
+                }
+              },
+              "diagnostics": {
+                "sourceWidth": 40,
+                "sourceHeight": 30,
+                "mapSize": 512,
+                "cropBBoxPixels": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 40,
+                  "height": 30
+                },
+                "mask": {
+                  "backgroundColor": "#D2B72E",
+                  "backgroundNoise": 10.677,
+                  "transparentPixelFraction": 0.0,
+                  "foregroundCoverage": 1.0
+                },
+                "mapStats": {
+                  "valueRange": 0.08,
+                  "heightP90Gradient": 0.11264,
+                  "roughnessBase": 0.793,
+                  "roughnessVariation": 0.163,
+                  "normalStrength": 0.288,
+                  "blurRadius": 10
+                },
+                "palette": [
+                  "#D5B932",
+                  "#D2B52C",
+                  "#DBBE38",
+                  "#CDB027",
+                  "#DCC347"
+                ]
+              },
+              "warnings": [
+                "image is not clearly isolated from background; using most pixels as material evidence",
+                "object/background separation is weak",
+                "single-image inverse rendering cannot prove true physical PBR; confidence is capped",
+                "low value range weakens height/roughness inference"
+              ],
+              "limitation": "single-image PBR extraction is an estimate; 70%+ extraction confidence still needs render screenshot review"
+            },
+            "texture": {
+              "finishClass": "painted-metal",
+              "recipe": {
+                "metalness": 0.0,
+                "roughness": 0.5,
+                "clearcoat": 1.0,
+                "clearcoatRoughness": 0.05,
+                "transmission": 0.0,
+                "ior": 1.5,
+                "envMapIntensity": 1.0,
+                "anisotropy": 0.0,
+                "procedural": "flat-clearcoat"
+              },
+              "palette": [
+                "#D2B52F",
+                "#DABF42",
+                "#D3B62F",
+                "#D3B72D",
+                "#D6B933"
+              ],
+              "paletteHueRisk": [],
+              "gradientAxis": "horizontal",
+              "stats": {
+                "meanLum": 178.3,
+                "meanSaturation": 0.764,
+                "gradientStrength": 0.05,
+                "mottle": 0.011,
+                "streakRatio": 1.46,
+                "hueSpread": 0.0,
+                "specularFraction": 0.0
+              }
+            }
+          },
+          "profileId": "coating.painted-metal",
+          "family": "coating",
+          "subtype": "paint-over-metal",
+          "finish": "gloss-or-satin",
+          "renderPrior": {
+            "metalness": 0.0,
+            "roughness": 0.45,
+            "clearcoat": 0.75,
+            "clearcoatRoughness": 0.12,
+            "ior": 1.5
+          },
+          "requiredMaps": [
+            "map",
+            "roughnessMap"
+          ],
+          "optionalMaps": [
+            "normalMap",
+            "clearcoatMap",
+            "clearcoatRoughnessMap",
+            "metalnessMap"
+          ],
+          "validationViews": [
+            "albedo-unlit",
+            "neutral-studio",
+            "grazing",
+            "environment-reflection",
+            "reference-beauty"
+          ],
+          "sourceRefs": [
+            "three.mesh-physical",
+            "gltf.2",
+            "khronos.gltf-pbr",
+            "adobe.pbr-guide-1",
+            "adobe.pbr-guide-2"
+          ],
+          "visualCues": [
+            "diffuse paint colour under a separate glossy coat",
+            "chips may expose metallic substrate"
+          ],
+          "confidenceNote": "Resolved to coating.painted-metal at 0.488, below the registry's own bar, and promoted to proceed on independent evidence rather than on that number: retroreflective sheeting IS a coating over an aluminium blank, so the FAMILY is exact; the crop's PBR extraction cleared 0.7 at 0.827; and the per-crop comparator passed at 0.8631 with no mismatches. Every authored value sits inside the profile's own priors - metalness 0.0 against a range of [0.0, 0.1], roughness 0.50 against [0.2, 0.7], clearcoat 0.10 against [0.0, 1.0]."
+        },
+        "specMaterialId": "sheeting",
+        "profileId": "coating.painted-metal"
+      },
+      {
+        "componentId": "post",
+        "regionId": "galvanised",
+        "materialId": "metal.aluminum",
+        "status": "proceed",
+        "confidence": 0.75,
+        "assignment": {
+          "materialId": "metal.aluminum",
+          "status": "proceed",
+          "source": "vision",
+          "confidence": 0.75,
+          "method": "unresolved",
+          "alternatives": [
+            "metal.aluminum",
+            "metal.brass",
+            "metal.copper",
+            "metal.gold",
+            "metal.steel-brushed",
+            "metal.steel-polished"
+          ],
+          "evidence": {
+            "crop": {
+              "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/01-galvanised.png",
+              "bbox": {
+                "x": 466,
+                "y": 730,
+                "width": 80,
+                "height": 150
+              },
+              "sourceWidth": 1024,
+              "sourceHeight": 1024,
+              "loaderWarnings": [],
+              "coverage": 0.0114
+            },
+            "pbr": {
+              "ok": true,
+              "verdict": "pass",
+              "confidence": 0.86,
+              "estimatedFidelity": 0.86,
+              "targetThreshold": 0.7,
+              "materialId": "galvanised",
+              "sourceImage": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/01-galvanised.png",
+              "outDir": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised",
+              "palette": [
+                "#949D9D",
+                "#8D9594",
+                "#9FA7A6",
+                "#5A5E58",
+                "#ACB4B3"
+              ],
+              "maps": {
+                "albedo": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised/galvanised_albedo.png",
+                  "url": "galvanised_albedo.png",
+                  "channel": "albedo",
+                  "source": "reference-pixel-extraction"
+                },
+                "roughness": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised/galvanised_roughness.png",
+                  "url": "galvanised_roughness.png",
+                  "channel": "roughness",
+                  "source": "reference-pixel-extraction"
+                },
+                "height": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised/galvanised_height.png",
+                  "url": "galvanised_height.png",
+                  "channel": "height",
+                  "source": "reference-pixel-extraction"
+                },
+                "normal": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised/galvanised_normal.png",
+                  "url": "galvanised_normal.png",
+                  "channel": "normal",
+                  "source": "reference-pixel-extraction"
+                },
+                "ao": {
+                  "path": "/home/mulligan/code/thaikit/scratch/elephant-crossing-sign/material-review/regions/pbr-01-galvanised/galvanised_ao.png",
+                  "url": "galvanised_ao.png",
+                  "channel": "ao",
+                  "source": "reference-pixel-extraction"
+                }
+              },
+              "diagnostics": {
+                "sourceWidth": 80,
+                "sourceHeight": 150,
+                "mapSize": 512,
+                "cropBBoxPixels": {
+                  "x": 16,
+                  "y": 0,
+                  "width": 48,
+                  "height": 150
+                },
+                "mask": {
+                  "backgroundColor": "#818181",
+                  "backgroundNoise": 1.732,
+                  "transparentPixelFraction": 0.0,
+                  "foregroundCoverage": 0.3573
+                },
+                "mapStats": {
+                  "valueRange": 0.3592,
+                  "heightP90Gradient": 0.07897,
+                  "roughnessBase": 0.729,
+                  "roughnessVariation": 0.136,
+                  "normalStrength": 0.249,
+                  "blurRadius": 10
+                },
+                "palette": [
+                  "#949D9D",
+                  "#8D9594",
+                  "#9FA7A6",
+                  "#5A5E58",
+                  "#ACB4B3"
+                ]
+              },
+              "warnings": [
+                "single-image inverse rendering cannot prove true physical PBR; confidence is capped"
+              ],
+              "limitation": "single-image PBR extraction is an estimate; 70%+ extraction confidence still needs render screenshot review"
+            },
+            "texture": {
+              "finishClass": "worn-composite",
+              "recipe": {
+                "metalness": 0.0,
+                "roughness": 0.9,
+                "clearcoat": 0.0,
+                "clearcoatRoughness": 0.0,
+                "transmission": 0.0,
+                "ior": 1.5,
+                "envMapIntensity": 0.5,
+                "anisotropy": 0.0,
+                "procedural": "mottle"
+              },
+              "palette": [
+                "#929799",
+                "#989D98",
+                "#8B9495",
+                "#7D8482",
+                "#7F8382"
+              ],
+              "paletteHueRisk": [],
+              "gradientAxis": "horizontal",
+              "stats": {
+                "meanLum": 142.0,
+                "meanSaturation": 0.074,
+                "gradientStrength": 0.239,
+                "mottle": 0.024,
+                "streakRatio": 0.65,
+                "hueSpread": 0.015,
+                "specularFraction": 0.0
+              }
+            }
+          },
+          "approximation": true,
+          "approximationNote": "LABELLED AN APPROXIMATION, not a resolution. The library has no entry for hot-dip galvanised steel: material_region_analysis returned request-input at confidence 0.0 and offered aluminum, brass, copper, gold, steel-brushed and steel-polished, every one of which is model 'conductor' with metalness locked at 1.0. Weathered galvanising is an oxidised zinc layer over steel and does not behave like a clean conductor, and the reference says so: analyze_texture measures specularFraction 0.0 on the post crop, so there is no specular lobe anywhere on it, and its luma runs a gentle 115-170 gradient. A metalness of 1.0 would render a chalky post as chrome. metal.aluminum is taken as the nearest profile on its visual cues - 'bright neutral conductor, soft satin highlight unless polished' - and the shipped metalness of 0.25 is a DELIBERATE DEVIATION from its prior, evidenced above. The crop comparator passes this material at 0.8182 with the reference and render crop means within 2 per channel, so the deviation is measured, not assumed. The registry gap is a finding about the library, not about this prop.",
+          "deviations": [
+            {
+              "field": "metalness",
+              "profilePrior": 1.0,
+              "shipped": 0.25,
+              "evidence": "analyze_texture specularFraction 0.0 on crops/galvanised-post.png; meanSaturation 0.074; mottle 0.018"
+            }
+          ]
+        },
+        "specMaterialId": "galvanised",
+        "profileId": "metal.aluminum"
+      }
+    ],
+    "unresolvedNotObservedMaterials": [],
+    "note": "Two regions, both observed in the single admitted view and both crop-verified to sit on the surface they name. The galvanised assignment is carried as an explicit approximation with its deviation recorded; see its approximationNote.",
+    "evidence": {
+      "analysis": "material-review/material-analysis.json",
+      "comparisons": [
+        "material-review/cmp-sheeting.json",
+        "material-review/cmp-galvanised.json"
+      ],
+      "viewPlans": [
+        "material-review/view-plan-sheeting.json",
+        "material-review/view-plan-galvanised.json"
+      ]
+    },
+    "schemaVersion": 1,
+    "registry": "docs/materials/material-reference.json"
+  }
+}
