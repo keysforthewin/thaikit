@@ -1,0 +1,2710 @@
+{
+  "targetName": "King Power Store Building",
+  "targetId": "king-power-store-building",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-retail-building",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "rectilinear",
+        "planar-panelled",
+        "hard-edged",
+        "axis-aligned"
+      ],
+      "structureKind": [
+        "shell-volume",
+        "panelised-facade",
+        "cantilever",
+        "clustered-plant"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "painted-cement-render",
+        "painted-metal-panel",
+        "cast-stone-coping",
+        "tinted-plate-glass",
+        "galvanised-steel",
+        "roof-membrane"
+      ],
+      "notes": "Static single-storey branded retail box on thaikit's shared 8.0 x 4.6 x 7.0 m module, exterior shell only. No interior geometry: glazing is a tinted mostly-opaque pane, not an opening. Nothing moves, so one root pivot and zero sockets is the correct contract. Distinguishing features on this plate: cream render walls, a deep NAVY fascia band that WRAPS the front-right corner onto the +X wall, KING POWER in white under a gold crown, a NAVY shopfront frame rather than mill-finish aluminium, a grey stone coping capping the whole parapet ring, a flush service door on the +X wall, and two condensers at the rear right. There is NO entrance canopy, so the shell face is pushed forward rather than set back."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 7,
+        "repetitionSystems": 2
+      },
+      "reasoning": [
+        "Silhouette is a single rectangular prism -- low geometric complexity.",
+        "Richness is REPETITION and PANELLING, not intricate form. The instanced systems collapse the repeated parts into one InstancedMesh each.",
+        "Occlusion risk is real: the rear elevation is entirely unseen in the single plate.",
+        "Action readiness is minimal: static exterior shell, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Repetition-dominated facade: without repetitionSystems the mullion and plant sets would each cost a draw call per part and blow maxDrawCalls=12."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-kingpower-wordmark",
+          "zone": "front-fascia",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "white KING POWER wordmark under a gold crown on the navy sign panel",
+          "mapsTo": {
+            "ref": "d1-kingpower-wordmark"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-navy-band",
+          "zone": "front-elevation",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "deep navy panelled band across the whole front elevation",
+          "mapsTo": {
+            "ref": "front-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-corner-wrap",
+          "zone": "front-right-corner",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "navy band wrapping the front-right corner onto the +X wall",
+          "mapsTo": {
+            "ref": "front-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-coping",
+          "zone": "parapet-top",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "grey cast-stone coping capping the whole parapet ring",
+          "mapsTo": {
+            "ref": "extra-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-navy-frame",
+          "zone": "shopfront",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "navy shopfront frame and central door bay, not aluminium",
+          "mapsTo": {
+            "ref": "shopfront-frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-service-door",
+          "zone": "right-side-wall",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "flush service door on the +X wall",
+          "mapsTo": {
+            "ref": "side-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-roof-plant",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "two condensers at the rear right",
+          "mapsTo": {
+            "ref": "roof-deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-glazing-gloss",
+          "zone": "shopfront",
+          "kind": "gloss",
+          "identityDefining": true,
+          "description": "plate glass reads as a tight specular lobe, unlike every other surface",
+          "mapsTo": {
+            "ref": "d8-glazing-gloss"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+    "resolvedUnknowns": [
+      "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render with no openings. Confidence 0.20 / 0.25.",
+      "The plate's glazing is TRANSPARENT and shows a brightly lit retail interior of white shelving and display cases. None of it is modelled: this prop is an exterior shell. The glazing is a mid-tinted mostly-opaque pane and its albedo is a DESIGN value for that rule, not a measurement -- deliberately mid rather than dark, both because the plate reads bright behind the glass and because a dark pane composites down to the harness backdrop luma, where the silhouette gate reads the whole shopfront as a hole.",
+      "The plate shows two proud lit poster panels flanking the glazing. NOT modelled: each would cost a draw call to express a lightbox a few centimetres deep, and the budget is better spent on the coping and the corner wrap, which change the silhouette.",
+      "The crown above the wordmark is drawn from a glyph, not from the brand mark."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 8.0 x 4.6 x 7.0 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 4,
+      "microFeatureGroups": 3,
+      "materialLayers": 7,
+      "repetitionSystems": 2,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Single rectangular prism at 8.0 x 4.6 x 7.0 m",
+          "Coping caps the whole parapet ring and sits ON the upstands",
+          "Two condensers break the roofline"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "coping floating clear of the upstands it caps",
+          "built short of 7.0 m depth"
+        ]
+      },
+      {
+        "id": "brand-fascia",
+        "name": "KING POWER sign panel",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "White KING POWER wordmark under a gold crown on navy",
+          "Panel proud of the band it sits in"
+        ],
+        "evidenceRefs": [
+          "region-fascia"
+        ],
+        "failureModes": [
+          "wordmark absent",
+          "panel flush with the band"
+        ]
+      },
+      {
+        "id": "navy-band",
+        "name": "Navy fascia band and corner wrap",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Navy band across the front with cream walls elsewhere",
+          "Band wraps the front-RIGHT corner onto the +X wall and stops at the roofline"
+        ],
+        "evidenceRefs": [
+          "region-navy"
+        ],
+        "failureModes": [
+          "wrap standing above the side parapet with nothing behind it",
+          "band edge coplanar with the wall it clads"
+        ]
+      },
+      {
+        "id": "navy-shopfront",
+        "name": "Navy-framed glazed shopfront",
+        "required": false,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Frame reads navy, not aluminium",
+          "Mid-tinted mostly-opaque glazing"
+        ],
+        "evidenceRefs": [
+          "region-shopfront"
+        ],
+        "failureModes": [
+          "frame rendered as bright metal",
+          "glazing dark enough to read as a hole"
+        ]
+      },
+      {
+        "id": "parapet-coping",
+        "name": "Cast-stone coping",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Grey coping capping front, sides and rear, inset from the parapet faces"
+        ],
+        "evidenceRefs": [
+          "region-coping"
+        ],
+        "failureModes": [
+          "coping omitted",
+          "coping flush with the parapet face"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a hero2x budget of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "building-shell",
+        "parapet",
+        "extra-feature"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "brand-fascia",
+      "name": "KING POWER sign panel",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "fascia-panel"
+      ],
+      "evidenceRefs": [
+        "region-fascia"
+      ]
+    },
+    {
+      "id": "navy-band",
+      "name": "Navy fascia band and corner wrap",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "front-feature"
+      ],
+      "evidenceRefs": [
+        "region-navy"
+      ]
+    },
+    {
+      "id": "navy-shopfront",
+      "name": "Navy-framed glazed shopfront",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "shopfront-frame",
+        "shopfront-glazing"
+      ],
+      "evidenceRefs": [
+        "region-shopfront"
+      ]
+    },
+    {
+      "id": "parapet-coping",
+      "name": "Cast-stone coping",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "extra-feature"
+      ],
+      "evidenceRefs": [
+        "region-coping"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 11,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "building-shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Nothing opens, turns or swings; doors and shutters are authored as fixed geometry, so they get no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "building-shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "The asset declares collider 'box'. One box proxy."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render with no openings. Confidence 0.20 / 0.25.",
+    "The plate's glazing is TRANSPARENT and shows a brightly lit retail interior of white shelving and display cases. None of it is modelled: this prop is an exterior shell. The glazing is a mid-tinted mostly-opaque pane and its albedo is a DESIGN value for that rule, not a measurement -- deliberately mid rather than dark, both because the plate reads bright behind the glass and because a dark pane composites down to the harness backdrop luma, where the silhouette gate reads the whole shopfront as a hole.",
+    "The plate shows two proud lit poster panels flanking the glazing. NOT modelled: each would cost a draw call to express a lightbox a few centimetres deep, and the budget is better spent on the coping and the corner wrap, which change the silhouette.",
+    "The crown above the wordmark is drawn from a glyph, not from the brand mark."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares. The glazed shopfront faces +Z. The navy band wraps only the front-RIGHT corner and the service door is on the +X wall; neither is mirrored, so the subject is asymmetric about X and no mirror plane is declared."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 8.0,
+      "h": 4.6,
+      "d": 7.0
+    },
+    "description": "One rectangular prism. The only silhouette events are the coping capping the parapet ring and two condensers breaking the roofline. No cantilever.",
+    "envelopeDerivation": "x spans -4.00..+4.00 (parapet ring outer faces) = 8.00. y spans 0.00..4.60 = 4.60. z spans -3.50 (rear parapet) ..+3.50 = 7.00. The shell front face is set back to z=+2.50 so anything cantilevering off it lands ON the declared depth rather than overrunning it.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.475 : 0.748 against the declared 1 : 0.575 : 0.875 -- 17% shorter and 15% shallower, the largest divergence in the retail set after the two-storey hospital. The declared 8.0 x 4.6 x 7.0 m is the KIT's shared retail module across seven sibling props, so the declaration wins and the proxy divergence is reported rather than followed."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-fascia",
+      "viewpoint": "front",
+      "path": "crops/fascia.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-navy",
+      "viewpoint": "front",
+      "path": "crops/navy.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-shopfront",
+      "viewpoint": "front",
+      "path": "crops/glass.png",
+      "confidence": 0.6
+    },
+    {
+      "id": "region-coping",
+      "viewpoint": "front-high",
+      "path": "crops/coping.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-wall",
+      "viewpoint": "right",
+      "path": "crops/wall.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-roofplant",
+      "viewpoint": "top",
+      "path": "crops/galv.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-roofdeck",
+      "viewpoint": "top",
+      "path": "crops/deck.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.2,
+      "note": "NOT OBSERVED. Authored as plain render with the parapet returning and no openings."
+    },
+    {
+      "id": "region-left",
+      "viewpoint": "left",
+      "path": null,
+      "confidence": 0.25,
+      "note": "NOT OBSERVED. Authored plain; the navy corner wrap and service door are NOT mirrored."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "building-shell",
+      "name": "Building shell",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One continuous render skin over four walls. Splitting it per elevation would cost a draw call per wall for the life of the prop to express one material.",
+      "materialId": "wall",
+      "material": "wall",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box, x -3.94..+3.94, y 0..3.55, z -3.44..+2.50. SOLID, not a ring: the prop is an exterior shell only ever seen from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid also means the shopfront needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Set 0.06 m INSIDE the parapet ring on every elevation (walls at +-3.94 and -3.44; parapet at +-4.00 and -3.50). That difference is a coping drip edge, and it is what stops a wall face and a parapet face being coplanar and co-facing.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "wall",
+        "baseColor": "#ddccae",
+        "recipe": "Flat painted cement render, roughness 0.88, metalness 0.0, no texture set.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(221, 204, 174, 1.0)",
+        "secondaryAlbedo": "rgba(221, 204, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            2.3,
+            0
+          ],
+          "halfExtents": [
+            4.0,
+            2.3,
+            3.5
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the building, not with its canopy plates."
+        }
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Roof deck",
+      "level": "macro",
+      "role": "surface",
+      "importance": 0.6,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat deck plane. Its own component only because the membrane is a visibly different value from the wall render, and this prop is seen from above in every hero shot.",
+      "materialId": "deck",
+      "material": "deck",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Thin slab spanning y 3.50..3.62, overlapping UNDER the parapet ring.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Spans y 3.50..3.62 so its underside is sunk INTO the shell rather than resting on it. Authored flush, the deck bottom face and the parapet ring bottom face would both sit at y=3.550 facing down -- tens of square metres of coplanar co-facing surface, and exactly the pair check-coplanar catches.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-roof-plant",
+          "description": "two condensers at the rear right",
+          "delivery": "repetitionSystems.plant-condensers"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "deck",
+        "baseColor": "#4c545f",
+        "recipe": "Dark blue-grey membrane, roughness 0.94.",
+        "evidenceRef": "region-roofdeck",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(76, 84, 95, 1.0)",
+        "secondaryAlbedo": "rgba(76, 84, 95, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "parapet",
+      "name": "Parapet ring and fascia wall",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A continuous upstand ring in one material, with the front simply taller -- which a plan extrusion cannot express, since an extrude carries one height. Merged boxes are the right primitive, and anything else in the same material folds in here rather than costing its own submission.",
+      "materialId": "wall",
+      "material": "wall",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Front fascia wall plus left, right and rear upstands, merged into ONE component and ONE draw call, with same-material cladding folded in.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Parapet outer faces stand 0.06 m PROUD of the shell walls. Authored flush they would be coplanar and co-facing along all three elevations. The front box overlaps into the shell volume rather than butting it.",
+        "mergeNote": "Primitive is \"box\" because the schema enumerates primitives, but this is a MERGED cluster built into one BufferGeometry and submitted as ONE draw call."
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "wall",
+        "baseColor": "#ddccae",
+        "recipe": "The SAME cream render as the shell -- one material, not two. Runs the full height from the shell top so it never floats clear of the side upstands.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(221, 204, 174, 1.0)",
+        "secondaryAlbedo": "rgba(221, 204, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "fascia-panel",
+      "name": "Brand fascia panel",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat panel carrying the brand mark. UV strategy is AUTHORED, not generated: the +Z face samples the wordmark region of the canvas and the other five faces sample a plain corner of the same canvas. That is what keeps the brand graphic at one material and one draw call instead of adding a separate graphic plane.",
+      "materialId": "fascia",
+      "material": "fascia",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Brand fascia panel, sunk INTO the fascia wall at the back and standing proud of it at the front, so it overlaps its surround instead of meeting it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Back face is inside the fascia wall solid and the front face clears every other facade plane. No coincident face anywhere on this panel.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-kingpower-wordmark",
+          "description": "KING POWER under a gold crown",
+          "delivery": "post-construction canvas texture, UV-region-split"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "fascia",
+        "baseColor": "#1d2437",
+        "recipe": "Navy sign panel, roughness 0.40. A separate material from the band ONLY because it carries the wordmark canvas; a map on a shared material would put the wordmark on the band too.",
+        "evidenceRef": "region-fascia",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(29, 36, 55, 1.0)",
+        "secondaryAlbedo": "rgba(29, 36, 55, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shopfront-glazing",
+      "name": "Shopfront glazing",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.9,
+      "confidence": 0.6,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One pane, not one per bay: the mullion grid in front does the dividing, and a pane per bay would cost a draw call each to express one sheet of glass.",
+      "materialId": "glass",
+      "material": "glass",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Single tinted pane, overlapping INTO the facade at the back and RECESSED behind the framing at the front, which is what makes it read as glass set into a frame.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Front face sits behind the frame and mullion fronts; back face is inside the facade solid. No coincident face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "glass",
+        "baseColor": "#8b8d88",
+        "recipe": "Mid-tinted pane, roughness 0.12, opacity 0.93. Mostly opaque ON PURPOSE. Confidence 0.60 because the plate offers no glass tone to measure: this albedo is chosen, not read.",
+        "evidenceRef": "region-shopfront",
+        "confidence": 0.6,
+        "dominantAlbedo": "rgba(139, 141, 136, 1.0)",
+        "secondaryAlbedo": "rgba(139, 141, 136, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.6
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shopfront-frame",
+      "name": "Shopfront framing and door bay",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Every one of these parts is the same metal. Folding them into one component is the draw-call lever chosen in the BLOCKOUT -- a part split for authoring convenience cannot be merged afterwards once pivots hang off it.",
+      "materialId": "navy",
+      "material": "navy",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Perimeter frame, transom, kick rail, door jambs and door header MERGED into one component.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Frame front face stands proud of both the glazing and the mullions. The frame OVERLAPS the glazing it holds rather than meeting its edge, which is the rule that stops a frame putting four coincident reveal faces in the model.",
+        "mergeNote": "Merged multi-box cluster, one BufferGeometry, one draw call."
+      },
+      "localFeatures": [
+        {
+          "id": "d5-navy-frame",
+          "description": "navy frame and central door bay",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "navy",
+        "baseColor": "#1d2437",
+        "recipe": "The SAME navy as the fascia band. On this building the shopfront is framed navy, not in the mill-finish aluminium every sibling uses -- so one material covers both.",
+        "evidenceRef": "region-navy",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(29, 36, 55, 1.0)",
+        "secondaryAlbedo": "rgba(29, 36, 55, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "side-feature",
+      "name": "Service door",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.4,
+      "confidence": 0.72,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A single flush door. One box, one component; it shares the wall material so it costs no shader switch.",
+      "materialId": "wall",
+      "material": "wall",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Flush service door on the +X wall, standing proud of it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Outer face at x=3.99, proud of the wall at 3.94 and deliberately NOT at the parapet plane of 4.00.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-service-door",
+          "description": "flush service door",
+          "delivery": "geometryDescriptor"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "wall",
+        "baseColor": "#ddccae",
+        "recipe": "The service door is painted to match the render in the plate, so it carries the wall material rather than earning one of its own.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.72,
+        "dominantAlbedo": "rgba(221, 204, 174, 1.0)",
+        "secondaryAlbedo": "rgba(221, 204, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.72
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "front-feature",
+      "name": "Navy fascia band and corner wrap",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Band and wrap share the navy panel material, so they merge into one component.",
+      "materialId": "navy",
+      "material": "navy",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Navy band across the front elevation plus a wrap returning onto the +X wall.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The band is 7.92 m wide against a 7.88 m shell, standing 0.02 m proud of the wall on each side: at the shell's own width its -X face landed on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The wrap stops at the roofline; carried to the front band's own top it stood above the side parapet with nothing behind it and the turntable gate saw daylight through the gap.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-navy-band",
+          "description": "navy band across the front",
+          "delivery": "geometryDescriptor"
+        },
+        {
+          "id": "d3-corner-wrap",
+          "description": "wrap onto the +X wall",
+          "delivery": "geometryDescriptor"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "navy",
+        "baseColor": "#1d2437",
+        "recipe": "Painted navy metal panel, roughness 0.48. Band and corner wrap are one material and therefore one component and one draw call.",
+        "evidenceRef": "region-navy",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(29, 36, 55, 1.0)",
+        "secondaryAlbedo": "rgba(29, 36, 55, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "extra-feature",
+      "name": "Parapet coping",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.84,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A single capping ring in one material.",
+      "materialId": "coping",
+      "material": "coping",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Coping capping front, sides and rear; the front run takes the envelope to exactly y=4.60.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Inset 0.02 m from the parapet outer faces so no coping face is coplanar with one. The side and rear runs sit at 3.95..4.11, ON the upstands they cap: authored at 4.22 they floated 0.27 m clear and the gate saw background through the gap from three of four azimuths.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-coping",
+          "description": "grey coping capping the parapet ring",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "coping",
+        "baseColor": "#6a6b6c",
+        "recipe": "Cast-stone coping, roughness 0.82. Four runs, one material, one component, one draw call.",
+        "evidenceRef": "region-coping",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(106, 107, 108, 1.0)",
+        "secondaryAlbedo": "rgba(106, 107, 108, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "wall",
+      "name": "Painted cement render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ddccae",
+      "color": "#ddccae",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/wall_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ddccae",
+        "secondary": [
+          "#C0B49C"
+        ],
+        "samplingNotes": "Measured as the mean of crops/wall.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-wall: the clean flat wall field scans at standard deviation 1 per channel -- no high-frequency component to carry.",
+          "Albedo #DDCCAE is that flat sub-region; PBR confidence 0.831 comes from a LARGER crop including the wall corner, because extract_pbr_evidence scores a perfectly flat swatch poorly (a 55x60 flat crop returned 0.668, below threshold). Both numbers are reported."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/wall.png",
+        "pbrReport": "material-evidence/wall.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Roof deck membrane",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4c545f",
+      "color": "#4c545f",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/deck_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4c545f",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/deck.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofdeck (PBR confidence 0.751): a dark blue-grey membrane reading as one value at standard deviation 5, seen only over the parapet from above."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/deck.png",
+        "pbrReport": "material-evidence/deck.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "navy",
+      "name": "Navy panelled fascia band",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#1d2437",
+      "color": "#1d2437",
+      "roughness": {
+        "base": 0.48,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/navy_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#1d2437",
+        "secondary": [
+          "#343A47"
+        ],
+        "samplingNotes": "Measured as the mean of crops/navy.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-navy: the band scans at standard deviation 1 on a clean panel face -- painted metal panel is optically flat. Confidence 0.829 comes from a wider crop spanning a panel joint, for the same flat-swatch reason as the render.",
+          "Shared with the shopfront frame: on this building the frame is navy, not the mill-finish aluminium every sibling uses, so one material covers both and no shader is spent on the difference."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/navy.png",
+        "pbrReport": "material-evidence/navy.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "fascia",
+      "name": "Navy sign panel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#1d2437",
+      "color": "#1d2437",
+      "roughness": {
+        "base": 0.4,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/fascia_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#1d2437",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/fascia.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d1-kingpower-wordmark",
+          "region": "sign panel +Z only",
+          "palette": [
+            "#F4F1EA",
+            "#C9A227"
+          ],
+          "evidence": "crops/fascia.png -- white KING POWER wordmark under a gold crown on navy. Delivered as a post-construction canvas, UV-region-split so ONLY the +Z face samples the graphic and the five remaining faces sample a plain corner."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-fascia (PBR confidence 0.831). The sign panel is the SAME navy as the band around it; it is a separate material only because it carries the wordmark canvas, and a map on a shared material would put the wordmark on the band too.",
+          "The KING POWER mark is NOT a material texture: it is a generated canvas assigned AFTER material construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/fascia.png",
+        "pbrReport": "material-evidence/fascia.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Tinted plate glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8b8d88",
+      "color": "#8b8d88",
+      "roughness": {
+        "base": 0.12,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#8b8d88",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d1-kingpower-wordmark",
+          "region": "front-fascia",
+          "roughness": 0.12,
+          "evidence": "crops/glass.png -- white KING POWER wordmark under a gold crown on the navy sign panel"
+        },
+        {
+          "id": "d8-glazing-gloss",
+          "region": "shopfront",
+          "roughness": 0.12,
+          "evidence": "crops/glass.png -- plate glass reads as a tight specular lobe, unlike every other surface"
+        }
+      ],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's glazing is TRANSPARENT and shows a brightly lit interior, so it offers no glass albedo to measure. This is a DESIGN value required by the exterior-shell rule and is recorded as chosen, not measured -- mid rather than dark, because the plate reads bright behind the glass and because a dark pane composites to the backdrop luma and reads as a hole.",
+          "Textureless regardless: plate glass is optically smooth, and every feature in the crop is either a mullion (geometry) or what is behind the glass (not the material)."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "coping",
+      "name": "Cast-stone parapet coping",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6a6b6c",
+      "color": "#6a6b6c",
+      "roughness": {
+        "base": 0.82,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/coping_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#6a6b6c",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/coping.png. extract_pbr_evidence confidence 0.777. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "stone",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-coping (PBR confidence 0.777): a uniform grey band at standard deviation 5, its only feature the hard top edge, which is geometry and not texture."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/coping.png",
+        "pbrReport": "material-evidence/coping.pbr.json",
+        "confidence": 0.777,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "galv",
+      "name": "Galvanised steel plant",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8d949a",
+      "color": "#8d949a",
+      "roughness": {
+        "base": 0.52,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/galv_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#8d949a",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/galv.png. extract_pbr_evidence confidence 0.811. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofplant (PBR confidence 0.811): galvanised steel carries a spangle at hand distance and nothing at prop distance.",
+          "Metalness 0.30, well below physical: the harness supplies no environment map and a metal with nothing to reflect renders black."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/galv.png",
+        "pbrReport": "material-evidence/galv.pbr.json",
+        "confidence": 0.811,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "shopfront-mullions",
+      "name": "Shopfront vertical mullions",
+      "instanceCount": 4,
+      "sourceComponent": "shopfront-frame",
+      "material": "navy",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "mullion-box",
+      "placement": {
+        "axis": "X",
+        "positions": [
+          -1.9,
+          -1.28,
+          1.28,
+          1.9
+        ],
+        "y": 1.56,
+        "z": 3.41
+      },
+      "instanceDimensions": {
+        "width": 0.07,
+        "height": 2.89,
+        "depth": 0.08
+      },
+      "rationale": "Four mullions divide the glazing into large panes either side of the central door bay, matching the plate rather than the finer grid the siblings use.",
+      "zFightingNote": "Mullions sit inside the frame depth band at both ends and proud of the glazing."
+    },
+    {
+      "id": "plant-condensers",
+      "name": "Rooftop condenser units",
+      "instanceCount": 2,
+      "sourceComponent": "roof-deck",
+      "material": "galv",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "condenser-unit",
+      "placement": {
+        "mode": "explicit",
+        "positions": [
+          [
+            2.05,
+            3.6,
+            -2.1
+          ],
+          [
+            2.95,
+            3.6,
+            -2.75
+          ]
+        ]
+      },
+      "instanceDimensions": {
+        "width": 0.95,
+        "height": 0.92,
+        "depth": 0.85
+      },
+      "integralFeature": {
+        "id": "cowl",
+        "geometry": "cylinder",
+        "radius": 0.3,
+        "height": 0.1,
+        "segments": 16,
+        "note": "Casing, fan cowl and four feet MERGED into the single instanced geometry."
+      },
+      "rationale": "Two units at the rear right, as the plate shows. One geometry, one draw call.",
+      "zFightingNote": "Feet sink into the roof deck rather than sharing its top plane."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T14:31:50.637237+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.721962+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        },
+        {
+          "id": "parapet-coping",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Grey cast-stone coping (#6A6B6C, PBR confidence 0.777) capping front, sides and rear, inset 0.02 m from the parapet outer faces.",
+          "notes": "The side and rear runs first floated 0.27 m above the upstands they cap, and the turntable gate saw background through that gap from three of its four azimuths -- the clearest case in this batch of a gate catching something a front view never shows."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.804001+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy frame and four mullions dividing large panes either side of a central door bay; mid-tinted pane at opacity 0.93.",
+          "notes": "The glazing tint is the one CHOSEN value on this prop -- the plate's shopfront is transparent over brightly lit white shelving and offers no glass albedo. It is deliberately mid rather than dark: a dark pane composites down to the harness backdrop luma and the silhouette reads the whole shopfront as a hole, which is the failure this rule exists to prevent."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.888723+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.968578+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.048216+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.125911+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.205008+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        },
+        {
+          "id": "navy-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy frame and four mullions dividing large panes either side of a central door bay; mid-tinted pane at opacity 0.93.",
+          "notes": "The glazing tint is the one CHOSEN value on this prop -- the plate's shopfront is transparent over brightly lit white shelving and offers no glass albedo. It is deliberately mid rather than dark: a dark pane composites down to the harness backdrop luma and the silhouette reads the whole shopfront as a hole, which is the failure this rule exists to prevent."
+        },
+        {
+          "id": "parapet-coping",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Grey cast-stone coping (#6A6B6C, PBR confidence 0.777) capping front, sides and rear, inset 0.02 m from the parapet outer faces.",
+          "notes": "The side and rear runs first floated 0.27 m above the upstands they cap, and the turntable gate saw background through that gap from three of its four azimuths -- the clearest case in this batch of a gate catching something a front view never shows."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T14:31:50.637237+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: shared retail module, 9 components and 2 InstancedMesh systems at 11 draw calls. Shell face pushed forward to z=3.22 because this building has no forward cantilever.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.721962+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        },
+        {
+          "id": "parapet-coping",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Grey cast-stone coping (#6A6B6C, PBR confidence 0.777) capping front, sides and rear, inset 0.02 m from the parapet outer faces.",
+          "notes": "The side and rear runs first floated 0.27 m above the upstands they cap, and the turntable gate saw background through that gap from three of its four azimuths -- the clearest case in this batch of a gate catching something a front view never shows."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: navy band and corner wrap folded into one component, four coping runs into another. Facade depth ordering authored so no two surfaces are coplanar and co-facing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.804001+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy frame and four mullions dividing large panes either side of a central door bay; mid-tinted pane at opacity 0.93.",
+          "notes": "The glazing tint is the one CHOSEN value on this prop -- the plate's shopfront is transparent over brightly lit white shelving and offers no glass albedo. It is deliberately mid rather than dark: a dark pane composites down to the harness backdrop luma and the silhouette reads the whole shopfront as a hole, which is the failure this rule exists to prevent."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: navy band widened to 7.92 m off the shell face plane, corner wrap capped at the roofline, coping runs dropped onto the upstands they cap. Each of the three was a gate failure, not a preference.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.888723+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 7 materials at PBR confidence 0.751-0.860, all textureless. navy covers the band, the frame and the mullions because this shopfront really is framed navy. The glazing tint is the one chosen value.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:50.968578+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: surface character is geometry and colour -- coping edge, mullion grid, panel joints carried as flat colour. No texture sets.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.048216+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: near-shadowless studio plate, so measured crop means stand as albedo. No rim light, no contact shadow; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.125911+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one box collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:31:51.205008+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.87,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The coping's front run is what takes it to 4.60.",
+          "notes": "Meshy reads this plate 17% shorter and 15% shallower than the declared module -- the largest divergence in the retail set after the two-storey hospital. The declaration is the kit's shared retail module across seven siblings and wins; the proxy is reported, not followed."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White KING POWER wordmark under a gold crown on a navy panel (#1D2437, PBR confidence 0.831), proud of the band it sits in, fitted to the panel by measureText.",
+          "notes": "The crown is drawn from a glyph, not from the brand mark, and the wordmark is Arial. The sign panel is a separate MATERIAL from the identical navy band purely because it carries the canvas: a map on a shared material would put the wordmark on the band as well."
+        },
+        {
+          "id": "navy-band",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy panelling #1D2437 (PBR confidence 0.829) across the front with cream walls elsewhere, wrapping the front-right corner onto the +X wall.",
+          "notes": "Two corrections. The band is 7.92 m wide against a 7.88 m shell because at the shell's own width its -X face sat on the shell's -X face at -3.940, coplanar and co-facing over 1.26 m2. The corner wrap was then capped at the roofline: carried up to the front band's own top it stood proud of the side parapet with nothing behind it, and the gate saw daylight through it."
+        },
+        {
+          "id": "navy-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Navy frame and four mullions dividing large panes either side of a central door bay; mid-tinted pane at opacity 0.93.",
+          "notes": "The glazing tint is the one CHOSEN value on this prop -- the plate's shopfront is transparent over brightly lit white shelving and offers no glass albedo. It is deliberately mid rather than dark: a dark pane composites down to the harness backdrop luma and the silhouette reads the whole shopfront as a hole, which is the failure this rule exists to prevent."
+        },
+        {
+          "id": "parapet-coping",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Grey cast-stone coping (#6A6B6C, PBR confidence 0.777) capping front, sides and rear, inset 0.02 m from the parapet outer faces.",
+          "notes": "The side and rear runs first floated 0.27 m above the upstands they cap, and the turntable gate saw background through that gap from three of its four azimuths -- the clearest case in this batch of a gate catching something a front view never shows."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score. 560/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries. The lowest triangle count in the retail set, because this building has no canopy, no shutter ribs and only two rooftop units.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/king-power-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 9,
+        "repetitionSystems": 2,
+        "projectedTotal": 11,
+        "budget": 12,
+        "headroom": 1,
+        "note": "Two repetition systems collapse 6 discrete parts into 2 submissions; the navy band and its corner wrap fold into one component, and the four coping runs into another. Eleven of twelve draw calls."
+      },
+      "materials": {
+        "projectedTotal": 7,
+        "budget": 8,
+        "headroom": 1,
+        "note": "navy is shared by the fascia band AND the shopfront frame AND the mullions -- on this building the shopfront is framed navy, so no shader is spent on a difference that does not exist. wall is shared by the shell, the parapet and the service door."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 11,
+        "budget": 16,
+        "headroom": 5,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 560,
+        "budget": 16000,
+        "headroom": 15440,
+        "note": "Triangles are NOT the binding constraint on this prop -- draw calls are. The headroom is deliberately spent on silhouette quality (chamfers, cowl segments, shutter ribs) and must not be read as room to split components, which would spend the axis that is actually scarce."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "box, cylinder and merged-box clusters only. No organic surfaces exist on this subject."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Two InstancedMesh systems carry 6 of the 15 discrete parts."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. The brand fascia receives its wordmark as a generated canvas assigned AFTER material construction -- the documented route for a printed brand fascia, unaffected by the declaration."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "unobserved-rear",
+      "severity": "medium",
+      "description": "Rear and left elevations are not in the single plate; authored plain.",
+      "mitigation": "Reported at 0.20/0.25 confidence."
+    },
+    {
+      "id": "glass-albedo-chosen",
+      "severity": "medium",
+      "description": "The plate's glazing is transparent over a lit interior, so the tint albedo is a design value, not a measurement.",
+      "mitigation": "Recorded as chosen on the material, the component and in assumptions, at confidence 0.60 -- the lowest on this prop."
+    },
+    {
+      "id": "aa-hole-signal",
+      "severity": "low",
+      "description": "The silhouette gate reports enclosed background on three azimuths.",
+      "mitigation": "Every enclosed component measures exactly ONE pixel thick -- an anti-aliased edge between the navy frame (rendered luma 23) and the bright pane (136) whose gradient crosses the backdrop value of 58. Measured per azimuth and recorded before --allow-holes was used; it is not a hole through the model."
+    },
+    {
+      "id": "poster-panels-omitted",
+      "severity": "low",
+      "description": "Two proud lit poster panels flanking the glazing are not modelled.",
+      "mitigation": "Each would cost a draw call for a few centimetres of relief; the budget went to the coping and corner wrap, which change the silhouette."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "King Power Store Building",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6331,
+        "aspectRatioDelta": 0.1613,
+        "scaleDelta": 0.5352,
+        "bilateralSymmetryError": 0.087,
+        "colorDelta": {
+          "checked": 9,
+          "maxDeltaE": 9.19,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 7.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.99
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.19
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.03
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.19
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.19
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.11
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.633 is below threshold 0.85",
+        "aspect-ratio delta 0.161 exceeds threshold 0.05",
+        "scale delta 0.535 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "a5c917b2c801fa12",
+      "passId": "blockout"
+    }
+  ]
+}

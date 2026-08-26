@@ -1,0 +1,2697 @@
+{
+  "targetName": "Tourist Attraction Sign",
+  "targetId": "tourist-attraction-sign",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "roadside tourist directional sign on twin posts",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "framed planar board",
+        "twin round tubes"
+      ],
+      "structureKind": [
+        "rigid assembly",
+        "post-mounted panel"
+      ],
+      "motionPotential": [
+        "none - static ground-fixed prop"
+      ],
+      "materialFamilies": [
+        "painted timber board with a painted frame",
+        "hot-dip galvanised steel tube"
+      ],
+      "notes": "A 1.2 x 0.62 m brown directional board inside a wide white painted frame, carried on TWO 48 mm round hot-dip galvanised tubes that pass through the frame and are cut off square just above it. The only twin-post prop in this set, and the only one whose panel is painted timber rather than vinyl sheeting."
+    },
+    "complexity": {
+      "tier": "simple",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 0,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 3,
+        "microFeatureGroups": 2,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Silhouette is two primitives: a thin plate and a slender vertical support. Nothing organic, nothing swept.",
+        "All identity lives in the PRINTED FACE, not in geometry. That routes to a canvas atlas, not to components.",
+        "Held to 2 draw calls by the asset budget, so the pair of tubes and everything sharing its material get ONE mesh between them and the plate is the other.",
+        "This is the only TWIN-post prop in the set, and merging the two legs into one buffer is what keeps it at two draw calls - a leg each reads as the natural component tree and would double what every instance costs a scene.",
+        "The painted frame is a printed region of the board's face, not a separate solid: modelling it would cost a geometry and a draw call for a band that is flat at prop distance.",
+        "The panel is painted TIMBER, not vinyl sheeting, so its finish is matte where every sibling in this set is satin."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "simple",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": false,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 3,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "painted-frame",
+          "kind": "linework",
+          "description": "Wide white painted frame on all four sides of the brown field, measured #D4D3CF over 1274 bright px on the right stile. PRINTED into the atlas rather than modelled: it is flat at prop distance and a modelled frame would cost a second geometry and a second draw call.",
+          "region": {
+            "x": 0.22,
+            "y": 0.06,
+            "width": 0.58,
+            "height": 0.42,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "frame-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.88,
+          "realization": "unreported"
+        },
+        {
+          "id": "legend-thai",
+          "kind": "linework",
+          "description": "Large white Thai place name across the upper half of the brown field. SOLID FILL, never an outline.",
+          "region": {
+            "x": 0.32,
+            "y": 0.19,
+            "width": 0.42,
+            "height": 0.13,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "legend-latin",
+          "kind": "linework",
+          "description": "Latin transliteration set smaller beneath the Thai line, aligned left.",
+          "region": {
+            "x": 0.33,
+            "y": 0.36,
+            "width": 0.36,
+            "height": 0.09,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "direction-arrow",
+          "kind": "linework",
+          "description": "A white arrow at the right end of the field pointing RIGHT, level with the Thai line. Chiral - an arrow the other way sends traffic the wrong way - so the atlas must not be mirrored.",
+          "region": {
+            "x": 0.68,
+            "y": 0.26,
+            "width": 0.09,
+            "height": 0.06,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.92,
+          "realization": "unreported"
+        },
+        {
+          "id": "flaked-paint",
+          "kind": "chip",
+          "description": "Chalky white paint flaking off the frame's arrises to show weathered timber beneath. The strongest age cue on this prop and the reason its finish is matte where every sibling is satin.",
+          "region": {
+            "x": 0.23,
+            "y": 0.08,
+            "width": 0.1,
+            "height": 0.38,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "frame-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.8,
+          "realization": "unreported"
+        },
+        {
+          "id": "galv-spangle",
+          "kind": "stain",
+          "description": "Mottled grey hot-dip spangle over both tubes; 7497 of 7500 px in the left-tube crop pass a strict neutral filter, the cleanest galvanising of the eight props.",
+          "region": {
+            "x": 0.31,
+            "y": 0.55,
+            "width": 0.06,
+            "height": 0.22,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "galv-spangle"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "foot-rust",
+          "kind": "stain",
+          "description": "Orange-brown rust climbing the lower third of both tubes as a RAMP with no hard top edge, unlike the square-post siblings' splash lines.",
+          "region": {
+            "x": 0.31,
+            "y": 0.8,
+            "width": 0.06,
+            "height": 0.16,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "foot-rust"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+          "confidence": 0.88,
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg"
+  },
+  "qualityContract": {
+    "qualityBar": "simple",
+    "definitionOfDone": [
+      "The plate reads at its declared size and the support lands where the plate shows it.",
+      "The printed face carries every measured region at the measured fraction of the plate, not at an estimated one.",
+      "The plate stands proud of the pair of tubes and is never flush with it.",
+      "2 draw calls, 3 materials, 3 unique geometries and at or under 800 triangles, measured in the harness."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 0,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 2
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "board-outline",
+      "name": "Board outline, framed proportion and thinness",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-board"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "twin-post-structure",
+      "name": "Twin round tubes as a merged left/right pair at the right spacing",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "posts"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "printed-face-system",
+      "name": "Painted frame, both legend lines and the direction arrow",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-board"
+      ],
+      "evidenceRefs": [
+        "region-field",
+        "region-frame",
+        "region-legend"
+      ]
+    },
+    {
+      "id": "painted-timber-finish",
+      "name": "Chalky matte painted timber, not the vinyl sheeting of the sibling signs",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "sign-board"
+      ],
+      "evidenceRefs": [
+        "region-field",
+        "region-frame"
+      ]
+    },
+    {
+      "id": "galvanised-and-rust",
+      "name": "Galvanised spangle with the rust ramp on both tubes",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "posts"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-foot"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "posts",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    },
+    "declaredContract": {
+      "pivots": [
+        "root at base-center"
+      ],
+      "pivotCount": 1,
+      "sockets": [],
+      "socketCount": 0,
+      "rationale": "A bolted roadside sign is a static rigid body. Nothing hinges, nothing turns, and nothing clips into it. One root pivot and zero sockets is the CORRECT answer, not a gap: a named pivot promises a part turns on that axis and a named socket promises something attaches there, and this prop can keep neither.",
+      "collider": "cylinder - honoured on both components",
+      "destructionGroups": [],
+      "destructionRationale": "The asset declares no destruction groups, so no component carries a fractureGroup and the prop does not come apart."
+    }
+  },
+  "assumptions": [
+    "board-back: not shown as a face, but the three-quarter view DOES show the board's left edge as a pale weathered band, so the back is inferred from an adjacent surface rather than invented. Confidence 0.6.",
+    "tube-diameter: 48 mm, matching the soi-name sign's tube, from the proxy's normalised shaft width. Confidence 0.7.",
+    "leg-spacing: 0.81 m between centres, from the reference's leg positions as a fraction of board width applied to the declared 1.2 m. Confidence 0.75.",
+    "tube-mouths: the reference shows the tubes as OPEN at the top, with visible bores. They are built CLOSED - a bored tube would cost a second unique geometry against a ceiling already carrying two, for a feature seen only from above.",
+    "board-height: 0.62 m, from the Meshy proxy's board band extent of 0.4 of total height scaled against the declared 1.2 m width. Confidence 0.7 - the lowest-confidence dimension in this spec."
+  ],
+  "coordinateFrame": {
+    "front": "+Z is the printed face of the plate, the camera-facing side in the reference plate",
+    "up": "+Y",
+    "scaleReference": "metres. Origin at base-center: x=0 on the pair of tubes axis, y=0 at ground contact, z=0 at the pair of tubes section centre."
+  },
+  "silhouette": {
+    "boundingShape": "A wide framed board carried on two slim legs: a table, 0.62 m of board over 1.78 m of open vertical, in a 1.2 m width with a walk-through gap between the legs.",
+    "aspectRatios": [
+      {
+        "id": "overall",
+        "wOverH": 0.5,
+        "dOverH": 0.042,
+        "note": "1.20 x 2.40 x 0.10 m declared."
+      },
+      {
+        "id": "board-height-over-total",
+        "value": 0.26,
+        "note": "0.62 / 2.40, following the Meshy proxy's board band extent of 0.4 scaled to the declared width."
+      },
+      {
+        "id": "leg-spacing-over-width",
+        "value": 0.675,
+        "note": "0.81 m between leg centres on a 1.2 m board - the legs sit well inboard of the board's ends, which the reference confirms."
+      }
+    ],
+    "symmetry": "Bilateral about x=0 in geometry, and the two legs are a genuine left/right pair built by negating x. The printed arrow is NOT symmetric - it points one way - so the atlas must not be mirrored.",
+    "dominantCurves": [
+      "the two tubes' circular sections - the only true curves in the prop"
+    ],
+    "negativeSpaces": [
+      "the walk-through gap between the two legs, which is the largest negative space in any prop in this set and is what makes the single declared cylinder collider a compromise"
+    ],
+    "landmarks": [
+      {
+        "id": "board-top",
+        "position": [
+          0,
+          2.4,
+          0.03
+        ]
+      },
+      {
+        "id": "board-bottom",
+        "position": [
+          0,
+          1.78,
+          0.03
+        ]
+      },
+      {
+        "id": "leg-left-top",
+        "position": [
+          -0.405,
+          1.9,
+          -0.01
+        ]
+      },
+      {
+        "id": "leg-right-top",
+        "position": [
+          0.405,
+          1.9,
+          -0.01
+        ]
+      },
+      {
+        "id": "ground-contact",
+        "position": [
+          0,
+          0.0,
+          -0.01
+        ]
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "sign-board",
+      "name": "Framed directional board",
+      "level": "macro",
+      "role": "panel",
+      "importance": 1.0,
+      "confidence": 0.8,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat rectangular board inside a raised painted frame: two parallel planar caps joined by a short wall, closed and rigid. The frame is a PRINTED region of the same face, not a separate solid - see the localFeatures note.",
+      "geometryDescriptor": {
+        "topologyIntent": "ExtrudeGeometry over a rounded-rectangle profile, 1.2 x 0.62, corner radius 0.012, depth 0.055.",
+        "profile2D": {
+          "kind": "rounded-rect",
+          "halfWidth": 0.6,
+          "halfHeight": 0.31,
+          "cornerRadius": 0.012,
+          "cornerSegments": 4,
+          "depth": 0.055,
+          "points": [
+            [
+              0.588,
+              -0.31
+            ],
+            [
+              0.59259,
+              -0.30909
+            ],
+            [
+              0.59649,
+              -0.30649
+            ],
+            [
+              0.59909,
+              -0.30259
+            ],
+            [
+              0.6,
+              -0.298
+            ],
+            [
+              0.6,
+              0.298
+            ],
+            [
+              0.59909,
+              0.30259
+            ],
+            [
+              0.59649,
+              0.30649
+            ],
+            [
+              0.59259,
+              0.30909
+            ],
+            [
+              0.588,
+              0.31
+            ],
+            [
+              -0.588,
+              0.31
+            ],
+            [
+              -0.59259,
+              0.30909
+            ],
+            [
+              -0.59649,
+              0.30649
+            ],
+            [
+              -0.59909,
+              0.30259
+            ],
+            [
+              -0.6,
+              0.298
+            ],
+            [
+              -0.6,
+              -0.298
+            ],
+            [
+              -0.59909,
+              -0.30259
+            ],
+            [
+              -0.59649,
+              -0.30649
+            ],
+            [
+              -0.59259,
+              -0.30909
+            ],
+            [
+              -0.588,
+              -0.31
+            ]
+          ],
+          "note": "The explicit polygon the layer builds. Corners are near-square here, unlike the informatory plates in this set: the reference shows a timber-framed board with sharp mitred corners, so the 12 mm radius is a manufacturing round rather than a design radius."
+        },
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - rewritten after generation into a two-region atlas: the front cap takes the board graphic INCLUDING its white frame, and every wall and back-cap vertex collapses to a single weathered-white texel. The frame being printed rather than modelled is what keeps this prop at one geometry for the board.",
+        "normalStrategy": "flat-shaded caps, flat wall",
+        "segmentRationale": "Four segments per corner on a 12 mm radius. The board is otherwise straight and gets one segment everywhere."
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1.2,
+        "height": 0.62,
+        "depth": 0.055,
+        "units": "m",
+        "confidence": 0.7
+      },
+      "transform": {
+        "position": [
+          0,
+          2.09,
+          0.03
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "Not an articulation. The board does not turn on anything; this is the component's own transform origin, and the model exposes exactly ONE named pivot, the root."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.6,
+            0.0275,
+            0.6
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. A convex proxy circumscribing the board."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "sheeting"
+        }
+      },
+      "material": "sheeting",
+      "materialLayers": [
+        "sheeting"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "painted-frame",
+          "description": "Wide white painted frame surrounding the brown field on all four sides, with the paint flaking off its arrises. PRINTED into the atlas, not modelled as a separate solid: modelling it would cost a second geometry and a second draw call for a band that is flat at prop distance.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "legend-lines",
+          "description": "Two white legend lines on the brown field, a large Thai place name over a Latin transliteration.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "direction-arrow",
+          "description": "A white right-pointing arrow at the right end of the field, level with the Thai line. Chiral: it points one way and the atlas must not mirror it.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "flaked-paint",
+          "description": "Chalky white paint flaking off the frame's arrises to show weathered timber beneath - the strongest age cue on this prop.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#655851",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(212,211,207,1.0)",
+            "note": "the white painted frame, measured #D4D3CF over 1274 bright px on the frame's right stile"
+          },
+          {
+            "position": 0.1,
+            "color": "rgba(212,211,207,1.0)",
+            "note": "frame inner edge - the frame is a wide band, not a rule"
+          },
+          {
+            "position": 0.13,
+            "color": "rgba(101,88,81,1.0)",
+            "note": "brown board field begins, measured #655851 over 7200 px"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(101,88,81,1.0)",
+            "note": "brown field across the board; the legend and arrow sit on top of it as solid fill"
+          }
+        ],
+        "finishStyle": "matte",
+        "notes": "An ordered ramp measured INWARD from the board edge. This is the only sign in the set whose 'sheeting' is not vinyl at all: the reference shows chalky painted timber with the paint flaking off the frame's arrises, so the finish is MATTE where every sibling is satin, and the brown is a warm neutral rather than a printed colour.",
+        "dominantAlbedo": "rgba(101,88,81,1.0)",
+        "secondaryAlbedo": "rgba(212,211,207,1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.75
+      }
+    },
+    {
+      "id": "posts",
+      "name": "Twin galvanised round tubes",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.9,
+      "confidence": 0.8,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two vertical tubes of circular section, each continuous around its axis and neither ever deforming. Merged into ONE buffer because they share a material and never move relative to one another.",
+      "geometryDescriptor": {
+        "topologyIntent": "Two CylinderGeometry(0.024, 0.024, 1.90, 10, 10) tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "none - the weathering ramp arrives as VERTEX COLOURS across 10 height segments per tube, not as a texture",
+        "normalStrategy": "flat",
+        "note": "ROUND tubes, not the square posts most of this set uses: the reference shows continuous curved highlights down both shafts and open tube MOUTHS at the top, where the tubes pass through the board's frame and are cut off square. 10 radial segments each, two segments fewer than the soi-name tube, because these are seen at greater distance and in pairs.",
+        "mergedAssembly": {
+          "reason": "maxDrawCalls is 2 and the board must have one of them, so the two tubes get ONE mesh between them. They share a material and never move relative to each other, so merging is invisible. This is the prop that most tempts a third component - a leg each reads as the natural tree - and splitting them would double what every instance costs a scene for nothing.",
+          "parts": [
+            {
+              "id": "post-left",
+              "level": "meso",
+              "primitive": "cylinder",
+              "extent": {
+                "width": 0.048,
+                "height": 1.9,
+                "depth": 0.048
+              },
+              "localOffset": [
+                -0.405,
+                0.95,
+                -0.01
+              ],
+              "note": "48 mm round tube from ground contact at y=0 to y=1.90, passing THROUGH the board's frame and cut off square just above it."
+            },
+            {
+              "id": "post-right",
+              "level": "meso",
+              "primitive": "cylinder",
+              "extent": {
+                "width": 0.048,
+                "height": 1.9,
+                "depth": 0.048
+              },
+              "localOffset": [
+                0.405,
+                0.95,
+                -0.01
+              ],
+              "note": "The mirror of the left tube. A left/right pair is a REFLECTION, not a rotation: the lateral axis is negated and nothing else. Both tubes are surfaces of revolution, so the reflection is trivially exact here and no winding flip is needed - but the pair is still built by negating x rather than by rotating, so the rule holds where it would matter."
+            }
+          ],
+          "jointNote": "In DEPTH the board's back face sits at z=+0.0025 and the tubes span z -0.034 to +0.014, so the tubes pass BEHIND and THROUGH the board's plane rather than butting against it, which is what the reference shows. No two same-facing surfaces are coincident."
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.86,
+        "height": 1.9,
+        "depth": 0.048,
+        "units": "m",
+        "confidence": 0.75
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "The root pivot, at base-center, between the two tubes. This is the ONLY named pivot in the prop, and it is the correct count: a bolted directional sign has no moving parts."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0.95,
+            -0.01
+          ],
+          "scale": [
+            0.43,
+            0.95,
+            0.043
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`, and here it is a COMPROMISE that is worth naming: the prop has two separate legs with a walk-through gap between them, and a single cylinder cannot express that. The proxy spans both legs, so it blocks the gap. The declared shape is honoured as the contract requires; a compound or box-pair proxy would describe this prop better and is not what the asset declares."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "galv-spangle",
+          "description": "Mottled grey hot-dip spangle over both tubes, with continuous soft highlights down their curved faces.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "foot-rust",
+          "description": "Orange-brown rust climbing the lower third of both tubes as a ramp with no hard top edge.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#777B79",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(119,123,121,1.0)",
+            "note": "tube under the board, cleanest coating, measured #777B79 over 7497 neutral px"
+          },
+          {
+            "position": 0.62,
+            "color": "rgba(119,123,121,1.0)",
+            "note": "held clean over the upper two-thirds"
+          },
+          {
+            "position": 0.72,
+            "color": "rgba(108,83,63,1.0)",
+            "note": "transition into rust - a ramp rather than a hard splash line, matching what the reference shows on both tubes"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(108,83,63,1.0)",
+            "note": "rust to ground contact, measured #6C533F over 2067 orange-biased px"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered vertical ramp measured DOWNWARD from the tube tops. A RAMP, not a step: the reference shows rust climbing both tubes over roughly their lower third with no hard top edge, unlike the square-post siblings' splash lines. Both tubes share this ramp because both are measured together - they weather identically in the reference.",
+        "dominantAlbedo": "rgba(119,123,121,1.0)",
+        "secondaryAlbedo": "rgba(108,83,63,1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.85
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "sheeting",
+      "name": "Painted timber board and frame",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#655851",
+          "#D4D3CF",
+          "#D8D6D2"
+        ],
+        "samplingNotes": "White on purpose. The albedo is delivered by the board atlas assigned after material construction, and any tint here would multiply into the painted graphic."
+      },
+      "colorVariation": {
+        "palette": [
+          "#655851",
+          "#D4D3CF",
+          "#D8D6D2",
+          "#C7C4BE"
+        ],
+        "pattern": "authored-regions",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.72,
+        "variation": 0.06,
+        "map": "none",
+        "localResponse": "Calendered vinyl over aluminium: smooth, with no tight highlight anywhere on the plate."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0,
+        "notes": "Dielectric. The vinyl is what is seen; the plate underneath never reaches the surface on the front cap."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Flat plate, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "field-brown",
+          "color": "#655851",
+          "region": "the board's brown ground inside the frame",
+          "evidenceRef": "region-field",
+          "notes": "Trimmed mean #655851 over the full 7200 px of (420,180,120,60), high on the board and clear of both the legend and the arrow. A warm NEUTRAL brown rather than a saturated printed colour - this board is painted timber, not vinyl sheeting, and that is the single biggest material difference between this prop and the other seven."
+        },
+        {
+          "id": "frame-white",
+          "color": "#D4D3CF",
+          "region": "the wide painted frame on all four sides",
+          "evidenceRef": "region-frame",
+          "notes": "Trimmed mean of the 1274 bright px (luma>170) of (760,200,26,180), down the frame's right stile. A crop taken at (300,150,40,20) on the frame's shadowed left return returned #ABABAB and was DISCARDED - it is within 1 luma of the backdrop's #A9A9A9 and is backdrop contamination, not paint."
+        },
+        {
+          "id": "legend-white",
+          "color": "#D8D6D2",
+          "region": "both legend lines and the direction arrow",
+          "evidenceRef": "region-legend",
+          "notes": "Trimmed mean of the 5092 bright px of (380,290,300,60), across the Latin transliteration. Within 4 luma of the frame white, which is expected: the same paint was used for the frame and the lettering."
+        },
+        {
+          "id": "board-back",
+          "color": "#C7C4BE",
+          "region": "the board's back cap and its edge wall",
+          "evidenceRef": "single-view-inference",
+          "notes": "NOT OBSERVED as a face, but the three-quarter view does show the board's left EDGE as a pale weathered band, so this is inferred from an adjacent surface rather than invented. Confidence 0.6. This is the colour every non-front-cap vertex collapses onto in the atlas."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, brown field at (420,180,120,60): 7200 px trimming to #655851. Chalky matte paint on timber, with no relief resolvable at prop distance.",
+          "Reference plate, frame stile at (760,200,26,180): 1274 bright px trimming to #D4D3CF. Flat paint, flaking at the arrises but flat across the face.",
+          "The identity of this surface is PAINTED, not textured. It arrives as a canvas atlas assigned after material construction, which the textureless declaration does not touch.",
+          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel for this one material, and the generator would additionally force color to white and roughness to 1 and read both from the generated maps - discarding the measured #655851 that makes this board brown rather than grey."
+        ]
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Hot-dip galvanised steel, weathering to rust at the foot",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#777B79",
+        "secondary": [
+          "#6C533F"
+        ],
+        "samplingNotes": "White base colour because the measured vertical ramp is delivered as VERTEX COLOURS, not a texture - a tint here would multiply into it."
+      },
+      "colorVariation": {
+        "palette": [
+          "#777B79",
+          "#6C533F"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.18,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.12,
+        "map": "none",
+        "localResponse": "Mill-finish galvanising scatters rather than reflecting a lobe; the rusted foot is rougher still."
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0,
+        "notes": "Held at 0.25, not the high value a zinc coating suggests by name. There is no environment map in the target harness, so a high metalness has nothing to reflect and renders near-black. The measured luma spread of the shaft is scatter, not a lobe."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Prismatic solid, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "galv-spangle",
+          "color": "#777B79",
+          "region": "both tubes above the rust ramp",
+          "evidenceRef": "region-post",
+          "notes": "Trimmed mean #777B79 over the 7497 NEUTRAL pixels (|R-B|<12) of (330,600,50,150) on the left tube. 7497 of 7500 px pass the neutral filter, which is the cleanest galvanising reading of the eight props."
+        },
+        {
+          "id": "foot-rust",
+          "color": "#6C533F",
+          "region": "the lower third of both tubes",
+          "evidenceRef": "region-foot",
+          "notes": "Trimmed mean #6C533F over the 2067 ORANGE-BIASED px (R-B>28) of (330,860,55,110). Climbs as a RAMP with no hard top edge, unlike the square-post siblings' splash lines - the reference shows the same gradient on both tubes, so they share one ramp rather than being weathered independently."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, left tube at (330,600,50,150): 7497 of 7500 px pass a strict neutral filter, trimming to #777B79 - the cleanest galvanising reading of the eight props.",
+          "Reference plate, tube foot at (330,860,55,110): 2067 ORANGE-BIASED px (R-B>28) trimming to #6C533F - a surface bloom on a smooth tube, not a pitted profile at prop distance.",
+          "The spangle and the rust ramp arrive as VERTEX COLOURS over 10 height segments per tube, so a synthesised five-canvas set would be discarded work.",
+          "Measured cost: five canvases at 1024 for this material alone is roughly 1.9 s inside createObjectModel, on a support whose whole geometry is 440 triangles."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T03:41:52.790550+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.830966+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.870621+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.911647+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.951049+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.990681+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:53.031927+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:41:53.071868+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T03:41:52.790550+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.830966+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.870621+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.911647+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.951049+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:52.990681+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:53.031927+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:41:53.071868+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.91,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "board-outline",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "A 20-point rounded-rect extrusion at 1.2 x 0.62 m with a 12 mm radius - near-square corners, because the reference shows a framed board with sharp mitred corners rather than the design radii the informatory plates carry. Held at 0.86 because the board height is the lowest-confidence dimension in the spec: it comes from the Meshy proxy's band extent scaled against the declared width, not from a measurement of the image."
+        },
+        {
+          "id": "twin-post-structure",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "Two 48 mm round tubes at x = -0.405 and +0.405, merged into ONE BufferGeometry. Built as a genuine REFLECTION - the lateral axis negated and nothing else - rather than by rotating, so the chirality rule holds even though both tubes are surfaces of revolution and the distinction cannot show here. 440 of the prop's 580 triangles are in this component, which is right: a round section read as a polygon is the one defect a viewer notices on a tube, and there are two of them."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "Wide painted frame, Thai place name, Latin transliteration and the direction arrow all ride ONE atlas on ONE material along with the weathered back. The arrow points RIGHT and that is chiral - an arrow the other way sends traffic the wrong way - and the front-cap UV mapping preserves the sign so the atlas is not mirrored."
+        },
+        {
+          "id": "painted-timber-finish",
+          "passed": true,
+          "score": 0.78,
+          "evidence": "Roughness 0.72 and materialClass wood, matte where every sibling in this set is satin vinyl at 0.42 - this is the only prop of the eight whose panel is painted timber, and treating it as sheeting would have been the easy error. Brown #655851 is a warm NEUTRAL rather than a printed colour, measured over 7200 px. Held at 0.78 because the paint flaking off the frame's arrises is drawn as scattered rectangles, which reads correctly at prop distance but is graphic rather than organic at close range."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Ramp baked as vertex colours over 10 height segments per tube, no texture, shared across both legs because the reference weathers them identically. The clean value rests on 7497 of 7500 neutral pixels - the cleanest galvanising reading of the eight props, against the no-parking post's 186. A RAMP rather than a hard splash line, because the reference shows rust climbing both tubes over their lower third with no top edge."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component twin-post directional sign built to the declared 1.200 x 2.400 m. 580 triangles of 800, 2 draw calls of 2, 2 materials of 3, 2 unique geometries of 3, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two splits were refused and both are recorded where someone tempted to make them will read them: the two legs are merged into ONE buffer rather than given a component each, which is the whole reason this prop fits two draw calls; and the wide painted frame is a printed region of the board's face rather than a modelled solid. The third material and third geometry were both available and neither was spent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/tourist-attraction-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tourist-attraction-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "as built - already below the per-draw-call overhead, so there is no far tier worth authoring"
+    },
+    {
+      "tier": "far",
+      "distance": 40,
+      "strategy": "none. A decimated tier would save nothing measurable and would cost a unique geometry against a ceiling that is full."
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 2,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 3,
+    "textureSize": 512,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() and none was invented. DRAW CALLS are the binding axis and triangles are not.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "At the ceiling with nothing spare. maxDrawCalls was raised from 1 to 2 BEFORE any geometry existed. This is the prop in the set that most tempts a third component - a leg each reads as the natural component tree - and the two tubes are merged into one buffer instead. A separate mesh per leg would double what every instance costs a scene for nothing, since they share a material and never move relative to each other. The painted FRAME was the other refused split: it is a printed region of the board's face, not a solid."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "Two. The third was available and NOT spent: a separate material for the white frame would have been the easy route to a brown board in a white surround, and it would have cost a DRAW CALL as well as a material. A colour difference is not a material difference - the frame and the field are the same chalky paint on the same timber."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "One board extrusion and one merged twin-tube buffer. Both are built once at module scope, and so is the atlas canvas."
+      },
+      "triangles": {
+        "signBoard": 76,
+        "posts": 440,
+        "projectedTotal": 516,
+        "budget": 800,
+        "headroom": 284,
+        "note": "The tubes carry most of the cost and that is right for this prop: two round sections at 10 radial by 10 height segments are 400 wall triangles plus 40 of cap, and a round section read as a polygon is the one defect a viewer notices on a tube. The board is a 20-point extrusion at 76. The 284 spare are NOT spent - the open tube MOUTHS visible at the top of the reference are the obvious candidate, and a bored tube would cost a second geometry against a ceiling of three already carrying two."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "area",
+      "directionHint": [
+        -0.4,
+        0.55,
+        0.73
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "The board's brown field falls from luma 86 at the top of the panel to 68 at the bottom across a vertical scanline at x=500, and the frame's left return sits in shadow while its right stile reads 211 - a soft key, high and camera-left."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "directionHint": [
+        0.55,
+        0.2,
+        -0.4
+      ],
+      "intensity": 0.34,
+      "colorTemperatureK": 6500,
+      "evidence": "The board's left edge return, fully turned from the key, still reads as a pale band rather than going black, which only happens with real fill."
+    },
+    {
+      "role": "rim",
+      "type": "directional",
+      "directionHint": [
+        0.6,
+        0.3,
+        -0.75
+      ],
+      "intensity": 0.22,
+      "colorTemperatureK": 6500,
+      "evidence": "A bright line runs along the frame's top rail at luma 221-224 against the backdrop's 171."
+    },
+    {
+      "role": "environment",
+      "type": "studio-context",
+      "environment": "studio softbox on a flat neutral backdrop",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "evidence": "Border-ring scan over 1024 samples trimming to #A9A9A9. MEASURED rather than assumed - and this backdrop is close enough to the frame's shadowed white that one crop had to be discarded as contamination.",
+      "note": "The render harness backs onto a much darker ground, so a candidate render reads darker overall and that difference is the backdrop, not the prop."
+    },
+    {
+      "role": "contact-shadow",
+      "type": "ground-shadow",
+      "intensity": 0.55,
+      "evidence": "The reference shows both tubes ending in mid-air at the frame edge with a soft pooled shadow under them, so ground contact is grounded at y=0 by construction.",
+      "behavior": "Grounded at y=0, the prop's origin, so a placed instance darkens where both legs actually touch. Ambient occlusion is left at zero on both materials: two closed tubes and a sealed board have no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot at base-center supports whole-object placement, rotation about +Y and visibility changes; nothing else in this prop articulates"
+  ],
+  "destructionAnchors": [
+    "none - destructionGroups is empty on the asset and no component declares a fractureGroup"
+  ],
+  "risks": [
+    "One view only. The board's back and the tubes' rear faces are inferred, not observed.",
+    "The Meshy proxy is holed between bands 0.1 and 0.6 - a remesh artefact that removed most of both legs - so it was used for board proportions and leg spacing only, never for structure.",
+    "The proxy's normalised board width implies 2.15 m against the declared 1.2 m. The declared contract wins; a reviewer comparing render to plate will see a narrower board.",
+    "The declared collider is a single cylinder, which cannot express a two-legged prop with a walk-through gap: the proxy spans both legs and blocks the gap. The contract is honoured, and the mismatch is recorded here rather than silently worked around.",
+    "The legend is representative Thai and Latin text for a waterfall destination, not a transcription of the reference's particular sign."
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Tourist Attraction Sign",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  }
+}

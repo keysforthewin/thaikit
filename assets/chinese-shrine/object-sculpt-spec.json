@@ -1,0 +1,2379 @@
+{
+  "targetName": "Chinese Shrine",
+  "targetId": "chinese-shrine",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-shrine",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "concave-hip-roof",
+        "upswept-eaves",
+        "open-colonnade",
+        "axial-symmetry"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "swept-roof-surface",
+        "colonnade",
+        "hanging-cluster"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "weathered-granite",
+        "red-lacquer-timber",
+        "gilt-carving",
+        "green-glazed-tile",
+        "compressed-incense"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A Chinese-Thai neighbourhood shrine hall. A pale stone plinth carrying a tripod censer; a solid red-lacquer body with an open colonnade along its long face; seven round red columns on stone drum bases, of which the two centre ones are wrapped in gilt dragons; eleven conical incense coils hung across the open front; and over all of it a heavy low green-glazed hip roof, concave in section, with upswept curled ridge ends, four flying eaves corners and a pair of guardian beasts on the ridge."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 6,
+        "repetitionSystems": 3
+      },
+      "reasoning": [
+        "The registry notes open with a WARNING rather than a description -- it must not be built with the profile of a Thai wat -- so the roof is the whole problem: heavy, low, hipped on all four sides, concave in section and finished with strongly upswept curls.",
+        "That roof cannot be extruded or lathed. It is generated as a ring of eight-point rectangles climbing from the eaves to the ridge, which is the only one of the shape helpers in this batch that had to be written for a single asset.",
+        "The two features the notes call out for recognition -- dragon-wrapped columns and hanging incense coils -- are both authored as real geometry rather than left to a material.",
+        "Action readiness is minimal: static landmark geometry, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Three repetition systems and two hand-built swept surfaces against a twelve-draw-call ceiling. The eleven incense coils alone would be eleven of the twelve as separate meshes."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-concave-hip",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "heavy low hip roof, CONCAVE in section -- steep at the ridge, flaring shallow at the eaves",
+          "mapsTo": {
+            "ref": "roof"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-upswept-curls",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two curled ridge ends and four flying eaves corners",
+          "mapsTo": {
+            "ref": "roof"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-dragon-columns",
+          "zone": "porch",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "gilt dragons coiling up the two centre front columns",
+          "mapsTo": {
+            "ref": "dragons"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-incense-coils",
+          "zone": "porch",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "eleven conical incense coils hung across the open front at staggered heights",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-column-bases",
+          "zone": "porch",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "stone drum base under every column",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-censer",
+          "zone": "porch",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "tripod stone censer standing on the porch floor",
+          "mapsTo": {
+            "ref": "plinth"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-ridge-beasts",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "a pair of guardian beasts on the ridge",
+          "mapsTo": {
+            "ref": "roof"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-porch-shade",
+          "zone": "porch",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "the dark face the open colonnade looks into",
+          "mapsTo": {
+            "ref": "shade"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-plinth-stain",
+          "zone": "plinth",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "brown staining along the plinth edge, fading out by 0.75 m",
+          "mapsTo": {
+            "ref": "d9-plinth-stain"
+          },
+          "onMaterial": "pale",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+    "resolvedUnknowns": [
+      "The rear and both short elevations are authored as plain red lacquer. The plate shows one closed elevation and it is plain; the others are unseen.",
+      "The roof tiles are individually laid half-round pantiles in the plate, ending in a stamped end-cap at every eaves course. The model carries a smooth swept surface. This is the largest departure from the plate and is reported as a risk.",
+      "TWO dragon columns, on the two centre front columns. The plate shows exactly two and the rest plain, which is the usual arrangement.",
+      "The guardian beasts on the ridge are blocked in as two silhouettes rather than sculpted. At the distance a shrine roof is read from they ARE two silhouettes.",
+      "The interior is not modelled. What the porch looks into is a single dark face on a solid body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 10.00 x 8.00 x 12.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 6,
+      "repetitionSystems": 3,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "roof-profile",
+        "name": "Concave hip roof",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Hipped on ALL FOUR sides, not gabled",
+          "CONCAVE in section: steep at the ridge, flaring shallow at the eaves",
+          "Low and heavy, NOT the steep tiered profile of a Thai wat"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-roof"
+        ],
+        "failureModes": [
+          "a flat-topped tent, which is what a shrink exponent below one builds",
+          "an extruded gable with vertical ends, which is a different building",
+          "the Thai temple profile the registry notes explicitly warn against"
+        ]
+      },
+      {
+        "id": "upswept-curls",
+        "name": "Upswept ridge and eaves",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Two curled ridge ends",
+          "Four eaves corners lifted and curling up",
+          "The eaves stay DOWN between the corners"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a corner lift with no midpoints to fall away to, which raises the whole eaves line and builds a saddle"
+        ]
+      },
+      {
+        "id": "porch-features",
+        "name": "Dragon columns and incense coils",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Gilt dragons coiling up the two centre front columns, as geometry",
+          "Eleven conical coils hung at staggered heights across the open front",
+          "The porch reads as an opening, not as a hole through the building"
+        ],
+        "evidenceRefs": [
+          "region-dragon",
+          "region-coil"
+        ],
+        "failureModes": [
+          "a painted dragon, which needs the texture set that discards every measured albedo",
+          "coils or shade at the backdrop luma, read as holes"
+        ]
+      },
+      {
+        "id": "shrine-palette",
+        "name": "Shrine palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Sage-green glazed roof over red lacquer over pale granite",
+          "Warm bronze gilding, not bright leaf"
+        ],
+        "evidenceRefs": [
+          "region-roof",
+          "region-column"
+        ],
+        "failureModes": [
+          "saturated jade and bright gold authored from memory rather than the plate"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "roof-profile",
+      "name": "Concave hip roof",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "roof"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-roof"
+      ]
+    },
+    {
+      "id": "upswept-curls",
+      "name": "Upswept ridge and eaves",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "roof"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "porch-features",
+      "name": "Dragon columns and incense coils",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "dragons",
+        "body",
+        "shade"
+      ],
+      "evidenceRefs": [
+        "region-dragon",
+        "region-coil"
+      ]
+    },
+    {
+      "id": "shrine-palette",
+      "name": "Shrine palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "roof",
+        "body",
+        "plinth"
+      ],
+      "evidenceRefs": [
+        "region-roof",
+        "region-column"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 8,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "plinth",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "plinth",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the shrine, not with its individual columns."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The rear and both short elevations are authored as plain red lacquer. The plate shows one closed elevation and it is plain; the others are unseen.",
+    "The roof tiles are individually laid half-round pantiles in the plate, ending in a stamped end-cap at every eaves course. The model carries a smooth swept surface. This is the largest departure from the plate and is reported as a risk.",
+    "TWO dragon columns, on the two centre front columns. The plate shows exactly two and the rest plain, which is the usual arrangement.",
+    "The guardian beasts on the ridge are blocked in as two silhouettes rather than sculpted. At the distance a shrine roof is read from they ARE two silhouettes.",
+    "The interior is not modelled. What the porch looks into is a single dark face on a solid body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up. The OPEN FRONT faces +X, which is the long 12 m elevation, and that was a correction rather than a choice: built first with the porch on the short end, the band table read the body 0.47 of height too wide in every band from 1 to 4. The declared 10 x 12 makes this prop deeper than it is wide and the plate shows the opposite -- a shrine WIDER than deep, with its colonnade along the long face. The declared envelope is kept and the building is turned inside it."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 10.0,
+      "h": 8.0,
+      "d": 12.0
+    },
+    "description": "A low pale plinth, a red body barely half the plinth's depth with a deep open porch in front of it, and a roof that is nearly half the prop's height and wider than everything under it. The silhouette events are all in the roof: the concave sweep from a steep ridge out to shallow flaring eaves, the four corners curling up, and the two ridge-end curls.",
+    "envelopeDerivation": "x spans -5.00..+5.00 = 10.00 and z spans -6.00..+6.00 = 12.00, both set by the bottom plinth slab; the roof reaches 9.10 m across at the eaves and its four upswept corners take it to exactly 10.00. y spans 0.00 to 8.00, the tip of a ridge-end curl. The plinth and the roof are the two parts that carry the declared envelope, and the building standing between them is deliberately smaller than either.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to long:h:short = 1 : 0.764 : 0.731 against the declared 1 : 0.667 : 0.833 -- the reference is taller and NARROWER than the declaration. After correcting the axis convention, area-weighted band comparison gives mean |delta width| 0.157 and |delta depth| 0.116 of height. Two rounds of rebuilding got it there. The first put the porch on the short elevation, which read +0.47 of height too wide through the body; the second still had the body filling the declared width, which read +0.34. The body and porch were then sized off the BAND TABLE rather than off the envelope, at 5.7 m deep, and bands 1 to 4 came in to +0.09. What is left is concentrated in exactly two bands -- band 0, the plinth, and bands 5 to 6, the roof eaves -- which are the two parts that carry the declared 10 x 12. The declaration is wider and squatter than the plate's object; it wins, and the difference is reported rather than split."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-plinth",
+      "viewpoint": "front",
+      "path": "crops/pale.png",
+      "confidence": 0.841
+    },
+    {
+      "id": "region-column",
+      "viewpoint": "front",
+      "path": "crops/red.png",
+      "confidence": 0.761
+    },
+    {
+      "id": "region-dragon",
+      "viewpoint": "front",
+      "path": "crops/gold.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-roof",
+      "viewpoint": "top",
+      "path": "crops/green.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-shade",
+      "viewpoint": "front",
+      "path": "crops/dark.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-coil",
+      "viewpoint": "front",
+      "path": "crops/coil.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.6,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.60: the roof is four-fold in its construction and the plate shows two of its faces, but the BUILDING under it is not symmetric front to back -- it has one open elevation and three closed ones -- so the rear is authored as plain red lacquer with no way to check it."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "plinth",
+      "name": "Stone plinth and censer",
+      "level": "macro",
+      "role": "body",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two stepped slabs and the tripod censer standing on them, all the same stone and therefore ONE component and ONE draw call. The censer is freestanding in the plate and could have been its own component; it is not, because grouping by MATERIAL rather than by object is what holds the draw-call count down.",
+      "materialId": "pale",
+      "material": "pale",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Two slabs to y=0.75 carrying the declared 10 x 12 footprint, plus a five-part tripod censer on the porch floor.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The two slabs meet top-to-bottom, which is an opposed butt, and the censer stands on the upper slab rather than in it.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-censer",
+          "description": "tripod stone censer",
+          "delivery": "geometryDescriptor merged cylinders and legs"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "pale",
+        "baseColor": "#86827e",
+        "recipe": "Weathered granite, roughness 0.93, no texture set.",
+        "evidenceRef": "region-plinth",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(134, 130, 126, 1.0)",
+        "secondaryAlbedo": "rgba(134, 130, 126, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            4.0,
+            0
+          ],
+          "halfExtents": [
+            5.0,
+            4.0,
+            6.0
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the shrine, not with its individual columns."
+        }
+      }
+    },
+    {
+      "id": "body",
+      "name": "Shrine body",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A SOLID red mass filling the back of the plan, with the porch left open in front of it. The shrine is an exterior shell only ever seen from outside, so there is no interior; a solid body also means the porch needs no opening cut in it.",
+      "materialId": "red",
+      "material": "red",
+      "parent": "plinth",
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box, x -3.60..+0.20, y 0.75..4.50, z +-4.40 -- 5.7 m deep against a 10 m plinth, because the reference reads the building at 0.60 of height where a body filling the declared width measured 0.96.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Stands clear of the plinth edge on every side and clear of the column line in front.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-incense-coils",
+          "description": "eleven hanging coils",
+          "delivery": "repetitionSystems.coils"
+        },
+        {
+          "id": "d5-column-bases",
+          "description": "stone drum base under every column",
+          "delivery": "repetitionSystems.column-bases"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "red",
+        "baseColor": "#7e3029",
+        "recipe": "Red lacquer, roughness 0.78, lifted from a measured #421915 for the silhouette gate.",
+        "evidenceRef": "region-column",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(126, 48, 41, 1.0)",
+        "secondaryAlbedo": "rgba(126, 48, 41, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shade",
+      "name": "Porch shade face",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.75,
+      "confidence": 0.75,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is its own material. Together with the columns and the hanging coils in front of it, this is what gives the open front its depth without modelling an interior.",
+      "materialId": "dark",
+      "material": "dark",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "A dark face on the +X side of the body, 0.04 m proud of it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "PROUD of the red body, not recessed into it: the body is a solid mass, so a panel sunk into it is inside the solid and invisible.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d8-porch-shade",
+          "description": "the dark the colonnade looks into",
+          "delivery": "geometryDescriptor box in the shade material"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "dark",
+        "baseColor": "#4f473e",
+        "recipe": "Porch shade, roughness 0.96, lifted from a measured #170906.",
+        "evidenceRef": "region-shade",
+        "confidence": 0.75,
+        "dominantAlbedo": "rgba(79, 71, 62, 1.0)",
+        "secondaryAlbedo": "rgba(79, 71, 62, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.75
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "dragons",
+      "name": "Gilt dragon spirals",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.83,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The registry notes name the dragon-wrapped columns as one of the two features that carry recognition from outside, so the dragon is GEOMETRY and not a texture: a painted dragon needs the procedural texture set, which forces color to white and discards every measured albedo on the prop. Fifty-two short segments across two columns, merged into one component and one draw call.",
+      "materialId": "gold",
+      "material": "gold",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "A gilt spiral of 3.2 turns coiling up each of the two centre front columns.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each segment is aimed along its own helical tangent by two Euler turns, so no two are parallel and nothing inside the merge can share a plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-dragon-columns",
+          "description": "gilt dragons on two columns",
+          "delivery": "26 tangent-aligned segments per column"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gold",
+        "baseColor": "#895d41",
+        "recipe": "Gilt carving, roughness 0.40, metalness 0.30 -- below physical because the harness supplies no environment map.",
+        "evidenceRef": "region-dragon",
+        "confidence": 0.83,
+        "dominantAlbedo": "rgba(137, 93, 65, 1.0)",
+        "secondaryAlbedo": "rgba(137, 93, 65, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.83
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof",
+      "name": "Glazed tile roof",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "curve-sweep",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "The whole identity of the prop, and everything green rides ONE component and ONE draw call: the hip surface, the ridge bar, its two curled ends, the four flying eaves corners and the pair of guardian beasts. It is generated as a ring of EIGHT-point rectangles climbing from the eaves to the ridge -- not an extrusion, which gives vertical gable ends, and not four points, which is what built a saddle.",
+      "materialId": "green",
+      "material": "green",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "A concave hip roof from eaves at 4.50 to a ridge at 7.00, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Closed as a SOLID -- outer surface, a soffit 0.34 m below the eaves and a fascia band between them. An open shell lets the turntable gate read straight through the roof from any low angle. The ring winding is counter-clockwise seen from above; wound the other way the whole roof renders inside out, which looks like a thin black membrane rather than a mistake.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-concave-hip",
+          "description": "concave hip surface",
+          "delivery": "hipRoof() with a shrink exponent above one"
+        },
+        {
+          "id": "d2-upswept-curls",
+          "description": "curled ridge ends and eaves corners",
+          "delivery": "curledHorn() segments merged in"
+        },
+        {
+          "id": "d7-ridge-beasts",
+          "description": "a pair of guardian beasts",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "attachment": {
+        "parentId": "body",
+        "parentSocket": "wall-head",
+        "contactType": "seated",
+        "localStart": [
+          0,
+          4.5,
+          0
+        ],
+        "localEnd": [
+          0,
+          7.0,
+          0
+        ],
+        "embedDepth": 0.2,
+        "gapTolerance": 0.01,
+        "notes": "The roof seats on the wall head at y=4.50 and embeds 0.20 m into it rather than resting on its top plane, so the two never share a surface. gapTolerance 0.01 m is the same tolerance check-coplanar runs at."
+      },
+      "colorMaterialRecipe": {
+        "materialId": "green",
+        "baseColor": "#566d5b",
+        "recipe": "Green-glazed tile, roughness 0.68, no texture set.",
+        "evidenceRef": "region-roof",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(86, 109, 91, 1.0)",
+        "secondaryAlbedo": "rgba(86, 109, 91, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "pale",
+      "name": "Weathered granite",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#86827e",
+      "color": "#86827e",
+      "roughness": {
+        "base": 0.93,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/pale_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#86827e",
+        "secondary": [
+          "#493830",
+          "#B8A592",
+          "#765248"
+        ],
+        "samplingNotes": "Measured as the mean of crops/pale.png. extract_pbr_evidence confidence 0.841. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-plinth-stain",
+          "region": "plinth below y=0.75",
+          "roughness": 0.93,
+          "palette": [
+            "#716964",
+            "#86827E"
+          ],
+          "evidence": "The plate's plinth is stained brown along its top edge and cleaner below. Delivered as a per-vertex TINT on the merged plinth geometry -- (0.86, 0.86, 0.84) at y=0 fading out by y=0.75 -- rather than as a second material, which would cost a draw call and a shader switch for a gradient."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-plinth (PBR confidence 0.841) on the porch floor.",
+          "Shared by the plinth, the tripod censer and the seven column drum bases -- three consumers, one stone.",
+          "Textureless: the plate's brown staining along the plinth edge is wear at a frequency no prop-distance viewer resolves, and only its vertical gradient is carried, as a vertex tint."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pale.png",
+        "pbrReport": "material-evidence/pale.pbr.json",
+        "confidence": 0.841,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "red",
+      "name": "Red lacquer on timber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7e3029",
+      "color": "#7e3029",
+      "roughness": {
+        "base": 0.78,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/red_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#7e3029",
+        "secondary": [
+          "#4B1B17",
+          "#32110C",
+          "#190603"
+        ],
+        "samplingNotes": "Measured as the mean of crops/red.png. extract_pbr_evidence confidence 0.761. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-column (PBR confidence 0.761) at #421915 and LIFTED to #7E3029. The measured value is luma 45 against the harness backdrop's 58, and the silhouette gate classifies background by mean luma alone -- a whole red body below the backdrop value is read as a hole punched through the prop rather than as a wall. A deliberate deviation from the measurement, recorded with its reason and its margin: the shipped value is luma 71.",
+          "The narrow crop is why this is the lowest confidence of the six. A 16-pixel column strip returned 0.690, below the 0.7 threshold and therefore a stop signal rather than a pass; widening the crop to 30 pixels moved it to 0.761 without moving the surface it sits on."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/red.png",
+        "pbrReport": "material-evidence/red.pbr.json",
+        "confidence": 0.761,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Gilt dragon carving",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#895d41",
+      "color": "#895d41",
+      "roughness": {
+        "base": 0.4,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gold_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#895d41",
+        "secondary": [
+          "#4A2313",
+          "#795535",
+          "#A9835B"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gold.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-dragon (PBR confidence 0.829) on a dragon column. Warm bronze rather than bright leaf, which is what the plate shows.",
+          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black, which here would lose one of the two features the registry notes call out for recognition."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gold.png",
+        "pbrReport": "material-evidence/gold.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Green-glazed roof tile",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#566d5b",
+      "color": "#566d5b",
+      "roughness": {
+        "base": 0.68,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/green_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#566d5b",
+        "secondary": [
+          "#6A8974",
+          "#506D57",
+          "#3A4E3D"
+        ],
+        "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roof (PBR confidence 0.860). A muted sage green, not the saturated jade a Chinese roof is remembered as.",
+          "Roughness 0.68, the tightest non-metal on the prop: glazed tile has a visibly harder specular response than the lacquer or the stone, and that difference is the only way the glaze survives into a textureless material."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/green.png",
+        "pbrReport": "material-evidence/green.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Porch shade",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4f473e",
+      "color": "#4f473e",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/dark_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4f473e",
+        "secondary": [
+          "#060501",
+          "#0B0201",
+          "#250D0A"
+        ],
+        "samplingNotes": "Measured as the mean of crops/dark.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured INSIDE the plate's own porch (viewEvidence region-shade, PBR confidence 0.751) at #170906 -- almost black -- and LIFTED to #4F473E, luma 71 against the backdrop's 58. Forced by the same luma-only background test: this face is enclosed by the roof and the columns, so at the measured value the whole open front is read as a hole through the building."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/dark.png",
+        "pbrReport": "material-evidence/dark.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "coil",
+      "name": "Compressed incense",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6e645d",
+      "color": "#6e645d",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/coil_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#6e645d",
+        "secondary": [
+          "#160905",
+          "#281914",
+          "#675F5A"
+        ],
+        "samplingNotes": "Measured as the mean of crops/coil.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-coil (PBR confidence 0.829) at #423632 and LIFTED to #6E645D. The measured value is luma 57 -- one below the backdrop's 58, which is as exact a coincidence as this failure mode ever gets. Eleven coils hanging inside the porch silhouette at the backdrop value would each have been read as a hole."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/coil.png",
+        "pbrReport": "material-evidence/coil.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "columns",
+      "name": "Round columns",
+      "instanceCount": 7,
+      "sourceComponent": "body",
+      "material": "red",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "column-with-capital",
+      "placement": {
+        "mode": "explicit",
+        "note": "Five along the front at x=1.90 and two returning at x=0.85, all on the open +X elevation."
+      },
+      "instanceDimensions": {
+        "width": 0.42,
+        "height": 3.53,
+        "depth": 0.42
+      },
+      "rationale": "Seven columns at one geometry and one submission against a twelve-draw-call ceiling.",
+      "zFightingNote": "The capital block is sunk 0.16 m into the shaft rather than sitting on it, so no two top faces share a plane inside the merged unit."
+    },
+    {
+      "id": "column-bases",
+      "name": "Column drum bases",
+      "instanceCount": 7,
+      "sourceComponent": "body",
+      "material": "pale",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "drum-base",
+      "placement": {
+        "mode": "explicit",
+        "note": "One under each column, on the same schedule."
+      },
+      "instanceDimensions": {
+        "width": 0.72,
+        "height": 0.22,
+        "depth": 0.72
+      },
+      "rationale": "A SECOND system on the same placement rather than a second colour on the first: InstancedMesh takes one material, and a stone base is a different SHAPE as well as a different stone, so a per-instance colour could not have carried it.",
+      "zFightingNote": "The drum is a wider cylinder under a narrower collar, so the two meet as opposed faces, and the column shaft starts above the collar."
+    },
+    {
+      "id": "coils",
+      "name": "Hanging incense coils",
+      "instanceCount": 11,
+      "sourceComponent": "body",
+      "material": "coil",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "coil-cone-and-wire",
+      "placement": {
+        "mode": "explicit",
+        "note": "Spread across the open front at three staggered heights and two staggered depths, so the cluster reads as a hanging field rather than a row."
+      },
+      "instanceDimensions": {
+        "width": 0.6,
+        "height": 0.84,
+        "depth": 0.6
+      },
+      "rationale": "The second of the two features the registry notes call out. Eleven cones at ONE geometry and one draw call; as separate meshes they would be eleven of the twelve draw calls available.",
+      "zFightingNote": "The z spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T17:18:07.075991+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.157171+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        },
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.241553+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "upswept-curls",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Two curled ridge ends and four flying eaves corners, all merged into the single roof component, with the eaves staying down between the corners.",
+          "notes": "The corner upsweep needed EIGHT points per ring rather than four. With four -- just the corners -- the lift had nowhere to fall away to and raised the entire eaves line, which built a saddle instead of a roof; the four edge midpoints are what hold the eaves down between the corners. The ring winding also had to be counter-clockwise seen from above: wound the other way the whole roof rendered inside out, which looks like a thin black membrane and reads as a material problem rather than a winding one."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.323725+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "shrine-palette",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "This is the layer carrying the prop's weakness, and honestly so. THREE of the six albedos ship above their measurements -- red lacquer #421915, porch shade #170906 and incense coil #423632 -- because all three fell at or below the harness backdrop's luma of 58 and all three sit enclosed by the prop's own outline, where the silhouette gate reads them as holes punched through the building. The coil is the sharpest case anywhere in this batch: measured luma 57, one below the backdrop. The red crop also failed its own gate first time at confidence 0.690 on a 16-pixel column strip, which is a stop signal and not a pass; widening the crop to 30 pixels moved it to 0.761 without moving the surface it sits on."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.405940+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.490138+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.578251+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.663587+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        },
+        {
+          "id": "upswept-curls",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Two curled ridge ends and four flying eaves corners, all merged into the single roof component, with the eaves staying down between the corners.",
+          "notes": "The corner upsweep needed EIGHT points per ring rather than four. With four -- just the corners -- the lift had nowhere to fall away to and raised the entire eaves line, which built a saddle instead of a roof; the four edge midpoints are what hold the eaves down between the corners. The ring winding also had to be counter-clockwise seen from above: wound the other way the whole roof rendered inside out, which looks like a thin black membrane and reads as a material problem rather than a winding one."
+        },
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        },
+        {
+          "id": "shrine-palette",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "This is the layer carrying the prop's weakness, and honestly so. THREE of the six albedos ship above their measurements -- red lacquer #421915, porch shade #170906 and incense coil #423632 -- because all three fell at or below the harness backdrop's luma of 58 and all three sit enclosed by the prop's own outline, where the silhouette gate reads them as holes punched through the building. The coil is the sharpest case anywhere in this batch: measured luma 57, one below the backdrop. The red crop also failed its own gate first time at confidence 0.690 on a 16-pixel column strip, which is a stop signal and not a pass; widening the crop to 30 pixels moved it to 0.761 without moving the surface it sits on."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T17:18:07.075991+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: five components and 3 InstancedMesh systems at 8 draw calls of 12 -- the tightest draw-call headroom of the monumental set, which is why the whole roof is one submission and the eleven incense coils are another.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.157171+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        },
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the open front turned onto the LONG elevation after the band table read the body 0.47 of height too wide on the short one, and the body then sized off the band table rather than off the declared envelope -- the plinth and the roof carry the declared 10 x 12, the building between them does not.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.241553+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "upswept-curls",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Two curled ridge ends and four flying eaves corners, all merged into the single roof component, with the eaves staying down between the corners.",
+          "notes": "The corner upsweep needed EIGHT points per ring rather than four. With four -- just the corners -- the lift had nowhere to fall away to and raised the entire eaves line, which built a saddle instead of a roof; the four edge midpoints are what hold the eaves down between the corners. The ring winding also had to be counter-clockwise seen from above: wound the other way the whole roof rendered inside out, which looks like a thin black membrane and reads as a material problem rather than a winding one."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the roof shrink exponent moved from below one to above one, turning a flat-topped tent into a concave sweep; ring resolution raised from four points to eight so the corner upsweep stops raising the whole eaves line; winding reversed so the surface faces out.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.323725+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "shrine-palette",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "This is the layer carrying the prop's weakness, and honestly so. THREE of the six albedos ship above their measurements -- red lacquer #421915, porch shade #170906 and incense coil #423632 -- because all three fell at or below the harness backdrop's luma of 58 and all three sit enclosed by the prop's own outline, where the silhouette gate reads them as holes punched through the building. The coil is the sharpest case anywhere in this batch: measured luma 57, one below the backdrop. The red crop also failed its own gate first time at confidence 0.690 on a 16-pixel column strip, which is a stop signal and not a pass; widening the crop to 30 pixels moved it to 0.761 without moving the surface it sits on."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 6 materials at PBR confidence 0.751-0.860, three of them lifted off their measurements against a luma-only background test, each recorded with the value it departs from and the margin it ships at.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.405940+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: surface character is entirely geometry -- the swept roof, the curls, 52 dragon segments, eleven coils -- plus one delivered per-vertex stain gradient on the plinth. No texture sets and no canvas. The individual pantile course is what is genuinely lost.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.490138+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: this plate is NOT the shadowless lightbox the retail plates are -- it is a shaded shrine under a deep overhang, which is why three albedos needed lifting. No rim light, no contact shadow; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.578251+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:18:07.663587+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.87,
+        "formDetail": 0.86,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "roof-profile",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A hip roof sloping on all four sides, concave in section, from eaves at 4.50 m to a ridge at 7.00 m, spanning 9.10 m at the eaves and 10.00 m at the lifted corners.",
+          "notes": "The registry notes open with a warning rather than a description -- it must not be built with the profile of a Thai wat -- and this roof is the opposite of one in three ways: hipped rather than gabled, low rather than steep, concave rather than straight. No existing helper could express it. It is generated directly as a ring of rectangles climbing from the eaves to the ridge, and the concavity comes from a horizontal shrink of (1-t)^q with q ABOVE one. The first attempt used q below one and built a flat-topped tent: slope is dy/dx, so a plan that shrinks fast for a given rise is a SHALLOW slope, and q>1 puts the fast shrink at the eaves where it belongs. The roof is also closed as a solid -- outer surface, soffit and fascia -- because an open shell lets the turntable gate read straight through it from any low angle."
+        },
+        {
+          "id": "upswept-curls",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Two curled ridge ends and four flying eaves corners, all merged into the single roof component, with the eaves staying down between the corners.",
+          "notes": "The corner upsweep needed EIGHT points per ring rather than four. With four -- just the corners -- the lift had nowhere to fall away to and raised the entire eaves line, which built a saddle instead of a roof; the four edge midpoints are what hold the eaves down between the corners. The ring winding also had to be counter-clockwise seen from above: wound the other way the whole roof rendered inside out, which looks like a thin black membrane and reads as a material problem rather than a winding one."
+        },
+        {
+          "id": "porch-features",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Gilt dragons of 3.2 turns coiling up the two centre front columns as 52 tangent-aligned segments, and eleven conical incense coils hung at staggered heights and depths across the open front.",
+          "notes": "Both are the features the registry notes name as carrying recognition from outside, so both are GEOMETRY. A painted dragon would need the procedural texture set, which forces color to white and roughness to 1 and would discard every measured albedo on the prop. The coil spread was pulled in from +-3.55 to +-3.46 after check-coplanar found the outermost coil sharing its bounding plane with the outermost column base over 0.17 m2 -- two parts that never touch, flagged because their envelopes happened to align."
+        },
+        {
+          "id": "shrine-palette",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "This is the layer carrying the prop's weakness, and honestly so. THREE of the six albedos ship above their measurements -- red lacquer #421915, porch shade #170906 and incense coil #423632 -- because all three fell at or below the harness backdrop's luma of 58 and all three sit enclosed by the prop's own outline, where the silhouette gate reads them as holes punched through the building. The coil is the sharpest case anywhere in this batch: measured luma 57, one below the backdrop. The red crop also failed its own gate first time at confidence 0.690 on a 16-pixel column strip, which is a stop signal and not a pass; widening the crop to 30 pixels moved it to 0.761 without moving the surface it sits on."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score, and held down by the material layer at 0.78 rather than by the shape. 3,482/16,000 triangles, 8/12 draw calls, 6/8 materials, 8/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chinese-shrine/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 5,
+        "repetitionSystems": 3,
+        "projectedTotal": 8,
+        "budget": 12,
+        "headroom": 4,
+        "note": "Five components and three repetition systems: 8 of 12, the tightest draw-call headroom of the monumental set. The whole roof -- surface, ridge, four eaves curls, two ridge curls and two beasts -- is ONE submission, and the fifty-two dragon segments are another."
+      },
+      "materials": {
+        "projectedTotal": 6,
+        "budget": 8,
+        "headroom": 2,
+        "note": "pale covers the plinth, the censer AND the seven drum bases; red covers the body and the seven column shafts. Six of eight materials, two in hand -- the closest to its material ceiling of any prop here, and every one of the six is a genuinely different finish."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 8,
+        "budget": 32,
+        "headroom": 24,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 3482,
+        "budget": 16000,
+        "headroom": 12518,
+        "note": "3,482 of 16,000. The roof sweep is the only expensive thing on the prop and it is cheap: nine rings of eight points is 144 quads. The headroom could buy the individual pantile course the plate shows and is deliberately not spent on it."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "A swept hip surface, a helix, curled horns and boxes. The roof is the one shape in this batch that no existing helper could express -- not an extrusion, which gives vertical gable ends, and not a lathe, which cannot be rectangular in plan -- so it is generated directly as a ring of eight-point rectangles climbing from the eaves to the ridge."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Three InstancedMesh systems carry 25 of the prop's 40 discrete parts. Two of them share one placement schedule and differ only in material and shape, which is what a column and its stone base actually are."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all. The individual pantile course and its stamped eaves end-caps are what is genuinely lost, and that is reported as this prop's largest risk."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "three-albedos-lifted",
+      "severity": "medium",
+      "description": "THREE of the six measured albedos ship above their measurements -- the red lacquer, the porch shade and the incense coils -- because all three fell at or below the harness backdrop's luma of 58.",
+      "mitigation": "This plate is a shaded shrine photographed under a deep overhang, and all three surfaces sit ENCLOSED by the prop's own outline, so at their measured values the silhouette gate reads them as holes punched through the building. The coil is the sharpest case: measured luma 57, one below the backdrop. Each lift records the measurement it departs from and the margin it ships at."
+    },
+    {
+      "id": "pantile-course-omitted",
+      "severity": "medium",
+      "description": "The plate's roof is individually laid half-round pantiles with a stamped end-cap at every eaves course; the model carries a smooth swept surface.",
+      "mitigation": "The only route to it is the procedural texture set, which forces color to white and roughness to 1 and would discard all six measured albedos. Roughness 0.68 -- the tightest non-metal on the prop -- is how the glaze survives instead. Reported as the largest departure from the plate."
+    },
+    {
+      "id": "declared-vs-proxy-plan",
+      "severity": "low",
+      "description": "The declared 10 x 8 x 12 is wider and squatter than the plate's object, and the residual band divergence sits entirely in the plinth and the roof eaves.",
+      "mitigation": "Those two components are what carry the declared envelope; the building between them was sized off the band table instead and matches to 0.09 of height. The declaration wins and the difference is reported."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Chinese Shrine",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5154,
+        "aspectRatioDelta": 0.0606,
+        "scaleDelta": 0.0234,
+        "bilateralSymmetryError": 0.1051,
+        "colorDelta": {
+          "checked": 5,
+          "maxDeltaE": 26.29,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 1.16
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 26.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.09
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.515 is below threshold 0.85",
+        "aspect-ratio delta 0.061 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f46c846a75b66438",
+      "passId": "blockout"
+    }
+  ]
+}

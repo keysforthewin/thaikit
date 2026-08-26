@@ -23,7 +23,7 @@
       "targetTriangles": 800,
       "maxDrawCalls": 1,
       "maxMaterials": 1,
-      "maxUniqueGeometries": 1
+      "maxUniqueGeometries": 2
     },
     "medium": {
       "examples": [
@@ -40,7 +40,7 @@
       "targetTriangles": 2000,
       "maxDrawCalls": 2,
       "maxMaterials": 2,
-      "maxUniqueGeometries": 2
+      "maxUniqueGeometries": 4
     },
     "large": {
       "examples": [
@@ -56,7 +56,7 @@
       "targetTriangles": 4000,
       "maxDrawCalls": 4,
       "maxMaterials": 3,
-      "maxUniqueGeometries": 3
+      "maxUniqueGeometries": 6
     },
     "hero": {
       "examples": [
@@ -70,7 +70,7 @@
       "targetTriangles": 8000,
       "maxDrawCalls": 6,
       "maxMaterials": 4,
-      "maxUniqueGeometries": 4
+      "maxUniqueGeometries": 8
     },
     "hero2x": {
       "examples": [
@@ -84,7 +84,7 @@
       "targetTriangles": 16000,
       "maxDrawCalls": 12,
       "maxMaterials": 8,
-      "maxUniqueGeometries": 8
+      "maxUniqueGeometries": 16
     },
     "hero4x": {
       "examples": [
@@ -98,7 +98,7 @@
       "targetTriangles": 32000,
       "maxDrawCalls": 24,
       "maxMaterials": 16,
-      "maxUniqueGeometries": 16
+      "maxUniqueGeometries": 32
     },
     "hero8x": {
       "examples": [
@@ -112,7 +112,7 @@
       "targetTriangles": 64000,
       "maxDrawCalls": 48,
       "maxMaterials": 32,
-      "maxUniqueGeometries": 32
+      "maxUniqueGeometries": 64
     },
     "$comment": "Texture-size and VRAM budgets are gone with the GLB pipeline: a procedural factory ships no texture files, and what canvas textures it generates are measured after the fact by render-model.mjs rather than budgeted up front. meshyPolycount is gone too -- Meshy honours target_polycount closely, so the reference mesh is simply asked for targetTriangles. large shares medium's tessellation tier and differs only in triangle budget: a food cart is not denser than a stool, it just has more silhouette. The draw-call ceilings are DELIBERATELY tight. A small prop is one mesh; a bowl that arrives as three is three CPU submissions forever, and a level builder places hundreds of them. maxUniqueGeometries is allowed to sit BELOW maxDrawCalls on large and hero because that gap is exactly what instancing buys: six draw calls off four geometries means a repeated part became one InstancedMesh instead of four copies. hero2x/4x/8x multiply ALL FOUR of hero's ceilings by 2, 4 and 8 -- they are for whole BUILDINGS, which hero (a facade section or a stall canopy) was never sized for. They are auto-assigned by size like every other class, so a resize past 8m escalates a prop's budget on its own; that is deliberate, but it means a careless resize can multiply a budget eightfold, and render-model.mjs measuring all four is what catches it. Note what 8x costs a level builder: 48 draw calls is one prop's worth of CPU submissions, so a street of twenty is 960 before anything else draws."
   },

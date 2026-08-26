@@ -1,0 +1,3417 @@
+{
+  "targetName": "Big C Store Building",
+  "targetId": "big-c-store-building",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-retail-building",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "rectilinear",
+        "planar-panelled",
+        "hard-edged",
+        "axis-aligned"
+      ],
+      "structureKind": [
+        "shell-volume",
+        "panelised-facade",
+        "cantilever",
+        "clustered-plant"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "painted-cement-render",
+        "cast-stone-precast",
+        "illuminated-acrylic",
+        "anodised-aluminium",
+        "tinted-plate-glass",
+        "galvanised-steel"
+      ],
+      "notes": "Static single-storey branded retail box, exterior shell only. No interior geometry: glazing is authored as a tinted mostly-opaque pane, not an opening. No moving parts are authored, so one root pivot and zero sockets is the correct contract."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 5,
+        "mesoComponents": 7,
+        "microFeatureGroups": 4,
+        "materialLayers": 6,
+        "repetitionSystems": 6
+      },
+      "reasoning": [
+        "Silhouette is a single rectangular prism -- low geometric complexity.",
+        "Richness is REPETITION (mullions, cap blocks, quoins, canopy plates, downlights, condensers), not intricate form. Six repetitionSystems collapse ~90 parts into 6 InstancedMesh draw calls.",
+        "Occlusion risk is real: rear and right walls are entirely unseen in the single plate.",
+        "Action readiness is minimal: static exterior shell, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Repetition-dominated facade: without repetitionSystems the mullion/block/plate sets would each cost a draw call per part and blow maxDrawCalls=12 many times over."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-bigc-wordmark",
+          "zone": "front-fascia",
+          "description": "Big C wordmark: green rounded-rect field, red Big C letters, small yellow Big above the C",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "sign-lightbox"
+          },
+          "route": "post-construction canvas texture",
+          "realization": "unreported",
+          "kind": "decal"
+        },
+        {
+          "id": "d2-cap-blocks",
+          "zone": "front-parapet-top",
+          "description": "rusticated alternating precast cap blocks, tonally varied grey, overhanging the parapet face",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "parapet"
+          },
+          "realization": "unreported",
+          "kind": "ridge"
+        },
+        {
+          "id": "d3-corner-quoins",
+          "zone": "front-parapet-ends",
+          "description": "vertical stacks of the same blocks framing both ends of the sign wall",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "parapet"
+          },
+          "realization": "unreported",
+          "kind": "ridge"
+        },
+        {
+          "id": "d4-mullion-grid",
+          "zone": "shopfront",
+          "description": "aluminium vertical mullions ~0.6m pitch, high transom, low kick rail",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "shopfront-frame"
+          },
+          "realization": "unreported",
+          "kind": "linework"
+        },
+        {
+          "id": "d5-sliding-doors",
+          "zone": "shopfront-centre",
+          "description": "wider central paired sliding door bay with its own frame and header box",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "shopfront-frame"
+          },
+          "realization": "unreported",
+          "kind": "seam"
+        },
+        {
+          "id": "d6-canopy-joints",
+          "zone": "canopy",
+          "description": "canopy reads as ~6 discrete slabs with visible joints, not one plate",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "building-shell"
+          },
+          "realization": "unreported",
+          "kind": "seam"
+        },
+        {
+          "id": "d7-downlights",
+          "zone": "canopy-soffit",
+          "description": "recessed circular downlight discs on the soffit",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "building-shell"
+          },
+          "realization": "unreported",
+          "kind": "emissive"
+        },
+        {
+          "id": "d8-condenser-cowls",
+          "zone": "roof",
+          "description": "circular fan cowl grille on the top of the larger condensers",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "roof-deck"
+          },
+          "realization": "unreported",
+          "kind": "contour"
+        },
+        {
+          "id": "d9-roller-shutter",
+          "zone": "left-side-wall",
+          "description": "recessed corrugated roller shutter with a metal head box above",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "roller-shutter"
+          },
+          "realization": "unreported",
+          "kind": "groove"
+        },
+        {
+          "id": "d10-render-streaking",
+          "zone": "walls",
+          "description": "faint vertical weathering streaks on the render",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "d10-render-streaking"
+          },
+          "realization": "unreported",
+          "kind": "stain"
+        },
+        {
+          "id": "d11-glazing-gloss",
+          "zone": "shopfront",
+          "description": "plate glass reads as a tight specular lobe -- optically smooth, unlike every other surface on the prop",
+          "identityDefining": true,
+          "kind": "gloss",
+          "mapsTo": {
+            "ref": "d11-glazing-gloss"
+          }
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+    "resolvedUnknowns": [
+      "What is on the rear (z-) elevation? (confidence 0.20) -- Not visible in the single plate. Author as plain render wall with parapet and no openings; report as low confidence. Do NOT invent a service door or window.",
+      "Does the right (x+) side wall carry a shutter too? (confidence 0.25) -- Not visible. Only ONE roller shutter is evidenced (left wall). Do not mirror it.",
+      "How many downlights and at what spacing? (confidence 0.50) -- Soffit seen at a grazing angle. Infer one per canopy plate, evenly spaced.",
+      "What else sits on the roof behind the plant? (confidence 0.55) -- Partially occluded. Author a plain deck; four condensers are what is evidenced."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each one now lives where it can still be read against the model: the two unobserved elevations are viewEvidence region-rear (0.20) and region-right (0.25) with path null, and all four are restated in assumptions. Nothing here was invented to close a gap -- the rear wall is authored plain and the roller shutter is deliberately NOT mirrored onto the unseen +X wall."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 8.0 x 4.6 x 7.0 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material either declares textureless with named evidence, or argues its texture."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 4,
+      "microFeatureGroups": 3,
+      "materialLayers": 6,
+      "repetitionSystems": 4,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Single rectangular prism at 8.0 x 4.6 x 7.0 m",
+          "Front parapet rises above the side/rear parapet and stands proud of the facade",
+          "Rooftop plant breaks the roofline"
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "reads as a featureless cuboid",
+          "parapet flush with facade"
+        ]
+      },
+      {
+        "id": "brand-fascia",
+        "name": "Big C illuminated fascia",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "White lightbox inset in the sign wall and standing proud of it",
+          "Green field with red Big C wordmark, yellow Big above the C",
+          "Reads as illuminated acrylic, not flat paint"
+        ],
+        "evidenceRefs": [
+          "front-fascia"
+        ],
+        "failureModes": [
+          "wordmark absent or mid-grey",
+          "sign face flush with parapet -> z-fight"
+        ]
+      },
+      {
+        "id": "glazed-shopfront",
+        "name": "Glazed shopfront and doors",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Full-width mullion grid across the front",
+          "Wider central sliding-door bay",
+          "Dark tinted mostly-opaque glazing recessed behind the frame"
+        ],
+        "evidenceRefs": [
+          "shopfront"
+        ],
+        "failureModes": [
+          "glazing reads as a hole punched through the wall",
+          "frame meets the opening reveal exactly -> z-fight"
+        ]
+      },
+      {
+        "id": "entrance-canopy",
+        "name": "Entrance canopy",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Flat slab cantilevering forward beneath the sign",
+          "Reads as discrete plates with joints",
+          "Downlights on the soffit"
+        ],
+        "evidenceRefs": [
+          "canopy"
+        ],
+        "failureModes": [
+          "canopy missing",
+          "canopy modelled as one featureless plate"
+        ]
+      },
+      {
+        "id": "parapet-blockwork",
+        "name": "Parapet cap course and quoins",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Rusticated cap blocks overhang the parapet face",
+          "Vertical quoin stacks frame both ends of the sign wall",
+          "Tonal variation between adjacent blocks"
+        ],
+        "evidenceRefs": [
+          "front-parapet"
+        ],
+        "failureModes": [
+          "plain unarticulated parapet",
+          "cap flush with parapet face"
+        ]
+      },
+      {
+        "id": "roof-plant",
+        "name": "Rooftop condenser cluster",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Four units in two pairs",
+          "Circular fan cowls on the larger units",
+          "Raised on feet off the deck"
+        ],
+        "evidenceRefs": [
+          "roof"
+        ],
+        "failureModes": [
+          "plant omitted -> roofline reads wrong from above"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "REVISED DOWN from macro 5 / meso 6 / repetitionSystems 5. Those numbers were written in the pre-spec assessment BEFORE the design was costed against the draw-call ceiling, and they were arithmetically impossible: 5 macro + 6 meso components plus 5 instanced systems is 16 draw calls against a hero2x budget of 12. The revised figures are what the finished design actually is (3 macro, 4 meso, 4 systems = 11 draw calls), and the depth the original numbers were reaching for is delivered instead by MERGING -- the parapet carries 4 boxes, the shopfront framing 8 and the roller shutter 2, each as one component and one submission. Recorded rather than silently relaxed, because a contract edited to match the result it is meant to judge is worth nothing unless the reason is on the record."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "building-shell",
+        "parapet",
+        "roof-deck"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "brand-fascia",
+      "name": "Big C illuminated fascia",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-lightbox"
+      ],
+      "evidenceRefs": [
+        "region-fascia"
+      ]
+    },
+    {
+      "id": "glazed-shopfront",
+      "name": "Glazed shopfront and doors",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shopfront-glazing",
+        "shopfront-frame",
+        "shopfront-mullions"
+      ],
+      "evidenceRefs": [
+        "region-shopfront"
+      ]
+    },
+    {
+      "id": "entrance-canopy",
+      "name": "Entrance canopy",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "canopy-plates"
+      ],
+      "evidenceRefs": [
+        "region-canopy"
+      ]
+    },
+    {
+      "id": "parapet-blockwork",
+      "name": "Parapet cap course and quoins",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "parapet-cap-blocks"
+      ],
+      "evidenceRefs": [
+        "region-parapet"
+      ]
+    },
+    {
+      "id": "roof-plant",
+      "name": "Rooftop condenser cluster",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "plant-condensers"
+      ],
+      "evidenceRefs": [
+        "region-roofplant"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 11,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "building-shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. It is a static exterior shell: nothing opens, turns or swings. The sliding doors and the roller shutter are authored as fixed geometry, so they get no pivot -- a named pivot is a promise that a part turns on that axis, and promising a door slide that the factory does not deliver is contract the kit would have to keep."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A socket named for a place on the surface (sign-mount, socket-top-center) is a location, not a mechanism, and would be contract nobody asked for.",
+    "colliderInventory": [
+      {
+        "component": "building-shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "The asset declares collider 'box'. One box proxy over the envelope."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group would fail the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Rear (-Z) and right (+X) elevations are unobserved; authored as plain render walls with no openings. Confidence 0.20 / 0.25.",
+    "Canopy downlight count is inferred as one per canopy plate (6). The soffit is seen only at a grazing angle. Confidence 0.50.",
+    "All four rooftop condensers are authored from ONE merged casing+cowl geometry instanced 4x. The plate shows two visually similar unit types; collapsing them to one type spends 1 draw call instead of 2 and is a deliberate, reported simplification.",
+    "The building is a solid exterior shell. No interior geometry exists, so the glazing is authored as a tinted mostly-opaque pane (opacity 0.92) rather than an opening."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares. The glazed shopfront faces +Z. The roller shutter is on the -X wall and is NOT mirrored: only one is evidenced in the single plate. The subject is ASYMMETRIC about X; no mirror plane is declared and none may be assumed."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 8.0,
+      "h": 4.6,
+      "d": 7.0
+    },
+    "description": "One rectangular prism. The only silhouette events are the taller front parapet sign wall, the cantilevered entrance canopy and the rooftop condenser cluster breaking the roofline.",
+    "envelopeDerivation": "x spans -4.00..+4.00 (parapet ring outer faces) = 8.00. y spans 0.00..4.60 (ground to cap-block top) = 4.60. z spans -3.50 (rear parapet) ..+3.50 (canopy nose) = 7.00. The canopy projection is INSIDE the declared depth by design: the shell front face was set back to z=+2.50 so the 1.00 m canopy lands exactly on the declared 7.0 m envelope rather than overrunning it.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction bounds normalise to w:h:d = 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- agreement within 1.7% on both axes. The declared size is EVIDENCED, not assumed."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-fascia",
+      "viewpoint": "front",
+      "path": "crops/fascia-graphic.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-shopfront",
+      "viewpoint": "front",
+      "path": "crops/glass-tinted.png",
+      "confidence": 0.85
+    },
+    {
+      "id": "region-parapet",
+      "viewpoint": "front-high",
+      "path": "crops/parapet-block.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-canopy",
+      "viewpoint": "front-high",
+      "path": "crops/aluminium.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-roofplant",
+      "viewpoint": "top-three-quarter",
+      "path": "crops/galv-plant.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-wall",
+      "viewpoint": "left",
+      "path": "crops/render-wall.png",
+      "confidence": 0.85
+    },
+    {
+      "id": "region-roofdeck",
+      "viewpoint": "top",
+      "path": "crops/_p_roof-deck.png",
+      "confidence": 0.75
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.2,
+      "note": "NOT OBSERVED. The rear elevation is not in the single plate. Authored as plain render with the parapet returning, and no openings. Reported, not invented."
+    },
+    {
+      "id": "region-right",
+      "viewpoint": "right",
+      "path": null,
+      "confidence": 0.25,
+      "note": "NOT OBSERVED. The +X wall is not in the single plate. Authored as plain render. The roller shutter is deliberately NOT mirrored onto it."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "building-shell",
+      "name": "Building shell: solid rendered walls",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One continuous painted render skin over four walls. Splitting it per elevation would cost a draw call per wall for the life of the prop to express one material.",
+      "materialId": "render-wall",
+      "material": "render-wall",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box, x -3.94..+3.94, y 0..3.55, z -3.44..+2.50 (7.88 x 3.55 x 5.94 m). SOLID, not a ring: the prop is an exterior shell that is only ever seen from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid also means the shopfront needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "dimensions": {
+          "w": 7.88,
+          "h": 3.55,
+          "d": 5.94
+        },
+        "center": [
+          0,
+          1.775,
+          -0.47
+        ],
+        "zFightingNote": "Set INSIDE the parapet ring in every horizontal direction (walls at +-3.94 and -3.44; parapet at +-4.00 and -3.50). The 0.06 m difference is a coping drip edge, and it is what stops the wall face and the parapet face being coplanar and co-facing.",
+        "segmentRationale": "One box, 12 triangles, plus a 0.012 m chamfer for silhouette."
+      },
+      "localFeatures": [
+        {
+          "id": "d10-render-streaking",
+          "description": "faint vertical weathering runoff on the render",
+          "delivery": "material.render-wall.localOverrides.weather-streak"
+        },
+        {
+          "id": "d6-canopy-joints",
+          "description": "canopy reads as six discrete slabs with 0.02 m joint reveals",
+          "delivery": "repetitionSystems.canopy-plates"
+        },
+        {
+          "id": "d7-downlights",
+          "description": "circular recessed downlights on the canopy soffit",
+          "delivery": "repetitionSystems.canopy-plates.integralFeature"
+        }
+      ],
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. This building is a STATIC exterior shell: it has no lid, no wheel and no door authored as an articulating part, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            2.3,
+            0
+          ],
+          "halfExtents": [
+            4.0,
+            2.3,
+            3.5
+          ],
+          "notes": "Declared on the asset as box. One convex box proxy over the whole envelope; a level builder collides with the building, not with its canopy plates."
+        }
+      },
+      "colorMaterialRecipe": {
+        "materialId": "render-wall",
+        "baseColor": "#9C948B",
+        "recipe": "Flat painted cement render. Solid albedo, roughness 0.88, metalness 0.0, no texture set. Faint vertical runoff streaking is carried as a localOverride tone (#8E867E), not geometry.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.708,
+        "dominantAlbedo": "rgba(156, 148, 139, 1.0)",
+        "secondaryAlbedo": "rgba(155, 146, 137, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.708
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Roof deck",
+      "level": "macro",
+      "role": "surface",
+      "importance": 0.6,
+      "confidence": 0.75,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat deck plane. Its own component only because the membrane is a visibly different grey (#C2C2C3) from the render (#9C948B) and this prop is seen from above in every hero shot and thumbnail.",
+      "materialId": "roof-deck",
+      "material": "roof-deck",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Thin slab x -3.90..+3.90, y 3.55..3.62, z -3.42..+2.48. Overlaps UNDER the parapet ring rather than meeting it, so there is no coincident face and no gap at the junction.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "dimensions": {
+          "w": 7.8,
+          "h": 0.07,
+          "d": 5.9
+        },
+        "center": [
+          0,
+          3.585,
+          -0.47
+        ],
+        "zFightingNote": "Bottom face at y=3.55 meets the shell top face at y=3.55: those face OPPOSITE directions, which is a butt joint of opposed faces and is how solids are meant to meet."
+      },
+      "localFeatures": [
+        {
+          "id": "d8-condenser-cowls",
+          "description": "circular fan cowl on the top of each condenser",
+          "delivery": "repetitionSystems.plant-condensers.integralFeature"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "roof-deck",
+        "baseColor": "#C2C2C3",
+        "recipe": "Neutral grey membrane, roughness 0.85, metalness 0.0. Deliberately a different material from the render below it: measured 38 levels lighter and visibly cooler.",
+        "evidenceRef": "region-roofdeck",
+        "confidence": 0.799,
+        "dominantAlbedo": "rgba(194, 194, 195, 1.0)",
+        "secondaryAlbedo": "rgba(175, 174, 171, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.799
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    },
+    {
+      "id": "parapet",
+      "name": "Parapet ring and front sign wall",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A continuous upstand ring in one material. The front is simply taller, which a plan extrusion cannot express (an extrude carries one height), so merged boxes are the right primitive here.",
+      "materialId": "render-wall",
+      "material": "render-wall",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "FOUR boxes merged into ONE component and ONE draw call: front sign wall x -4..4, y 3.55..4.32, z 2.20..2.74 (it OVERLAPS the shell top by 0.30 m so it is supported, and stands 0.24 m proud of the facade); left and right upstands x +-3.76..+-4.00, y 3.55..3.95, z -3.50..2.20; rear upstand y 3.55..3.95, z -3.50..-3.26. Merging is the whole point -- four separate components would be four draw calls to express one render skin.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "boxes": [
+          {
+            "id": "parapet-front",
+            "center": [
+              0,
+              3.935,
+              2.47
+            ],
+            "size": [
+              8.0,
+              0.77,
+              0.54
+            ]
+          },
+          {
+            "id": "parapet-left",
+            "center": [
+              -3.88,
+              3.75,
+              -0.65
+            ],
+            "size": [
+              0.24,
+              0.4,
+              5.7
+            ]
+          },
+          {
+            "id": "parapet-right",
+            "center": [
+              3.88,
+              3.75,
+              -0.65
+            ],
+            "size": [
+              0.24,
+              0.4,
+              5.7
+            ]
+          },
+          {
+            "id": "parapet-rear",
+            "center": [
+              0,
+              3.75,
+              -3.38
+            ],
+            "size": [
+              8.0,
+              0.4,
+              0.24
+            ]
+          }
+        ],
+        "zFightingNote": "The parapet outer faces (+-4.00, -3.50) stand 0.06 m PROUD of the shell walls (+-3.94, -3.44). Authored flush they would have been coplanar and co-facing along all three elevations -- the exact defect that shipped eight times on the 7-Eleven. The front box overlaps into the shell volume rather than butting it.",
+        "segmentRationale": "Four chamfered boxes, 48 triangles before bevels.",
+        "mergeNote": "Primitive is 'box' because the schema enumerates primitives, but this component is a MERGED cluster of the boxes listed in geometryDescriptor.boxes, built into one BufferGeometry and submitted as ONE draw call. The merge is the draw-call lever chosen in the blockout, not an optimization deferred to the end."
+      },
+      "localFeatures": [
+        {
+          "id": "front-wall-proud",
+          "description": "the sign wall projects 0.24 m forward of the facade",
+          "delivery": "geometryDescriptor.boxes.parapet-front"
+        },
+        {
+          "id": "d2-cap-blocks",
+          "description": "rusticated precast cap blocks overhanging the parapet front face",
+          "delivery": "repetitionSystems.parapet-cap-blocks capCourse"
+        },
+        {
+          "id": "d3-corner-quoins",
+          "description": "vertical block stacks framing both ends of the sign wall",
+          "delivery": "repetitionSystems.parapet-cap-blocks quoins"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "render-wall",
+        "baseColor": "#9C948B",
+        "recipe": "The SAME render as the shell -- measured #9C938A on the parapet against #9B9289 on the wall, one level apart. One material, not two: a one-level difference is not a material difference and would cost a shader switch to express.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.708,
+        "dominantAlbedo": "rgba(156, 148, 139, 1.0)",
+        "secondaryAlbedo": "rgba(153, 144, 135, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.708
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    },
+    {
+      "id": "sign-lightbox",
+      "name": "Big C illuminated fascia lightbox",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat backlit panel. UV strategy is AUTHORED, not generated: the +Z face samples the wordmark region of the canvas and the other five faces sample a plain white corner of the same canvas. That is what keeps the brand graphic at one material and one draw call instead of adding a separate graphic plane.",
+      "materialId": "sign-face",
+      "material": "sign-face",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Box x -3.30..+3.30, y 3.70..4.20, z 2.70..2.82. Sunk 0.04 m INTO the parapet front face (2.74) and standing 0.08 m proud of it, so the panel overlaps its surround instead of meeting it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored",
+        "normalStrategy": "vertex normals from generated geometry",
+        "dimensions": {
+          "w": 6.6,
+          "h": 0.5,
+          "d": 0.12
+        },
+        "center": [
+          0,
+          3.95,
+          2.76
+        ],
+        "uvNote": "Face +Z -> canvas region (0,0)-(1,0.8) carrying the wordmark. Faces +-X, +-Y, -Z -> canvas region (0,0.9)-(0.1,1.0), a plain white corner. One canvas, one material, one draw call.",
+        "zFightingNote": "Front face at z=2.82 clears the cap-block overhang at z=2.80 by 0.02 m; back face at 2.70 is inside the parapet solid. No coincident face anywhere on this panel."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-bigc-wordmark",
+          "description": "green field, red Big C letters, yellow Big above the C",
+          "delivery": "post-construction canvas texture, UV-region-split"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "sign-face",
+        "baseColor": "#D9D9D8",
+        "recipe": "Backlit acrylic diffuser: high flat albedo, roughness 0.35, envMapIntensity 0.6. The Big C wordmark arrives as a post-construction canvas, UV-region-split so only the +Z face samples it.",
+        "evidenceRef": "region-fascia",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(217, 217, 216, 1.0)",
+        "secondaryAlbedo": "rgba(228, 228, 227, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    },
+    {
+      "id": "shopfront-glazing",
+      "name": "Shopfront glazing pane",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One pane, not one per bay: the mullion grid in front of it does the dividing, and a pane per bay would cost a draw call each to express one sheet of glass.",
+      "materialId": "glass-tinted",
+      "material": "glass-tinted",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Single tinted pane x -3.25..+3.25, y 0.18..3.15, z 2.46..2.56. Overlaps INTO the facade at the back and is RECESSED 0.06 m behind the framing at the front, which is what makes it read as glass set into a frame rather than a sheet stuck on a wall.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "dimensions": {
+          "w": 6.5,
+          "h": 2.97,
+          "d": 0.1
+        },
+        "center": [
+          0,
+          1.665,
+          2.51
+        ],
+        "zFightingNote": "Front face 2.56 sits behind the frame front 2.64 and the mullion front 2.62; back face 2.46 is inside the shell solid (front face 2.50). No coincident face."
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "glass-tinted",
+        "baseColor": "#5A5F5E",
+        "recipe": "Dark tinted plate glass: roughness 0.08 for a tight specular lobe, ior 1.5, opacity 0.92. Mostly opaque ON PURPOSE -- there is no interior behind it, and a fully transparent pane would read as a hole punched through the wall.",
+        "evidenceRef": "region-shopfront",
+        "confidence": 0.781,
+        "dominantAlbedo": "rgba(90, 95, 94, 1.0)",
+        "secondaryAlbedo": "rgba(67, 72, 72, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.781
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    },
+    {
+      "id": "shopfront-frame",
+      "name": "Shopfront framing and door bay",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Every one of these parts is the same anodised aluminium. Folding them into one component is the draw-call lever chosen in the BLOCKOUT -- the 7-Eleven sibling records that a part split for authoring convenience cannot be merged afterwards once pivots hang off it.",
+      "materialId": "aluminium",
+      "material": "aluminium",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Perimeter frame, transom, kick rail, door jambs and door header MERGED into one component: left and right stiles x +-3.25..+-3.32; head y 3.15..3.22; sill y 0.10..0.18; transom y 2.42..2.50; door jambs at x +-1.15..+-1.22 up to y 2.50; door header x -1.15..1.15, y 2.50..2.72. All at z 2.52..2.64.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "boxes": [
+          {
+            "id": "stile-l",
+            "center": [
+              -3.285,
+              1.66,
+              2.58
+            ],
+            "size": [
+              0.07,
+              3.12,
+              0.12
+            ]
+          },
+          {
+            "id": "stile-r",
+            "center": [
+              3.285,
+              1.66,
+              2.58
+            ],
+            "size": [
+              0.07,
+              3.12,
+              0.12
+            ]
+          },
+          {
+            "id": "head",
+            "center": [
+              0,
+              3.185,
+              2.58
+            ],
+            "size": [
+              6.64,
+              0.07,
+              0.12
+            ]
+          },
+          {
+            "id": "sill",
+            "center": [
+              0,
+              0.14,
+              2.58
+            ],
+            "size": [
+              6.64,
+              0.08,
+              0.12
+            ]
+          },
+          {
+            "id": "transom",
+            "center": [
+              0,
+              2.46,
+              2.58
+            ],
+            "size": [
+              6.5,
+              0.08,
+              0.12
+            ]
+          },
+          {
+            "id": "jamb-l",
+            "center": [
+              -1.185,
+              1.3,
+              2.58
+            ],
+            "size": [
+              0.07,
+              2.4,
+              0.12
+            ]
+          },
+          {
+            "id": "jamb-r",
+            "center": [
+              1.185,
+              1.3,
+              2.58
+            ],
+            "size": [
+              0.07,
+              2.4,
+              0.12
+            ]
+          },
+          {
+            "id": "door-header",
+            "center": [
+              0,
+              2.61,
+              2.58
+            ],
+            "size": [
+              2.3,
+              0.22,
+              0.12
+            ]
+          }
+        ],
+        "zFightingNote": "Frame front face 2.64 stands proud of both the glazing (2.56) and the mullions (2.62). The frame OVERLAPS the glazing it holds rather than meeting its edge, which is the rule that stops a frame putting four coincident reveal faces in the model.",
+        "segmentRationale": "Eight chamfered boxes, 96 triangles before bevels.",
+        "mergeNote": "Primitive is 'box' because the schema enumerates primitives, but this component is a MERGED cluster of the boxes listed in geometryDescriptor.boxes, built into one BufferGeometry and submitted as ONE draw call. The merge is the draw-call lever chosen in the blockout, not an optimization deferred to the end."
+      },
+      "localFeatures": [
+        {
+          "id": "d5-sliding-doors",
+          "description": "wider central paired sliding door bay with its own jambs and header box",
+          "delivery": "geometryDescriptor.boxes jamb-l/jamb-r/door-header"
+        },
+        {
+          "id": "d4-mullion-grid",
+          "description": "fine vertical mullion grid on a 0.338 m pitch",
+          "delivery": "repetitionSystems.shopfront-mullions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "aluminium",
+        "baseColor": "#BDBCB9",
+        "recipe": "Mill-finish anodised aluminium: metalness 0.85, roughness 0.38. Shared with the canopy plates and the mullions -- one material across every aluminium part on the prop.",
+        "evidenceRef": "region-canopy",
+        "confidence": 0.794,
+        "dominantAlbedo": "rgba(189, 188, 185, 1.0)",
+        "secondaryAlbedo": "rgba(204, 204, 204, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.794
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    },
+    {
+      "id": "roller-shutter",
+      "name": "Side roller shutter and head box",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.6,
+      "confidence": 0.7,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Slats and head box share the galvanised material and merge into one component. The corrugation is carried by a shallow ribbed profile on the slat panel, which is geometry the silhouette actually shows at a grazing angle, rather than by a texture.",
+      "materialId": "galv-plant",
+      "material": "galv-plant",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "On the -X wall only. Corrugated slat panel x -3.99..-3.90, y 0.10..2.35, z 0.60..2.10, with the head box above at y 2.35..2.62. Stands 0.05 m proud of the wall face at -3.94.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "boxes": [
+          {
+            "id": "shutter-slats",
+            "center": [
+              -3.945,
+              1.225,
+              1.35
+            ],
+            "size": [
+              0.09,
+              2.25,
+              1.5
+            ],
+            "ribbed": {
+              "axis": "Y",
+              "pitch": 0.11,
+              "amplitude": 0.015,
+              "note": "Shallow horizontal ribs read as slats at a grazing angle. 20 ribs."
+            }
+          },
+          {
+            "id": "shutter-headbox",
+            "center": [
+              -3.935,
+              2.485,
+              1.35
+            ],
+            "size": [
+              0.11,
+              0.27,
+              1.6
+            ]
+          }
+        ],
+        "zFightingNote": "Outer face at x=-3.99 stands proud of the wall (-3.94) and deliberately does NOT reach the parapet plane at -4.00: a shutter face at exactly -4.00 would be coplanar and co-facing with the parapet outer face, which the bounding-box coplanarity check flags even though the two never overlap in Y.",
+        "mergeNote": "Primitive is 'box' because the schema enumerates primitives, but this component is a MERGED cluster of the boxes listed in geometryDescriptor.boxes, built into one BufferGeometry and submitted as ONE draw call. The merge is the draw-call lever chosen in the blockout, not an optimization deferred to the end."
+      },
+      "localFeatures": [
+        {
+          "id": "d9-roller-shutter",
+          "description": "recessed corrugated shutter with a metal head box above",
+          "delivery": "geometryDescriptor.boxes"
+        }
+      ],
+      "confidenceNote": "0.70: the shutter is clearly visible but partly foreshortened. Its z position along the wall is read off the plate; its exact width is inferred.",
+      "colorMaterialRecipe": {
+        "materialId": "galv-plant",
+        "baseColor": "#90969A",
+        "recipe": "Galvanised steel: metalness 0.70, roughness 0.55, cool blue-grey. Shared with the rooftop plant. The slat corrugation is a ribbed profile in GEOMETRY, not a normal map.",
+        "evidenceRef": "region-roofplant",
+        "confidence": 0.739,
+        "dominantAlbedo": "rgba(144, 150, 154, 1.0)",
+        "secondaryAlbedo": "rgba(130, 135, 138, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.739
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it. A pivot per component would describe a machine that does not exist."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "render-wall",
+      "name": "Painted cement render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9C948B",
+      "color": "#9C948B",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/render-wall_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#9C948B",
+        "secondary": [
+          "#9B9289",
+          "#999087"
+        ],
+        "samplingNotes": "Measured as the mean of crops/render-wall.png. extract_pbr_evidence confidence 0.708. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d10-render-streaking",
+          "color": "#8E867E",
+          "region": "wall field below the parapet",
+          "evidence": "crops/render-wall.png -- faint vertical runoff streaking, below the resolution worth a texture set at prop distance. Recorded so it is not mistaken for an omission."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-wall (crops/render-wall.png, PBR confidence 0.708): the wall field scans at standard deviation 3 per channel over a 130x150 px flat area -- there is no high-frequency component to carry, and no tooth resolves at plate resolution.",
+          "Flat painted render is flat paint at prop distance. The faint vertical weathering streaks are recorded as a localOverride, not as a texture set."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/render-wall.png",
+        "pbrReport": "material-evidence/render-wall.pbr.json",
+        "confidence": 0.708,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Roof deck membrane",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#C2C2C3",
+      "color": "#C2C2C3",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/roof-deck_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#C2C2C3",
+        "secondary": [
+          "#AFAEAB",
+          "#D5D4D2"
+        ],
+        "samplingNotes": "Measured as the mean of crops/_p_roof-deck.png. extract_pbr_evidence confidence 0.799. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofdeck (crops/_p_roof-deck.png, PBR confidence 0.799): the deck reads as one flat neutral value at standard deviation 10, and it is only ever seen over the parapet from above."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/_p_roof-deck.png",
+        "pbrReport": "material-evidence/roof-deck.pbr.json",
+        "confidence": 0.799,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "parapet-block",
+      "name": "Precast cap blockwork",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#B0ADA8",
+      "color": "#B0ADA8",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/parapet-block_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#B0ADA8",
+        "secondary": [
+          "#9D9992",
+          "#C3C3C2",
+          "#B9B7B4"
+        ],
+        "samplingNotes": "Measured as the mean of crops/parapet-block.png. extract_pbr_evidence confidence 0.748. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "rustication-tone",
+          "palette": [
+            "#9D9992",
+            "#C3C3C2",
+            "#B9B7B4",
+            "#A9A6A1"
+          ],
+          "region": "cap course and corner quoins",
+          "evidence": "crops/parapet-block.png -- adjacent blocks differ tonally by up to 38 levels. Applied deterministically per instance index via InstancedMesh instanceColor."
+        }
+      ],
+      "finishClass": "stone",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-parapet (crops/parapet-block.png, PBR confidence 0.748): the standard deviation of 25 per channel is BLOCK-TO-BLOCK tonal variation, not surface tooth -- the variation has the pitch of the blocks, so it is carried by per-instance colour on the InstancedMesh, which costs nothing, rather than by a texture set."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/parapet-block.png",
+        "pbrReport": "material-evidence/parapet-block.pbr.json",
+        "confidence": 0.748,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "sign-face",
+      "name": "Illuminated acrylic sign face",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#D9D9D8",
+      "color": "#D9D9D8",
+      "roughness": {
+        "base": 0.35,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/sign-face_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#D9D9D8",
+        "secondary": [
+          "#E4E4E3",
+          "#CFCFCE"
+        ],
+        "samplingNotes": "Measured as the mean of crops/sign-face.png. extract_pbr_evidence confidence 0.860. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "bigc-wordmark",
+          "region": "sign face +Z only",
+          "palette": [
+            "#8CC63F",
+            "#E30613",
+            "#FFD400"
+          ],
+          "evidence": "crops/fascia-graphic.png -- green rounded-rect field #8CC63F, red Big C letterforms #E30613, small yellow Big above the C #FFD400. Delivered as a post-construction canvas texture, UV-region-split so ONLY the +Z face of the lightbox samples the graphic and the five remaining faces sample a plain white corner of the same canvas. That keeps the fascia at one material and one draw call."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-fascia (crops/sign-face.png, PBR confidence 0.860, the highest of the seven): the white lightbox field scans flat at mean 215,215,214. It is a backlit acrylic panel -- a uniform diffuser by construction, with nothing for a texture set to carry.",
+          "The Big C wordmark is NOT a material texture: it is a generated canvas assigned AFTER material construction, which the textureless declaration does not affect. That is the documented route for a printed brand fascia."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/sign-face.png",
+        "pbrReport": "material-evidence/sign-face.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      },
+      "envMapIntensity": 0.6
+    },
+    {
+      "id": "aluminium",
+      "name": "Mill-finish anodised aluminium",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#BDBCB9",
+      "color": "#BDBCB9",
+      "roughness": {
+        "base": 0.38,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/aluminium_roughness.png"
+      },
+      "metalness": 0.85,
+      "albedo": {
+        "dominant": "#BDBCB9",
+        "secondary": [
+          "#CCCCCC",
+          "#B6B5B2"
+        ],
+        "samplingNotes": "Measured as the mean of crops/aluminium.png. extract_pbr_evidence confidence 0.794. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-canopy (crops/aluminium.png, PBR confidence 0.794): mill-finish aluminium is a uniform anodised surface. The extractor palette resolves a smooth value ramp (#CCCCCC..#8E8D89) which is the studio key falling across the canopy plates, not albedo variation, and is not sampled."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/aluminium.png",
+        "pbrReport": "material-evidence/aluminium.pbr.json",
+        "confidence": 0.794,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass-tinted",
+      "name": "Tinted plate glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#5A5F5E",
+      "color": "#5A5F5E",
+      "roughness": {
+        "base": 0.08,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass-tinted_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#5A5F5E",
+        "secondary": [
+          "#7B7D7D",
+          "#434848"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass-tinted.png. extract_pbr_evidence confidence 0.781. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d11-glazing-gloss",
+          "region": "glazing pane",
+          "roughness": 0.08,
+          "evidence": "crops/glass-tinted.png -- the only tight specular lobe on the prop; every other surface is matte or satin."
+        }
+      ],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-shopfront (crops/glass-tinted.png, PBR confidence 0.781): plate glass is optically smooth. Every feature in the crop is either a mullion (geometry) or a reflection (lighting) -- neither belongs in a texture set."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass-tinted.png",
+        "pbrReport": "material-evidence/glass-tinted.pbr.json",
+        "confidence": 0.781,
+        "verdict": "pass"
+      },
+      "transparent": true,
+      "opacity": 0.92,
+      "ior": 1.5,
+      "envMapIntensity": 1.1,
+      "opacityRationale": "The building is an exterior shell with NO interior geometry behind the glass. At full transparency the glazing would read as a hole punched through the wall. Authored at opacity 0.92 with low roughness so it reads as dark tinted glass instead."
+    },
+    {
+      "id": "galv-plant",
+      "name": "Galvanised steel plant and shutter",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#90969A",
+      "color": "#90969A",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is declared textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/galv-plant_roughness.png"
+      },
+      "metalness": 0.7,
+      "albedo": {
+        "dominant": "#90969A",
+        "secondary": [
+          "#82878A",
+          "#9FA6A8"
+        ],
+        "samplingNotes": "Measured as the mean of crops/galv-plant.png. extract_pbr_evidence confidence 0.739. The extractor palette is treated as advisory only here: these crops are flat material swatches, not isolated objects, so its foreground/background separation is weak (it says so in its own warnings). Albedo is taken from the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofplant (crops/galv-plant.png, PBR confidence 0.739): galvanised steel carries a spangle at hand distance and nothing at all at prop distance -- these units are 3.6 m up and read as a value, not a pattern.",
+          "The first crop of this material scored 0.677, BELOW the 0.7 threshold, because it was sited on the louvre grille and returned a near-black palette (#272727) that is cavity shading, not the casing. Re-sited onto the casing body it scores 0.739. Recorded because a sub-threshold confidence was the only thing that caught a crop on the wrong surface."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That builds FIVE canvases per material at textureResolution pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution. It is also a correctness fix: whenever a texture set exists the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo -- which is exactly what renders a building mid-grey."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/galv-plant.png",
+        "pbrReport": "material-evidence/galv-plant.pbr.json",
+        "confidence": 0.739,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "parapet-cap-blocks",
+      "name": "Parapet cap course and corner quoins",
+      "instanceCount": 18,
+      "sourceComponent": "parapet",
+      "material": "parapet-block",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "cap-block-unit",
+      "placement": {
+        "mode": "explicit",
+        "capCourse": {
+          "axis": "X",
+          "positions": [
+            -3.6483,
+            -2.985,
+            -2.3217,
+            -1.6583,
+            -0.995,
+            -0.3317,
+            0.3317,
+            0.995,
+            1.6583,
+            2.3217,
+            2.985,
+            3.6483
+          ],
+          "y": 4.46,
+          "z": 2.47,
+          "note": "12 blocks along the front parapet top, y 4.32..4.60, z 2.14..2.80."
+        },
+        "quoins": {
+          "axis": "Y",
+          "positions": [
+            3.6784,
+            3.935,
+            4.1917
+          ],
+          "x": [
+            -3.74,
+            3.74
+          ],
+          "z": 2.47,
+          "note": "3 blocks stacked at each front corner, y 3.55..4.32, framing both ends of the sign wall."
+        }
+      },
+      "instanceDimensions": {
+        "width": 0.6433,
+        "height": 0.28,
+        "depth": 0.66
+      },
+      "perInstanceColor": {
+        "source": "material.parapet-block.localOverrides.rustication-tone",
+        "palette": [
+          "#9D9992",
+          "#C3C3C2",
+          "#B9B7B4",
+          "#A9A6A1"
+        ],
+        "assignment": "deterministic by instance index",
+        "note": "The block-to-block tonal variation measured at standard deviation 25 is delivered by instanceColor, which costs nothing, instead of by a texture set."
+      },
+      "rationale": "Cap course and quoins are the SAME block at different transforms, so both sets ride one InstancedMesh and one geometry. Authored as 18 components they would have been 18 draw calls; here they are 1.",
+      "zFightingNote": "Blocks span x -3.98..+3.98 and stop 0.02 m short of the parapet outer face at +-4.00 so the two are not coplanar. They overhang the parapet front (2.74) to z=2.80, which is what a coping does and is why its outer face is never flush."
+    },
+    {
+      "id": "canopy-plates",
+      "name": "Entrance canopy plates with integral downlights",
+      "instanceCount": 6,
+      "sourceComponent": "building-shell",
+      "material": "aluminium",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "canopy-plate-unit",
+      "placement": {
+        "axis": "X",
+        "positions": [
+          -2.75,
+          -1.65,
+          -0.55,
+          0.55,
+          1.65,
+          2.75
+        ],
+        "y": 3.37,
+        "z": 2.95,
+        "note": "Canopy slab y 3.30..3.44, projecting z 2.40..3.50. The nose at z=3.50 IS the declared front of the envelope."
+      },
+      "instanceDimensions": {
+        "width": 1.08,
+        "height": 0.14,
+        "depth": 1.1
+      },
+      "integralFeature": {
+        "id": "d7-downlights",
+        "geometry": "cylinder",
+        "radius": 0.085,
+        "height": 0.03,
+        "localCenter": [
+          0,
+          -0.085,
+          0.0
+        ],
+        "note": "ONE downlight is merged into the plate geometry itself, so six plates give six downlights for ZERO extra draw calls. Authored as its own repetition system it would have cost one. Count and spacing are INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle."
+      },
+      "rationale": "The canopy reads as discrete slabs with visible joints in the plate, not as one plate. Six instances of one 1.08 m unit on a 1.10 m pitch leave a 0.02 m joint reveal.",
+      "zFightingNote": "Plate backs overlap into the shell facade (2.50) rather than butting it. The top at y=3.44 clears the shell top at 3.55 and the frame head at 3.22."
+    },
+    {
+      "id": "shopfront-mullions",
+      "name": "Shopfront vertical mullions",
+      "instanceCount": 11,
+      "sourceComponent": "shopfront-frame",
+      "material": "aluminium",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "mullion-box",
+      "placement": {
+        "axis": "X",
+        "positions": [
+          -2.9117,
+          -2.5734,
+          -2.2351,
+          -1.8968,
+          -1.5585,
+          0.0,
+          1.5585,
+          1.8968,
+          2.2351,
+          2.5734,
+          2.9117
+        ],
+        "y": 1.645,
+        "z": 2.58,
+        "note": "Five mullions in each glazed run on a 0.338 m pitch, plus the meeting stile at x=0."
+      },
+      "instanceDimensions": {
+        "width": 0.07,
+        "height": 3.05,
+        "depth": 0.08
+      },
+      "rationale": "The fine vertical grid is the single most recognisable thing about the shopfront. Eleven instances on one geometry cost one draw call; eleven components would have cost eleven and blown the ceiling on their own.",
+      "zFightingNote": "Mullions occupy z 2.54..2.62 -- INSIDE the frame band (2.52..2.64) at both ends. Authored on the frame planes they would have been coplanar and co-facing with it on two faces. They still stand proud of the glazing at 2.56, so the glass reads as recessed."
+    },
+    {
+      "id": "plant-condensers",
+      "name": "Rooftop condenser units",
+      "instanceCount": 4,
+      "sourceComponent": "roof-deck",
+      "material": "galv-plant",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "condenser-unit",
+      "placement": {
+        "mode": "explicit",
+        "positions": [
+          [
+            -2.5,
+            3.6,
+            -0.6
+          ],
+          [
+            -1.6,
+            3.6,
+            -1.3
+          ],
+          [
+            0.9,
+            3.6,
+            -0.5
+          ],
+          [
+            1.8,
+            3.6,
+            -1.2
+          ]
+        ],
+        "yawDegrees": [
+          0,
+          90,
+          0,
+          90
+        ],
+        "note": "Two pairs, as the plate shows. Alternating yaw gives the cluster variety without a second geometry."
+      },
+      "instanceDimensions": {
+        "width": 0.95,
+        "height": 0.92,
+        "depth": 0.85
+      },
+      "integralFeature": {
+        "id": "d8-condenser-cowls",
+        "geometry": "cylinder",
+        "radius": 0.3,
+        "height": 0.1,
+        "segments": 16,
+        "localCenter": [
+          0,
+          0.46,
+          0
+        ],
+        "note": "Casing, circular fan cowl and four feet are MERGED into the single instanced geometry. The plate shows two visually similar unit types; collapsing them to one costs a little fidelity and saves a whole draw call, and is reported as a deliberate simplification."
+      },
+      "rationale": "Four units, one geometry, one draw call. This is what breaks the roofline, so it is worth the slot.",
+      "zFightingNote": "Feet start at y=3.60, sunk 0.02 m INTO the roof deck (top 3.62), so the two overlap rather than sharing a plane."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T13:44:36.614666+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.8,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.568632+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.8,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.655719+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.744541+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.442191+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.537317+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.624761+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.707479+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T13:47:44.445252+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T13:44:36.614666+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.8,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout through material pass: 11/12 draw calls, all four budget axes green, coplanarity clean, runtime contract exact. Silhouette verified three ways against the plate and the independent Meshy reconstruction.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.568632+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.8,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: 7 components and 4 InstancedMesh systems carry 50 discrete parts at 11 draw calls. Facade depth ordering authored so no two surfaces are coplanar and co-facing; check-coplanar clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.655719+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: coping depth trimmed 0.66 to 0.50 m, lightbox raised to 0.58 m to match the plate's sign-wall proportion, shutter corrugation rebuilt so alternating slats thin inward instead of projecting past the declared envelope.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:37.744541+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.78
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 7 materials from measured crops at PBR confidence 0.708-0.860, every one declared textureless with named evidence. Metalness capped for a harness with no environment map. Big C fascia via post-construction canvas, UV-region-split to one draw call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.442191+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: surface character is carried by GEOMETRY and per-instance colour, not by texture. Shutter corrugation is 20 ribbed slats; cap-course rustication is instanceColor from the measured palette at standard deviation 25; canopy joints are 0.02 m reveals between instanced plates.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.537317+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: the plate is a near-shadowless studio lightbox -- the -X wall and the +Z parapet measure one level apart, so there is almost no baked key to subtract and the measured crop means stand as albedo. No rim light and no contact shadow are present in the plate, both recorded as absent. Exposure 1.0, ACES filmic. castShadow is on every mesh; the host scene owns the ground contact shadow.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.624761+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center) and ZERO sockets. The building is a static exterior shell -- nothing opens, turns or swings, so one root pivot is the entire mechanism inventory and that is the correct answer rather than a gap. Collider is a single box proxy, matching the asset declaration. No destruction groups, matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:45:54.707479+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Optimization pass: nothing to optimise, by construction. The component split was costed against the draw-call ceiling in the BLOCKOUT -- parapet, framing and shutter are merged multi-box components and the downlights and cowls are folded into their instanced parents. Final: 1648/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries. Factory builds in 62-91 ms because all 7 materials are textureless.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T13:47:44.445252+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "name": "Overall silhouette and proportions",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "THREE independent measurements agree. (1) Bounding box: 8.00 x 4.60 x 7.00 m built against 8 x 4.6 x 7 declared, exact. (2) Meshy v7 reconstructed the same plate independently and its bounds normalise to 1 : 0.584 : 0.860 against the declared 1 : 0.575 : 0.875 -- within 1.7% on both axes. (3) Area-weighted SURFACE band comparison against that mesh, feet-aligned and height-normalised: mean absolute width delta 0.060 and depth delta 0.112 of height across ten bands.",
+          "notes": "Sits exactly at its threshold, and the residual is named rather than smoothed over. Band 9 (the top 10%) is the one real divergence: the reference mesh reports depth 1.080 of height there against this model's 0.908. That band contains only the front cap course in this model, and Meshy smooths the rooftop plant cluster into the parapet ring, which is precisely the hallucination a generative proxy produces at the top of a subject. The PLATE is the authority and the plate shows a tall front sign wall over low side upstands, so this was deliberately NOT chased.\nThe raw frame-space silhouette IoU is 0.665, but that number is dominated by camera: the harness frames to a fixed radius while the plate is a long-lens near-orthographic shot with the subject at 75% frame height, leaving a 16% scale delta. Aligned bounding boxes and normalised, IoU is 0.826, with aspect ratio matched to 2.1% at azimuth 315 / elevation 20."
+        },
+        {
+          "id": "brand-fascia",
+          "name": "Big C illuminated fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Green field #8CC63F at 36.5%-73% of the sign width, measured off the plate (green spans px 575-755 within a white panel spanning 385-905). Red #E30613 wordmark, yellow #FFD400 tag on the C's upper-left shoulder, cream #FFF6E0 keyline. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "The glyphs are Arial bold, not Big C's own rounded proprietary face, and the C is a plain circular C rather than the brand's flag-terminal form. That is an approximation and is reported as one. The wordmark is fitted to the panel by MEASUREMENT (measureText plus a horizontal scale) rather than by a font-size ratio, because headless Chrome's font fallback decides the real advance widths -- sized by ratio the glyphs filled about 40% of the field against the plate's ~86%."
+        },
+        {
+          "id": "glazed-shopfront",
+          "name": "Glazed shopfront and doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Eleven mullions on a 0.338 m pitch across two glazed runs plus the centre meeting stile; wider central door bay with its own jambs and header; tinted pane at measured #6B6F6E, opacity 0.92, recessed 0.06 m behind the framing.",
+          "notes": "Glazing is mostly opaque by design -- the building is an exterior shell with nothing behind it, so a transparent pane would read as a hole punched through the wall. The plate shows more reflection variation across the glass than a single flat pane can carry; that is a known and accepted simplification for a prop at this budget."
+        },
+        {
+          "id": "entrance-canopy",
+          "name": "Entrance canopy",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six plates on a 1.10 m pitch with a 0.02 m joint reveal, cantilevering z 2.40 to 3.50. One downlight merged into the plate geometry, so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing are INFERRED at 0.50 confidence -- the soffit is visible only at a grazing angle in the single plate. The canopy nose at z=3.50 is the declared front of the envelope: the shell face was set back to 2.50 so the cantilever lands on the declared 7.0 m depth instead of overrunning it."
+        },
+        {
+          "id": "parapet-blockwork",
+          "name": "Parapet cap course and quoins",
+          "tier": "important",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twelve cap blocks plus three quoins at each front corner, all on one InstancedMesh and one geometry. Block-to-block tone measured at standard deviation 25 in crops/parapet-block.png and delivered by instanceColor from the measured palette.",
+          "notes": "The coping reads chunkier and deeper than the plate's; its depth was trimmed from 0.66 to 0.50 m during review and remains slightly heavy. Finding worth recording: the tones were initially being MULTIPLIED down by the material's own base colour, because InstancedMesh.setColorAt multiplies rather than replaces, and the cap course rendered brown. The material is now white and the measured tones are unmodulated."
+        },
+        {
+          "id": "roof-plant",
+          "name": "Rooftop condenser cluster",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four units on one merged casing+cowl+feet geometry, one draw call, alternating yaw. Galvanised at measured #90969A.",
+          "notes": "The plate shows two visually similar unit types; collapsing them to one instanced geometry costs a little fidelity and saves a whole draw call against a ceiling that finished at 11 of 12. Reported as a deliberate simplification, not an oversight. Unit spacing is wider than the plate's two tight pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT for the whole reconstruction, recorded last so it is the one thaikit carries across. Overall visual fidelity 0.83, not the 0.88 the optimization pass scored ITSELF on -- that number measured whether the budget was well spent, not whether the model looks like the plate, and left alone it would have shipped in the registry as though it were the reconstruction score. All 8 passes reached continue with 0 recorded corrections against the 10 ceiling; defects found during a pass (metalness rendering metals black under a harness with no environment map, instanceColor multiplying the cap-course tones down to brown, a 46 m2 coplanar co-facing pair between roof deck and parapet, shutter slats overshooting the declared envelope, a wordmark filling 40% of its field) were fixed before that pass's review was recorded, which is why the correction counter reads 0.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/el20/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/big-c-store-building/review/cmp-315.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was chosen against the DRAW-CALL ceiling in the blockout, before any geometry existed: the parapet ring, the shopfront framing and the roller shutter are merged multi-box components rather than parts to be merged later, and the canopy downlights and condenser cowls are folded into their instanced parent geometry. A pivot hung off a part cannot be merged afterwards, which is why none of this was left to an optimization pass.",
+    "accounting": {
+      "drawCalls": {
+        "components": 7,
+        "repetitionSystems": 4,
+        "projectedTotal": 11,
+        "budget": 12,
+        "headroom": 1,
+        "note": "Four repetition systems collapse 39 discrete parts (18 cap blocks and quoins, 6 canopy plates, 11 mullions, 4 condensers) into 4 InstancedMesh submissions. Authored as components they would have been 39 draw calls against a ceiling of 12."
+      },
+      "materials": {
+        "projectedTotal": 7,
+        "budget": 8,
+        "headroom": 1,
+        "note": "render-wall is shared by the shell AND the parapet ring -- measured at #9B9289 on the wall and #9C938A on the parapet, a one-level difference, so they are one material and not two. galv-plant is shared by the rooftop plant and the roller shutter. The block-to-block tone on the cap course is per-instance COLOUR, not a second material: a colour difference is not a material difference."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 11,
+        "budget": 16,
+        "headroom": 5,
+        "note": "One per component (7) plus one per repetition system (4). The 7-Eleven sibling records the correction that matters here: a scaled box is NOT a shared geometry, because the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh does reuse a single geometry across all its instances, which is the whole point, so the four systems add four and not thirty-nine."
+      },
+      "triangles": {
+        "buildingShell": 12,
+        "roofDeck": 12,
+        "parapet": 48,
+        "signLightbox": 12,
+        "glazing": 12,
+        "shopfrontFrame": 96,
+        "rollerShutter": 264,
+        "capBlocks": 216,
+        "canopyPlates": 492,
+        "mullions": 132,
+        "condensers": 608,
+        "chamfers": 340,
+        "projectedTotal": 2244,
+        "budget": 16000,
+        "headroom": 13756,
+        "note": "Triangles are NOT the binding constraint on this prop -- draw calls are, at 11 of 12. The large triangle headroom is deliberately spent on silhouette quality (the 0.012 m chamfer on every box, the 16-segment condenser cowls, the 20-rib shutter profile) and must NOT be read as room to split components, which would spend the axis that is actually scarce."
+      }
+    }
+  },
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "unobserved-rear",
+      "severity": "medium",
+      "description": "Rear and right elevations are not in the single plate. Authored plain. A user placing the prop so its back faces the player sees an unarticulated wall.",
+      "mitigation": "Reported at 0.20/0.25 confidence rather than invented."
+    },
+    {
+      "id": "condenser-type-collapse",
+      "severity": "low",
+      "description": "Two visually similar condenser types collapsed to one instanced geometry to save a draw call.",
+      "mitigation": "Alternating yaw gives cluster variety. Reported as a deliberate simplification."
+    },
+    {
+      "id": "draw-call-headroom",
+      "severity": "medium",
+      "description": "11 of 12 draw calls used. Any new component during review spends the last slot.",
+      "mitigation": "Triangle headroom is 13,756 -- refinement must go into geometry on EXISTING components, never into new ones."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Big C Store Building retail storefront curtain wall aluminium mullion glazing parapet coping precast concrete block cap course quoin illuminated fascia lightbox signage acrylic sign panel rooftop HVAC condenser unit galvanised casing roller shutter corrugated slat door cement render painted exterior wall low poly game prop",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.coordinate-relative-units",
+        "file_path": "grimoire/glossary/3d_vocabulary.md",
+        "heading": "Geometry And Topology",
+        "key_path": null,
+        "score": 5.226280734608,
+        "snippets": [
+          "A bevel radius is sized in object-relative units."
+        ],
+        "source_refs": [
+          {
+            "path": "grimoire/glossary/3d_vocabulary.md",
+            "heading": "Geometry And Topology",
+            "key_path": null
+          },
+          {
+            "path": "grimoire/intake/image_analysis.md",
+            "heading": "Layer 2 — Overall form & silhouette",
+            "key_path": null
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "grimoire/glossary/3d_vocabulary.md"
+          },
+          {
+            "kind": "notebooklm-research",
+            "ref": "notebooklm:4b03c2f9-8393-411f-b5b4-039ab9532843",
+            "note": "Validated generic schema vocabulary; numeric claims remain backed by local source_refs."
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-roughness",
+        "file_path": "grimoire/glossary/3d_vocabulary.md",
+        "heading": "Material And PBR",
+        "key_path": null,
+        "score": 4.283141571387,
+        "snippets": [
+          "Roughness is microfacet scatter: high roughness reads matte and low roughness reads glossy. Recognition cues: low roughness reads as a sharp, mirror-like, tight specular highlight; high roughness reads as a blurry, wide, dim highlight and matte ..."
+        ],
+        "source_refs": [
+          {
+            "path": "grimoire/glossary/3d_vocabulary.md",
+            "heading": "Material And PBR",
+            "key_path": null
+          },
+          {
+            "path": "grimoire/intake/image_analysis.md",
+            "heading": "Layer 5 — Materials & surface (PBR)",
+            "key_path": null
+          },
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[1]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "grimoire/glossary/3d_vocabulary.md"
+          },
+          {
+            "kind": "notebooklm-research",
+            "ref": "notebooklm:4b03c2f9-8393-411f-b5b4-039ab9532843",
+            "note": "Validated generic schema vocabulary; numeric claims remain backed by local source_refs."
+          },
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation — merged recognition cues + Three.js target instead of duplicating this entity."
+          }
+        ]
+      },
+      {
+        "record_id": "core.shader-mapping-boxgeometry-slides-receivers-grips",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[5]",
+        "score": 3.982060806801,
+        "snippets": [
+          "... ráp hình chữ nhật/khối. Recognition cues: Flat-faced, roughly rectangular volume (pistol slide, receiver/frame, grip, panel) Dấu hiệu nhận diện: Khối gần chữ nhật với các mặt phẳng (khóa nòng súng lục, thân/khung súng, tay cầm, tấm phẳng) ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a studio lightbox. Evidence: the -X wall measures #9B9289 and the +Z-facing parapet measures #9C938A -- one level apart. Only near-shadowless illumination puts two surfaces at 90 degrees to each other within one level."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value. This is WHY the measured crop means are usable as albedo with almost no key to subtract."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround #808080",
+      "notes": "The seamless backdrop acts as a large uniform environment. Drives the satin lobe on the aluminium and the specular on the glazing; envMapIntensity is set per material against it."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light is present in the plate. Recorded explicitly so the review does not read a missing rim in the render as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping. The backdrop measures 132 against a nominal #808080 (128), so the plate is within 3% of neutral exposure -- no exposure compensation is applied to the measured albedos, and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact shadow and NO ground shadow in the plate: the reference prompt asked for a cut-out floating against a seamless backdrop with nothing underneath, and the plate delivers that -- the border ring measures uniform with no darkening under the building. Recorded explicitly so the absence is not read as a missing feature. IN USE the prop is a floor-placed building and the HOST scene owns its contact shadow: the factory ships castShadow enabled on every mesh and receiveShadow on the roof deck and canopy, and defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "box, cylinder and merged-box clusters only. No organic surfaces exist on this subject."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Four InstancedMesh systems carry 39 of the 50 discrete parts."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation (cap-block tone, condenser yaw) is assigned by instance INDEX, not by a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Six of seven materials are declared textureless. The seventh, sign-face, is also declared textureless and receives the Big C wordmark as a generated canvas assigned AFTER material construction -- the documented route for a printed brand fascia, unaffected by the declaration."
+    }
+  ],
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6532,
+        "aspectRatioDelta": 0.0263,
+        "scaleDelta": 0.1546,
+        "bilateralSymmetryError": 0.1629,
+        "colorDelta": {
+          "checked": 7,
+          "maxDeltaE": 7.09,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.51
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.0
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.09
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.653 is below threshold 0.85",
+        "scale delta 0.155 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 2.3% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "eb2b6665037ff554",
+      "passId": "blockout"
+    }
+  ]
+}

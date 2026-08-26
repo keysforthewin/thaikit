@@ -47,6 +47,55 @@ let model = null;
 const sphere = new THREE.Sphere(new THREE.Vector3(), 1);
 const originalMaterials = new Map();
 
+// Diagnostics ONLY -- never sequencing. A map that 404s would otherwise sit in
+// the wait below until the deadline and then be measured as simply absent,
+// which is the same silent grey surface a missing texture always is.
+const loadErrors = [];
+THREE.DefaultLoadingManager.onError = function (url) { loadErrors.push(url); };
+
+// displacementMap and alphaMap were missing from the old inline list: a prop
+// that ships a height map paid VRAM this never counted.
+const MAP_KEYS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap',
+                  'aoMap', 'displacementMap', 'alphaMap'];
+
+/**
+ * A texture is measurable once its image has decoded. A CanvasTexture is born
+ * that way; one from TextureLoader is not, and it is handed back before the
+ * bytes arrive.
+ */
+function textureReady(t) {
+  const img = t && t.image;
+  if (!img) return false;
+  return !!(img.width || img.videoWidth || img.data);
+}
+
+/**
+ * Textures load asynchronously, and BOTH the measurement below and the
+ * screenshots the caller takes straight afterwards would otherwise see an empty
+ * material -- 0 textures, 0 bytes and an untextured render, which is a valid PNG
+ * of the wrong thing.
+ *
+ * Polling the collected Texture objects rather than DefaultLoadingManager.onLoad
+ * is deliberate: onLoad never fires for a prop that loads nothing, so every
+ * procedural prop in the kit would hang here until timeout. An empty list
+ * resolves on the first pass.
+ */
+async function waitForTextures(textures, timeoutMs) {
+  const deadline = performance.now() + (timeoutMs || 20000);
+  for (;;) {
+    const pending = textures.filter(function (t) { return !textureReady(t); });
+    if (!pending.length) break;
+    // Every straggler has already failed; waiting out the deadline adds nothing.
+    if (loadErrors.length >= pending.length) break;
+    if (performance.now() >= deadline) break;
+    await new Promise(function (r) { requestAnimationFrame(r); });
+  }
+  return {
+    pending: textures.filter(function (t) { return !textureReady(t); }).length,
+    errors: loadErrors.slice()
+  };
+}
+
 // The UV-checker and albedo passes went with the GLB rubric they served: this
 // pipeline emits code, so there is no unwrap to inspect and no baked-in
 // lighting to isolate. Clay and wire survive because they are what a silhouette
@@ -89,7 +138,12 @@ window.__thaikit = {
     }
 
     if (model) scene.remove(model);
-    model = factory({}, {});
+    // The module is eval'd, not imported: it has no import.meta and no
+    // currentScript, so it cannot resolve its own shipped files. A bare relative
+    // path would resolve against THIS document instead, which is a different
+    // place here than it is in the web app. Hand it the base explicitly.
+    const baseUrl = new URL('.', new URL(url, location.href)).href;
+    model = factory({}, { baseUrl: baseUrl });
     if (!model || !model.isObject3D) throw new Error('factory did not return an Object3D');
     scene.add(model);
     model.updateMatrixWorld(true);
@@ -101,8 +155,7 @@ window.__thaikit = {
     // this count and drawCalls is the only visible evidence that a repeated part
     // became an InstancedMesh rather than N copies.
     const geometries = new Set();
-    const images = new Set();
-    let gpuBytes = 0;
+    const textures = [];
     model.traverse(function (o) {
       if (!o.isMesh) return;
       originalMaterials.set(o.uuid, o.material);
@@ -119,17 +172,27 @@ window.__thaikit = {
       vertices += meshVertices * copies;
       triangles += (g.index ? g.index.count / 3 : meshVertices / 3) * copies;
 
-      // A procedural factory has no texture files, but it can generate canvas
-      // textures -- and those cost VRAM exactly like loaded ones do.
-      var keys = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap'];
-      for (var i = 0; i < keys.length; i++) {
-        var tex = o.material[keys[i]];
-        var img = tex && tex.image;
-        if (!img || images.has(img)) continue;
-        images.add(img);
-        gpuBytes += Math.round((img.width || 0) * (img.height || 0) * 4 * (4 / 3));
+      // A procedural factory can generate canvas textures and a textured one can
+      // load files; both cost VRAM the same way. Collect them here and measure
+      // after the wait below -- a loaded texture has no image yet.
+      for (var i = 0; i < MAP_KEYS.length; i++) {
+        var tex = o.material[MAP_KEYS[i]];
+        if (tex && textures.indexOf(tex) === -1) textures.push(tex);
       }
     });
+
+    const tLoad0 = performance.now();
+    const texWait = await waitForTextures(textures, 20000);
+    const textureMs = Math.round(performance.now() - tLoad0);
+
+    const images = new Set();
+    let gpuBytes = 0;
+    for (var ti = 0; ti < textures.length; ti++) {
+      var timg = textures[ti].image;
+      if (!timg || images.has(timg)) continue;
+      images.add(timg);
+      gpuBytes += Math.round((timg.width || 0) * (timg.height || 0) * 4 * (4 / 3));
+    }
 
     const box = new THREE.Box3().setFromObject(model);
     box.getBoundingSphere(sphere);
@@ -142,6 +205,7 @@ window.__thaikit = {
       triangles: triangles, vertices: vertices, drawCalls: drawCalls,
       materials: materials.size, uniqueGeometries: geometries.size,
       textures: images.size, gpuBytesEstimate: gpuBytes,
+      textureMs: textureMs, texturesPending: texWait.pending, textureErrors: texWait.errors,
       bounds: { min: box.min.toArray(), max: box.max.toArray() },
       radius: sphere.radius,
       runtime: rt ? {

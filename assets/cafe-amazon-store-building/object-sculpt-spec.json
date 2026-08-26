@@ -1950,7 +1950,8 @@
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript at a cost that is the SQUARE of textureResolution; eight materials at 1024 would cost roughly 15 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves."
       },
-      "materialPipelineNote": "Albedo anchored to the SUN-LIT (+X) plate reading via the measured L(+Z)/L(+X)=0.508 lighting solve; see evidence/material-evidence.json."
+      "materialPipelineNote": "Albedo anchored to the SUN-LIT (+X) plate reading via the measured L(+Z)/L(+X)=0.508 lighting solve; see evidence/material-evidence.json.",
+      "postConstructionMap": "postConstructionMap: buildTimberCanvas(), 512x64 near-white grain MULTIPLIER assigned to this shared material (battens + canopy); the authored #ad7a4d stays as material.color. Per-board tone on the dado-battens InstancedMesh via setColorAt with RELATIVE multipliers 0.80-1.00 (Knuth-hashed by index, deterministic) -- relative because setColorAt multiplies with material.color and this material is deliberately not white."
     },
     {
       "id": "glass-tinted",
@@ -1996,7 +1997,8 @@
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript at a cost that is the SQUARE of textureResolution; eight materials at 1024 would cost roughly 15 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves."
       },
       "materialPipelineNote": "Albedo anchored to the SUN-LIT (+X) plate reading via the measured L(+Z)/L(+X)=0.508 lighting solve; see evidence/material-evidence.json.",
-      "envMapIntensity": 1.2
+      "envMapIntensity": 1.2,
+      "postConstructionMap": "postConstructionMap: buildGlazingCanvas(), 512x256, planar-projected by WORLD position (front x -3.56..3.56, return z 3.28..1.48, y 0.06..3.08) so the interior impression lines up across the front run, the return and the door leaf. Authored as a plain #4a4b46 pane the glazing rendered at luma ~20 against the backdrop's 58 -- a hole to the silhouette gate and a black slab to a player; the plate's glazing samples at luma 78-85 with the interior showing through. The canvas carries a de-lit interior (head reflection, warm back wall, counter band at 0.85-1.15 m, floor) and a soft sheen at mean luma ~80. color forced white (absolute tones); roughness lifted 0.06 -> 0.30 because with the reflection painted in, a mirror lobe only darkens the pane off-axis. Still opaque, still no interior geometry."
     },
     {
       "id": "concrete-deck",
@@ -2154,7 +2156,8 @@
           1024,
           256
         ]
-      }
+      },
+      "postConstructionMap": "postConstructionMap: SIGN_IMAGE_DATA_URL, a 1200x276 WebP (32 KB) embedded in the bundle and loaded through TextureLoader, color forced white. Composed once in Pillow (scratch/<id>/sign/): badge = fal-ai/flux/dev generated toucan-over-leaves roundel (seed 11, ~$0.03), a stylised approximation of the trademark and recorded as such, cut to a circle with a white rim; wordmark = 'Café Amazon' in URW Gothic Demi at 130 px with a dark drop shadow; background the fascia's measured #466748 so the 10 mm proud panel edge disappears into the band. Baked rather than drawn at runtime because fillText depends on the host's fonts and the first ship's serif fallback ended 200 px short of its panel; buildBrandCanvas() (stroked vector glyphs) remains as the decode-failure fallback. Panel 4.70 x 1.081 m, centred on the front elevation at x = 0 and vertically in the 3.26-4.52 band, per user direction (the plate has it left of centre)."
     }
   ],
   "repetitionSystems": [

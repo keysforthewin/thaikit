@@ -1,0 +1,3679 @@
+{
+  "targetName": "FamilyMart Store Building",
+  "targetId": "familymart-store-building",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 1,
+    "interaction_fit": 2
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "single-storey convenience-store building with a glazed shopfront",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "rectilinear",
+        "flat-roofed",
+        "asymmetric-front-to-back"
+      ],
+      "structureKind": [
+        "static-level-geometry",
+        "exterior-shell",
+        "single-rigid-body"
+      ],
+      "motionPotential": [
+        "none - nothing on this prop turns and nothing attaches to it"
+      ],
+      "materialFamilies": [
+        "cement-render",
+        "painted-steel",
+        "architectural-glass",
+        "mill-finish-aluminium",
+        "printed-vinyl"
+      ],
+      "notes": "A single-storey shop shell. EXTERIOR ONLY: a prop kit is looked at from outside, so there is no interior geometry and the glazing is therefore authored as a tinted, mostly opaque pane rather than as a window -- with nothing behind it, a transparent pane reads as a hole punched in the facade."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 3,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 3,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 1,
+        "mesoComponents": 7,
+        "microFeatureGroups": 3,
+        "materialLayers": 7,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "The silhouette is a box with a parapet and a hung fascia; what identifies the building is the FASCIA, not the outline.",
+        "The binding budget axes are unique geometries and materials, not triangles: the generator bakes each component's dimensions into vertex data, so every box is a distinct geometry.",
+        "actionReadinessNeed is 1: a box collider, one root pivot, and no sockets."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "No repetition system: the shopfront bays are holes in ONE frame plate rather than a mullion per bay, which is cheaper on both binding axes and is what a shopfront actually is -- one welded assembly."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Each detail maps to a component.localFeatures or material.localOverrides entry.",
+      "details": [
+        {
+          "id": "brand-band",
+          "zone": "fascia",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "The fascia's coloured bands and wordmark -- what names the building.",
+          "mapsTo": {
+            "ref": "fascia-band/brand-band"
+          }
+        },
+        {
+          "id": "coping",
+          "zone": "roofline",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "Parapet upstand capping the walls above the flat roof.",
+          "mapsTo": {
+            "ref": "parapet/coping"
+          }
+        },
+        {
+          "id": "pane",
+          "zone": "shopfront",
+          "kind": "gloss",
+          "identityDefining": true,
+          "description": "Tinted glazing standing proud of the wall face.",
+          "mapsTo": {
+            "ref": "shopfront-glazing/pane"
+          }
+        },
+        {
+          "id": "mullions",
+          "zone": "shopfront",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "White framing dividing the shopfront into five bays.",
+          "mapsTo": {
+            "ref": "shopfront-framing/mullions"
+          }
+        },
+        {
+          "id": "condenser-bank",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "Rooftop condenser plant breaking the roofline.",
+          "mapsTo": {
+            "ref": "rooftop-plant/condenser-bank"
+          }
+        },
+        {
+          "id": "leaf",
+          "zone": "flank",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "Service door on the flank wall.",
+          "mapsTo": {
+            "ref": "service-door/leaf"
+          }
+        },
+        {
+          "id": "wall-streaking",
+          "zone": "walls",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "Run-off staining down the render below the coping drip.",
+          "mapsTo": {
+            "ref": "render/wall-streaking"
+          }
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+    "resolvedUnknowns": [
+      "[hidden] The rear and the far flank are not visible in the single plate. Inferred as plain render walls continuing the near flank, which is what this building type does. No detail is invented there. Confidence 0.7.",
+      "[deliberate-non-modelling] No interior. The plate shows shelving through the glass; it is not modelled, and the glazing is authored mostly opaque so its absence cannot be seen.",
+      "[measurement-refused] Four of ten crops were refused after inspection rather than used: the blue fascia line, the glazing, the parapet and the roof deck. Their values are authored and labelled as authored."
+    ]
+  },
+  "qualityContract": {
+    "qualityBar": "complex",
+    "definitionOfDone": [
+      "Footprint sits inside the declared 8.0 x 4.6 x 7.0 m envelope with no geometry overhanging it.",
+      "The fascia carries the brand's own colours and wordmark and is legible in the render.",
+      "The glazing reads as glass, not as a hole: nothing behind it is visible.",
+      "All four budget axes hold, measured not estimated.",
+      "No coincident co-facing face pair anywhere (check-coplanar clean).",
+      "Exactly one pivot (root) and zero sockets."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 4,
+      "microFeatureGroups": 2,
+      "materialLayers": 7,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "brand-fascia",
+      "name": "Brand fascia: colours, bands and wordmark",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "fascia-band"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "massing",
+      "name": "Massing: box, parapet, hung fascia, glazed front",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "building-shell",
+        "parapet"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "glazing-reads-as-glass",
+      "name": "Shopfront reads as glass, not as a hole",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": true,
+      "componentRefs": [
+        "shopfront-glazing"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "shopfront-framing",
+      "name": "Five-bay framing lapping the glazing",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.65,
+      "mustPass": false,
+      "componentRefs": [
+        "shopfront-framing"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "roofline",
+      "name": "Roofline: parapet plus condenser plant",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.65,
+      "mustPass": false,
+      "componentRefs": [
+        "rooftop-plant"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "contactShadow": {
+      "enabled": true,
+      "strength": 0.6,
+      "radius": 0.4,
+      "note": "A building needs a firm contact shadow or it floats off the tile it stands on."
+    },
+    "groundShadow": {
+      "enabled": true,
+      "receive": true,
+      "note": "castShadow matters more than receiveShadow here: this prop shades the street."
+    },
+    "environment": {
+      "intensity": 0.4,
+      "note": "The glazing and the metals need SOMETHING to reflect; with no environment map a metallic surface renders near-black, which is why metalness is held low."
+    }
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "root",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    }
+  },
+  "assumptions": [
+    "Only the front and one flank are visible in the single plate. The rear and far flank are inferred as plain render continuing the near flank -- what this building type does -- and nothing is invented there. Confidence 0.7.",
+    "Four of ten material crops were REFUSED after being rendered to a contact sheet and looked at: the blue fascia line (spread 110.6 on a 5 px band), the glazing (every pixel is shop interior), the parapet and the roof deck (both straddle two surfaces). Their values are authored and are labelled as authored in each material's evidence.",
+    "Crops on the SHADED elevation are lifted toward full-key albedo by a stated factor rather than used raw, because a shaded crop measures the surface under fill, not its albedo."
+  ],
+  "coordinateFrame": {
+    "front": "+Z is the shopfront elevation",
+    "up": "+Y",
+    "scaleReference": "Real metres. Origin at the CENTRE OF THE FOOTPRINT ON THE GROUND PLANE (y=0 at grade), envelope 8.0 x 4.6 x 7.0 m."
+  },
+  "silhouette": {
+    "boundingShape": "cuboid with a parapet upstand and a hung fascia",
+    "aspectRatios": [
+      {
+        "pair": "width:depth",
+        "value": 1.143,
+        "evidence": "registry declared 8.0 : 7.0"
+      },
+      {
+        "pair": "width:height",
+        "value": 1.739,
+        "evidence": "registry declared 8.0 : 4.6"
+      }
+    ],
+    "symmetry": "bilateral about x=0 on the front elevation; front-to-back strongly asymmetric, which is the whole point of a shopfront building",
+    "dominantCurves": [],
+    "negativeSpaces": [
+      "the glazed shopfront bays"
+    ],
+    "landmarks": [
+      "roof deck y=3.7",
+      "parapet top y=4.3",
+      "fascia band y=2.94..3.86",
+      "front wall face z=3.4"
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "three-quarter-front-high",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.85
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "building-shell",
+      "name": "Render wall shell",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A rigid box with flat faces and no interior: a prop kit is only ever looked at from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid rather than a wall ring for the same reason.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 7.8,
+        "height": 3.7,
+        "depth": 6.8,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          1.85,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          7.8,
+          3.7,
+          6.8
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "The ONLY pivot on this prop. A shop building is static level geometry: no part turns on an axis, so a second pivot would promise a mechanism that does not exist. The roller shutter and the doors are modelled closed and do not open."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": {
+          "type": "box",
+          "offset": [
+            0,
+            2.3,
+            0
+          ],
+          "scale": [
+            8.0,
+            4.6,
+            7.0
+          ],
+          "isTrigger": false,
+          "notes": "The asset's declared collider: one box over the whole envelope. A building is a solid obstacle; nothing about it needs a finer proxy."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "render"
+        }
+      },
+      "material": "render",
+      "materialLayers": [
+        "render"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "wall-mass",
+          "description": "The building mass, 7.8 x 3.7 x 6.8 m, inset inside the declared 8.0 x 4.6 x 7.0 m envelope so the parapet and fascia can stand proud of it without overhanging the footprint.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#6D6F74",
+        "secondary": [
+          "#6D6F74"
+        ],
+        "zones": [
+          {
+            "id": "wall",
+            "albedo": "#6D6F74",
+            "note": "flat render, the flattest read on the plate"
+          },
+          {
+            "id": "wall-shadowed",
+            "albedo": "#595b5f",
+            "note": "the flank away from the key"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(109, 111, 116, 1.0)",
+        "secondaryAlbedo": "rgba(109, 111, 116, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Flat roof deck",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.4,
+      "confidence": 0.6,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat slab. It exists because the parapet stands above it -- without a deck the parapet ring would frame a hole straight through the building.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 7.359999999999999,
+        "height": 0.14,
+        "depth": 6.359999999999999,
+        "units": "meters",
+        "confidence": 0.6
+      },
+      "transform": {
+        "position": [
+          0,
+          3.75,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          7.359999999999999,
+          0.14,
+          6.359999999999999
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "roof-grey"
+        }
+      },
+      "material": "roof-grey",
+      "materialLayers": [
+        "roof-grey"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "deck",
+          "description": "Spans y=3.68 to 3.8200000000000003, so it EMBEDS 20 mm into the wall top rather than resting on it. Flush, its underside and the parapet's underside both sat at y=3.7 facing down; their footprints are complementary so nothing actually overlaps, but an envelope test cannot see that and check-coplanar reported a 46.8 m2 same-facing pair. Embedding is also the honest contact type -- a deck is laid INTO its upstand.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#7C8288",
+        "secondary": [
+          "#7C8288"
+        ],
+        "zones": [
+          {
+            "id": "deck",
+            "albedo": "#7C8288",
+            "note": "weathered flat-roof membrane"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(124, 130, 136, 1.0)",
+        "secondaryAlbedo": "rgba(124, 130, 136, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "parapet",
+      "name": "Parapet upstand",
+      "level": "meso",
+      "role": "body",
+      "importance": 0.7,
+      "confidence": 0.8,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An extruded RING -- the roof outline with the deck opening as a hole -- so the upstand's inner and outer faces come from one geometry and cannot drift apart. This is what makes the building read as a flat-roofed shop rather than an open-topped box.",
+      "geometryDescriptor": {
+        "topologyIntent": "roof outline extruded with the deck opening as a hole",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "profile2D": {
+          "points": [
+            [
+              -3.9,
+              -3.4
+            ],
+            [
+              3.9,
+              -3.4
+            ],
+            [
+              3.9,
+              3.4
+            ],
+            [
+              -3.9,
+              3.4
+            ]
+          ],
+          "depth": 0.5999999999999996,
+          "holes": [
+            [
+              [
+                -3.6799999999999997,
+                -3.1799999999999997
+              ],
+              [
+                3.6799999999999997,
+                -3.1799999999999997
+              ],
+              [
+                3.6799999999999997,
+                3.1799999999999997
+              ],
+              [
+                -3.6799999999999997,
+                3.1799999999999997
+              ]
+            ]
+          ]
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 7.8,
+        "height": 0.5999999999999996,
+        "depth": 6.8,
+        "units": "meters",
+        "confidence": 0.8
+      },
+      "transform": {
+        "position": [
+          0,
+          4.3,
+          0
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "white-trim"
+        }
+      },
+      "material": "white-trim",
+      "materialLayers": [
+        "white-trim"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "coping",
+          "description": "Upstand from y=3.7 to y=4.3, 0.22 m thick, capping the walls. Reads a clear step lighter than the render below it, which is what separates the two planes.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#D4D6D7",
+        "secondary": [
+          "#D4D6D7"
+        ],
+        "zones": [
+          {
+            "id": "coping",
+            "albedo": "#D4D6D7",
+            "note": "in full key, no lift needed"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(212, 214, 215, 1.0)",
+        "secondaryAlbedo": "rgba(212, 214, 215, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "fascia-band",
+      "name": "Brand fascia band",
+      "level": "meso",
+      "role": "signage",
+      "importance": 0.95,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A shallow sign tray hung on the front. Its stripes and wordmark are PRINTED GRAPHICS carried in this material's canvas albedo -- paint has no thickness, and as proud panels they would be several coplanar surfaces over one face, plus materials and geometries on the two axes this class is tightest on.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 8.0,
+        "height": 0.9199999999999999,
+        "depth": 0.22,
+        "units": "meters",
+        "confidence": 0.85
+      },
+      "transform": {
+        "position": [
+          0,
+          3.4,
+          3.51
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          8.0,
+          0.9199999999999999,
+          0.22
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "fascia"
+        }
+      },
+      "material": "fascia",
+      "materialLayers": [
+        "fascia"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "brand-band",
+          "description": "White field with a green band along the top and a blue line near the bottom, carrying the wordmark. This is the single most identity-defining surface on the prop: the shell is generic and the fascia is what names it.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#FFFFFF"
+        ],
+        "zones": [
+          {
+            "id": "field",
+            "albedo": "#FFFFFF",
+            "note": "white by design; the colour lives in the canvas"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(255, 255, 255, 1.0)",
+        "secondaryAlbedo": "rgba(255, 255, 255, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "shopfront-glazing",
+      "name": "Shopfront glazing",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.8,
+      "confidence": 0.75,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A tinted, mostly opaque pane -- NOT a window. This prop is an exterior shell with nothing behind it, so a transparent pane would show the inside of the far wall and read as a hole punched in the facade.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 6.9,
+        "height": 2.62,
+        "depth": 0.04,
+        "units": "meters",
+        "confidence": 0.75
+      },
+      "transform": {
+        "position": [
+          0,
+          1.53,
+          3.42
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          6.9,
+          2.62,
+          0.04
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "glass-tinted"
+        }
+      },
+      "material": "glass-tinted",
+      "materialLayers": [
+        "glass-tinted"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "pane",
+          "description": "Stands 0.02 m PROUD of the wall face at z=3.4. Flush would be a coplanar co-facing pair over 18 m2 of facade -- the exact defect the 7-Eleven shipped eight of.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#7E8A8A",
+        "secondary": [
+          "#7E8A8A"
+        ],
+        "zones": [
+          {
+            "id": "pane",
+            "albedo": "#7E8A8A",
+            "note": "authored tint, not sampled"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(126, 138, 138, 1.0)",
+        "secondaryAlbedo": "rgba(126, 138, 138, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "shopfront-framing",
+      "name": "Shopfront framing",
+      "level": "meso",
+      "role": "body",
+      "importance": 0.7,
+      "confidence": 0.7,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One extruded frame with the window openings as holes, rather than a mullion per bay: a bay per component would be five draw calls and five geometries for a part that is one welded assembly in life. It OVERLAPS the glazing it frames rather than meeting its reveal edge, which is the kit's standing rule.",
+      "geometryDescriptor": {
+        "topologyIntent": "one frame plate with the window bays as holes",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "profile2D": {
+          "points": [
+            [
+              -3.55,
+              0.0
+            ],
+            [
+              3.55,
+              0.0
+            ],
+            [
+              3.55,
+              2.82
+            ],
+            [
+              -3.55,
+              2.82
+            ]
+          ],
+          "depth": 0.06,
+          "holes": [
+            [
+              [
+                -3.42,
+                0.1
+              ],
+              [
+                -2.112,
+                0.1
+              ],
+              [
+                -2.112,
+                2.72
+              ],
+              [
+                -3.42,
+                2.72
+              ]
+            ],
+            [
+              [
+                -2.037,
+                0.1
+              ],
+              [
+                -0.7289999999999999,
+                0.1
+              ],
+              [
+                -0.7289999999999999,
+                2.72
+              ],
+              [
+                -2.037,
+                2.72
+              ]
+            ],
+            [
+              [
+                -0.6539999999999999,
+                0.1
+              ],
+              [
+                0.6540000000000001,
+                0.1
+              ],
+              [
+                0.6540000000000001,
+                2.72
+              ],
+              [
+                -0.6539999999999999,
+                2.72
+              ]
+            ],
+            [
+              [
+                0.7290000000000001,
+                0.1
+              ],
+              [
+                2.037,
+                0.1
+              ],
+              [
+                2.037,
+                2.72
+              ],
+              [
+                0.7290000000000001,
+                2.72
+              ]
+            ],
+            [
+              [
+                2.112,
+                0.1
+              ],
+              [
+                3.42,
+                0.1
+              ],
+              [
+                3.42,
+                2.72
+              ],
+              [
+                2.112,
+                2.72
+              ]
+            ]
+          ]
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 7.1,
+        "height": 2.82,
+        "depth": 0.06,
+        "units": "meters",
+        "confidence": 0.7
+      },
+      "transform": {
+        "position": [
+          0,
+          0.12,
+          3.4499999999999997
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "white-trim"
+        }
+      },
+      "material": "white-trim",
+      "materialLayers": [
+        "white-trim"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "mullions",
+          "description": "Perimeter frame plus four intermediate mullions and one transom, giving five bays. The openings are 0.05 m SMALLER than the glazing behind them on every side, so the frame laps the pane.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#D4D6D7",
+        "secondary": [
+          "#D4D6D7"
+        ],
+        "zones": [
+          {
+            "id": "frame",
+            "albedo": "#D4D6D7",
+            "note": "lit figure only; the crop straddles glazing"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(212, 214, 215, 1.0)",
+        "secondaryAlbedo": "rgba(212, 214, 215, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "service-door",
+      "name": "Service door",
+      "level": "meso",
+      "role": "hardware",
+      "importance": 0.35,
+      "confidence": 0.6,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat leaf standing proud of the flank. Modelled shut and given no pivot: it is scenery, and a hinge would be a promise the prop cannot keep.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.06,
+        "height": 2.05,
+        "depth": 0.95,
+        "units": "meters",
+        "confidence": 0.6
+      },
+      "transform": {
+        "position": [
+          3.9299999999999997,
+          1.025,
+          -0.6
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          0.06,
+          2.05,
+          0.95
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "door-grey"
+        }
+      },
+      "material": "door-grey",
+      "materialLayers": [
+        "door-grey"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "leaf",
+          "description": "Stands 0.03 m proud of the flank wall so it reads as a leaf in a frame rather than as a painted rectangle.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#3B3F42",
+        "secondary": [
+          "#3B3F42"
+        ],
+        "zones": [
+          {
+            "id": "leaf",
+            "albedo": "#3B3F42",
+            "note": "flat painted steel"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(59, 63, 66, 1.0)",
+        "secondaryAlbedo": "rgba(59, 63, 66, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "rooftop-plant",
+      "name": "Rooftop condenser plant",
+      "level": "meso",
+      "role": "hardware",
+      "importance": 0.5,
+      "confidence": 0.55,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A boxy condenser bank. Every Thai shop of this type carries one and it is a large part of the roofline read; one box for the bank rather than a unit each keeps it to a single draw call.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 2.4,
+        "height": 0.85,
+        "depth": 1.1,
+        "units": "meters",
+        "confidence": 0.55
+      },
+      "transform": {
+        "position": [
+          1.1,
+          4.245,
+          -1.4
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          2.4,
+          0.85,
+          1.1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 1.0,
+          "note": "Inherited placement only; this component declares no axis."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": false
+        },
+        "sockets": [],
+        "collider": null,
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "condenser-bank",
+          "description": "Sits ON the roof deck, inside the parapet, so it breaks the roofline exactly as far as the plate shows and no further.",
+          "evidenceRefs": [
+            "full-object"
+          ]
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "dominant": "#9AA0A4",
+        "secondary": [
+          "#9AA0A4"
+        ],
+        "zones": [
+          {
+            "id": "casing",
+            "albedo": "#9AA0A4",
+            "note": "galvanised steel casing"
+          }
+        ],
+        "finishStyle": "matte",
+        "gradientStops": [],
+        "dominantAlbedo": "rgba(154, 160, 164, 1.0)",
+        "secondaryAlbedo": "rgba(154, 160, 164, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "render",
+      "name": "Painted cement render, walls",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6D6F74",
+      "color": "#6D6F74",
+      "albedo": {
+        "dominant": "#6D6F74",
+        "secondary": [
+          "#5A5C60",
+          "#7B7D82"
+        ],
+        "samplingNotes": "Measured on a 67x143 px crop of the +X flank between the door and the rear corner. Luma spread 5.2 -- the flattest read anywhere on this plate, so the crop sits on one surface and the number is the render's own albedo with no lift applied."
+      },
+      "colorVariation": {
+        "palette": [
+          "#6D6F74",
+          "#5A5C60",
+          "#7B7D82"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.86,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.12,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [
+        {
+          "id": "wall-streaking",
+          "albedo": "#5F6165",
+          "roughnessDelta": 0.03,
+          "coverage": 0.18,
+          "evidenceRefs": [
+            "full-object"
+          ],
+          "description": "Run-off staining down the render below the coping drip, heaviest in the top 0.8 m of each wall. Carried as a shading note rather than a texture: it is localised dirt, not albedo variation of the material, and the plate's own crop spread of 5.2 says the render itself is uniform."
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial, metalness 0. Flat painted render."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/render-wall.png, 9,581 px: luma P10 108.1, P90 113.4, spread 5.2. A spread that small over that many pixels is a flat matte dielectric with no resolvable relief.",
+          "The vertical streaking visible on the plate is run-off staining, which is localised dirt rather than albedo variation of the material, so it does not justify a texture set.",
+          "Cost measurement carried from the 7-Eleven: declaring textureless took createObjectModel from 24,180 ms to 23 ms, and the cost is the SQUARE of textureResolution."
+        ]
+      }
+    },
+    {
+      "id": "roof-grey",
+      "name": "Weathered flat-roof membrane",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7C8288",
+      "color": "#7C8288",
+      "albedo": {
+        "dominant": "#7C8288",
+        "secondary": [
+          "#6B7076"
+        ],
+        "samplingNotes": "Read from the roof deck between the parapet and the plant. Recorded at LOW confidence: the crop measured spread 82.2 because at this camera angle the deck and the parapet's inner face cannot be separated by any axis-aligned box."
+      },
+      "colorVariation": {
+        "palette": [
+          "#7C8288",
+          "#6B7076"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.2,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "Authored from a REFUSED crop, deliberately. The honest alternative to a bad measurement is an authored value that says so, not a bad measurement."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/roof-deck.png measures spread 82.2, which is REFUSED as a direct albedo reading and recorded as such; the authored value is the crop's lit quartile, one step below the render, which is the relationship the plate plainly shows.",
+          "A flat-roof membrane at prop distance is a value, not a pattern: this surface is visible only from above and is never the read that identifies the building."
+        ]
+      }
+    },
+    {
+      "id": "white-trim",
+      "name": "White coping and shopfront framing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#D4D6D7",
+      "color": "#D4D6D7",
+      "albedo": {
+        "dominant": "#D4D6D7",
+        "secondary": [
+          "#C3C5C6",
+          "#E2E4E5"
+        ],
+        "samplingNotes": "Two crops. The coping (184x10 px, spread 25.1, in full key) gives #CACAC8 with no lift needed. The framing crop (205x10 px on a transom) straddles glazing either side and measures spread 172.2, so only its LIT quartile #D4D6D7 is used. The two agree within a few units, which is why they share one material."
+      },
+      "colorVariation": {
+        "palette": [
+          "#D4D6D7",
+          "#C3C5C6",
+          "#E2E4E5"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.15,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "Coping and framing share this material on an observed match, not on convenience: the two independent crops land within a few units of each other.",
+        "metalness 0.15 rather than a bare-metal value. The review harness has no environment map, and a high metalness with nothing to reflect renders near-black."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/coping.png, 1,840 px, spread 25.1 in full key: a single lit surface.",
+          "material-crops/frame-white.png, spread 172.2: REFUSED as a mean and used only for its lit quartile. A 205x10 px band across a shopfront on a three-quarter view cannot avoid the glass either side of the transom.",
+          "Mill-finish aluminium and painted coping are both flat at prop distance: a 0.075 m mullion on an 8 m facade is under two texels from across a street."
+        ]
+      }
+    },
+    {
+      "id": "fascia",
+      "name": "Brand fascia, printed",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#408546",
+          "#1B6FB4"
+        ],
+        "samplingNotes": "color is WHITE BY DESIGN. The surface colour lives in a canvas assigned AFTER material construction -- the route this kit reserves for printed graphics -- so a tinted base would multiply through and darken the wordmark along with the field."
+      },
+      "colorVariation": {
+        "palette": [
+          "#FFFFFF",
+          "#408546",
+          "#1B6FB4"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.5,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "The green band, the blue line and the wordmark are ONE canvas on this material. As geometry they would have cost three materials and three geometries on a class whose binding axes are exactly those two."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/fascia-green.png, 530 px, spread 9.4: a single flat surface, measured #29562d on the SHADED right wing. The authored green #408546 is that value lifted 1.55x toward full key, and the lift is stated rather than hidden.",
+          "material-crops/fascia-white.png, 636 px, spread 21.3, same shaded wing, measured #8F939A and lifted to the field white for the same reason.",
+          "material-crops/fascia-blue.png is REFUSED: spread 110.6 over a 5 px band. No placement on this plate isolates a 6-pixel stripe, so the blue is AUTHORED from the brand and labelled as authored.",
+          "Printed vinyl has no relief at prop distance; the identity is the flat field plus the wordmark, and the wordmark is a canvas assigned after construction, which the textureless declaration does not affect."
+        ]
+      }
+    },
+    {
+      "id": "glass-tinted",
+      "name": "Tinted shopfront glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7E8A8A",
+      "color": "#7E8A8A",
+      "albedo": {
+        "dominant": "#7E8A8A",
+        "secondary": [
+          "#6E7A7A"
+        ],
+        "samplingNotes": "AUTHORED, not sampled, and deliberately. The crop measures a mid neutral, but every one of those pixels is the shop INTERIOR -- shelving, a magazine rack, a ceiling -- seen through the pane. Sampling it would reproduce a photograph of a room this model does not contain."
+      },
+      "colorVariation": {
+        "palette": [
+          "#7E8A8A",
+          "#6E7A7A"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.1,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.05,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "metalness 0.05: the harness has no environment map and a metallic pane with nothing to reflect renders black."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/glazing.png measures spread 158.2, and inspection of the crop shows why: it is shelving and a lit ceiling, not a surface. REFUSED by rule, not by spread.",
+          "Glass identity is the specular lobe and the tint, both carried by scalars. A generated texture set would force color to white and roughness to 1 and destroy precisely the two properties that make it read as glass."
+        ]
+      },
+      "opacity": 0.92,
+      "transparent": true,
+      "opacityNote": "0.92 rather than a truly transparent pane. This prop is an exterior shell with NO interior geometry, so a transparent pane would show the inside of the far wall or the backdrop and read as a hole punched in the facade. At 0.92 it reads as glass with a hint of depth and nothing behind it is legible."
+    },
+    {
+      "id": "door-grey",
+      "name": "Painted steel service door",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#3B3F42",
+      "color": "#3B3F42",
+      "albedo": {
+        "dominant": "#3B3F42",
+        "secondary": [
+          "#33373A"
+        ],
+        "samplingNotes": "Measured on a 29x102 px crop of the flank door. Spread 35 across a flat leaf."
+      },
+      "colorVariation": {
+        "palette": [
+          "#3B3F42",
+          "#33373A"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.7,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial, metalness 0. Flat paint on steel."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "material-crops/door.png, 2,958 px, spread 35.0: one flat painted panel.",
+          "The louvre at its foot is under a texel at prop distance and is not modelled or textured."
+        ]
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Galvanised condenser casing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9AA0A4",
+      "color": "#9AA0A4",
+      "albedo": {
+        "dominant": "#9AA0A4",
+        "secondary": [
+          "#868C90"
+        ],
+        "samplingNotes": "Authored from the rooftop plant, which sits at the top of the plate at a shallow angle where no crop of usable area is available. Recorded as authored."
+      },
+      "colorVariation": {
+        "palette": [
+          "#9AA0A4",
+          "#868C90"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.05,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#4A4640"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "metalness 0.25 for the same environment-map reason as the other metals here."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "No crop of sufficient area exists: the plant occupies roughly 40x25 px at a grazing angle, below the reference-admission floor, so no measurement is claimed for it.",
+          "Spangle is a centimetre-scale crystal pattern; on a 2.4 m condenser bank seen at prop distance it is under one texel and reads as the value alone."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T06:06:10.787469+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.828624+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.871138+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.912978+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.952833+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.992108+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:11.033306+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T06:06:11.073284+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T06:06:10.787469+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.828624+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.871138+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.912978+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.952833+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:10.992108+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:11.033306+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T06:06:11.073284+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.7,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "massing",
+          "score": 0.88,
+          "tier": "critical",
+          "notes": "MEASURED off the built model: shell 7.8 x 3.7 x 6.8 inside the declared 8 x 4.6 x 7 envelope, parapet 3.70-4.30, fascia 2.94-3.86 hung 0.22 m proud of the parapet, plant topping out at 4.67. Nothing overhangs the footprint in x or z."
+        },
+        {
+          "id": "brand-fascia",
+          "score": 0.82,
+          "tier": "critical",
+          "notes": "Green band, white field, logo bars, wordmark and blue underline all present and legible. The green is the measured #29562d from the shaded wing lifted 1.55x to #408546, and the lift is recorded rather than hidden. The blue could not be measured and is authored from the brand. Took one correction: the first build drew the canvas 8.7x too tall because both axes scaled by the canvas WIDTH, which left only a sliver of the layout on the surface -- the plain colour bands still looked plausible, so the defect showed only on the wordmark."
+        },
+        {
+          "id": "glazing-reads-as-glass",
+          "score": 0.78,
+          "tier": "critical",
+          "notes": "Reads as a tinted pane, not as a hole: opacity 0.92 with nothing behind it legible, standing 0.02 m proud of the wall face rather than flush. The plate shows shelving through the glass and that is deliberately NOT reproduced -- this is an exterior shell and modelling an interior would cost draw calls for something nobody sees."
+        },
+        {
+          "id": "shopfront-framing",
+          "score": 0.72,
+          "tier": "important",
+          "notes": "One frame plate with five bay openings rather than a mullion per bay, which would have been five draw calls and five geometries on the two axes this class is tightest on. The openings are inset 0.05 m from the glazing behind, so the frame LAPS the pane instead of meeting its reveal edge."
+        },
+        {
+          "id": "roofline",
+          "score": 0.68,
+          "tier": "important",
+          "notes": "Parapet plus a single condenser bank sitting on the deck inside the upstand. The plate shows three separate units; they are modelled as one bank to hold the geometry ceiling, which is an accepted simplification recorded at confidence 0.55."
+        }
+      ],
+      "action": "continue",
+      "summary": "Massing, parapet, hung fascia, five-bay glazed shopfront, service door and rooftop plant all present and correctly related; all four budget axes inside, measured not estimated, with unique geometries at the ceiling (8/8) and materials one under it (7/8) -- those, not triangles (1,280 of 16,000), are the binding axes for this class. The brand fascia is a canvas on the fascia material, so the bands and wordmark cost nothing on any axis and cannot z-fight. Materials are measured off THIS building's own plate, not inherited from a sibling: six crops were used and FOUR were refused after being rendered to a contact sheet and looked at -- the blue fascia line (luma spread 110.6 on a 5 px band), the glazing (every pixel is shop interior, refused by rule since this is an exterior shell), the parapet and the roof deck (both straddle two surfaces). Those four are authored and labelled as authored. Crops on the shaded front elevation are lifted toward full-key albedo by a stated factor rather than used raw.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/familymart-store-building/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/familymart-store-building/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full eight-component tree"
+    },
+    {
+      "tier": "far",
+      "distance": 60,
+      "strategy": "drop the service door and the condenser bank; the shell, parapet and fascia carry the read at this distance"
+    }
+  ],
+  "performanceBudget": {
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 8,
+    "qualityPriority": "real-time-first",
+    "textureSize": 512,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Four ceilings, none substituting for another. The binding axes here are unique geometries and materials, NOT triangles: the generator bakes each component's real dimensions into its vertex data, so every box is a genuinely distinct geometry however similar it looks. Eight components and seven materials were chosen in the blockout to sit under both ceilings, rather than optimised into them afterwards -- a pivot hung off a part cannot be merged later. All brand graphics ride one canvas on the fascia material."
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "type": "directional",
+      "direction": [
+        -0.42,
+        0.8,
+        0.43
+      ],
+      "intensity": 1.0,
+      "intensityRelative": 1.0,
+      "colorTemperatureK": 5600,
+      "color": "#FFF4E2",
+      "evidence": "The front elevation is in shade while the flank and the coping take the light: a high key from behind and to the camera-left."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "type": "hemisphere",
+      "direction": [
+        0,
+        1,
+        0
+      ],
+      "intensity": 0.42,
+      "intensityRelative": 0.42,
+      "colorTemperatureK": 7000,
+      "color": "#CFE0F0",
+      "evidence": "The shaded front elevation still reads its own colours rather than going to black, so a broad sky fill is present. This is exactly why the front-elevation crops are lifted before use."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "type": "directional",
+      "direction": [
+        0.6,
+        0.4,
+        -0.7
+      ],
+      "intensity": 0.22,
+      "intensityRelative": 0.22,
+      "colorTemperatureK": 6200,
+      "color": "#E8EEF6",
+      "evidence": "The parapet's far edge separates from the backdrop with a faint bright line."
+    },
+    {
+      "id": "exposure",
+      "role": "grade",
+      "type": "tone-mapping",
+      "toneMapping": "ACES filmic",
+      "exposure": 1.0,
+      "contactShadow": {
+        "enabled": true,
+        "strength": 0.6,
+        "radius": 0.4
+      },
+      "groundShadow": {
+        "enabled": true,
+        "receive": true
+      },
+      "ambientOcclusion": {
+        "enabled": false,
+        "note": "No AO pass: the shopfront reveal is the only cavity and the framing's own cast shadow carries it."
+      },
+      "evidence": "The plate holds detail in both the lit coping and the shaded front, which is a filmic roll-off rather than a linear grade."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot node supports whole-object translation, rotation, scale, and visibility changes",
+    "component pivot groups support later local transforms without rebuilding geometry"
+  ],
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": [
+    {
+      "id": "glazing-as-hole",
+      "severity": "high",
+      "description": "With no interior behind it, a pane authored transparent reads as a hole punched in the facade. Held at opacity 0.92 for that reason; if a render shows the far wall through the glass, the opacity is the fix, not interior geometry."
+    },
+    {
+      "id": "fascia-flush",
+      "severity": "medium",
+      "description": "The fascia, glazing and framing all sit on the front elevation and are the natural place for a coplanar co-facing pair. Each is held at a different offset from the wall face (0.02, 0.05, 0.11) rather than flush."
+    },
+    {
+      "id": "brand-colour-authored",
+      "severity": "medium",
+      "description": "The blue fascia line could not be measured and is authored from the brand. If the shipped render's blue looks wrong beside the plate, that is the reason."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "FamilyMart Store Building",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5962,
+        "aspectRatioDelta": 0.1105,
+        "scaleDelta": 0.4343,
+        "bilateralSymmetryError": 0.0755,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 16.23,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 12.33
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.23
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.87
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.8
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.596 is below threshold 0.85",
+        "aspect-ratio delta 0.111 exceeds threshold 0.05",
+        "scale delta 0.434 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "ba879dfec01eb81a",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5962,
+        "aspectRatioDelta": 0.1105,
+        "scaleDelta": 0.4343,
+        "bilateralSymmetryError": 0.0755,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 16.23,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 12.33
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.23
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.87
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.8
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.596 is below threshold 0.85",
+        "aspect-ratio delta 0.111 exceeds threshold 0.05",
+        "scale delta 0.434 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "ba879dfec01eb81a",
+      "passId": "blockout"
+    }
+  ]
+}

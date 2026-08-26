@@ -1,0 +1,2661 @@
+{
+  "targetName": "Soi Name Sign",
+  "targetId": "soi-name-sign",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "street-name plate on a tube post",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "planar landscape plate",
+        "round tube"
+      ],
+      "structureKind": [
+        "rigid assembly",
+        "post-mounted panel"
+      ],
+      "motionPotential": [
+        "none - static ground-fixed prop"
+      ],
+      "materialFamilies": [
+        "painted folded steel plate",
+        "hot-dip galvanised steel tube"
+      ],
+      "notes": "A 0.75 x 0.22 m deep-navy street-name plate, painted round its folded edge rather than cut from sheet, carried on a 48 mm round hot-dip galvanised tube with drilled fixing holes. Nothing articulates and nothing attaches."
+    },
+    "complexity": {
+      "tier": "simple",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 0,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 3,
+        "microFeatureGroups": 2,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Silhouette is two primitives: a thin plate and a slender vertical support. Nothing organic, nothing swept.",
+        "All identity lives in the PRINTED FACE, not in geometry. That routes to a canvas atlas, not to components.",
+        "Held to 2 draw calls by the asset budget, so the tube and everything sharing its material get ONE mesh between them and the plate is the other.",
+        "The support is a ROUND tube, which is the one structural difference from the other plate-on-post signs in this set and is why the collider proxy is exact here rather than circumscribing.",
+        "The plate's edge return is PAINTED, not bare metal, so the atlas ground texel is navy rather than the grey every sibling uses."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "simple",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": false,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 3,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "border-rule",
+          "kind": "linework",
+          "description": "White inset rule following the plate's outline about 0.02 m in from the edge. Trimmed to #CED2D7 off the bright half of the legend crop.",
+          "region": {
+            "x": 0.2,
+            "y": 0.1,
+            "width": 0.6,
+            "height": 0.45,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "legend-thai",
+          "kind": "linework",
+          "description": "Large white Thai soi name occupying the upper two-thirds of the legend area, set left of the number. SOLID FILL, never an outline.",
+          "region": {
+            "x": 0.26,
+            "y": 0.2,
+            "width": 0.42,
+            "height": 0.16,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "legend-latin",
+          "kind": "linework",
+          "description": "Latin transliteration set smaller directly beneath the Thai line.",
+          "region": {
+            "x": 0.28,
+            "y": 0.34,
+            "width": 0.34,
+            "height": 0.09,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.88,
+          "realization": "unreported"
+        },
+        {
+          "id": "soi-number",
+          "kind": "linework",
+          "description": "The soi number set large at the right end of the plate, the same height as the Thai line and clearly separated from it.",
+          "region": {
+            "x": 0.68,
+            "y": 0.15,
+            "width": 0.12,
+            "height": 0.14,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.85,
+          "realization": "unreported"
+        },
+        {
+          "id": "galv-spangle",
+          "kind": "stain",
+          "description": "Mottled grey hot-dip spangle over the tube, with a continuous soft highlight running down its curved face rather than the flat facets a square post shows.",
+          "region": {
+            "x": 0.47,
+            "y": 0.5,
+            "width": 0.06,
+            "height": 0.24,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "galv-spangle"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.85,
+          "realization": "unreported"
+        },
+        {
+          "id": "foot-rust",
+          "kind": "stain",
+          "description": "Orange-brown rust over the lowest stretch of the tube, heavier and reaching further up than on the square-post siblings: 2586 of 4500 px in the foot crop pass the orange filter.",
+          "region": {
+            "x": 0.47,
+            "y": 0.8,
+            "width": 0.06,
+            "height": 0.16,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "foot-rust"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg"
+  },
+  "qualityContract": {
+    "qualityBar": "simple",
+    "definitionOfDone": [
+      "The plate reads at its declared size and the support lands where the plate shows it.",
+      "The printed face carries every measured region at the measured fraction of the plate, not at an estimated one.",
+      "The plate stands proud of the tube and is never flush with it.",
+      "2 draw calls, 2 materials, 2 unique geometries and at or under 800 triangles, measured in the harness."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 0,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 2
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "plate-outline",
+      "name": "Landscape plate outline and thinness",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "mast-proportion",
+      "name": "Plate-to-tube proportion and mounting height",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate",
+        "post"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "round-tube-section",
+      "name": "Round tube section, not the square post of the sibling signs",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "post"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "printed-face-system",
+      "name": "Border rule and both legend lines on the face atlas",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate"
+      ],
+      "evidenceRefs": [
+        "region-field",
+        "region-legend"
+      ]
+    },
+    {
+      "id": "galvanised-and-rust",
+      "name": "Galvanised spangle with the rust ramp at the foot",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "post"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-foot"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "post",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    },
+    "declaredContract": {
+      "pivots": [
+        "root at base-center"
+      ],
+      "pivotCount": 1,
+      "sockets": [],
+      "socketCount": 0,
+      "rationale": "A bolted roadside sign is a static rigid body. Nothing hinges, nothing turns, and nothing clips into it. One root pivot and zero sockets is the CORRECT answer, not a gap: a named pivot promises a part turns on that axis and a named socket promises something attaches there, and this prop can keep neither.",
+      "collider": "cylinder - honoured on both components",
+      "destructionGroups": [],
+      "destructionRationale": "The asset declares no destruction groups, so no component carries a fractureGroup and the prop does not come apart."
+    }
+  },
+  "assumptions": [
+    "plate-back: never shown by the single three-quarter view; assumed to share the painted edge return's #55678D at confidence 0.6 - higher than the siblings', because a plate painted round its fold is very unlikely to have a bare back.",
+    "tube-diameter: 48 mm, from the proxy's normalised shaft width of 0.049 over a 2.2 m declared height. Confidence 0.75.",
+    "ground-termination: the reference crops the tube at the bottom of the frame. Built as a plain tube running into the ground rather than inventing a footplate. Confidence 0.7.",
+    "fixing-holes: the drilled holes visible on the shaft are deliberately NOT modelled. At roughly 8 mm on a 48 mm tube they are under a pixel at prop distance, and cutting them would cost geometry against ceilings that are full."
+  ],
+  "coordinateFrame": {
+    "front": "+Z is the printed face of the plate, the camera-facing side in the reference plate",
+    "up": "+Y",
+    "scaleReference": "metres. Origin at base-center: x=0 on the tube axis, y=0 at ground contact, z=0 at the tube section centre."
+  },
+  "silhouette": {
+    "boundingShape": "A wide, shallow plate perched on a slim round tube: a T, with 0.22 m of plate over 1.98 m of near-empty vertical.",
+    "aspectRatios": [
+      {
+        "id": "overall",
+        "wOverH": 0.341,
+        "dOverH": 0.036,
+        "note": "0.75 x 2.20 x 0.08 m declared."
+      },
+      {
+        "id": "plate-height-over-total",
+        "value": 0.1,
+        "note": "0.22 / 2.20. The shallowest plate in the set by a wide margin."
+      },
+      {
+        "id": "plate-w-over-h",
+        "value": 3.41,
+        "note": "0.75 / 0.22 - a landscape plate, where every sibling in this set is portrait or square."
+      }
+    ],
+    "symmetry": "Bilateral about x=0 in geometry. The printed legend is NOT symmetric - the number sits at the right end - so the atlas must not be mirrored.",
+    "dominantCurves": [
+      "the tube's circular section, the only true curve in the prop and the thing that separates this support from the square posts"
+    ],
+    "negativeSpaces": [
+      "the tall open rectangle either side of the tube below the plate, roughly 90 per cent of the prop's height and almost all of its area"
+    ],
+    "landmarks": [
+      {
+        "id": "plate-top",
+        "position": [
+          0,
+          2.2,
+          0.0275
+        ]
+      },
+      {
+        "id": "plate-bottom",
+        "position": [
+          0,
+          1.98,
+          0.0275
+        ]
+      },
+      {
+        "id": "tube-top",
+        "position": [
+          0,
+          1.98,
+          -0.02
+        ]
+      },
+      {
+        "id": "ground-contact",
+        "position": [
+          0,
+          0.0,
+          -0.02
+        ]
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "sign-plate",
+      "name": "Street-name plate",
+      "level": "macro",
+      "role": "panel",
+      "importance": 1.0,
+      "confidence": 0.85,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat rounded-corner plate with a folded edge return: two parallel planar caps joined by a short wall, closed and rigid. Not an open-shell, because the plate has real thickness and is sealed.",
+      "geometryDescriptor": {
+        "topologyIntent": "ExtrudeGeometry over a rounded-rectangle profile, 0.75 x 0.22, corner radius 0.012, depth 0.035.",
+        "profile2D": {
+          "kind": "rounded-rect",
+          "halfWidth": 0.375,
+          "halfHeight": 0.11,
+          "cornerRadius": 0.012,
+          "cornerSegments": 4,
+          "depth": 0.035,
+          "points": [
+            [
+              0.363,
+              -0.11
+            ],
+            [
+              0.36759,
+              -0.10909
+            ],
+            [
+              0.37149,
+              -0.10649
+            ],
+            [
+              0.37409,
+              -0.10259
+            ],
+            [
+              0.375,
+              -0.098
+            ],
+            [
+              0.375,
+              0.098
+            ],
+            [
+              0.37409,
+              0.10259
+            ],
+            [
+              0.37149,
+              0.10649
+            ],
+            [
+              0.36759,
+              0.10909
+            ],
+            [
+              0.363,
+              0.11
+            ],
+            [
+              -0.363,
+              0.11
+            ],
+            [
+              -0.36759,
+              0.10909
+            ],
+            [
+              -0.37149,
+              0.10649
+            ],
+            [
+              -0.37409,
+              0.10259
+            ],
+            [
+              -0.375,
+              0.098
+            ],
+            [
+              -0.375,
+              -0.098
+            ],
+            [
+              -0.37409,
+              -0.10259
+            ],
+            [
+              -0.37149,
+              -0.10649
+            ],
+            [
+              -0.36759,
+              -0.10909
+            ],
+            [
+              -0.363,
+              -0.11
+            ]
+          ],
+          "note": "The explicit polygon the layer builds, written out so the spec documents the geometry rather than gesturing at it. 20 points: four 4-segment corner arcs joined by four straight runs. The extrusion is bevelEnabled:false - THREE.ExtrudeGeometry rounds every corner by default, which would round the authored radius a second time."
+        },
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - rewritten after generation into a two-region atlas: front-cap vertices take the printed graphic region, every wall and back-cap vertex collapses to a single bare-galvanised texel. This is what lets one material carry a printed front and a plain back without spending the second draw call.",
+        "normalStrategy": "flat-shaded caps, flat wall",
+        "segmentRationale": "Four segments per corner. The corner radius is the only curve this plate has and it is what separates a road sign from a sheet of metal; everything else here is straight and gets one segment."
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.75,
+        "height": 0.22,
+        "depth": 0.035,
+        "units": "m",
+        "confidence": 0.75
+      },
+      "transform": {
+        "position": [
+          0,
+          2.09,
+          0.0275
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "Not an articulation. The plate does not turn on anything; this is the component's own transform origin, and the model exposes exactly ONE named pivot, the root."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.375,
+            0.0175,
+            0.375
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. A convex proxy circumscribing the plate - the cheap volume a projectile tests against instead of the plate's extrusion."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "sheeting"
+        }
+      },
+      "material": "sheeting",
+      "materialLayers": [
+        "sheeting"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "border-rule",
+          "description": "White inset rule following the plate's outline, a single thin rectangle about 0.02 m in from the edge.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "legend-lines",
+          "description": "Three white legend elements: a large Thai soi name, a Latin transliteration beneath it, and the soi number set large at the right end.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "painted-edge-return",
+          "description": "Folded edge return painted the same navy as the face rather than left as bare metal, which is what distinguishes this plate from the cut-sheet signs in the set.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#2B4278",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(85,103,141,1.0)",
+            "note": "PAINTED folded edge return, measured #55678D over 4680 px - navy, not the bare metal grey every sibling sign shows"
+          },
+          {
+            "position": 0.06,
+            "color": "rgba(206,210,215,1.0)",
+            "note": "white border rule inset about 0.02 m, measured #CED2D7"
+          },
+          {
+            "position": 0.12,
+            "color": "rgba(43,66,120,1.0)",
+            "note": "deep navy field begins, measured #2B4278 over 5400 px"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(43,66,120,1.0)",
+            "note": "navy field across the plate; the legend sits on top of it as solid fill, not as ramp stops"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered ramp measured INWARD from the plate edge. Every boundary is hard-edged paint, so the stops are doubled at each edge rather than blended. The base is a DEEP navy - two sibling signs measured in the same session read #3370AB and #4871A2, and using either here would have made this plate a different sign.",
+        "dominantAlbedo": "rgba(43,66,120,1.0)",
+        "secondaryAlbedo": "rgba(206,210,215,1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8
+      }
+    },
+    {
+      "id": "post",
+      "name": "Galvanised round tube",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.85,
+      "confidence": 0.8,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A single vertical tube of circular section, continuous around its axis and never deforming. A cylinder is the exact primitive; a box would be the wrong solid entirely and is what every other support in this set uses.",
+      "geometryDescriptor": {
+        "topologyIntent": "CylinderGeometry(0.024, 0.024, 1.98, 12, 12), translated so it runs from y=0 to y=1.98.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "none - the weathering ramp arrives as VERTEX COLOURS across 12 height segments, not as a texture",
+        "normalStrategy": "flat",
+        "note": "A ROUND tube, not the square section every other post in this set uses - the reference shows a continuous curved highlight down the shaft with no arris anywhere, and drilled fixing holes on its face. 12 radial segments: the tube's circular section is a silhouette feature at this diameter, and 12 is where the outline stops reading as a polygon at prop distance. The 12 height segments carry the rust ramp without a texture.",
+        "mergedAssembly": {
+          "reason": "Nothing to merge: the reference crops the tube at the bottom of the frame and shows no flange, no cap and no footing. Recorded explicitly so a later pass does not invent a footplate this sign does not have. The drilled fixing holes visible on the shaft are NOT modelled - they are 8 mm features on a 48 mm tube, under a pixel at prop distance, and cutting them would cost geometry on a prop whose ceilings are full.",
+          "parts": [
+            {
+              "id": "post-tube",
+              "level": "meso",
+              "primitive": "cylinder",
+              "extent": {
+                "width": 0.048,
+                "height": 1.98,
+                "depth": 0.048
+              },
+              "localOffset": [
+                0.0,
+                0.99,
+                -0.02
+              ],
+              "note": "48 mm round tube running from ground contact at y=0 up to y=1.98, PAST the plate's bottom edge at y=1.98 - the reference shows the tube ending just under the plate rather than continuing behind it."
+            }
+          ],
+          "jointNote": "In DEPTH the plate's back face sits at z=+0.010 and the tube's front face at z=+0.004: a 6 mm standoff, so the plate stands proud and no two same-facing surfaces are coincident. Prop depth spans z -0.044 to +0.045, 0.089 m against a declared 0.08 within the asset's 0.1 tolerance."
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.048,
+        "height": 1.98,
+        "depth": 0.048,
+        "units": "m",
+        "confidence": 0.8
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "The root pivot, at base-center. This is the ONLY named pivot in the prop, and it is the correct count: a bolted roadside sign has no moving parts."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0.99,
+            -0.02
+          ],
+          "scale": [
+            0.024,
+            0.99,
+            0.024
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`, and here the proxy is EXACT rather than circumscribing: the support really is a round tube, so the cheap convex volume and the visual mesh are the same shape."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "galv-spangle",
+          "description": "Mottled grey hot-dip spangle over the tube, with a continuous soft highlight running down its curved face rather than the flat facets a square post shows.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "foot-rust",
+          "description": "Orange-brown rust over the lowest stretch of the tube, heavier here than on the square-post siblings and reaching further up.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#777F81",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(119,127,129,1.0)",
+            "note": "tube under the plate, cleanest coating, measured #777F81 over 3945 neutral px"
+          },
+          {
+            "position": 0.72,
+            "color": "rgba(119,127,129,1.0)",
+            "note": "held clean down to roughly 0.55 m above ground"
+          },
+          {
+            "position": 0.78,
+            "color": "rgba(100,70,50,1.0)",
+            "note": "transition into the rust, softer than the siblings' hard splash line because this tube is rusting rather than staining"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(100,70,50,1.0)",
+            "note": "rust to ground contact, measured #644632 over 2586 orange-biased px - the most saturated and most extensive rust of the eight"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered vertical ramp measured DOWNWARD from the tube top. Unlike the square-post siblings this transition is a RAMP rather than a step: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain, and a hard edge would be the wrong shape for it.",
+        "dominantAlbedo": "rgba(119,127,129,1.0)",
+        "secondaryAlbedo": "rgba(100,70,50,1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "sheeting",
+      "name": "Painted folded-steel street-name plate",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#2B4278",
+          "#CED2D7",
+          "#55678D"
+        ],
+        "samplingNotes": "White on purpose. The albedo is delivered by the face atlas assigned after material construction, and any tint here would multiply into the printed graphic."
+      },
+      "colorVariation": {
+        "palette": [
+          "#2B4278",
+          "#CED2D7",
+          "#55678D"
+        ],
+        "pattern": "authored-regions",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.06,
+        "map": "none",
+        "localResponse": "Calendered vinyl over aluminium: smooth, with no tight highlight anywhere on the plate."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0,
+        "notes": "Dielectric. The vinyl is what is seen; the plate underneath never reaches the surface on the front cap."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Flat plate, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "field-blue",
+          "color": "#2B4278",
+          "region": "the plate's blue ground, everywhere inside the border rule",
+          "evidenceRef": "region-field",
+          "notes": "Trimmed mean #2B4278 over the full 5400 px of (400,380,90,60). A DEEP navy, markedly darker and less cyan than the #3370AB of the motorcycle plate or the #4871A2 of the u-turn plate measured in the same session - Thai street-name plates use a different blue from the informatory signs, and pooling those measurements would have got all three wrong."
+        },
+        {
+          "id": "legend-white",
+          "color": "#CED2D7",
+          "region": "the border rule and both legend lines",
+          "evidenceRef": "region-legend",
+          "notes": "Trimmed mean of the 2694 bright px (luma>170) of (430,330,180,60), across the Thai line. A vertical scanline through the plate reads 206-213 on the white and 61-64 on the navy, so the boundary is hard and carries no relief."
+        },
+        {
+          "id": "edge-galv",
+          "color": "#55678D",
+          "region": "the folded edge return and the whole back cap",
+          "evidenceRef": "region-edge",
+          "notes": "Trimmed mean #55678D over 4680 px at (240,330,26,180), on the plate's left edge return. NOTE this is not a bare metal grey like the siblings': the return reads BLUE, because the plate is a folded pressing painted round its edge rather than a cut sheet showing bare galvanising. That is what the atlas ground texel carries, and assuming a grey return here would have put a metal band round a painted plate."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, navy field at (400,380,90,60): 5400 px trimming to #2B4278 with no resolvable relief. The variation across the crop is print and weathering, not a height field.",
+          "Reference plate, painted edge return at (240,330,26,180): 4680 px trimming to #55678D - a painted folded return, not bare metal, so there is no mill grain to reproduce either.",
+          "The identity of this surface is PRINTED, not textured. It arrives as a canvas atlas assigned after material construction, which the textureless declaration does not touch.",
+          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel for this one material, for a surface whose height field is flat."
+        ]
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Hot-dip galvanised steel, weathering to rust at the foot",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#777F81",
+        "secondary": [
+          "#644632"
+        ],
+        "samplingNotes": "White base colour because the measured vertical ramp is delivered as VERTEX COLOURS, not a texture - a tint here would multiply into it."
+      },
+      "colorVariation": {
+        "palette": [
+          "#777F81",
+          "#644632"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.18,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.12,
+        "map": "none",
+        "localResponse": "Mill-finish galvanising scatters rather than reflecting a lobe; the rusted foot is rougher still."
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0,
+        "notes": "Held at 0.25, not the high value a zinc coating suggests by name. There is no environment map in the target harness, so a high metalness has nothing to reflect and renders near-black. The measured luma spread of the shaft is scatter, not a lobe."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Prismatic solid, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "galv-spangle",
+          "color": "#777F81",
+          "region": "the tube above the splash line",
+          "evidenceRef": "region-post",
+          "notes": "Trimmed mean #777F81 over the 3945 NEUTRAL pixels (|R-B|<12) of (500,600,45,140). Filtering to neutral pixels matters: an unfiltered trim of a crop holding both coating and rust reports a grey-brown that is on neither surface."
+        },
+        {
+          "id": "foot-rust",
+          "color": "#644632",
+          "region": "the lowest 0.45 m of the tube",
+          "evidenceRef": "region-foot",
+          "notes": "Trimmed mean #644632 over the 2586 ORANGE-BIASED px (R-B>28) of (495,860,50,90). The most saturated rust of the eight signage props and the most extensive: 2586 of 4500 px in the foot crop pass the orange filter, against 584 of 4050 on the u-turn post. This tube is rusting properly, not just staining, and the ramp reaches further up in consequence."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, tube midsection at (500,600,45,140): 3945 NEUTRAL px (|R-B|<12) trimming to #777F81. Hot-dip spangle is a flat crystalline blotch, and the crop's spread is colour, not height.",
+          "Reference plate, tube foot at (495,860,50,90): 2586 ORANGE-BIASED px (R-B>28) trimming to #644632 - a surface bloom on a smooth tube, not a pitted profile at prop distance.",
+          "The spangle and the rust ramp arrive as VERTEX COLOURS over 12 height segments, so a synthesised five-canvas set would be discarded work.",
+          "Measured cost: five canvases at 1024 for this material alone is roughly 1.9 s inside createObjectModel, on a support whose whole geometry is 312 triangles."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T03:34:04.605972+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.646915+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.688572+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.729175+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.770175+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.812590+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.854749+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.896097+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T03:34:04.605972+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.646915+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.688572+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.729175+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.770175+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.812590+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.854749+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:34:04.896097+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.88,
+          "evidence": "A 20-point rounded-rect extrusion at 0.75 x 0.22 m with a 12 mm radius - the shallowest plate in the set at a 3.41 aspect, where every sibling is portrait or square. Edge-on it reads as a 35 mm folded pressing. Held at 0.88 because a landscape plate this thin is the hardest of the eight to read off a three-quarter view and its height is the least certain number in the spec."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.86,
+          "evidence": "Graded against the DECLARED contract: 0.75 x 2.20 m built exactly, plate occupying 0.10 of total height, matching the Meshy proxy's own plate band extent of 0.3 scaled to the declared plate height. Tube diameter 48 mm from the proxy's normalised shaft width of 0.049."
+        },
+        {
+          "id": "round-tube-section",
+          "passed": true,
+          "score": 0.93,
+          "evidence": "A CylinderGeometry at 12 radial segments, not the BoxGeometry every other support in this set uses. This is the prop's one structural difference from its siblings and the reference is unambiguous: a continuous curved highlight runs the length of the shaft with no arris anywhere. The collider proxy is EXACT here rather than circumscribing, because the support really is a round tube. 288 of the prop's 452 triangles are in this component - the only prop in the set where the support outweighs the plate, and deliberate, because a round section read as a polygon is the one defect a viewer notices on a tube."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.87,
+          "evidence": "Border rule, Thai soi name, Latin transliteration and the soi number at the right end all ride one UV atlas on one material. The arrangement is asymmetric - the number sits right - and the front-cap UV mapping preserves the sign so the atlas is not mirrored. The legend is representative text, not a transcription of the reference's particular soi: this is a kit prop, not a copy of one street's sign."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. This is the only support in the set given a RAMP rather than a hard splash line, and the reason is measured: 2586 of 4500 px in the foot crop pass the orange filter against 584 of 4050 on the u-turn post, so this tube is corroding through rather than carrying a splash stain and a hard edge would be the wrong shape for it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component street-name sign built to the declared 0.750 x 2.200 m with a measured depth inside the asset's 0.1 tolerance. 452 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two measurements here contradict the sibling signs built in the same session and both were kept: the field is a DEEP navy #2B4278 against the informatory plates' #3370AB and #4871A2, and the folded edge return is PAINTED navy #55678D rather than the bare metal grey every sibling shows. Assuming either from a sibling would have put a metal band round a painted plate and lit the wrong blue behind the legend.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/soi-name-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-name-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-name-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "as built - already below the per-draw-call overhead, so there is no far tier worth authoring"
+    },
+    {
+      "tier": "far",
+      "distance": 40,
+      "strategy": "none. A decimated tier would save nothing measurable and would cost a unique geometry against a ceiling that is full."
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 2,
+    "textureSize": 512,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() and none was invented. Road signs are among the most heavily instanced props in a street scene, so DRAW CALLS are the binding axis and triangles are not.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "At the ceiling with nothing spare, decided in the blockout. maxDrawCalls was raised from 1 to 2 BEFORE any geometry existed, because the asset already carried maxMaterials=2, which one draw call cannot reach."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two. The navy field, the white legend and the painted return are THREE colours on ONE material, separated by a UV atlas."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One rounded-rect extrusion and one segmented cylinder. Both are built once at module scope, and so is the atlas canvas."
+      },
+      "triangles": {
+        "signPlate": 76,
+        "post": 312,
+        "projectedTotal": 388,
+        "budget": 800,
+        "headroom": 412,
+        "note": "The tube is where the triangles go on this prop and it is the only one in the set where the SUPPORT outweighs the plate: 12 radial by 12 height segments is 288 wall triangles plus 24 of cap. That is deliberate - a round section read as a polygon is the one defect a viewer notices on a tube, and the height segments are what carry the rust ramp without a texture. The 412 spare are not spent: the drilled fixing holes are the obvious candidate and they are under a pixel at prop distance."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "area",
+      "directionHint": [
+        -0.38,
+        0.56,
+        0.74
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "The plate's top face reads luma 162-166 against the navy front face's 61-64, so the key is well above the plate; the tube's left side reads brighter than its right, so it is also camera-left."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "directionHint": [
+        0.55,
+        0.2,
+        -0.4
+      ],
+      "intensity": 0.34,
+      "colorTemperatureK": 6500,
+      "evidence": "The painted edge return, turned away from the key, still trims to #55678D at luma 102 rather than going black, which only happens with real fill."
+    },
+    {
+      "role": "rim",
+      "type": "directional",
+      "directionHint": [
+        0.6,
+        0.3,
+        -0.75
+      ],
+      "intensity": 0.22,
+      "colorTemperatureK": 6500,
+      "evidence": "A bright line runs along the plate's top-right fold, separating it from the backdrop at luma 166 against 131."
+    },
+    {
+      "role": "environment",
+      "type": "studio-context",
+      "environment": "studio softbox on a flat neutral backdrop",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "evidence": "Border-ring scan over 1024 samples trimming to #838383. The backdrop was MEASURED rather than assumed to be the grey the prompt asked for.",
+      "note": "The render harness backs onto a darker ground than the plate does, so a candidate render reads darker overall and that difference is the backdrop, not the prop."
+    },
+    {
+      "role": "contact-shadow",
+      "type": "ground-shadow",
+      "intensity": 0.5,
+      "evidence": "The reference crops the tube at the bottom of the frame and shows no ground contact, so the contact shadow is grounded at y=0 by construction rather than matched to an observed one.",
+      "behavior": "Grounded at y=0, the prop's origin, so a placed instance darkens where it actually touches. Ambient occlusion is left at zero on both materials: a closed tube and a sealed plate have no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot at base-center supports whole-object placement, rotation about +Y and visibility changes; nothing else in this prop articulates"
+  ],
+  "destructionAnchors": [
+    "none - destructionGroups is empty on the asset and no component declares a fractureGroup"
+  ],
+  "risks": [
+    "One view only. The plate's back and the tube's rear face are inferred, not observed.",
+    "The Meshy proxy is holed between bands 0.4 and 0.7 - a remesh artefact - so it was used for band proportions only and never for structure.",
+    "The plate's aspect is taken from the proxy's normalised width of 0.629 against its 0.3-of-height plate band. A landscape plate this thin is the hardest of the set to read off a three-quarter view, and its height is the least certain number in this spec.",
+    "The soi number and name are set as representative text, not as a transcription of the reference's particular soi. The plate is a kit prop, not a copy of one street's sign."
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Soi Name Sign",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.description-drill-down-macro-to-micro-decomposition",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[4]",
+        "score": 3.109041007421,
+        "snippets": [
+          "... bowie'), sau đó các bộ phận ('lưỡi, đệm cán, ốp cán'), rồi hình khối cơ bản của từng bộ phận Three.js target: Nested JSON structure: { gist, components: [{ name, primitiveShape, ... }] } mirroring the geometry_anatomy category's per-part entries"
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[4]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  }
+}

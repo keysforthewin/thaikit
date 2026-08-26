@@ -1,0 +1,2548 @@
+{
+  "targetName": "Ubosot",
+  "targetId": "ubosot",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-hall",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "nested-gable-prisms",
+        "peristyle-colonnade",
+        "stepped-platform",
+        "axial-symmetry"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "extruded-prism",
+        "colonnade",
+        "tiered-roof"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "whitewashed-stone",
+        "red-lacquer-timber",
+        "terracotta-roof-tile",
+        "olive-glazed-tile",
+        "tarnished-gilding"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The ordination hall of a wat and its visual anchor. A stepped white stone platform with a stair on the short end; twenty-four red columns forming a peristyle round a solid white hall body; three steep descending roof tiers in terracotta tile with olive-glazed eaves bands, white bargeboards and red ridge and eaves trim; gilt pediments in the topmost gable; fourteen curved chofa horns; and eight bai sema boundary stones. The registry notes are explicit that the sema are what make this an ORDINATION hall rather than a general assembly hall, so they belong to the asset and are not optional dressing."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 3,
+        "hierarchyDepth": 3,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 6,
+        "repetitionSystems": 3
+      },
+      "reasoning": [
+        "The registry notes put the identity in the ROOF -- three steep descending tiers with curved horn finials -- so the roof is where the geometry budget goes, and it is built as nested TRUNCATED gable prisms rather than as a stack of boxes.",
+        "Three repetition systems: twenty-four columns, fourteen chofa and eight boundary stones. All three are instanced; as separate meshes the columns alone would be the entire draw-call budget.",
+        "Material layering is the highest of the monumental set at six -- stone, red, tile, olive glaze, gilt and shade -- because a Thai temple roof is genuinely polychrome.",
+        "Action readiness is minimal: static landmark geometry, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The roof cannot be expressed without nesting, and the nesting cannot be expressed with full gables: three full gables at one pitch put the WIDEST tier's ridge highest, which is upside down. Each lower tier has to be truncated at the height where the next tier's eaves begin."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-tiered-roof",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "three steep descending tiers, each truncated where the next tier's eaves begin",
+          "mapsTo": {
+            "ref": "roof-tile"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-chofa",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "fourteen CURVED horn finials at every gable apex and every rake foot",
+          "mapsTo": {
+            "ref": "roof-tile"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-sema",
+          "zone": "platform",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "eight pointed bai sema boundary stones on pedestals -- what makes this an ordination hall specifically",
+          "mapsTo": {
+            "ref": "platform"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-colonnade",
+          "zone": "body",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "twenty-four red columns forming a peristyle round the hall body",
+          "mapsTo": {
+            "ref": "wall"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-glaze-bands",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "olive-glazed band along the foot of every tier's slope",
+          "mapsTo": {
+            "ref": "roof-band"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-bargeboards",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "white bargeboards up each gable rake with red fascia outside them",
+          "mapsTo": {
+            "ref": "barge-boards"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-pediment",
+          "zone": "gable",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "gilt field filling the topmost gable at each end",
+          "mapsTo": {
+            "ref": "pediment"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-doorway",
+          "zone": "body",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "one doorway on the +Z short end at the head of the stair",
+          "mapsTo": {
+            "ref": "doorway"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-plinth-streaks",
+          "zone": "platform",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "black weathering streaks darkening the plinth, fading out by 1.75 m",
+          "mapsTo": {
+            "ref": "d9-plinth-streaks"
+          },
+          "onMaterial": "stone",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+    "resolvedUnknowns": [
+      "ONE stair and ONE doorway, on the +Z short end. Most ubosots have a matching pair at the far end; the plate shows one and the other end is unseen, so one is what the evidence supports.",
+      "The gilt pediment is a plain triangular field. The plate's pediment is dense pierced carving -- the single most ornate thing on the building -- and it is authored as a proud flat panel. This is the largest deliberate simplification on the prop and is reported as a risk.",
+      "The plate's roof tiles are individually laid and visibly overlapping; the model carries flat tile fields. At the distance a 24 m hall is read from, the tile course is below the resolvable band, and the only route to it is the procedural texture set that discards every measured albedo.",
+      "The pink glazed rosettes along the bargeboards and the naga finials at the rake feet are not authored; the chofa horns are.",
+      "The interior is not modelled. The dark between the columns is a single solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 12.00 x 12.00 x 24.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 5,
+      "microFeatureGroups": 3,
+      "materialLayers": 6,
+      "repetitionSystems": 3,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 12.0 x 12.0 x 24.0 m with the long axis on Z",
+          "Platform, colonnade and roof read as three distinct horizontal registers",
+          "The roof is nearly half the total height"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a chofa pushing the prop past its declared width",
+          "the roof reading as a lid rather than as the dominant mass"
+        ]
+      },
+      {
+        "id": "tiered-roof",
+        "name": "Three-tier roof and chofa",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Three steep tiers stepping in AND up, correctly nested",
+          "Horn finials that CURVE, at every gable apex and rake foot",
+          "Olive glaze bands, white bargeboards and red trim all present"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-tile"
+        ],
+        "failureModes": [
+          "full gables that cannot nest, putting the widest tier highest",
+          "straight spikes instead of curved horns, which read as lightning rods"
+        ]
+      },
+      {
+        "id": "colonnade-and-sema",
+        "name": "Colonnade and boundary stones",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Twenty-four red columns in a regular peristyle",
+          "EIGHT pointed boundary stones on pedestals around the platform"
+        ],
+        "evidenceRefs": [
+          "region-column"
+        ],
+        "failureModes": [
+          "the sema omitted, which makes it an assembly hall and not an ordination hall",
+          "the wall body rendering black because a vertexColors material found no colour attribute"
+        ]
+      },
+      {
+        "id": "polychrome",
+        "name": "Polychrome palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Muted terracotta tile, OLIVE glaze, tarnished gilt -- as measured",
+          "Red lacquer columns against whitewashed stone"
+        ],
+        "evidenceRefs": [
+          "region-tile",
+          "region-glaze",
+          "region-gilt"
+        ],
+        "failureModes": [
+          "bright orange tile and saturated green trim authored from memory rather than from the plate"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "platform",
+        "wall",
+        "roof-tile"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "tiered-roof",
+      "name": "Three-tier roof and chofa",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "roof-tile",
+        "roof-band",
+        "barge-boards",
+        "roof-trim"
+      ],
+      "evidenceRefs": [
+        "region-tile"
+      ]
+    },
+    {
+      "id": "colonnade-and-sema",
+      "name": "Colonnade and boundary stones",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "wall",
+        "platform"
+      ],
+      "evidenceRefs": [
+        "region-column"
+      ]
+    },
+    {
+      "id": "polychrome",
+      "name": "Polychrome palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "roof-tile",
+        "roof-band",
+        "pediment"
+      ],
+      "evidenceRefs": [
+        "region-tile",
+        "region-glaze",
+        "region-gilt"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 11,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "platform",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "platform",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its twenty-four individual columns."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "ONE stair and ONE doorway, on the +Z short end. Most ubosots have a matching pair at the far end; the plate shows one and the other end is unseen, so one is what the evidence supports.",
+    "The gilt pediment is a plain triangular field. The plate's pediment is dense pierced carving -- the single most ornate thing on the building -- and it is authored as a proud flat panel. This is the largest deliberate simplification on the prop and is reported as a risk.",
+    "The plate's roof tiles are individually laid and visibly overlapping; the model carries flat tile fields. At the distance a 24 m hall is read from, the tile course is below the resolvable band, and the only route to it is the procedural texture set that discards every measured albedo.",
+    "The pink glazed rosettes along the bargeboards and the naga finials at the rake feet are not authored; the chofa horns are.",
+    "The interior is not modelled. The dark between the columns is a single solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up, LONG AXIS ON Z -- the declared 12 x 12 x 24 puts the 24 m on depth. That matters for the reference comparison: Meshy returned this building with its long axis on X, which is an arbitrary output convention and not a disagreement, and the band comparison now detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring. Read without that rotation it reported a mean depth error of 1.05 of height -- a coordinate convention masquerading as a fidelity failure."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 12.0,
+      "h": 12.0,
+      "d": 24.0
+    },
+    "description": "A stepped white platform to 1.75 m, a red colonnade to 6.10 m, and then five and a half metres of roof: three tiers stepping in and up to a ridge at 11.40 m, with horns at every gable apex and every rake foot reaching 12.00 m. The silhouette events are the colonnade's rhythm, the three roof steps, and the fourteen horns breaking every edge of the roofline.",
+    "envelopeDerivation": "x spans -6.00..+6.00 = 12.00 and z spans -12.00..+12.00 = 24.00, both set by the bottom stone slab; the long axis is Z. y spans 0.00 to 12.00, the tip of the chofa at the topmost gable apex. The roof is NOT what sets the width, and that took a rebuild to get right: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00. The roof came in to 5.45; the platform sets the envelope, as it should.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to long:h:short = 1 : 0.712 : 0.574 against the declared 1 : 0.500 : 0.500 -- the reference is 42% TALLER relative to its length, and slightly wider. After correcting the axis convention, area-weighted band comparison gives mean |delta width| 0.173 and |delta depth| 0.446 of height, the largest divergence of the monumental set. Almost all of it is that one ratio: widths are normalised by height, so a model squashed from 17 m to 12 m reads proportionally wider in every band, and 1.75/1.20 on the long axis is 1.46 against the 1.42 the two aspect ratios predict. This is the Bangkok Hospital case again -- the proxy and the declaration disagree about the SUBJECT's proportions, not about its framing. The registry notes call 24 m long correct for a full ordination hall and declare 12 m of height; the declaration wins, and the divergence is reported rather than quietly split."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-stone",
+      "viewpoint": "front",
+      "path": "crops/stone.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-column",
+      "viewpoint": "front",
+      "path": "crops/red.png",
+      "confidence": 0.744
+    },
+    {
+      "id": "region-tile",
+      "viewpoint": "top",
+      "path": "crops/tile.png",
+      "confidence": 0.801
+    },
+    {
+      "id": "region-glaze",
+      "viewpoint": "top",
+      "path": "crops/green.png",
+      "confidence": 0.811
+    },
+    {
+      "id": "region-gilt",
+      "viewpoint": "front",
+      "path": "crops/gilt.png",
+      "confidence": 0.805
+    },
+    {
+      "id": "region-shade",
+      "viewpoint": "front",
+      "path": "crops/dark.png",
+      "confidence": 0.735
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.75,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the hall is bilaterally symmetric on both axes and the plate shows two adjacent elevations, so the unseen pair are their mirrors. What is genuinely unknown is whether the far short end has a second stair and doorway, as most ordination halls do."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "platform",
+      "name": "Stone platform and stair",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three stepped slabs and five treads in one stone, so eight parts ride ONE component and ONE draw call.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Three notched slabs from y=0.00 to 1.75 with a five-tread stair rising in the notch on the +Z short end.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The stair is cut into the plan as a notch rather than hung off the outside, and each tread occupies only its own going so neighbours meet as opposed faces. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry from three extruded plans and five boxes."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-sema",
+          "description": "eight boundary stones round the platform",
+          "delivery": "repetitionSystems.sema"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#bda69a",
+        "recipe": "Whitewashed stone, roughness 0.92, no texture set.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
+        "secondaryAlbedo": "rgba(189, 166, 154, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            6.0,
+            0
+          ],
+          "halfExtents": [
+            6.0,
+            6.0,
+            12.0
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its twenty-four individual columns."
+        }
+      }
+    },
+    {
+      "id": "wall",
+      "name": "Hall wall body",
+      "level": "macro",
+      "role": "body",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A SOLID box inside the colonnade. The hall is an exterior shell only ever seen from outside, so there is no interior: it would cost draw calls, geometries and VRAM for something nobody sees, and a solid body also means the doorway needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "platform",
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box, x +-3.60, y 1.75..6.30, z +-9.60, standing well inside the column ring.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Set 1.26 m inside the columns on every elevation, so no wall face is ever near a column face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-colonnade",
+          "description": "twenty-four peristyle columns",
+          "delivery": "repetitionSystems.columns"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#bda69a",
+        "recipe": "The SAME whitewashed stone as the platform -- one material, two components.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
+        "secondaryAlbedo": "rgba(189, 166, 154, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "doorway",
+      "name": "Doorway",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.5,
+      "confidence": 0.74,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is its own material and there is exactly one of it.",
+      "materialId": "dark",
+      "material": "dark",
+      "parent": "wall",
+      "geometryDescriptor": {
+        "topologyIntent": "A dark panel on the +Z short end at the head of the stair.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Stands 0.03 m PROUD of the wall face, not recessed into it: the wall is a solid mass, so a panel sunk into it is inside the solid and invisible.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d8-doorway",
+          "description": "one doorway at the stair head",
+          "delivery": "geometryDescriptor box in the shade material"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "dark",
+        "baseColor": "#54453b",
+        "recipe": "Colonnade shade, roughness 0.96, measured in the plate's own shadow.",
+        "evidenceRef": "region-shade",
+        "confidence": 0.74,
+        "dominantAlbedo": "rgba(84, 69, 59, 1.0)",
+        "secondaryAlbedo": "rgba(84, 69, 59, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.74
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-tile",
+      "name": "Tile roof fields",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three nested TRUNCATED gable prisms in one component. Each is the cross-section trapezoid of one tier extruded along the hall's length -- the roof is a prism, so a prism is what it should be built as, and a box decomposition of a 46-degree pitch is not a low-poly roof but a staircase.",
+      "materialId": "tile",
+      "material": "tile",
+      "parent": "wall",
+      "geometryDescriptor": {
+        "topologyIntent": "Three tiers from eaves at y=6.10 to a ridge at 11.40, each truncated at the height where the next tier's eaves begin.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each tier's orange field starts where its green band ends, meeting as OPPOSED faces -- the green's top against the orange's bottom -- and the orange prisms are pulled in 0.01 m at each end so no two tier ends share a plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-tiered-roof",
+          "description": "three nested truncated gable tiers",
+          "delivery": "tierProfile() extrusions"
+        },
+        {
+          "id": "d2-chofa",
+          "description": "fourteen curved horn finials",
+          "delivery": "repetitionSystems.chofa"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "tile",
+        "baseColor": "#c38a62",
+        "recipe": "Terracotta tile, roughness 0.78, no texture set.",
+        "evidenceRef": "region-tile",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(195, 138, 98, 1.0)",
+        "secondaryAlbedo": "rgba(195, 138, 98, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-band",
+      "name": "Green eaves bands",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.85,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The bottom 0.42 m of every tier's slope, as its own short trapezoid prism. A separate component because it is a separate glaze, not a separate shape.",
+      "materialId": "green",
+      "material": "green",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "An olive band along the foot of each of the three tiers, all three merged.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Meets the orange field above it as an opposed butt at one height.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-glaze-bands",
+          "description": "olive band at every eaves",
+          "delivery": "tierProfile() extrusions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "green",
+        "baseColor": "#6e6a48",
+        "recipe": "Olive-glazed tile, roughness 0.76.",
+        "evidenceRef": "region-glaze",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(110, 106, 72, 1.0)",
+        "secondaryAlbedo": "rgba(110, 106, 72, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "barge-boards",
+      "name": "Bargeboards",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.8,
+      "confidence": 0.82,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Twelve boards merged into one geometry. Each is a box ROTATED to the rake angle rather than a stair of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "A white board up each rake of each gable end of every tier.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each board is hung 0.14 m outside its tier's end face, so it overlaps rather than meeting it in its own plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#bda69a",
+        "recipe": "The same whitewashed stone as the platform and the wall.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.82,
+        "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
+        "secondaryAlbedo": "rgba(189, 166, 154, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.82
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-trim",
+      "name": "Ridge and eaves trim",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.7,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Red fascia up each rake, along each eaves, and the ridge cap: nineteen parts merged into one geometry and one draw call.",
+      "materialId": "red",
+      "material": "red",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "Red trim outlining every roof edge, and a cap along the topmost ridge.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The rake fascia sits 0.20 m outside the white board it accompanies, and the eaves fascia 0.08 m outside the tile edge.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-bargeboards",
+          "description": "red fascia outside the white boards",
+          "delivery": "geometryDescriptor merged rotated boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "red",
+        "baseColor": "#71332a",
+        "recipe": "The SAME red lacquer as the columns -- one material, two components.",
+        "evidenceRef": "region-column",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(113, 51, 42, 1.0)",
+        "secondaryAlbedo": "rgba(113, 51, 42, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "pediment",
+      "name": "Gable pediments",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.85,
+      "confidence": 0.8,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two extruded triangles, one per gable end. Its own component because it is its own material and the chofa that share that material are instanced.",
+      "materialId": "gilt",
+      "material": "gilt",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "A gilt field filling the topmost gable at each end, standing proud of the tier face.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Offset 0.06 m outside the tier's end at one end and 0.16 m at the other, so neither lies in the tier's own plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-pediment",
+          "description": "gilt gable field",
+          "delivery": "extruded triangle standing proud"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gilt",
+        "baseColor": "#8a6c52",
+        "recipe": "Tarnished gilding, roughness 0.36, metalness 0.30 -- below physical because the harness supplies no environment map.",
+        "evidenceRef": "region-gilt",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(138, 108, 82, 1.0)",
+        "secondaryAlbedo": "rgba(138, 108, 82, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "stone",
+      "name": "Whitewashed stone",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#bda69a",
+      "color": "#bda69a",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stone_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#bda69a",
+        "secondary": [
+          "#934D41",
+          "#CFB9AA",
+          "#6D3D32"
+        ],
+        "samplingNotes": "Measured as the mean of crops/stone.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-plinth-streaks",
+          "region": "platform below y=1.75",
+          "roughness": 0.92,
+          "palette": [
+            "#8C867F",
+            "#BDA69A"
+          ],
+          "evidence": "The plate's bottom courses measure distinctly darker than the deck above them, from the black weathering streaks that run down the plinth. Delivered as a per-vertex TINT on the merged platform geometry -- (0.80, 0.81, 0.79) at y=0 fading out by y=1.75 -- rather than as a second material, which would cost a draw call and a shader switch to say that the bottom of a plinth is dirtier than the top."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-stone (PBR confidence 0.860) on the lit platform moulding.",
+          "Shared by the platform, the hall wall body, the bargeboards and the eight boundary stones -- four consumers, one material, because they are one whitewashed stone and a colour difference would not have been a material difference even if there had been one.",
+          "Textureless: the plate's black weathering streaks are wear at a frequency no prop-distance viewer resolves, and only their vertical gradient is carried, as a vertex tint."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/stone.png",
+        "pbrReport": "material-evidence/stone.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "red",
+      "name": "Red lacquer on timber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#71332a",
+      "color": "#71332a",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/red_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#71332a",
+        "secondary": [
+          "#954C40",
+          "#44140E",
+          "#804338"
+        ],
+        "samplingNotes": "Measured as the mean of crops/red.png. extract_pbr_evidence confidence 0.744. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-column (PBR confidence 0.744) on a lit column shaft. The crop is narrow -- a column is 0.5 m wide on a 24 m building -- which is why the confidence is the lowest of the six here; it is still comfortably above the 0.7 threshold.",
+          "Shared by the columns and the ridge and eaves trim, which are the same lacquer in the plate."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/red.png",
+        "pbrReport": "material-evidence/red.pbr.json",
+        "confidence": 0.744,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "tile",
+      "name": "Terracotta roof tile",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c38a62",
+      "color": "#c38a62",
+      "roughness": {
+        "base": 0.78,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/tile_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c38a62",
+        "secondary": [
+          "#AE744C",
+          "#DAA078",
+          "#C48A62"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tile.png. extract_pbr_evidence confidence 0.801. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-tile (PBR confidence 0.801). Worth stating plainly: this is a MUTED terracotta, not the bright orange a Thai temple roof is remembered as. The first pass authored the roof from that memory and the plate disagreed; the measurement won.",
+          "Textureless. The individual tile course is visible in the plate and is genuinely lost here, but at the distance a 24 m hall is read from it is below the resolvable band, and the texture route forces color to white and would discard this measurement."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tile.png",
+        "pbrReport": "material-evidence/tile.pbr.json",
+        "confidence": 0.801,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Olive-glazed tile",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6e6a48",
+      "color": "#6e6a48",
+      "roughness": {
+        "base": 0.76,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/green_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#6e6a48",
+        "secondary": [
+          "#8B8159",
+          "#555535",
+          "#6C6C49"
+        ],
+        "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.811. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-glaze (PBR confidence 0.811). The eaves bands are OLIVE, not the saturated green they are remembered as -- the same correction the tile needed, from the same wrong instinct.",
+          "Roughness 0.76 against the tile's 0.78: glazed tile is marginally tighter than unglazed, and that difference is the only way the glaze survives into a textureless material."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/green.png",
+        "pbrReport": "material-evidence/green.pbr.json",
+        "confidence": 0.811,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gilt",
+      "name": "Tarnished gilding",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8a6c52",
+      "color": "#8a6c52",
+      "roughness": {
+        "base": 0.36,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gilt_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#8a6c52",
+        "secondary": [
+          "#6B533A",
+          "#7F684F",
+          "#523C25"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gilt.png. extract_pbr_evidence confidence 0.805. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-gilt (PBR confidence 0.805) on the pediment carving. Tarnished to a bronze rather than bright leaf, which is what the plate shows.",
+          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black -- which on the fourteen chofa would lose the feature the registry notes call this building's identity."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gilt.png",
+        "pbrReport": "material-evidence/gilt.pbr.json",
+        "confidence": 0.805,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Colonnade shade",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#54453b",
+      "color": "#54453b",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/dark_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#54453b",
+        "secondary": [
+          "#53453B",
+          "#4F4137",
+          "#584A40"
+        ],
+        "samplingNotes": "Measured as the mean of crops/dark.png. extract_pbr_evidence confidence 0.735. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-shade (PBR confidence 0.735) in the plate's own colonnade shadow, and used for the doorway panel.",
+          "Luma 72 against the harness backdrop's 58. That margin is deliberate: the silhouette gate classifies background by mean luma alone, and a dark panel between columns is enclosed by the prop's own outline, so at a lower value it would be read as a hole punched through it."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/dark.png",
+        "pbrReport": "material-evidence/dark.pbr.json",
+        "confidence": 0.735,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "columns",
+      "name": "Peristyle columns",
+      "instanceCount": 24,
+      "sourceComponent": "wall",
+      "material": "red",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "column-with-capital",
+      "placement": {
+        "mode": "ring",
+        "axis": "Y",
+        "insetX": 4.86,
+        "insetZ": 10.4,
+        "longSideCount": 9,
+        "shortSideCount": 3
+      },
+      "instanceDimensions": {
+        "width": 0.52,
+        "height": 4.35,
+        "depth": 0.52
+      },
+      "rationale": "Twenty-four columns at ONE geometry and ONE submission. As separate meshes they would be twenty-four draw calls of the twenty-four available -- the entire budget, for twenty-four copies of one box.",
+      "zFightingNote": "The capital block is sunk 0.02 m into the shaft rather than sitting on it, so no two top faces share a plane inside the merged unit."
+    },
+    {
+      "id": "chofa",
+      "name": "Chofa horn finials",
+      "instanceCount": 14,
+      "sourceComponent": "roof-tile",
+      "material": "gilt",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "chofa-horn",
+      "placement": {
+        "mode": "explicit",
+        "note": "Two at the topmost gable apex facing along the ridge, and one at each rake foot of every tier -- four corners per tier, each mirrored so it curls outward."
+      },
+      "instanceDimensions": {
+        "width": 0.44,
+        "height": 0.94,
+        "depth": 0.19
+      },
+      "rationale": "The registry notes call the horn finials the feature that separates an ubosot from any other rectangular hall, so there are fourteen of them and they cost one draw call. Mirroring is a NEGATIVE X scale in the instance matrix, which is what lets one geometry serve both hands.",
+      "zFightingNote": "Six tapering segments sampled along an arc, each rotated to its own tangent -- the horns CURVE. A straight spike at a ridge end reads as a lightning rod. No two segments are parallel, so nothing inside the unit can share a plane."
+    },
+    {
+      "id": "sema",
+      "name": "Bai sema boundary stones",
+      "instanceCount": 8,
+      "sourceComponent": "platform",
+      "material": "stone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "sema-on-pedestal",
+      "placement": {
+        "mode": "explicit",
+        "note": "Four at the platform corners and four at the mid-points of the sides, all inside the declared footprint."
+      },
+      "instanceDimensions": {
+        "width": 0.72,
+        "height": 1.51,
+        "depth": 0.72
+      },
+      "rationale": "Pedestal, plinth and pointed leaf blade merged into one unit, eight placements. These are required by the registry notes and not optional dressing.",
+      "zFightingNote": "The blade is an extruded curved leaf standing on a two-step pedestal; each step is narrower than the one below, so they meet as opposed faces."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T17:01:07.504559+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.584931+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        },
+        {
+          "id": "colonnade-and-sema",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
+          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.669044+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.754349+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
+          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.836184+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.918524+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.999149+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:01:08.083922+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        },
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        },
+        {
+          "id": "colonnade-and-sema",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
+          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+        },
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
+          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T17:01:07.504559+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: eight components and 3 InstancedMesh systems at 11 draw calls of 24. The columns are the expensive lesson avoided -- twenty-four separate meshes would have been the entire draw-call budget on their own.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/ubosot/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.584931+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        },
+        {
+          "id": "colonnade-and-sema",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
+          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the roof built as nested truncated gable prisms rather than a stack of boxes, the hall body solid so the doorway needs no opening cut in it, and the stair cut into the platform plan as a notch on the short end.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.669044+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: roof tiers pulled in after the chofa turned out to set the envelope rather than the roof; bargeboards rotated to the rake instead of stepped; horns rebuilt as six-segment curves with a negative-scale mirror for the opposite hand.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.754349+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
+          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 6 materials at PBR confidence 0.735-0.860, and three of them corrected AWAY from what a Thai temple is remembered as and towards what this plate measures -- muted terracotta, olive glaze, tarnished bronze.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.836184+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: surface character is entirely geometry and colour banding -- glaze bands, bargeboards, red trim, fourteen horns -- plus one delivered per-vertex weathering tint on the plinth. No texture sets and no canvas. The individual tile course and the pierced pediment carving are the two things genuinely lost to that, and both are reported.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.918524+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The gilt carries metalness 0.30 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black -- which on the fourteen chofa would lose the feature the registry notes call this building's identity.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:07.999149+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:01:08.083922+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.8,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
+          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+        },
+        {
+          "id": "tiered-roof",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
+          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+        },
+        {
+          "id": "colonnade-and-sema",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
+          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+        },
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
+          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score, and held down by the silhouette layer at 0.80 rather than by the build: the declared 12 m height on a 24 m hall is 42% squatter than the Meshy proxy reads the same plate, and that one ratio accounts for almost the whole band divergence. 2,788/32,000 triangles, 11/24 draw calls, 6/16 materials, 11/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 8,
+        "repetitionSystems": 3,
+        "projectedTotal": 11,
+        "budget": 24,
+        "headroom": 13,
+        "note": "Eight components and three repetition systems: 11 of 24. The columns are the expensive lesson avoided -- twenty-four of them would have been the entire draw-call budget on their own."
+      },
+      "materials": {
+        "projectedTotal": 6,
+        "budget": 16,
+        "headroom": 10,
+        "note": "stone covers the platform, the wall body, the bargeboards AND the boundary stones; red covers the columns and all the ridge and eaves trim; gilt covers the pediments and the fourteen chofa. Six of sixteen materials, ten in hand, and the six are genuinely six finishes -- a Thai temple roof is polychrome by construction."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 11,
+        "budget": 32,
+        "headroom": 21,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 2788,
+        "budget": 32000,
+        "headroom": 29212,
+        "note": "2,788 of 32,000. The roof is prisms and the columns are boxes, so nothing here is expensive; the headroom could buy the pediment carving and the individual tile course the plate shows, and is deliberately not spent on either, because both are below the resolvable band at the distance a 24 m hall is read from."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Extruded prisms, and boxes rotated to the rake. The roof is the interesting case: three TRUNCATED gable cross-sections extruded along the hall, because three full gables at one pitch cannot nest -- the widest tier's ridge would be the highest, which is upside down. The chofa and the sema blade are the only curves on the prop."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Three InstancedMesh systems carry 46 of the prop's 85 discrete parts. The chofa system uses a NEGATIVE X scale in half its instance matrices, which is what lets one horn geometry serve both hands of every corner."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all. Two things are genuinely lost to that and both are reported: the individual tile course, and the pierced carving of the gable pediment."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-vs-proxy-height",
+      "severity": "medium",
+      "description": "Meshy reads this building 42% taller relative to its length than the declared 12 m on 24 m, and that single ratio accounts for almost the whole band divergence -- the largest of the monumental set.",
+      "mitigation": "The registry notes call 24 m long correct for a full ordination hall and declare 12 m of height; the declaration is the kit's and it wins. Reported prominently rather than quietly split, because the proxy and the declaration disagree about the SUBJECT's proportions and not about its framing."
+    },
+    {
+      "id": "pediment-carving-omitted",
+      "severity": "medium",
+      "description": "The plate's gable pediment is dense pierced gilt carving and is authored as a plain proud triangle. It is the most ornate thing on the building.",
+      "mitigation": "The triangle carries the pediment's silhouette and its measured tarnished-gilt value, which is what reads at prop distance. The carving would need either a projected reference crop or a texture set that discards every measured albedo on the prop. Reported as the largest deliberate simplification here."
+    },
+    {
+      "id": "single-stair",
+      "severity": "low",
+      "description": "One stair and one doorway, on the +Z end. Most ubosots have a matching pair.",
+      "mitigation": "The plate shows one and the far end is unseen, so one is what the evidence supports. Recorded as an assumption rather than closed silently."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Ubosot",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.602,
+        "aspectRatioDelta": 0.255,
+        "scaleDelta": 0.078,
+        "bilateralSymmetryError": 0.1966,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 20.82,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 7.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.18
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.16
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.6
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.602 is below threshold 0.85",
+        "aspect-ratio delta 0.255 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "d8d530be578f8039",
+      "passId": "blockout"
+    }
+  ]
+}

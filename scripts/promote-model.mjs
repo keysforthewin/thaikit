@@ -45,6 +45,48 @@ async function copyIfPresent(from, to) {
   return to;
 }
 
+const MAP_ROLES = ['albedo', 'roughness', 'height', 'normal', 'ao', 'metalness', 'emissive', 'alpha'];
+
+/**
+ * The PBR maps the spec SAYS this prop needs, read off every material's
+ * referencePbr block.
+ *
+ * Driven off the spec rather than off a directory listing on purpose: a spec
+ * that names a map nobody authored then fails here, at promotion, instead of
+ * 404-ing silently in a browser and rendering as a flat grey surface. It is also
+ * what makes the factory's all-five-or-nothing rule checkable before shipping --
+ * makeReferenceTextureSet returns null for the whole set if one map is missing,
+ * so a prop can lose its entire surface to a single typo.
+ */
+async function declaredMaps(specPath) {
+  if (!(await exists(specPath))) return [];
+  let spec;
+  try {
+    spec = JSON.parse(await fs.readFile(specPath, 'utf8'));
+  } catch (err) {
+    throw new Error(`could not parse ${toRepoRelative(specPath)}: ${err.message}`);
+  }
+  const out = [];
+  for (const material of spec.materials ?? []) {
+    const maps = material?.referencePbr?.maps;
+    if (!maps || typeof maps !== 'object') continue;
+    for (const role of MAP_ROLES) {
+      const entry = maps[role];
+      if (!entry || typeof entry !== 'object') continue;
+      const raw = typeof entry.url === 'string' && entry.url.trim() ? entry.url : entry.path;
+      if (typeof raw !== 'string' || !raw.trim()) continue;
+      // An absolute URL is somebody else's to serve; only a local file ships.
+      if (/^(https?:|data:|blob:)/.test(raw)) continue;
+      out.push({
+        material: material.id ?? material.materialId ?? '',
+        role,
+        filename: path.basename(raw),
+      });
+    }
+  }
+  return out;
+}
+
 async function main() {
   const args = parseArgs();
   const id = args.id;
@@ -118,6 +160,43 @@ async function main() {
     path.join(to, 'object-sculpt-spec.json'),
   );
 
+  // Authored PBR maps. A procedural prop declares none and this is a no-op; a
+  // flat ground tile has nothing BUT these -- its geometry is two triangles and
+  // every marking on it is a pixel.
+  const mapEntries = [];
+  for (const { material, role, filename } of await declaredMaps(path.join(to, 'object-sculpt-spec.json'))) {
+    const src = path.join(from, 'maps', filename);
+    const dest = path.join(to, 'maps', filename);
+    if (!(await copyIfPresent(src, dest))) {
+      return fail(
+        `the spec declares a ${role} map for material "${material}" (${filename}) but ` +
+          `${toRepoRelative(src)} does not exist. The prop would render untextured.`,
+      );
+    }
+    const meta = await sharp(dest).metadata();
+    mapEntries.push({
+      material,
+      role,
+      file: toRepoRelative(dest),
+      bytes: (await fs.stat(dest)).size,
+      width: meta.width ?? null,
+      height: meta.height ?? null,
+    });
+  }
+  if (mapEntries.length) {
+    log(`maps   : ${mapEntries.length} shipped (${mapEntries.map((m) => m.role).join(', ')})`);
+    // The render is what produced the thumbnail and the four measured axes. If it
+    // saw fewer texture images than the prop ships maps, it ran before they
+    // existed -- so the picture in the kit is of an untextured prop.
+    const distinct = new Set(mapEntries.map((m) => m.file)).size;
+    if ((asset.model.textures ?? 0) < distinct) {
+      return fail(
+        `${distinct} map(s) ship but the render measured only ${asset.model.textures ?? 0} texture(s). ` +
+          'The render predates them; re-run render-model.mjs before promoting.',
+      );
+    }
+  }
+
   if (!moved.source) {
     log('warn   : no createObjectModel.ts beside the bundle; the TypeScript is not being shipped');
   }
@@ -169,6 +248,7 @@ async function main() {
     a.model.source = moved.source ? toRepoRelative(moved.source) : a.model.source;
     a.model.spec = moved.spec ? toRepoRelative(moved.spec) : a.model.spec;
     a.model.thumb = thumb ? toRepoRelative(thumb) : a.model.thumb;
+    a.model.maps = mapEntries;
     a.model.fileBytes = bytes;
     // img2threejs's state file stays in scratch/: it is a resume index, not a
     // shipped artefact, and pointing at it keeps a rebuild resumable.

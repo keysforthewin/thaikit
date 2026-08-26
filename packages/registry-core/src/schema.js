@@ -7,7 +7,7 @@
  */
 import { z } from 'zod';
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /** A stage that generation moves through. Every stage tracks its own state. */
 export const StageState = z.enum([
@@ -235,6 +235,42 @@ const Review = z.object({
  * edit for a refinement; the generated code must never be the only copy of a
  * reconstruction decision.
  */
+/**
+ * An authored PBR map file shipped beside the module.
+ *
+ * A procedural factory normally synthesises its surfaces, and declaring
+ * `textureless` is the default this kit argues for. A flat ground tile is the
+ * documented exception: it has two triangles and no geometry to carry its
+ * identity, so every marking, slab joint and drain lid on it is a pixel. Those
+ * maps are files, and they have to ship.
+ *
+ * Recorded per (material, role) rather than as a bare list of paths because the
+ * factory looks a map up by the role it plays, and a `file` is repo-relative and
+ * POSIX-separated like every other artefact path here -- the /media mount and a
+ * dist consumer each prefix it their own way.
+ */
+const MapRole = z.enum([
+  'albedo',
+  'roughness',
+  'height',
+  'normal',
+  'ao',
+  'metalness',
+  'emissive',
+  'alpha',
+]);
+
+const TextureMap = z.object({
+  /** Material id in object-sculpt-spec.json that this map belongs to. */
+  material: z.string().min(1),
+  role: MapRole,
+  /** Repo-relative: assets/<id>/maps/<file>. */
+  file: z.string().min(1),
+  bytes: z.number().int().nonnegative().nullable().default(null),
+  width: z.number().int().positive().nullable().default(null),
+  height: z.number().int().positive().nullable().default(null),
+});
+
 const Model = ModelStats.extend({
   status: StageState.default('pending'),
   /** Built browser module: assets/<id>/model.bundle.js */
@@ -249,6 +285,11 @@ const Model = ModelStats.extend({
   export: z.string().default('createObjectModel'),
   /** Browse-grid thumbnail, rendered from the built module. */
   thumb: z.string().nullable().default(null),
+  /**
+   * Authored PBR maps shipped in assets/<id>/maps/. Empty for a fully
+   * procedural prop, which is most of them.
+   */
+  maps: z.array(TextureMap).default([]),
   runtime: Runtime.default({}),
   reference: Reference.default({}),
   review: Review.default({}),

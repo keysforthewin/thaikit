@@ -1,0 +1,2920 @@
+{
+  "targetName": "Lotus's Store Building",
+  "targetId": "lotus-s-store-building",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-retail-building",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "rectilinear",
+        "planar-panelled",
+        "hard-edged",
+        "axis-aligned"
+      ],
+      "structureKind": [
+        "shell-volume",
+        "panelised-facade",
+        "cantilever",
+        "clustered-plant"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "painted-cement-render",
+        "glazed-tile-cladding",
+        "illuminated-acrylic",
+        "anodised-aluminium",
+        "tinted-plate-glass",
+        "galvanised-steel",
+        "roof-membrane"
+      ],
+      "notes": "Static single-storey branded retail box on thaikit's shared 8.0 x 4.6 x 7.0 m module, exterior shell only. No interior geometry: glazing is a tinted mostly-opaque pane, not an opening. Nothing moves, so one root pivot and zero sockets is the correct contract. Distinguishing features on this plate: the whole FRONT elevation is green tile cladding while the sides and rear are plain grey render; a proud white signboard; a green pilaster wrapping the front-right corner; a silver canopy with soffit downlights; a roller shutter on the +X wall; and TWO large ducted condensers rather than four small ones."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 7,
+        "repetitionSystems": 3
+      },
+      "reasoning": [
+        "Silhouette is a single rectangular prism -- low geometric complexity.",
+        "Richness is REPETITION and PANELLING, not intricate form. The instanced systems collapse the repeated parts into one InstancedMesh each.",
+        "Occlusion risk is real: the rear elevation is entirely unseen in the single plate.",
+        "Action readiness is minimal: static exterior shell, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Repetition-dominated facade: without repetitionSystems the mullion and plant sets would each cost a draw call per part and blow maxDrawCalls=12."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-lotus-wordmark",
+          "zone": "front-fascia",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "green 'Lotus' and gold apostrophe-s on a proud white rounded signboard",
+          "mapsTo": {
+            "ref": "d1-lotus-wordmark"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-green-cladding",
+          "zone": "front-elevation",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "green tile cladding over the whole front elevation, with panel joints",
+          "mapsTo": {
+            "ref": "parapet"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-corner-pilaster",
+          "zone": "front-right-corner",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "green pilaster wrapping the front-right corner onto the +X wall",
+          "mapsTo": {
+            "ref": "parapet"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-coping",
+          "zone": "parapet-top",
+          "kind": "bevel",
+          "identityDefining": false,
+          "description": "grey coping capping the parapet ring, inset from its outer faces",
+          "mapsTo": {
+            "ref": "front-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-mullion-grid",
+          "zone": "shopfront",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "fine vertical mullion grid with a wider central sliding-door bay",
+          "mapsTo": {
+            "ref": "shopfront-frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-downlights",
+          "zone": "canopy-soffit",
+          "kind": "emissive",
+          "identityDefining": false,
+          "description": "circular recessed downlights on the canopy soffit",
+          "mapsTo": {
+            "ref": "building-shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-shutter-ribs",
+          "zone": "right-side-wall",
+          "kind": "groove",
+          "identityDefining": true,
+          "description": "18 ribbed slats and a head box on the +X wall",
+          "mapsTo": {
+            "ref": "side-feature"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-glazing-gloss",
+          "zone": "shopfront",
+          "kind": "gloss",
+          "identityDefining": true,
+          "description": "plate glass reads as a tight specular lobe, unlike every other surface",
+          "mapsTo": {
+            "ref": "d8-glazing-gloss"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+    "resolvedUnknowns": [
+      "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render walls with no openings. Confidence 0.20 / 0.25.",
+      "Canopy downlight count is inferred as one per canopy plate (6); the soffit is seen only at a grazing angle. Confidence 0.50.",
+      "The plate shows shelving and floor markings through the glazing. NOT modelled: this prop is an exterior shell, so the glazing is authored as a tinted mostly-opaque pane instead.",
+      "The green tile cladding shows panel joints in the plate. Carried as a flat colour -- the joints are below the resolution worth geometry or a texture set at prop distance."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 8.0 x 4.6 x 7.0 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 4,
+      "microFeatureGroups": 3,
+      "materialLayers": 7,
+      "repetitionSystems": 3,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Single rectangular prism at 8.0 x 4.6 x 7.0 m",
+          "Green front parapet rises above the side upstands and is capped by a grey coping",
+          "Two ducted condensers break the roofline"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "reads as a featureless cuboid",
+          "parapet flush with facade"
+        ]
+      },
+      {
+        "id": "brand-fascia",
+        "name": "Lotus's signboard",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Proud white signboard carrying green 'Lotus' and a gold apostrophe-s",
+          "Sign sits in the green band clear of the canopy below it"
+        ],
+        "evidenceRefs": [
+          "region-fascia"
+        ],
+        "failureModes": [
+          "wordmark absent",
+          "sign face flush with the fascia wall -> z-fight",
+          "canopy overlapping the sign"
+        ]
+      },
+      {
+        "id": "green-facade",
+        "name": "Green tile front elevation and corner pilaster",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Front elevation clad green while sides and rear stay grey",
+          "Pilaster wraps the front-right corner onto the +X wall"
+        ],
+        "evidenceRefs": [
+          "region-green"
+        ],
+        "failureModes": [
+          "whole building one colour",
+          "pilaster on the wrong corner"
+        ]
+      },
+      {
+        "id": "glazed-shopfront",
+        "name": "Glazed shopfront and doors",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Full-width mullion grid",
+          "Wider central sliding-door bay",
+          "Tinted mostly-opaque glazing recessed behind the frame"
+        ],
+        "evidenceRefs": [
+          "region-shopfront"
+        ],
+        "failureModes": [
+          "glazing reads as a hole punched through the wall"
+        ]
+      },
+      {
+        "id": "entrance-canopy",
+        "name": "Entrance canopy",
+        "required": false,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Silver slab cantilevering forward below the sign",
+          "Downlights on the soffit"
+        ],
+        "evidenceRefs": [
+          "region-canopy"
+        ],
+        "failureModes": [
+          "canopy missing",
+          "canopy fouling the sign"
+        ]
+      },
+      {
+        "id": "side-shutter",
+        "name": "Roller shutter",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Ribbed slats with a head box on the +X wall",
+          "Reads as light mill grey"
+        ],
+        "evidenceRefs": [
+          "region-shutter"
+        ],
+        "failureModes": [
+          "flat unribbed panel",
+          "rendered near-black"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a hero2x budget of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "building-shell",
+        "parapet",
+        "front-feature"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "brand-fascia",
+      "name": "Lotus's signboard",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "fascia-panel"
+      ],
+      "evidenceRefs": [
+        "region-fascia"
+      ]
+    },
+    {
+      "id": "green-facade",
+      "name": "Green tile front elevation",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "parapet"
+      ],
+      "evidenceRefs": [
+        "region-green"
+      ]
+    },
+    {
+      "id": "glazed-shopfront",
+      "name": "Glazed shopfront and doors",
+      "tier": "important",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "shopfront-glazing",
+        "shopfront-frame",
+        "shopfront-mullions"
+      ],
+      "evidenceRefs": [
+        "region-shopfront"
+      ]
+    },
+    {
+      "id": "entrance-canopy",
+      "name": "Entrance canopy",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "canopy-plates"
+      ],
+      "evidenceRefs": [
+        "region-canopy"
+      ]
+    },
+    {
+      "id": "side-shutter",
+      "name": "Roller shutter",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "side-feature"
+      ],
+      "evidenceRefs": [
+        "region-shutter"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 11,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "building-shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Nothing opens, turns or swings; doors and shutters are authored as fixed geometry, so they get no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "building-shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "The asset declares collider 'box'. One box proxy."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render walls with no openings. Confidence 0.20 / 0.25.",
+    "Canopy downlight count is inferred as one per canopy plate (6); the soffit is seen only at a grazing angle. Confidence 0.50.",
+    "The plate shows shelving and floor markings through the glazing. NOT modelled: this prop is an exterior shell, so the glazing is authored as a tinted mostly-opaque pane instead.",
+    "The green tile cladding shows panel joints in the plate. Carried as a flat colour -- the joints are below the resolution worth geometry or a texture set at prop distance."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares. The glazed shopfront faces +Z. The roller shutter is on the +X wall and is NOT mirrored: only one is evidenced. The subject is ASYMMETRIC about X -- the green corner pilaster wraps only the front-RIGHT corner -- so no mirror plane is declared and none may be assumed."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 8.0,
+      "h": 4.6,
+      "d": 7.0
+    },
+    "description": "One rectangular prism. The only silhouette events are the taller green front parapet with its grey coping, the cantilevered entrance canopy, and two ducted condensers breaking the roofline.",
+    "envelopeDerivation": "x spans -4.00..+4.00 (parapet ring outer faces) = 8.00. y spans 0.00..4.60 = 4.60. z spans -3.50 (rear parapet) ..+3.50 = 7.00. The shell front face is set back to z=+2.50 so anything cantilevering off it lands ON the declared depth rather than overrunning it.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.561 : 0.972 against the declared 1 : 0.575 : 0.875 -- height agrees within 2.5%, depth reads 11% deeper. The declared 8.0 x 4.6 x 7.0 m is the KIT's shared retail module, a deliberate normalisation across seven sibling props, so where the plate's own building is proportioned differently the declaration wins and the proxy is reported, not followed."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-fascia",
+      "viewpoint": "front",
+      "path": "crops/fascia.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-green",
+      "viewpoint": "front",
+      "path": "crops/green.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-shopfront",
+      "viewpoint": "front",
+      "path": "crops/glass.png",
+      "confidence": 0.85
+    },
+    {
+      "id": "region-canopy",
+      "viewpoint": "front-high",
+      "path": "crops/aluminium.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-wall",
+      "viewpoint": "right",
+      "path": "crops/wall.png",
+      "confidence": 0.85
+    },
+    {
+      "id": "region-shutter",
+      "viewpoint": "right",
+      "path": "crops/galv.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-roofdeck",
+      "viewpoint": "top",
+      "path": "crops/deck.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.2,
+      "note": "NOT OBSERVED. Authored as plain render with the parapet returning and no openings."
+    },
+    {
+      "id": "region-left",
+      "viewpoint": "left",
+      "path": null,
+      "confidence": 0.25,
+      "note": "NOT OBSERVED. Authored plain; the roller shutter is deliberately NOT mirrored onto it."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "building-shell",
+      "name": "Building shell",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One continuous render skin over four walls. Splitting it per elevation would cost a draw call per wall for the life of the prop to express one material.",
+      "materialId": "wall",
+      "material": "wall",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box, x -3.94..+3.94, y 0..3.55, z -3.44..+2.50. SOLID, not a ring: the prop is an exterior shell only ever seen from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid also means the shopfront needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Set 0.06 m INSIDE the parapet ring on every elevation (walls at +-3.94 and -3.44; parapet at +-4.00 and -3.50). That difference is a coping drip edge, and it is what stops a wall face and a parapet face being coplanar and co-facing.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-downlights",
+          "description": "canopy soffit downlights",
+          "delivery": "repetitionSystems.canopy-plates.integralFeature"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "wall",
+        "baseColor": "#7a7f84",
+        "recipe": "Flat painted cement render. Solid albedo, roughness 0.88, metalness 0.0, no texture set.",
+        "evidenceRef": "region-wall",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(122, 127, 132, 1.0)",
+        "secondaryAlbedo": "rgba(122, 127, 132, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            2.3,
+            0
+          ],
+          "halfExtents": [
+            4.0,
+            2.3,
+            3.5
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the building, not with its canopy plates."
+        }
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Roof deck",
+      "level": "macro",
+      "role": "surface",
+      "importance": 0.6,
+      "confidence": 0.84,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat deck plane. Its own component only because the membrane is a visibly different value from the wall render, and this prop is seen from above in every hero shot.",
+      "materialId": "deck",
+      "material": "deck",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Thin slab spanning y 3.50..3.62, overlapping UNDER the parapet ring.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Spans y 3.50..3.62 so its underside is sunk INTO the shell rather than resting on it. Authored flush, the deck bottom face and the parapet ring bottom face would both sit at y=3.550 facing down -- tens of square metres of coplanar co-facing surface, and exactly the pair check-coplanar catches.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "deck",
+        "baseColor": "#5f6163",
+        "recipe": "Dark mineral-surfaced membrane, roughness 0.92, metalness 0.0. A different material from the render below it: measured 27 levels darker and cooler.",
+        "evidenceRef": "region-roofdeck",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(95, 97, 99, 1.0)",
+        "secondaryAlbedo": "rgba(95, 97, 99, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "parapet",
+      "name": "Parapet ring and fascia wall",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A continuous upstand ring in one material, with the front simply taller -- which a plan extrusion cannot express, since an extrude carries one height. Merged boxes are the right primitive, and anything else in the same material folds in here rather than costing its own submission.",
+      "materialId": "green",
+      "material": "green",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Front fascia wall plus left, right and rear upstands, merged into ONE component and ONE draw call, with same-material cladding folded in.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Parapet outer faces stand 0.06 m PROUD of the shell walls. Authored flush they would be coplanar and co-facing along all three elevations. The front box overlaps into the shell volume rather than butting it.",
+        "mergeNote": "Primitive is \"box\" because the schema enumerates primitives, but this is a MERGED cluster built into one BufferGeometry and submitted as ONE draw call."
+      },
+      "localFeatures": [
+        {
+          "id": "d2-green-cladding",
+          "description": "green tile over the whole front elevation",
+          "delivery": "geometryDescriptor merged boxes"
+        },
+        {
+          "id": "d3-corner-pilaster",
+          "description": "pilaster wrapping the front-right corner",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "green",
+        "baseColor": "#549070",
+        "recipe": "Green glazed tile cladding, roughness 0.62. Carries the front parapet band, the three side upstands, the full-height front cladding and the corner pilaster -- all the same green, so all one component and one draw call.",
+        "evidenceRef": "region-green",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(84, 144, 112, 1.0)",
+        "secondaryAlbedo": "rgba(84, 144, 112, 1.0)",
+        "materialClass": "ceramic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "fascia-panel",
+      "name": "Brand fascia panel",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat panel carrying the brand mark. UV strategy is AUTHORED, not generated: the +Z face samples the wordmark region of the canvas and the other five faces sample a plain corner of the same canvas. That is what keeps the brand graphic at one material and one draw call instead of adding a separate graphic plane.",
+      "materialId": "fascia",
+      "material": "fascia",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Brand fascia panel, sunk INTO the fascia wall at the back and standing proud of it at the front, so it overlaps its surround instead of meeting it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Back face is inside the fascia wall solid and the front face clears every other facade plane. No coincident face anywhere on this panel.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-lotus-wordmark",
+          "description": "green 'Lotus' and gold apostrophe-s",
+          "delivery": "post-construction canvas texture, UV-region-split"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "fascia",
+        "baseColor": "#dae0dc",
+        "recipe": "Backlit acrylic diffuser: high flat albedo, roughness 0.35. The wordmark arrives as a post-construction canvas, UV-region-split so only the +Z face samples it.",
+        "evidenceRef": "region-fascia",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(218, 224, 220, 1.0)",
+        "secondaryAlbedo": "rgba(218, 224, 220, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shopfront-glazing",
+      "name": "Shopfront glazing",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One pane, not one per bay: the mullion grid in front does the dividing, and a pane per bay would cost a draw call each to express one sheet of glass.",
+      "materialId": "glass",
+      "material": "glass",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Single tinted pane, overlapping INTO the facade at the back and RECESSED behind the framing at the front, which is what makes it read as glass set into a frame.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Front face sits behind the frame and mullion fronts; back face is inside the facade solid. No coincident face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "glass",
+        "baseColor": "#808582",
+        "recipe": "Tinted plate glass: roughness 0.16, opacity 0.92. Mostly opaque ON PURPOSE -- there is no interior behind it, and a fully transparent pane would read as a hole in the wall.",
+        "evidenceRef": "region-shopfront",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(128, 133, 130, 1.0)",
+        "secondaryAlbedo": "rgba(128, 133, 130, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shopfront-frame",
+      "name": "Shopfront framing and door bay",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Every one of these parts is the same metal. Folding them into one component is the draw-call lever chosen in the BLOCKOUT -- a part split for authoring convenience cannot be merged afterwards once pivots hang off it.",
+      "materialId": "aluminium",
+      "material": "aluminium",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Perimeter frame, transom, kick rail, door jambs and door header MERGED into one component.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Frame front face stands proud of both the glazing and the mullions. The frame OVERLAPS the glazing it holds rather than meeting its edge, which is the rule that stops a frame putting four coincident reveal faces in the model.",
+        "mergeNote": "Merged multi-box cluster, one BufferGeometry, one draw call."
+      },
+      "localFeatures": [
+        {
+          "id": "d5-mullion-grid",
+          "description": "fine vertical mullion grid with a wider door bay",
+          "delivery": "repetitionSystems.shopfront-mullions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "aluminium",
+        "baseColor": "#aeaeab",
+        "recipe": "Mill-finish anodised aluminium: metalness 0.35, roughness 0.42. Shared with the canopy plates, the mullions and the coping -- one material across every aluminium part.",
+        "evidenceRef": "region-canopy",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(174, 174, 171, 1.0)",
+        "secondaryAlbedo": "rgba(174, 174, 171, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "side-feature",
+      "name": "Roller shutter and head box",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.6,
+      "confidence": 0.75,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Slats and head box share the galvanised material and merge into one component. The corrugation is geometry the silhouette shows at a grazing angle, not a texture.",
+      "materialId": "galv",
+      "material": "galv",
+      "parent": "building-shell",
+      "geometryDescriptor": {
+        "topologyIntent": "18 ribbed slats plus a head box on the +X wall, standing proud of the wall face.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "All slats share the inner face at x=3.90 and the corrugation alternates by making every other slat THINNER. Growing them outward instead pushed faces past the declared envelope and onto the parapet's own +-4.00 plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-shutter-ribs",
+          "description": "18 ribbed slats and a head box",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "galv",
+        "baseColor": "#9aa0a6",
+        "recipe": "Galvanised steel: metalness 0.30, roughness 0.52. The slat corrugation is a ribbed profile in GEOMETRY, not a normal map.",
+        "evidenceRef": "region-shutter",
+        "confidence": 0.75,
+        "dominantAlbedo": "rgba(154, 160, 166, 1.0)",
+        "secondaryAlbedo": "rgba(154, 160, 166, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.75
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "front-feature",
+      "name": "Parapet coping",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A single capping ring in one material. Four boxes, one component, one draw call.",
+      "materialId": "aluminium",
+      "material": "aluminium",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Coping capping the whole parapet ring; the front run takes the envelope to exactly y=4.60.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Inset 0.02 m from the parapet outer faces and 0.04 m from its inner faces so no coping face is coplanar and co-facing with a parapet face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-coping",
+          "description": "grey coping capping the parapet ring",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "aluminium",
+        "baseColor": "#aeaeab",
+        "recipe": "Grey coping in the same aluminium as the framing and canopy -- one material, no extra shader switch.",
+        "evidenceRef": "region-canopy",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(174, 174, 171, 1.0)",
+        "secondaryAlbedo": "rgba(174, 174, 171, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "wall",
+      "name": "Painted cement render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7a7f84",
+      "color": "#7a7f84",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/wall_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#7a7f84",
+        "secondary": [
+          "#62676D",
+          "#6A6F75"
+        ],
+        "samplingNotes": "Measured as the mean of crops/wall.png. extract_pbr_evidence confidence 0.838. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-wall (crops/wall.png, PBR confidence 0.838): the wall field scans at standard deviation 14 over a 90x90 px area, with no high-frequency component to carry and no tooth resolving at plate resolution.",
+          "Flat painted render is flat paint at prop distance."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/wall.png",
+        "pbrReport": "material-evidence/wall.pbr.json",
+        "confidence": 0.838,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Roof deck membrane",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#5f6163",
+      "color": "#5f6163",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/deck_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#5f6163",
+        "secondary": [
+          "#282C31",
+          "#525559"
+        ],
+        "samplingNotes": "Measured as the mean of crops/deck.png. extract_pbr_evidence confidence 0.842. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofdeck (crops/deck.png, PBR confidence 0.842): a dark mineral-surfaced membrane reading as one value, seen only over the parapet from above."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/deck.png",
+        "pbrReport": "material-evidence/deck.pbr.json",
+        "confidence": 0.842,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Green tile cladding",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#549070",
+      "color": "#549070",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/green_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#549070",
+        "secondary": [
+          "#529170",
+          "#619479"
+        ],
+        "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "ceramic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-green (crops/green.png, PBR confidence 0.751): standard deviation 5 across the field -- glazed tile is optically flat, and the only feature in the crop is the panel joint, which is geometry-scale and below prop resolution.",
+          "Roughness 0.62 rather than the render's 0.88: the plate shows a soft sheen on this cladding that the matte render alongside it does not have."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/green.png",
+        "pbrReport": "material-evidence/green.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "fascia",
+      "name": "Illuminated acrylic sign face",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#dae0dc",
+      "color": "#dae0dc",
+      "roughness": {
+        "base": 0.35,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/fascia_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#dae0dc",
+        "secondary": [
+          "#E8ECE9"
+        ],
+        "samplingNotes": "Measured as the mean of crops/fascia.png. extract_pbr_evidence confidence 0.762. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d1-lotus-wordmark",
+          "region": "sign face +Z only",
+          "palette": [
+            "#0E7A4F",
+            "#E3A81C"
+          ],
+          "evidence": "crops/fascia.png -- green 'Lotus' and gold apostrophe-s on a white rounded panel. Delivered as a post-construction canvas, UV-region-split so ONLY the +Z face of the panel samples the graphic and the five remaining faces sample a plain corner of the same canvas. That keeps the fascia at one material and one draw call."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-fascia (crops/fascia.png, PBR confidence 0.762): a backlit acrylic diffuser is uniform by construction, with nothing for a texture set to carry.",
+          "The Lotus's wordmark is NOT a material texture: it is a generated canvas assigned AFTER material construction, which the textureless declaration does not affect."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/fascia.png",
+        "pbrReport": "material-evidence/fascia.pbr.json",
+        "confidence": 0.762,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Tinted plate glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#808582",
+      "color": "#808582",
+      "roughness": {
+        "base": 0.16,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#808582",
+        "secondary": [
+          "#4D7363"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d8-glazing-gloss",
+          "region": "glazing pane",
+          "roughness": 0.16,
+          "evidence": "crops/glass.png -- the only tight specular lobe on the prop; every other surface is matte or satin."
+        }
+      ],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-shopfront (crops/glass.png, PBR confidence 0.860, the highest of the seven): plate glass is optically smooth. Every feature in the crop is either a mullion (geometry) or a reflection (lighting) -- neither belongs in a texture set."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "aluminium",
+      "name": "Mill-finish anodised aluminium",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#aeaeab",
+      "color": "#aeaeab",
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/aluminium_roughness.png"
+      },
+      "metalness": 0.35,
+      "albedo": {
+        "dominant": "#aeaeab",
+        "secondary": [
+          "#666664"
+        ],
+        "samplingNotes": "Measured as the mean of crops/aluminium.png. extract_pbr_evidence confidence 0.709. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-canopy (crops/aluminium.png, PBR confidence 0.709): mill-finish aluminium is a uniform anodised surface; the value ramp the extractor resolves is the studio key falling across the canopy plates, not albedo variation, and is not sampled.",
+          "Metalness 0.35, well below physical: the thaikit harness supplies no environment map and a metal with nothing to reflect renders black."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/aluminium.png",
+        "pbrReport": "material-evidence/aluminium.pbr.json",
+        "confidence": 0.709,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "galv",
+      "name": "Galvanised steel shutter",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9aa0a6",
+      "color": "#9aa0a6",
+      "roughness": {
+        "base": 0.52,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/galv_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#9aa0a6",
+        "secondary": [
+          "#686C72",
+          "#797E84"
+        ],
+        "samplingNotes": "Measured as the mean of crops/galv.png. extract_pbr_evidence confidence 0.716. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-shutter (crops/galv.png, PBR confidence 0.716): galvanised steel carries a spangle at hand distance and nothing at all at prop distance.",
+          "Albedo lifted from the crop mean #71757B toward #9AA0A6 because the crop sits on the shaded +X elevation; the shutter reads as a light mill grey in the plate, and at the crop value it rendered as a dark panel."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/galv.png",
+        "pbrReport": "material-evidence/galv.pbr.json",
+        "confidence": 0.716,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "shopfront-mullions",
+      "name": "Shopfront vertical mullions",
+      "instanceCount": 9,
+      "sourceComponent": "shopfront-frame",
+      "material": "aluminium",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "mullion-box",
+      "placement": {
+        "axis": "X",
+        "positions": [
+          -2.72,
+          -2.3,
+          -1.88,
+          -1.46,
+          0,
+          1.46,
+          1.88,
+          2.3,
+          2.72
+        ],
+        "y": 1.53,
+        "z": 2.69
+      },
+      "instanceDimensions": {
+        "width": 0.06,
+        "height": 2.86,
+        "depth": 0.08
+      },
+      "rationale": "Nine instances on one geometry cost one draw call; nine components would have cost nine and blown the ceiling on their own.",
+      "zFightingNote": "z 2.65..2.73 puts the mullion front clear of the parapet front face at 2.74 -- authored at 2.70 the two shared that plane and all nine instances flickered."
+    },
+    {
+      "id": "plant-condensers",
+      "name": "Rooftop ducted condenser units",
+      "instanceCount": 2,
+      "sourceComponent": "roof-deck",
+      "material": "galv",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "condenser-unit",
+      "placement": {
+        "mode": "explicit",
+        "positions": [
+          [
+            0.55,
+            3.6,
+            -0.45
+          ],
+          [
+            1.95,
+            3.6,
+            -1.15
+          ]
+        ]
+      },
+      "instanceDimensions": {
+        "width": 0.95,
+        "height": 0.92,
+        "depth": 0.85
+      },
+      "integralFeature": {
+        "id": "cowl",
+        "geometry": "cylinder",
+        "radius": 0.3,
+        "height": 0.1,
+        "segments": 16,
+        "note": "Casing, fan cowl and four feet MERGED into the single instanced geometry."
+      },
+      "rationale": "The plate shows TWO large ducted units, not four small ones. Two instances, one geometry, one draw call.",
+      "zFightingNote": "Feet start at y=3.60, sunk into the roof deck (top 3.62), so the two overlap rather than sharing a plane."
+    },
+    {
+      "id": "canopy-plates",
+      "name": "Entrance canopy plates with integral downlights",
+      "instanceCount": 6,
+      "sourceComponent": "building-shell",
+      "material": "aluminium",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "canopy-plate-unit",
+      "placement": {
+        "axis": "X",
+        "positions": [
+          -2.65,
+          -1.59,
+          -0.53,
+          0.53,
+          1.59,
+          2.65
+        ],
+        "y": 3.0,
+        "z": 3.0
+      },
+      "instanceDimensions": {
+        "width": 1.04,
+        "height": 0.13,
+        "depth": 1.0
+      },
+      "integralFeature": {
+        "id": "d6-downlights",
+        "geometry": "cylinder",
+        "radius": 0.085,
+        "height": 0.03,
+        "note": "ONE downlight merged into the plate geometry, so six plates give six downlights for ZERO extra draw calls. Count and spacing INFERRED at 0.50 confidence."
+      },
+      "rationale": "The canopy reads as discrete slabs with visible joints, not one plate.",
+      "zFightingNote": "Plate backs overlap into the front cladding rather than butting it. Lowered to y=3.00 so the canopy no longer fouls the signboard above it."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T14:07:02.933824+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.015148+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "entrance-canopy",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six silver plates on a 1.06 m pitch, one downlight merged into each plate geometry so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.096468+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "side-shutter",
+          "tier": "important",
+          "score": 0.79,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "18 ribbed slats plus a head box on the +X wall, at measured-and-corrected #9AA0A6.",
+          "notes": "Two corrections here. The first build was a flat unribbed box; the ribs are geometry because the silhouette shows them at a grazing angle. The albedo was lifted from the crop mean #71757B, which sits on the shaded elevation and rendered the shutter as a dark panel against a plate that shows light mill grey."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.178228+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.257997+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.340125+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.423714+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.511003+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "entrance-canopy",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six silver plates on a 1.06 m pitch, one downlight merged into each plate geometry so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle."
+        },
+        {
+          "id": "side-shutter",
+          "tier": "important",
+          "score": 0.79,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "18 ribbed slats plus a head box on the +X wall, at measured-and-corrected #9AA0A6.",
+          "notes": "Two corrections here. The first build was a flat unribbed box; the ribs are geometry because the silhouette shows them at a grazing angle. The albedo was lifted from the crop mean #71757B, which sits on the shaded elevation and rendered the shutter as a dark panel against a plate that shows light mill grey."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T14:07:02.933824+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: shared 8.0 x 4.6 x 7.0 m retail module, 8 components and 3 InstancedMesh systems at 11 draw calls. Silhouette reads without materials in the map-stripped capture.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.015148+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "entrance-canopy",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six silver plates on a 1.06 m pitch, one downlight merged into each plate geometry so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: green cladding and corner pilaster folded into the parapet component, coping given its own; facade depth ordering authored so no two surfaces are coplanar and co-facing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.096468+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "side-shutter",
+          "tier": "important",
+          "score": 0.79,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "18 ribbed slats plus a head box on the +X wall, at measured-and-corrected #9AA0A6.",
+          "notes": "Two corrections here. The first build was a flat unribbed box; the ribs are geometry because the silhouette shows them at a grazing angle. The albedo was lifted from the crop mean #71757B, which sits on the shaded elevation and rendered the shutter as a dark panel against a plate that shows light mill grey."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: canopy lowered to y=3.00 so it stops fouling the signboard, shutter rebuilt as 18 ribbed slats with alternating thickness that thins inward rather than projecting past the envelope, coping run sized to take the model to exactly 4.60.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.178228+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 7 materials from measured crops at PBR confidence 0.709-0.860, all declared textureless. Metalness capped at 0.35/0.30 for a harness with no environment map. Shutter albedo corrected off the shaded crop.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.257997+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: surface character is GEOMETRY -- 18 shutter ribs, canopy joint reveals, mullion grid. No texture sets anywhere.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.340125+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: near-shadowless studio plate, so measured crop means stand as albedo. No rim light and no contact shadow present, both recorded as absent. Exposure 1.0, ACES filmic; the host scene owns the ground shadow.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.423714+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one box collider matching the declaration, no destruction groups matching the empty declared list. A static exterior shell has no mechanisms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T14:07:03.511003+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.85,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7. The independent Meshy v7 reconstruction of the same plate agrees on height within 2.5% and reads 11% deeper; the declared size is the kit's shared retail module across seven siblings, so the declaration wins and the proxy divergence is reported rather than followed.",
+          "notes": "The grey coping run on the front parapet is what takes the model to exactly 4.60 -- authored without it the prop topped out at 4.52 and was 0.08 m short of its declared height."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proud white signboard carrying green 'Lotus' (#0E7A4F) and a gold apostrophe-s (#E3A81C), measured off crops/fascia.png at PBR confidence 0.762. Delivered as a post-construction canvas, UV-region-split so only the +Z face samples the graphic -- one material, one draw call.",
+          "notes": "Glyphs are Arial rather than the brand's own face, and the text is fitted to the board by measureText rather than a font-size ratio because headless Chrome's fallback decides the real advance widths. The canopy was lowered from y=3.16 to y=3.00 during review: at the first height it cantilevered across the signboard and hid part of the wordmark."
+        },
+        {
+          "id": "green-facade",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Green tile cladding #549070 measured at standard deviation 5 (crops/green.png, PBR confidence 0.751) over the whole front elevation, with the corner pilaster wrapping onto the +X wall. Sides and rear stay grey render #7A7F84.",
+          "notes": "Cladding and pilaster are folded INTO the parapet component because they are the same green -- that merge is what pays for the coping's own draw call. The plate's tile panel joints are carried as flat colour: below the resolution worth geometry at prop distance."
+        },
+        {
+          "id": "glazed-shopfront",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Nine mullions plus a wider central sliding-door bay; tinted pane at measured #808582, opacity 0.92, recessed behind the framing.",
+          "notes": "Mostly opaque by design -- the plate shows shelving and floor markings through the glass and none of it is modelled, because this is an exterior shell. The mullions were moved from z=2.70 to z=2.69 during review: at 2.70 their front faces shared the parapet's own 2.740 plane and all nine instances flickered against it."
+        },
+        {
+          "id": "entrance-canopy",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six silver plates on a 1.06 m pitch, one downlight merged into each plate geometry so six plates give six downlights for zero extra draw calls.",
+          "notes": "Downlight count and spacing INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle."
+        },
+        {
+          "id": "side-shutter",
+          "tier": "important",
+          "score": 0.79,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "18 ribbed slats plus a head box on the +X wall, at measured-and-corrected #9AA0A6.",
+          "notes": "Two corrections here. The first build was a flat unribbed box; the ribs are geometry because the silhouette shows them at a grazing angle. The albedo was lifted from the crop mean #71757B, which sits on the shaded elevation and rendered the shutter as a dark panel against a plate that shows light mill grey."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score. 1220/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries; factory builds in ~77 ms because every material is textureless. Nothing to optimise: the split was costed against the draw-call ceiling in the blockout.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/lotus-s-store-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 8,
+        "repetitionSystems": 3,
+        "projectedTotal": 11,
+        "budget": 12,
+        "headroom": 1,
+        "note": "Three repetition systems collapse 17 discrete parts (9 mullions, 2 condensers, 6 canopy plates) into 3 InstancedMesh submissions, and the green cladding and corner pilaster fold into the parapet rather than costing their own."
+      },
+      "materials": {
+        "projectedTotal": 7,
+        "budget": 8,
+        "headroom": 1,
+        "note": "aluminium is shared by the framing, the mullions, the canopy plates AND the parapet coping -- four roles, one shader. galv is the shutter alone here because the condensers also use it. A colour difference is not a material difference."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 11,
+        "budget": 16,
+        "headroom": 5,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1220,
+        "budget": 16000,
+        "headroom": 14780,
+        "note": "Triangles are NOT the binding constraint on this prop -- draw calls are. The headroom is deliberately spent on silhouette quality (chamfers, cowl segments, shutter ribs) and must not be read as room to split components, which would spend the axis that is actually scarce."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "box, cylinder and merged-box clusters only. No organic surfaces exist on this subject."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Three InstancedMesh systems carry 17 of the 28 discrete parts."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. The brand fascia receives its wordmark as a generated canvas assigned AFTER material construction -- the documented route for a printed brand fascia, unaffected by the declaration."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "unobserved-rear",
+      "severity": "medium",
+      "description": "Rear and left elevations are not in the single plate; authored plain.",
+      "mitigation": "Reported at 0.20/0.25 confidence rather than invented."
+    },
+    {
+      "id": "declared-vs-plate-depth",
+      "severity": "low",
+      "description": "Meshy reads the plate's building 11% deeper than the declared module.",
+      "mitigation": "The declared 8.0 x 4.6 x 7.0 m is the kit's shared retail module across seven siblings; the declaration wins and the proxy is reported."
+    },
+    {
+      "id": "draw-call-headroom",
+      "severity": "medium",
+      "description": "11 of 12 draw calls used.",
+      "mitigation": "Triangle headroom is 14,780 -- refinement must go into geometry on EXISTING components, never into new ones."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Lotus's Store Building",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.description-drill-down-macro-to-micro-decomposition",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[4]",
+        "score": 3.481029529261,
+        "snippets": [
+          "... whole object first ('a bowie-style knife'), then its components ('blade, bolster, handle scales'), then each component's basic solid shape Dấu hiệu nhận diện: Một mô tả tốt gọi tên toàn bộ đối tượng trước ('dao kiểu bowie'), sau đó các bộ ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[4]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.shader-mapping-uvcoordinate-system-conversion-attachment-hierarchy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[14]",
+        "score": 3.215198600387,
+        "snippets": [
+          "... một offset+xoay cục bộ tương đối với node cha Three.js target: THREE.Object3D parent-child hierarchy with each sub-part's local .position/.quaternion set to the source engine's named attachment-socket transform; flip texture.flipY / negate ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[14]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-honest-uncertainty-single-image-limits-convention",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[6]",
+        "score": 2.03736085196,
+        "snippets": [
+          "... cứng chống lại việc bịa chi tiết hình học/vật liệu đưa vào tái tạo Three.js target: Sentinel value \"undetermined\" (or null + a needsAnotherView:true flag) written into any metadata field the agent cannot verify from the given reference image(s)"
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4901,
+        "aspectRatioDelta": 0.0921,
+        "scaleDelta": 0.304,
+        "bilateralSymmetryError": 0.1394,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 12.32,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.25
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.12
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.22
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.31
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.5
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.490 is below threshold 0.85",
+        "aspect-ratio delta 0.092 exceeds threshold 0.05",
+        "scale delta 0.304 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.9% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "7c4afa44f84edbc8",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4901,
+        "aspectRatioDelta": 0.0921,
+        "scaleDelta": 0.304,
+        "bilateralSymmetryError": 0.1394,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 12.32,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.25
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.12
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.22
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.31
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.5
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.490 is below threshold 0.85",
+        "aspect-ratio delta 0.092 exceeds threshold 0.05",
+        "scale delta 0.304 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.9% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "7c4afa44f84edbc8",
+      "passId": "blockout"
+    }
+  ]
+}

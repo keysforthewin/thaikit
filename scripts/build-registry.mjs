@@ -65,6 +65,15 @@ async function main() {
       /** The named export to call. Not always the default. */
       export: a.model.export,
       /**
+       * Authored PBR maps, repo-relative exactly like `module`, so a consumer
+       * that fetches the module from <base>/assets/... fetches these from the
+       * same base. Left undefined rather than [] for the procedural props, which
+       * is most of the kit, so their entries stay byte-identical.
+       */
+      maps: a.model.maps?.length
+        ? a.model.maps.map((m) => ({ material: m.material, role: m.role, file: m.file }))
+        : undefined,
+      /**
        * What a game can drive without reading the geometry: the named pivots for
        * parts that move and the sockets things attach to.
        */

@@ -1,0 +1,2557 @@
+{
+  "targetName": "Chedi",
+  "targetId": "chedi",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-stupa",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "surface-of-revolution",
+        "stepped-terrace",
+        "tapering-profile",
+        "four-fold-symmetric"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "lathed-profile",
+        "stacked-terrace",
+        "axial-spire"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "weathered-limestone",
+        "lime-whitewash-stucco",
+        "worn-gilding"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A village relic stupa: a stepped square terrace with redented corners and one arched niche per face, a bell dome on moulded rings, a square harmika, a sixteen-ring conical taper and a worn gilt needle finial. The registry notes name the readable feature exactly -- \"stepped square base, rounded bell, ringed taper, needle spire\" -- and every authoring decision here serves that profile rather than any surface."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 1,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 4,
+        "repetitionSystems": 2
+      },
+      "reasoning": [
+        "Silhouette is the whole subject and it is NOT simple: bell, ringed taper and needle are three different curvatures stacked on a stepped square, and the registry notes say that profile must survive at a distance where no surface detail is visible at all.",
+        "Component count is low on purpose. Every ring, moulding and step is a PROFILE POINT rather than a mesh, so richness costs triangles -- the axis with headroom -- instead of draw calls.",
+        "Occlusion risk is unusually low for this kit: the prop is four-fold symmetric, so the single plate showing two of the four faces effectively shows all of them.",
+        "Action readiness is minimal: static landmark geometry, cylinder collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Profile-dominated rather than repetition-dominated, which is the opposite of the retail set. The one repeating element is the four arched niches, and they must be repetitionSystems: as four separate frames plus four separate back panels they would cost eight draw calls of the twelve available, for four copies of two geometries."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-bell-profile",
+          "zone": "dome",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the bell curve -- full at the haunch, tightening only near the shoulder",
+          "mapsTo": {
+            "ref": "bell-dome"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-ringed-taper",
+          "zone": "spire",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "sixteen low-relief rings climbing the conical taper",
+          "mapsTo": {
+            "ref": "spire"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-needle-finial",
+          "zone": "apex",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "worn gilt needle with a small bud at its tip",
+          "mapsTo": {
+            "ref": "finial"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-redented-corners",
+          "zone": "terrace",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "each terrace corner cut back in two right-angled redent steps",
+          "mapsTo": {
+            "ref": "terrace"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-arched-niches",
+          "zone": "terrace",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "one arched blind niche per face, standing proud of the terrace",
+          "mapsTo": {
+            "ref": "terrace"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-bell-mouldings",
+          "zone": "dome-foot",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "two moulded rings at the foot of the bell, above the terrace",
+          "mapsTo": {
+            "ref": "bell-dome"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-harmika",
+          "zone": "dome-head",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "square stepped harmika block interrupting an otherwise round form",
+          "mapsTo": {
+            "ref": "harmika"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-terrace-cornice",
+          "zone": "terrace",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "the fifth terrace slab steps back OUT as a cornice above the niche storey",
+          "mapsTo": {
+            "ref": "terrace"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-plinth-dirt",
+          "zone": "terrace",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "ground dirt darkening the lower plinth, fading out by 1.60 m",
+          "mapsTo": {
+            "ref": "d9-plinth-dirt"
+          },
+          "onMaterial": "stone",
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-peel-crazing",
+          "zone": "dome",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "crazed, flaking whitewash with grey render showing through and drip streaks down the bell",
+          "mapsTo": {
+            "ref": "d10-peel-crazing"
+          },
+          "onMaterial": "stucco",
+          "realization": "unreported"
+        },
+        {
+          "id": "d11-lichen-crazing",
+          "zone": "terrace",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "yellow-green lichen crust and darker moss mottling the terrace stone",
+          "mapsTo": {
+            "ref": "d11-lichen-crazing"
+          },
+          "onMaterial": "stone",
+          "realization": "unreported"
+        },
+        {
+          "id": "d12-drum-neck",
+          "zone": "dome-head",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "the bell's crown meeting a short drum neck that carries the harmika",
+          "mapsTo": {
+            "ref": "bell-dome"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+    "resolvedUnknowns": [
+      "The four niches are authored IDENTICAL. The plate shows two of them and they match; whether the unseen two hold different images or are blocked up cannot be known from one view.",
+      "The plate's peeling, crazing, drip streaks and lichen are WEAR, and they are authored -- as two post-construction canvas tiles, not as the generator's five-canvas texture set. The tile repeats every 3 m, so the pattern on the unseen faces is the same pattern; where the real object's flaking actually sits cannot be known from one view.",
+      "The niches are authored as shallow blind recesses. The plate shows the interior of one and it is empty; whether the others hold Buddha images is not observable.",
+      "The terrace is a solid mass with no doorway. Village chedis are solid by construction, and the plate shows no opening -- but a plate cannot prove the absence of one on an unseen face.",
+      "Declared at 14 m against the plate's own proportions, which read closer to 12.5 m at this width. The registry notes call 14 m correct for a village chedi and the declaration wins; the extra height is carried by the spire rather than by stretching the bell."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 8.00 x 14.00 x 8.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 4,
+      "repetitionSystems": 2,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 8.0 x 14.0 x 8.0 m",
+          "Stepped square base, rounded bell, ringed taper, needle spire -- all four legible",
+          "The profile reads at a distance where no surface detail is visible"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "bell reading as a hemisphere rather than a bell",
+          "spire reading as a smooth cone with the rings lost"
+        ]
+      },
+      {
+        "id": "bell-and-spire",
+        "name": "Bell, taper and finial",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Bell with near-vertical flanks rounding over to a flat crown the harmika stands on -- not an ogive, and no gap under the harmika",
+          "Sixteen distinct rings on the taper",
+          "Gilt needle with a bud at the tip"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-bell"
+        ],
+        "failureModes": [
+          "the bell tapering to a point instead of rounding to a neck",
+          "the harmika floating above the bell instead of standing on it",
+          "the spire and finial meeting at a grazing surface and stippling",
+          "the finial rendering black for want of an environment map"
+        ]
+      },
+      {
+        "id": "terrace-and-niches",
+        "name": "Redented terrace and arched niches",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Six stepped slabs with two-step redented corners",
+          "One ARCHED niche per face -- arched, not square",
+          "The niche is a real concavity, not a dark rectangle painted on the wall"
+        ],
+        "evidenceRefs": [
+          "region-niche"
+        ],
+        "failureModes": [
+          "the arch head left filled solid so the aperture reads square",
+          "the niche back panel flush with the wall, giving no depth"
+        ]
+      },
+      {
+        "id": "weathered-palette",
+        "name": "Weathered palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Terrace greener and dirtier than the bell",
+          "Whitewash weathered to a mid grey, not repainted white",
+          "The whitewash is CRAZED and PEELING, with grey render showing through, not flat paint",
+          "Lichen mottle on the terrace",
+          "Finial reads as worn gilt, not as bright leaf and not as black metal"
+        ],
+        "evidenceRefs": [
+          "region-terrace",
+          "region-bell",
+          "region-finial"
+        ],
+        "failureModes": [
+          "the prop rendering as one uniform grey with no material distinction",
+          "flat untextured plaster where the plate shows peeling paint",
+          "wear patches reading as polka dots rather than flakes"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "terrace",
+        "bell-dome",
+        "spire"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "bell-and-spire",
+      "name": "Bell, taper and finial",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "bell-dome",
+        "spire",
+        "finial"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "terrace-and-niches",
+      "name": "Redented terrace and arched niches",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "terrace"
+      ],
+      "evidenceRefs": [
+        "region-niche"
+      ]
+    },
+    {
+      "id": "weathered-palette",
+      "name": "Weathered palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "terrace",
+        "bell-dome",
+        "finial"
+      ],
+      "evidenceRefs": [
+        "region-terrace",
+        "region-finial"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 7,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "terrace",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "terrace",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as CYLINDER rather than the building-part default box, and the asset notes give the reason: the bell and spire are round in plan, so a box proxy would leave a player colliding with empty air at the corners for eight of the prop's fourteen metres. One convex proxy over the whole envelope."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The four niches are authored IDENTICAL. The plate shows two of them and they match; whether the unseen two hold different images or are blocked up cannot be known from one view.",
+    "The plate's peeling, crazing, drip streaks and lichen are WEAR, and they are authored -- as two post-construction canvas tiles, not as the generator's five-canvas texture set. The tile repeats every 3 m, so the pattern on the unseen faces is the same pattern; where the real object's flaking actually sits cannot be known from one view.",
+    "The niches are authored as shallow blind recesses. The plate shows the interior of one and it is empty; whether the others hold Buddha images is not observable.",
+    "The terrace is a solid mass with no doorway. Village chedis are solid by construction, and the plate shows no opening -- but a plate cannot prove the absence of one on an unseen face.",
+    "Declared at 14 m against the plate's own proportions, which read closer to 12.5 m at this width. The registry notes call 14 m correct for a village chedi and the declaration wins; the extra height is carried by the spire rather than by stretching the bell."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up. The prop is FOUR-FOLD SYMMETRIC about the Y axis: there is no front, and the niche on each face is the same niche. That symmetry is why the single plate is adequate evidence here in a way it is not for the retail props -- the two faces it shows are the two faces it does not."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 8.0,
+      "h": 14.0,
+      "d": 8.0
+    },
+    "description": "Read bottom to top: a stepped square pyramid of six redented slabs to 3.85 m; moulded rings at 2.70 m radius; a BELL whose body rises near-vertical from 2.36 m radius at 4.52 to 1.98 at 6.45 and rounds over a quarter-ellipse shoulder to a FLAT crown 1.30 m in radius at 7.72; a square harmika of 2.10 and 1.52 m from 7.55 to 9.05, its metre-tall lower block standing on the flat crown; a sixteen-ring conical taper from 0.66 m radius at 8.99 to 12.30 m; a gilt needle to 14.00 m. The silhouette events are the terrace steps, the foot rings, the bell's vertical flank turning into its dome, the harmika's square interruption of an otherwise round form, and the needle. The first build had the bell as a quarter-cosine ogive from the foot, pointed at 8.30 with the harmika floating 0.25 m above it; the profile is now the Meshy proxy's own radius-by-height, read at 56 slices.",
+    "envelopeDerivation": "x and z both span -4.00..+4.00 = 8.00, set by the bottom terrace slab: its redented plan has its widest point on the flat of each face at 4.00, and the corner redents cut INWARD from there, so the corners do not push the bounding box out past the faces. y spans 0.00 (terrace underside) to 14.00 (finial tip). Nothing else on the prop reaches any of those planes -- the niche frames stand proud to 3.30 and the bell to 2.70, both well inside 4.00 -- so the envelope is set by exactly two parts and can be read off them.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 2.000 : 1.000 against the declared 1 : 1.750 : 1.000 -- depth EXACT, height 14% taller. That is the closest agreement of any prop in this batch and it agrees on the thing that matters: a chedi is a square-plan solid of revolution, and both readings say so. Area-weighted band comparison against the reference mesh gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045. That is the REBUILT figure: the first build measured 0.030 with the spire bands 6-8 at +0.06, and the bell shoulder and harmika were then read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the three-quarter plate -- a near-vertical body, a domed shoulder, a 0.72 m neck and a 1.66 m harmika, and a spire starting at 0.68 m. The spire bands are now within 0.017. The declared 14 m wins and the extra height the proxy wants is not taken."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-terrace",
+      "viewpoint": "front",
+      "path": "crops/stone.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-bell",
+      "viewpoint": "front",
+      "path": "crops/stucco.png",
+      "confidence": 0.734
+    },
+    {
+      "id": "region-niche",
+      "viewpoint": "front",
+      "path": "crops/shadow.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-finial",
+      "viewpoint": "front",
+      "path": "crops/gold.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED, but confidence is 0.80 rather than the 0.20 this kit gives an unseen elevation: the prop is four-fold symmetric about its axis, so the rear faces are the same faces as the two the plate shows. What is genuinely unknown is only whether the real object's four niches differ from one another."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "terrace",
+      "name": "Stepped terrace",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.92,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Six stepped slabs in one material. Each is a single EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection, which z-fights, and one closed plan has no interior coincidence at all.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Six redented slabs from y=0.00 to y=3.85, widest at half-width 4.00 and stepping in to 2.86, with the fifth stepping back OUT as a cornice.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Consecutive slabs meet as OPPOSED faces -- one slab's top against the next slab's bottom -- which is how solids are meant to meet and does not fight. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": "Primitive is recorded as \"extrusion\" because that is what each slab is; the six are MERGED into one BufferGeometry and submitted as ONE draw call."
+      },
+      "localFeatures": [
+        {
+          "id": "d11-lichen-crazing",
+          "description": "lichen crust and moss mottle",
+          "delivery": "post-construction canvas tile on the stone material"
+        },
+        {
+          "id": "d4-redented-corners",
+          "description": "two-step redented corners",
+          "delivery": "redentedShape() plan, extruded"
+        },
+        {
+          "id": "d5-arched-niches",
+          "description": "one arched blind niche per face",
+          "delivery": "repetitionSystems.niche-frames + niche-panels"
+        },
+        {
+          "id": "d8-terrace-cornice",
+          "description": "cornice slab stepping back out",
+          "delivery": "geometryDescriptor slab 5"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#9e9b91",
+        "recipe": "Weathered limestone, roughness 0.94, no generator texture set; lichen-and-crazing canvas tile bound post-construction as map and bumpMap.",
+        "evidenceRef": "region-terrace",
+        "confidence": 0.92,
+        "dominantAlbedo": "rgba(158, 155, 145, 1.0)",
+        "secondaryAlbedo": "rgba(158, 155, 145, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.92
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            7.0,
+            0
+          ],
+          "radius": 4.0,
+          "height": 14.0,
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "Declared on the asset as CYLINDER rather than the building-part default box, and the asset notes give the reason: the bell and spire are round in plan, so a box proxy would leave a player colliding with empty air at the corners for eight of the prop's fourteen metres. One convex proxy over the whole envelope."
+        }
+      }
+    },
+    {
+      "id": "bell-dome",
+      "name": "Bell dome",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "A surface of revolution, so a lathe is the only honest primitive: a box decomposition of a bell is not a low-poly bell, it is a different object. The moulded rings at its foot and the drum neck at its crown are PROFILE POINTS on the same lathe, not separate meshes, which is what keeps the whole dome at one geometry and one draw call.",
+      "materialId": "stucco",
+      "material": "stucco",
+      "parent": "terrace",
+      "geometryDescriptor": {
+        "topologyIntent": "One lathe from y=3.70 to y=8.72: two mouldings at 2.70 m radius, a body from 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a FLAT crown of 1.30 m radius at 7.72 (horizontal tangent), the crown running inward to a 0.75 m neck that rises to 7.90 inside the harmika block. Body and foot are the Meshy proxy's radius-by-height at 56 slices; the flat crown is the plate's, chosen over the proxy's domed cone, which kept climbing into the block.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The lathe's base is sunk to y=3.70, INSIDE the top terrace slab, and its top runs 0.15 m up INSIDE the harmika slab, which is seated down onto the dome's shoulder. LatheGeometry is open at both ends; an open rim sitting exactly on a surface is a seam the turntable gate can read through, and an open rim stopping 0.25 m SHORT of one -- the first build -- is a floating block.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-bell-profile",
+          "description": "the bell curve",
+          "delivery": "lathe profile"
+        },
+        {
+          "id": "d6-bell-mouldings",
+          "description": "two moulded rings at the foot",
+          "delivery": "profile points on the same lathe"
+        },
+        {
+          "id": "d12-drum-neck",
+          "description": "drum neck under the harmika",
+          "delivery": "last two profile points on the same lathe"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stucco",
+        "baseColor": "#a7a7a1",
+        "recipe": "Whitewashed stucco, roughness 0.88, no generator texture set; peel-and-crazing canvas tile bound post-construction as map and bumpMap.",
+        "evidenceRef": "region-bell",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(167, 167, 161, 1.0)",
+        "secondaryAlbedo": "rgba(167, 167, 161, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "harmika",
+      "name": "Harmika block",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.8,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two merged boxes standing on the bell's drum neck. The only orthogonal thing above the terrace, and the interruption that stops the prop reading as one continuous cone. The lower block is deliberately taller and wider than the proxy's 1.66 m plate: seated into the dome, a proxy-sized slab shows 0.4 m of face and reads as a wafer.",
+      "materialId": "stucco",
+      "material": "stucco",
+      "parent": "bell-dome",
+      "geometryDescriptor": {
+        "topologyIntent": "Two stacked square blocks from y=7.55 to y=9.05: a 2.10 m block a metre tall SEATED into the bell (standing on the flat crown at 7.72 with 0.83 m of face showing, the 0.75 m neck running up inside it), then a 1.52 m cube. First placed at 8.60 on a visible neck it read as hovering; then as a 0.40 m plate it read as a wafer under the cube.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The blocks meet as opposed faces. The neck's open top rim is INSIDE the lower slab, and the upper block's 1.52 m top is what CAPS the spire lathe's open base, so no open rim is ever visible.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-harmika",
+          "description": "square stepped block",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stucco",
+        "baseColor": "#a7a7a1",
+        "recipe": "The SAME whitewashed stucco as the bell -- one material, because a colour difference is not a material difference and here there is not even a colour difference.",
+        "evidenceRef": "region-bell",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(167, 167, 161, 1.0)",
+        "secondaryAlbedo": "rgba(167, 167, 161, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "spire",
+      "name": "Ringed spire",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.95,
+      "confidence": 0.88,
+      "primitive": "lathe",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "Sixteen rings as ONE lathe profile, not sixteen meshes. At 24 radial segments that is about 2,300 triangles in a single geometry and a single draw call; the same rings as separate cylinders would be sixteen geometries of the thirty-two available, for an identical picture.",
+      "materialId": "stucco",
+      "material": "stucco",
+      "parent": "harmika",
+      "geometryDescriptor": {
+        "topologyIntent": "Ringed conical taper from y=8.99 to y=12.30, radius 0.66 (+0.07 ring bulge, inside the 0.76 half-width of the block it stands in) to 0.22, closed on the axis at the top with a flat 0.22 m cap. The first build started at 1.05 and was 0.06 of height fatter than the proxy through bands 6-8.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Stopped at a FLAT cap rather than run to a needle point. Run to a point, the last ring and the finial's flare met at a grazing near-tangent circle and the junction rendered as a stippled dark band -- two surfaces do not have to be coplanar to fight, only to graze.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-ringed-taper",
+          "description": "sixteen low-relief rings",
+          "delivery": "ringedTaper() profile on one lathe"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stucco",
+        "baseColor": "#a7a7a1",
+        "recipe": "The same whitewashed stucco again, roughness 0.88.",
+        "evidenceRef": "region-bell",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(167, 167, 161, 1.0)",
+        "secondaryAlbedo": "rgba(167, 167, 161, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "finial",
+      "name": "Gilded finial",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "lathe",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "The top 1.72 m of a 14 m prop, and the only surface on it that is not grey. Its own component because it is its own material; there is nothing to merge it with.",
+      "materialId": "gold",
+      "material": "gold",
+      "parent": "spire",
+      "geometryDescriptor": {
+        "topologyIntent": "Closed lathe from y=12.28 to y=14.00: a flared collar, a teardrop taper and a small bud at the tip.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Closed on the axis at BOTH ends and standing on the spire's flat cap at 0.19 m radius, clear inside the cap's 0.22. Nothing grazes.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-needle-finial",
+          "description": "gilt needle with a bud",
+          "delivery": "lathe profile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gold",
+        "baseColor": "#94805f",
+        "recipe": "Worn gilding, roughness 0.40, metalness 0.30 -- below physical because the harness supplies no environment map.",
+        "evidenceRef": "region-finial",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(148, 128, 95, 1.0)",
+        "secondaryAlbedo": "rgba(148, 128, 95, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "stone",
+      "name": "Weathered limestone terrace",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9e9b91",
+      "color": "#9e9b91",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stone_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#9e9b91",
+        "secondary": [
+          "#7F7C63",
+          "#282715",
+          "#64614B"
+        ],
+        "samplingNotes": "Measured as the mean of crops/stone.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d11-lichen-crazing",
+          "region": "terrace and niche frames, whole surface, 3 m tile",
+          "roughness": 0.94,
+          "palette": [
+            "#9E9B91",
+            "#a3a08d",
+            "#74715c"
+          ],
+          "evidence": "Plate (292,655) lichen crust against (560,720) clean stone on the same lit face is a YELLOW SHIFT, ratio (1.06, 1.08, 1.04) -- blue at 0.96 of the pale channels -- not a darkening; corner moss (455,905) against the shaded face (700,790) is (0.89, 0.87, 0.74). A multiplier tile cannot brighten, so the crust ships as (0.98, 0.99, 0.86) and the moss as (0.86, 0.85, 0.72). Delivered as a 512 px Canvas 2D tile of random-walk flake blobs and a thin crack network, box-projected in metres, seamless under RepeatWrapping (every mark drawn at nine wrapped offsets), assigned AFTER createSculptMaterial as map and bumpMap. A few hundred path fills: the whole factory builds in ~80 ms."
+        },
+        {
+          "id": "d9-plinth-dirt",
+          "region": "terrace below y=1.60",
+          "roughness": 0.94,
+          "palette": [
+            "#7F7F79",
+            "#9E9B91"
+          ],
+          "evidence": "Two crop measurements on the plate: the lower plinth reads #7F7F79 against #9E9B91 on the terrace above it. Delivered as a per-vertex TINT on the merged terrace geometry -- the ratio (0.804, 0.819, 0.834) at y=0 fading out by y=1.60 -- rather than as a second material, because a second material would cost a draw call and a shader switch to say that the bottom of a wall is dirtier than the top. It is the one local override on this prop and it is delivered, not described."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-terrace (PBR confidence 0.860): the lower plinth reads as a grey-green weathered limestone at standard deviation 38, the spread being lichen and dirt rather than the stone.",
+          "Textureless as far as the GENERATOR is concerned: no five-canvas procedural set, which would discard this measurement since the generator forces color to white whenever one exists. The lichen and crazing are delivered instead as a post-construction Canvas 2D tile bound as map and bumpMap, a multiplier on this measured colour, see localOverride d11-lichen-crazing."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/stone.png",
+        "pbrReport": "material-evidence/stone.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "stucco",
+      "name": "Lime-whitewashed stucco",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a7a7a1",
+      "color": "#a7a7a1",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stucco_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a7a7a1",
+        "secondary": [
+          "#B4B4AE",
+          "#A7A7A1",
+          "#989892"
+        ],
+        "samplingNotes": "Measured as the mean of crops/stucco.png. extract_pbr_evidence confidence 0.734. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d10-peel-crazing",
+          "region": "bell, harmika and spire, whole surface, 3 m tile",
+          "roughness": 0.88,
+          "palette": [
+            "#a7a7a1",
+            "#a39f94",
+            "#686964",
+            "#989995"
+          ],
+          "evidence": "Every tone is a RATIO against the clean whitewash at plate (455,455): exposed lime render at (412,520) is (0.754, 0.738, 0.703); the dark grey render core at (595,540) is 0.483; a drip streak at (541,565) is 0.703; the whitewash between flakes at (430,600) is 0.90. The dark core SHIPS at 0.62, not 0.483: the silhouette gate reads any surface at the backdrop luma of 58 as a hole, and the bell's shaded flank renders near 120, where 0.483 lands on 58. Delivered as a 512 px Canvas 2D tile: soft mottle, random-walk flake blobs with a darker core, a 640-walk crack network at 1.25 px, vertical fading drips, and grain; cylindrical UVs on the two lathes (u from the lathe's own seamless sweep, v = height in metres) and box projection on the harmika; bound as map AND bumpMap at 0.035 so a flake reads as a step, not a stain. The measured albedo stays on the material; the tile only ever multiplies it."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-bell (PBR confidence 0.734): the bell scans at standard deviation 19, the flattest surface on the prop. This chedi is NOT white -- the whitewash is weathered to a mid grey, and painting it white would be inventing a repaint the reference does not show.",
+          "Confidence 0.734 comes from a 90x80 crop; a flat swatch scores poorly with this extractor, which is built to separate an isolated object from its background rather than to read a uniform field.",
+          "Textureless as far as the GENERATOR is concerned. The plate's peeling and crazing are the bell's identity at prop distance and are delivered as a post-construction Canvas 2D tile, a multiplier on this measured colour, see localOverride d10-peel-crazing."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/stucco.png",
+        "pbrReport": "material-evidence/stucco.pbr.json",
+        "confidence": 0.734,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "shadow",
+      "name": "Niche interior render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7c766b",
+      "color": "#7c766b",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/shadow_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#7c766b",
+        "secondary": [
+          "#6F685C",
+          "#777063",
+          "#665F54"
+        ],
+        "samplingNotes": "Measured as the mean of crops/shadow.png. extract_pbr_evidence confidence 0.780. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured INSIDE the plate's own niche (viewEvidence region-niche, PBR confidence 0.780). It is a real measurement of a real concavity, not a chosen shadow value.",
+          "Darker than the surround but at luma 118, twice the harness backdrop's 58. That margin is deliberate: the silhouette gate classifies background by mean luma alone, and a dark surface at the backdrop value is read as a hole punched through the prop."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/shadow.png",
+        "pbrReport": "material-evidence/shadow.pbr.json",
+        "confidence": 0.78,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Worn gilding",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#94805f",
+      "color": "#94805f",
+      "roughness": {
+        "base": 0.4,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gold_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#94805f",
+        "secondary": [
+          "#796846",
+          "#8E7D58",
+          "#635336"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gold.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-finial (PBR confidence 0.860) at #94805F, the brightest gilt on the finial. The registry calls the finial gilded and it is, but the plate's gilding is WORN -- ochre with grey bare patches -- so this is the measurement rather than the word.",
+          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black, which on this prop would lose the only surface that is not grey. The albedo stays measured; the metalness is what the rig makes wrong."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gold.png",
+        "pbrReport": "material-evidence/gold.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "niche-frames",
+      "name": "Arched niche frames",
+      "instanceCount": 4,
+      "sourceComponent": "terrace",
+      "material": "stone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "arched-aedicule",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 3.0,
+        "y": 1.5,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 1.45,
+        "height": 1.45,
+        "depth": 0.4
+      },
+      "rationale": "One niche per face, four-fold symmetric. As four separate meshes they would cost four draw calls of twelve for four copies of one geometry.",
+      "zFightingNote": "The frame is embedded 0.10 m into the terrace face and stands 0.30 m proud of it, so it OVERLAPS its opening rather than meeting the reveal edge -- the rule that stops a frame putting four coincident reveal faces in the model."
+    },
+    {
+      "id": "niche-panels",
+      "name": "Niche back panels",
+      "instanceCount": 4,
+      "sourceComponent": "terrace",
+      "material": "shadow",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "niche-back-panel",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 3.02,
+        "y": 1.5,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 1.03,
+        "height": 1.15,
+        "depth": 0.06
+      },
+      "rationale": "The back of each niche, in its own darker material. A second system rather than a second colour on the first, because InstancedMesh takes one material.",
+      "zFightingNote": "Stands 0.05 m PROUD of the terrace face rather than flush with it, and sits 0.23 m behind the frame's front plane. The depth is the feature: a niche is a concavity, and a flat dark rectangle painted on a wall is not one."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T22:39:35.157112+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.240332+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.320527+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.407135+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.495519+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.577883+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.658934+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.741591+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.825342+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "weathered-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four materials at PBR confidence 0.734-0.860, all measured, all textureless to the generator; two post-construction Canvas 2D wear tiles bound as map and bumpMap on the stucco and the stone, every tone a measured ratio against the clean surface beside it on the plate.",
+          "notes": "The first build shipped flat paint and called the plate's peeling 'wear below the resolvable band'; it is the bell's identity at any distance, and it is now authored. Stucco: exposed lime render at (0.754, 0.738, 0.703) of the clean whitewash, drips at 0.703, between-flake mottle at 0.90, a 640-walk crack network, and dark render cores measured at 0.483 but SHIPPED at 0.62 because the bell's shaded flank renders near luma 120 and 0.483 of that is the backdrop's 58, which the silhouette gate reads as a hole. Stone: lichen crust as a yellow shift (blue at 0.86, pale channels held near 1.0 because a multiplier cannot brighten) and moss at (0.86, 0.85, 0.72). Discs scattered about a centre rendered as polka dots on the first attempt; the flakes are random walks of overlapping discs filled once as a union. The whitewash is still #A7A7A1 and the terrace #9E9B91 -- the tiles only ever multiply them -- and the finial stays worn ochre. Factory 80 ms, 2.7 MB texture VRAM, no per-pixel JavaScript."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.907429+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.989747+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:36.074870+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T22:39:36.157201+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        },
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        },
+        {
+          "id": "weathered-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four materials at PBR confidence 0.734-0.860, all measured, all textureless to the generator; two post-construction Canvas 2D wear tiles bound as map and bumpMap on the stucco and the stone, every tone a measured ratio against the clean surface beside it on the plate.",
+          "notes": "The first build shipped flat paint and called the plate's peeling 'wear below the resolvable band'; it is the bell's identity at any distance, and it is now authored. Stucco: exposed lime render at (0.754, 0.738, 0.703) of the clean whitewash, drips at 0.703, between-flake mottle at 0.90, a 640-walk crack network, and dark render cores measured at 0.483 but SHIPPED at 0.62 because the bell's shaded flank renders near luma 120 and 0.483 of that is the backdrop's 58, which the silhouette gate reads as a hole. Stone: lichen crust as a yellow shift (blue at 0.86, pale channels held near 1.0 because a multiplier cannot brighten) and moss at (0.86, 0.85, 0.72). Discs scattered about a centre rendered as polka dots on the first attempt; the flakes are random walks of overlapping discs filled once as a union. The whitewash is still #A7A7A1 and the terrace #9E9B91 -- the tiles only ever multiply them -- and the finial stays worn ochre. Factory 80 ms, 2.7 MB texture VRAM, no per-pixel JavaScript."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T22:39:35.157112+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: profile-dominated rather than repetition-dominated, the opposite of the retail set. Five components and 2 InstancedMesh systems at 7 draw calls, with every ring, moulding, terrace step and now the bell's drum neck authored as a profile point rather than a mesh.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/chedi/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.240332+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: terrace as six merged extrusions of a redented plan, bell (with its neck) and spire as lathes, harmika as two boxes standing on the neck. The four niches are two repetition systems -- as eight separate meshes they would have cost eight draw calls of twelve for four copies of two geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.320527+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned after promotion: the bell was an ogive -- a quarter-cosine from the foot tapering to a 0.62 m point at 8.30 -- and the harmika started at 8.55, floating 0.25 m above it. Rebuilt the lathe from the Meshy proxy's radius-by-height (scratch/_mon/profile.mjs, 56 slices): near-vertical body, domed shoulder, drum neck run 0.12 m up inside the harmika slab; harmika resized to the proxy's 1.66 m; spire base slimmed from 1.05 to 0.66.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.407135+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned again: the harmika on its 0.50 m visible neck still read as disconnected from the bell. Dropped it 0.45 m so the lower slab (8.15-8.55) is seated into the crown -- the dome shoulder at r 0.93 passes up inside the slab underside -- and the spire extended down to 8.99 to keep the 14 m height.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.495519+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned a third time: the seated lower slab, at 0.40 m and proxy width, read as a thin wafer under the upper cube. Made it a 2.10 m block a metre tall (7.55-8.55), extended DOWN into the dome so its faces clear the shoulder at 7.98 and its corners at 7.50.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.577883+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned a fourth time: with the block seated, the domed-cone shoulder no longer looked like the plate's bell. Reshaped the shoulder as a quarter-ellipse to a FLAT 1.30 m crown at 7.72, horizontal tangent at the top, the block standing on the flat. Band 5 moves away from the proxy (which reads a domed cone); the plate wins here on the user's call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.658934+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement, CORRECTED after promotion: the bell rebuilt from the proxy's radius-by-height as near-vertical flanks, a domed shoulder (1 - t^1.65) and a 0.80 m drum neck running 0.12 m up inside the harmika; harmika resized from 2.56 to 1.84/1.52 m; spire base from 1.05 to 0.66 m. Band divergence 0.030 -> 0.019, spire bands +0.06 -> +0.017. Earlier: arch aperture re-swept over the top of the circle, niche storey re-proportioned to 1.70 m, spire stopped at a flat cap, bud at the finial tip.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.741591+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned after promotion: no wear was authored and the bell read as clean plaster against a plate of crazed, peeling whitewash. Added two post-construction Canvas 2D tiles (stucco: mottle, flakes, crack network, drips; stone: lichen crust, moss, crazing) bound as map and bumpMap, every tone a measured ratio; the first attempt's scattered-disc patches rendered as polka dots and were replaced by random-walk flakes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.825342+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "weathered-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four materials at PBR confidence 0.734-0.860, all measured, all textureless to the generator; two post-construction Canvas 2D wear tiles bound as map and bumpMap on the stucco and the stone, every tone a measured ratio against the clean surface beside it on the plate.",
+          "notes": "The first build shipped flat paint and called the plate's peeling 'wear below the resolvable band'; it is the bell's identity at any distance, and it is now authored. Stucco: exposed lime render at (0.754, 0.738, 0.703) of the clean whitewash, drips at 0.703, between-flake mottle at 0.90, a 640-walk crack network, and dark render cores measured at 0.483 but SHIPPED at 0.62 because the bell's shaded flank renders near luma 120 and 0.483 of that is the backdrop's 58, which the silhouette gate reads as a hole. Stone: lichen crust as a yellow shift (blue at 0.86, pale channels held near 1.0 because a multiplier cannot brighten) and moss at (0.86, 0.85, 0.72). Discs scattered about a centre rendered as polka dots on the first attempt; the flakes are random walks of overlapping discs filled once as a union. The whitewash is still #A7A7A1 and the terrace #9E9B91 -- the tiles only ever multiply them -- and the finial stays worn ochre. Factory 80 ms, 2.7 MB texture VRAM, no per-pixel JavaScript."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass, CORRECTED after promotion: 4 materials at PBR confidence 0.734-0.860, every one measured off the plate and every one textureless to the generator; the peeling whitewash and terrace lichen now delivered as two post-construction canvas tiles (map + bumpMap) whose every tone is a measured ratio, dark cores lifted from 0.483 to 0.62 for the hole gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.907429+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: surface character is profile and colour -- rings, mouldings, redent steps -- plus the per-vertex plinth dirt tint and the two wear tiles. No generator texture sets; a few hundred Path2D fills at 512 px, and the factory builds in ~80 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:35.989747+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: near-shadowless studio plate. No rim light, no contact shadow; both recorded absent. Exposure 1.0, ACES filmic. The finial carries metalness 0.30 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:36.074870+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one CYLINDER collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T22:39:36.157201+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 8.00 x 14.00 x 8.00 m against the declared 8 x 14 x 8. Area-weighted band comparison against the Meshy reference (scratch/_mon/bands.mjs) gives mean |delta width| 0.019 and |delta depth| 0.019 of height with no band past 0.045; the first build measured 0.030 with the spire bands 6-8 at +0.06, now within 0.017.",
+          "notes": "The bell shoulder and harmika are now read off the proxy at 56 slices (scratch/_mon/profile.mjs) rather than off the foreshortened three-quarter plate. Residuals: band 3 (the foot mouldings and lower body) is +0.04 of height, where the 2.70 m rings sit 0.07 outside the proxy's 2.63; band 5 (the shoulder) +0.03. Meshy reads the plate 14% taller than declared; the declared 14 m still wins."
+        },
+        {
+          "id": "bell-and-spire",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bell as one lathe: foot mouldings at 2.70, a body from r 2.36 at 4.52 to 1.98 at 6.45, a quarter-ellipse shoulder rounding over to a flat 1.30 m crown at 7.72, the harmika block standing on the flat with a 0.75 m neck running up inside it. Harmika 2.10 / 1.52 m square from 7.55 to 9.05, a metre-tall lower block seated down into the crown; spire from r 0.66 at 8.99 to 0.22 at 12.30, sixteen rings; closed gilt needle with a bud.",
+          "notes": "The first build's bell was a quarter-cosine from the foot -- an OGIVE, full at the haunch and pointed at the top -- and it stopped at 8.30 with the harmika starting at 8.55, a 0.25 m air gap under a floating block. The proxy's radius-by-height says what a bell is: near-vertical flanks (2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4 in 14 m scale) that round over the top 1.3 m to a 0.72 neck, with a 1.66 m harmika on the neck. A quarter-ellipse shoulder was tried first and put band 5 at +0.07 -- a hemisphere, not a domed cone -- and the proxy's own normalised falloff (0.93, 0.85, 0.69, 0.44, 0.17) was fitted instead. The harmika, at 2.56 m in the first build, was read off the plate's diagonal and was 50% too wide; the spire base at 1.05 was what put bands 6-8 a twentieth of the height too fat. The lever remains the LATHE: the neck is two more profile points, not a mesh, and the prop is still 7 draw calls."
+        },
+        {
+          "id": "terrace-and-niches",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Six redented slabs from y=0.00 to 3.85 as one merged extrusion, with four arched aedicules standing 0.30 m proud and dark back panels 0.23 m behind their front plane. Unchanged in this round apart from the lichen tile.",
+          "notes": "Two things here were learned by rebuilding. Each slab is an EXTRUSION of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put their top faces in the same plane facing the same way over the whole intersection and z-fight, while one closed plan has no interior coincidence at all. And the arch aperture was first written as an arc from PI to 0, which swept through the BOTTOM of the circle: the arch head was left filled solid with the arc's own seam z-fighting across it, giving a square window with a ghost arch drawn on it. The direction of a half-circle is not a detail on this prop; it is the feature. The niche storey was also re-proportioned to 1.70 m so a 1.45 m aedicule fits inside it -- sized the other way round, the arch head ran up through the cornice above and was swallowed."
+        },
+        {
+          "id": "weathered-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four materials at PBR confidence 0.734-0.860, all measured, all textureless to the generator; two post-construction Canvas 2D wear tiles bound as map and bumpMap on the stucco and the stone, every tone a measured ratio against the clean surface beside it on the plate.",
+          "notes": "The first build shipped flat paint and called the plate's peeling 'wear below the resolvable band'; it is the bell's identity at any distance, and it is now authored. Stucco: exposed lime render at (0.754, 0.738, 0.703) of the clean whitewash, drips at 0.703, between-flake mottle at 0.90, a 640-walk crack network, and dark render cores measured at 0.483 but SHIPPED at 0.62 because the bell's shaded flank renders near luma 120 and 0.483 of that is the backdrop's 58, which the silhouette gate reads as a hole. Stone: lichen crust as a yellow shift (blue at 0.86, pale channels held near 1.0 because a multiplier cannot brighten) and moss at (0.86, 0.85, 0.72). Discs scattered about a centre rendered as polka dots on the first attempt; the flakes are random walks of overlapping discs filled once as a union. The whitewash is still #A7A7A1 and the terrace #9E9B91 -- the tiles only ever multiply them -- and the finial stays worn ochre. Factory 80 ms, 2.7 MB texture VRAM, no per-pixel JavaScript."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT (rebuild). Overall visual fidelity 0.87 -- not a pass self-score. 5,184/16,000 triangles, 7/12 draw calls, 4/8 materials, 7/32 unique geometries, 2 canvas textures.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chedi/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chedi/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 5,
+        "repetitionSystems": 2,
+        "projectedTotal": 7,
+        "budget": 12,
+        "headroom": 5,
+        "note": "Five components and two repetition systems: 7 of 12. The lever here is the LATHE, not the merge. Every moulding, ring and step is a profile point rather than a mesh, so the sixteen spire rings and the two bell mouldings cost zero draw calls between them."
+      },
+      "materials": {
+        "projectedTotal": 4,
+        "budget": 8,
+        "headroom": 4,
+        "note": "stucco covers the bell, the harmika AND the spire -- three components, one material, because they are the same whitewash and a colour difference would not have been a material difference even if there had been one. Four of eight materials, four in hand."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 7,
+        "budget": 32,
+        "headroom": 25,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 5184,
+        "budget": 16000,
+        "headroom": 10816,
+        "note": "Triangles are where this prop spends, and deliberately: 5,184 of 16,000, nearly half of it in the two lathes. That is the correct trade for a subject whose entire identity is its profile, and the headroom must not be read as room to split components -- draw calls are the scarce axis, at 7 of 12."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Lathes and extrusions, not boxes. A bell, a ringed taper and a needle are surfaces of revolution and a box decomposition of one is not a low-poly version of it but a different object; the terrace is an extruded redented plan for the same reason -- crossed boxes would z-fight where they intersect. The only boxes on the prop are the harmika's two blocks and the niche back panels."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Two InstancedMesh systems carry 8 of the prop's 13 discrete parts, all four-fold symmetric about the axis."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless to the GENERATOR -- no five-canvas procedural set. Two Canvas 2D wear tiles (peel/crazing on the stucco, lichen/crazing on the stone) are drawn post-construction as a few hundred Path2D fills at 512 px and bound as map and bumpMap, the route the retail set uses for its fascias; no per-pixel JavaScript, and the measured albedo stays on the material as the multiplicand. The factory builds in ~80 ms with 2.7 MB of texture VRAM; under Node, with no DOM, the materials keep their flat measured colour."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-height-vs-plate",
+      "severity": "low",
+      "description": "The plate's own proportions read closer to 12.5 m at this width, and Meshy reads it taller still at 16 m.",
+      "mitigation": "The declared 14 m is between the two and the registry notes call it correct for a village chedi. The extra height over the plate is carried by the spire rather than by stretching the bell, which is where a real chedi's height varies."
+    },
+    {
+      "id": "weathering-is-a-repeating-tile",
+      "severity": "low",
+      "description": "The peel, crazing and lichen are a 3 m tile, so the same flake recurs around the bell about five times and on every terrace face.",
+      "mitigation": "The tile is seeded and seamless, the flakes are random walks with no strong axis, and at the distance a 14 m landmark is read the repeat is below notice. The alternative -- a projected plate crop -- would need the texture set that discards every measured albedo, and this prop is four-fold symmetric anyway."
+    },
+    {
+      "id": "lathe-ledges-streak",
+      "severity": "low",
+      "description": "On the bell's foot mouldings the horizontal ledge faces share the cylindrical mapping's constant v, so the crack network runs radially across them.",
+      "mitigation": "The ledges are 2-20 cm deep on a 14 m prop; a per-face projection switch on an indexed lathe would smear the triangles that straddle it, which is worse."
+    },
+    {
+      "id": "niches-assumed-identical",
+      "severity": "low",
+      "description": "All four niches are authored the same; the plate shows two.",
+      "mitigation": "The prop is four-fold symmetric and the two visible niches match. Recorded as an assumption rather than closed silently."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Chedi",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5707,
+        "aspectRatioDelta": 0.0591,
+        "scaleDelta": 0.0211,
+        "bilateralSymmetryError": 0.0085,
+        "colorDelta": {
+          "checked": 5,
+          "maxDeltaE": 13.74,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 1.53
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.74
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.571 is below threshold 0.85",
+        "aspect-ratio delta 0.059 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.5% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "6ae553cc0727ed24",
+      "passId": "blockout"
+    }
+  ]
+}

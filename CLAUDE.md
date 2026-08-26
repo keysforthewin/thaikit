@@ -190,6 +190,60 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   something nobody sees. With nothing behind it the glazing then has to stop being
   a window: author it as a tinted, mostly opaque pane (opacity ~0.92, low
   roughness) so it reads as glass instead of a hole punched in the wall.
+- **A dark or saturated material rendering near the backdrop's luma of 58 is read as a HOLE.**
+  The turntable's silhouette gate classifies background by MEAN LUMA alone, so any surface enclosed
+  by the prop's own outline — a shopfront pane, a blind door, a colonnade shade, a hanging incense
+  coil — is flagged as background punched through the model when its rendered value lands in that
+  band. It has forced a lift on eleven materials across this kit, one of them measured at luma 57,
+  one below the backdrop. Lift the albedo, and record on the material both the measurement it
+  departs from and the margin it ships at. The legitimate `--allow-holes` case is different and
+  rarer: the mosque's courtyard genuinely IS open ground inside the silhouette, and there the flag
+  is set on a `_holecc.mjs` measurement showing thick real components, never on an unexplained fail.
+- **`InstancedMesh.setColorAt` MULTIPLIES with `material.color`.** An instanced material carrying
+  per-instance tones must be WHITE, or every tone ships darkened by the base. That is how the Khmer
+  sanctuary's twenty fallen blocks carry four measured stone colours at one draw call.
+- **A `vertexColors` material renders BLACK on any geometry with no `color` attribute** — the
+  shader reads an undefined attribute as (0,0,0). One tinted platform makes its whole material
+  poisonous to every other mesh using it: the ubosot's wall body and its eight boundary stones
+  shipped as black silhouettes from exactly that. An InstancedMesh HIDES the fault by falling back
+  to `instanceColor`, so the same mistake on the chedi's niche frames rendered correctly and taught
+  nothing. Fill white where a colour is missing, once, at the point every geometry passes through.
+- **A hand-rolled merge must carry `color` as well as position, normal and uv.** The monumental
+  preamble's `mergeGeos` copied three attributes and silently dropped the fourth, which erased the
+  mosque's dome rib striping the moment the domes were merged with anything. The dome still
+  rendered, in one flat colour, and the wrong theory chased first was sRGB gamma.
+- **Vertex colours multiply in LINEAR space, not sRGB.** A ratio measured between two crops has to
+  be raised to 2.2 before it is used as a per-vertex multiplier; fed the display-space ratio, a
+  rib stripe is there and simply too weak to see.
+- **A board rotated onto a roof rake turns by `atan2(run, rise)`, not `atan(pitch)`** — `rotateZ`
+  maps a box's +Y to (-sin, cos), so aiming along the rake needs the COMPLEMENT of the pitch angle.
+  At the ubosot's 46 degrees the two are three degrees apart and the error is invisible; at the
+  reclining hall's 33 they are twenty-four apart and the bargeboards stand off the roof like
+  scaffolding. The near-miss is why it survived a whole prop.
+- **Meshy's output orientation about Y is arbitrary, and for a building that is twice as long as it
+  is wide that swaps every width against every depth.** The ubosot's first band comparison read a
+  mean depth error of 1.05 of height, which was a coordinate convention and not a fidelity failure.
+  `scratch/_mon/bands.mjs` now detects the mismatch from the two footprints and rotates the
+  reference a quarter turn before measuring.
+- **A review that says "symmetric at every azimuth" is not evidence; the 0 and 90 turntable
+  frames are.** The kilometre stone shipped with its arch swept -π/2..π/2 — the RIGHT half of a
+  circle, a one-sided cusp with no left shoulder — and a section HALF the proxy's width, under a
+  recorded review claiming both were right. The review had compared only depth-over-width, where
+  two wrong numbers agreed at 0.8 vs 0.89; the proxy's w/h of 0.548 against the declared 0.278 was
+  in the same probe output and never read. Run `scratch/_mon/bands.mjs <id>` on a rebuild and quote
+  the width AND depth rows; and when a semicircle is the whole silhouette, look at the frame.
+- **The band table beats the plate for proportions, and it is worth trusting over your own eye.**
+  A three-quarter plate foreshortens, and three of the seven monumental props were rebuilt on the
+  table's evidence: the prang's terrace was a third too tall, the Khmer sanctuary's roof a fifth
+  too narrow, and the Chinese shrine had its open front on the wrong elevation entirely — the plate
+  shows a shrine wider than deep and the declared 10 x 12 makes it deeper than wide. Where the
+  residual is the DECLARED aspect ratio rather than the build, say so with the arithmetic:
+  re-normalising by width instead of height turned the mosque's 0.269 mean divergence into 1.6%.
+- **`build-model-module.mjs` builds from `scratch/<id>/src`, not from `assets/<id>/src`, and writes
+  to `scratch/<id>/model.bundle.js`.** Editing a promoted asset's shipped TypeScript and rebuilding
+  does nothing at all — it recompiles the old scratch source over the old scratch bundle, and the
+  comparison that "proves" the shipped file is unchanged is comparing a file nothing wrote to. Emit
+  into scratch, build, then promote; promote is what copies source, bundle and spec into `assets/`.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

@@ -1,0 +1,2526 @@
+{
+  "targetName": "Motorcycle Lane Sign",
+  "targetId": "motorcycle-lane-sign",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "roadside informatory traffic sign",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "planar rounded-corner plate",
+        "prismatic post"
+      ],
+      "structureKind": [
+        "rigid assembly",
+        "post-mounted panel"
+      ],
+      "motionPotential": [
+        "none - static ground-fixed prop"
+      ],
+      "materialFamilies": [
+        "retroreflective vinyl sheeting on aluminium",
+        "hot-dip galvanised steel"
+      ],
+      "notes": "A 0.9 x 1.08 m blue informatory plate with a deep folded edge return, bolted to the front face of a 50 mm square hot-dip galvanised post that runs past the plate's lower edge and out of frame. Nothing articulates and nothing attaches."
+    },
+    "complexity": {
+      "tier": "simple",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 0,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 3,
+        "microFeatureGroups": 2,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Silhouette is two primitives: a thin plate and a slender vertical support. Nothing organic, nothing swept.",
+        "All identity lives in the PRINTED FACE, not in geometry. That routes to a canvas atlas, not to components.",
+        "Held to 2 draw calls by the asset budget, so the post and everything sharing its material get ONE mesh between them and the plate is the other.",
+        "The pictogram is chiral - the motorcycle faces one way - so the atlas must not be mirrored, which fixes the sign of the front-cap UV mapping."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "simple",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": false,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 3,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "border-rule",
+          "kind": "linework",
+          "description": "White inset rule following the plate's rounded outline about 0.035 m in from the edge. Trimmed to #D3D5D5 off the bright half of the pictogram crop.",
+          "region": {
+            "x": 0.31,
+            "y": 0.08,
+            "width": 0.38,
+            "height": 0.48,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "kind": "linework",
+          "description": "White motorcycle in side elevation facing the viewer's RIGHT - chirality is an identity feature and the atlas must not mirror it. Two wheels with knocked-out centres, a teardrop tank, a flat seat, handlebars and an exhaust. SOLID FILL, never an outline: solid fill is what survives prop distance and a low texture resolution.",
+          "region": {
+            "x": 0.38,
+            "y": 0.16,
+            "width": 0.28,
+            "height": 0.16,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.92,
+          "realization": "unreported"
+        },
+        {
+          "id": "legend-lines",
+          "kind": "linework",
+          "description": "Two white legend lines under the pictogram, Thai over Latin MOTORCYCLE LANE, the Thai line the larger.",
+          "region": {
+            "x": 0.36,
+            "y": 0.38,
+            "width": 0.32,
+            "height": 0.12,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-white"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.88,
+          "realization": "unreported"
+        },
+        {
+          "id": "edge-return",
+          "kind": "seam",
+          "description": "Folded bare-galvanised edge return, unusually deep on this plate: the three-quarter view shows a 22 px wide band over 400 px of height, trimming to #7E8485 over 8092 neutral px.",
+          "region": {
+            "x": 0.29,
+            "y": 0.07,
+            "width": 0.03,
+            "height": 0.5,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "edge-galv"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.92,
+          "realization": "unreported"
+        },
+        {
+          "id": "galv-spangle",
+          "kind": "stain",
+          "description": "Mottled grey hot-dip spangle over the post, with pale adhesive-residue patches partway up where a label has been torn off.",
+          "region": {
+            "x": 0.46,
+            "y": 0.6,
+            "width": 0.06,
+            "height": 0.22,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "galv-spangle"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.85,
+          "realization": "unreported"
+        },
+        {
+          "id": "foot-rust",
+          "kind": "stain",
+          "description": "Orange-brown rust over the lowest stretch of the post, arriving abruptly at a splash line.",
+          "region": {
+            "x": 0.46,
+            "y": 0.84,
+            "width": 0.06,
+            "height": 0.12,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "foot-rust"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+          "confidence": 0.88,
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg"
+  },
+  "qualityContract": {
+    "qualityBar": "simple",
+    "definitionOfDone": [
+      "The plate reads at its declared size and the support lands where the plate shows it.",
+      "The printed face carries every measured region at the measured fraction of the plate, not at an estimated one.",
+      "The plate stands proud of the post and is never flush with it.",
+      "2 draw calls, 2 materials, 2 unique geometries and at or under 800 triangles, measured in the harness."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 0,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 2
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "plate-outline",
+      "name": "Plate outline, corner radius and thinness",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "mast-proportion",
+      "name": "Plate-to-post proportion and mounting height",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate",
+        "post"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "motorcycle-pictogram",
+      "name": "Motorcycle pictogram: side elevation, two wheels, tank and bars",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-plate"
+      ],
+      "evidenceRefs": [
+        "region-legend"
+      ]
+    },
+    {
+      "id": "galvanised-and-rust",
+      "name": "Galvanised spangle with the rust splash line at the foot",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "post"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-foot"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "post",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    },
+    "declaredContract": {
+      "pivots": [
+        "root at base-center"
+      ],
+      "pivotCount": 1,
+      "sockets": [],
+      "socketCount": 0,
+      "rationale": "A bolted roadside sign is a static rigid body. Nothing hinges, nothing turns, and nothing clips into it. One root pivot and zero sockets is the CORRECT answer, not a gap: a named pivot promises a part turns on that axis and a named socket promises something attaches there, and this prop can keep neither.",
+      "collider": "cylinder - honoured on both components",
+      "destructionGroups": [],
+      "destructionRationale": "The asset declares no destruction groups, so no component carries a fractureGroup and the prop does not come apart."
+    }
+  },
+  "assumptions": [
+    "plate-back: never shown by the single three-quarter view; assumed to share the edge return's #7E8485 at confidence 0.55.",
+    "post-section: square hollow section - the reference shows a flat front face with a sharp vertical arris and no channel lips. Confidence 0.85.",
+    "ground-termination: the reference runs the post out of the bottom of the frame, so nothing is known about a flange or footing. Built as a plain post rather than inventing a footplate. Confidence 0.7.",
+    "plate-height: the DECLARED width of 0.9 m is built. Plate height 1.08 m follows the Meshy proxy's own plate aspect of 0.83, not an estimate by eye."
+  ],
+  "coordinateFrame": {
+    "front": "+Z is the printed face of the plate, the camera-facing side in the reference plate",
+    "up": "+Y",
+    "scaleReference": "metres. Origin at base-center: x=0 on the post axis, y=0 at ground contact, z=0 at the post section centre."
+  },
+  "silhouette": {
+    "boundingShape": "A near-square blue plate carried on a slender post: 1.08 m of panel over 1.32 m of near-empty vertical, in a 0.9 m width.",
+    "aspectRatios": [
+      {
+        "id": "overall",
+        "wOverH": 0.375,
+        "dOverH": 0.036,
+        "note": "0.90 x 2.40 x 0.08 m declared."
+      },
+      {
+        "id": "plate-height-over-total",
+        "value": 0.45,
+        "note": "1.08 / 2.40, following the Meshy proxy's plate band extent."
+      },
+      {
+        "id": "plate-w-over-h",
+        "value": 0.83,
+        "note": "0.90 / 1.08, taken from the proxy's own normalised plate width over its plate band height."
+      }
+    ],
+    "symmetry": "Bilateral about x=0 in geometry. The printed pictogram is NOT symmetric - the motorcycle faces one way - so the atlas must not be mirrored.",
+    "dominantCurves": [
+      "the plate's four corner radii",
+      "the pictogram's two wheel circles, which are printed rather than modelled"
+    ],
+    "negativeSpaces": [
+      "the tall open rectangle either side of the post below the plate, roughly 55 per cent of the prop's height"
+    ],
+    "landmarks": [
+      {
+        "id": "plate-top",
+        "position": [
+          0,
+          2.4,
+          0.027
+        ]
+      },
+      {
+        "id": "plate-bottom",
+        "position": [
+          0,
+          1.32,
+          0.027
+        ]
+      },
+      {
+        "id": "post-top",
+        "position": [
+          0,
+          1.55,
+          -0.02
+        ]
+      },
+      {
+        "id": "ground-contact",
+        "position": [
+          0,
+          0.0,
+          -0.02
+        ]
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "sign-plate",
+      "name": "Motorcycle lane plate",
+      "level": "macro",
+      "role": "panel",
+      "importance": 1.0,
+      "confidence": 0.85,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat rounded-corner plate with a folded edge return: two parallel planar caps joined by a short wall, closed and rigid. Not an open-shell, because the plate has real thickness and is sealed.",
+      "geometryDescriptor": {
+        "topologyIntent": "ExtrudeGeometry over a rounded-rectangle profile, 0.9 x 1.08, corner radius 0.04, depth 0.03.",
+        "profile2D": {
+          "kind": "rounded-rect",
+          "halfWidth": 0.45,
+          "halfHeight": 0.54,
+          "cornerRadius": 0.04,
+          "cornerSegments": 4,
+          "depth": 0.03,
+          "points": [
+            [
+              0.41,
+              -0.54
+            ],
+            [
+              0.42531,
+              -0.53696
+            ],
+            [
+              0.43828,
+              -0.52828
+            ],
+            [
+              0.44696,
+              -0.51531
+            ],
+            [
+              0.45,
+              -0.5
+            ],
+            [
+              0.45,
+              0.5
+            ],
+            [
+              0.44696,
+              0.51531
+            ],
+            [
+              0.43828,
+              0.52828
+            ],
+            [
+              0.42531,
+              0.53696
+            ],
+            [
+              0.41,
+              0.54
+            ],
+            [
+              -0.41,
+              0.54
+            ],
+            [
+              -0.42531,
+              0.53696
+            ],
+            [
+              -0.43828,
+              0.52828
+            ],
+            [
+              -0.44696,
+              0.51531
+            ],
+            [
+              -0.45,
+              0.5
+            ],
+            [
+              -0.45,
+              -0.5
+            ],
+            [
+              -0.44696,
+              -0.51531
+            ],
+            [
+              -0.43828,
+              -0.52828
+            ],
+            [
+              -0.42531,
+              -0.53696
+            ],
+            [
+              -0.41,
+              -0.54
+            ]
+          ],
+          "note": "The explicit polygon the layer builds, written out so the spec documents the geometry rather than gesturing at it. 20 points: four 4-segment corner arcs joined by four straight runs. The extrusion is bevelEnabled:false - THREE.ExtrudeGeometry rounds every corner by default, which would round the authored radius a second time."
+        },
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - rewritten after generation into a two-region atlas: front-cap vertices take the printed graphic region, every wall and back-cap vertex collapses to a single bare-galvanised texel. This is what lets one material carry a printed front and a plain back without spending the second draw call.",
+        "normalStrategy": "flat-shaded caps, flat wall",
+        "segmentRationale": "Four segments per corner. The corner radius is the only curve this plate has and it is what separates a road sign from a sheet of metal; everything else here is straight and gets one segment."
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.9,
+        "height": 1.08,
+        "depth": 0.03,
+        "units": "m",
+        "confidence": 0.75
+      },
+      "transform": {
+        "position": [
+          0,
+          1.86,
+          0.027
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "Not an articulation. The plate does not turn on anything; this is the component's own transform origin, and the model exposes exactly ONE named pivot, the root."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.45,
+            0.015,
+            0.45
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. A convex proxy circumscribing the plate - the cheap volume a projectile tests against instead of the plate's extrusion."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "sheeting"
+        }
+      },
+      "material": "sheeting",
+      "materialLayers": [
+        "sheeting"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "border-rule",
+          "description": "White inset rule following the plate's rounded outline, about 0.035 m in from the edge.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "description": "White motorcycle in side elevation facing the viewer's right: two spoked-void wheels, a teardrop tank, a flat seat, handlebars and an exhaust. Drawn as SOLID FILL with knocked-out wheel centres.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "legend-lines",
+          "description": "Two white legend lines under the pictogram, Thai over Latin MOTORCYCLE LANE.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "edge-return",
+          "description": "Folded bare-galvanised edge, unusually deep on this plate and visible all round the rim.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#3370AB",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(126,132,133,1.0)",
+            "note": "folded edge return, measured #7E8485 over 8092 neutral px"
+          },
+          {
+            "position": 0.04,
+            "color": "rgba(211,213,213,1.0)",
+            "note": "white border rule inset about 0.035 m, measured #D3D5D5"
+          },
+          {
+            "position": 0.08,
+            "color": "rgba(51,112,171,1.0)",
+            "note": "blue field begins, measured #3370AB over 7200 px clear of the pictogram"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(51,112,171,1.0)",
+            "note": "blue field to centre; the pictogram and legend sit on top of it as solid fill, not as ramp stops"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered ramp measured INWARD from the plate edge, not a scatter. Every boundary is hard-edged printed vinyl, so the stops are doubled at each edge rather than blended.",
+        "dominantAlbedo": "rgba(51,112,171,1.0)",
+        "secondaryAlbedo": "rgba(211,213,213,1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      }
+    },
+    {
+      "id": "post",
+      "name": "Galvanised square post",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.85,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A single axis-aligned prismatic solid that never deforms. A box is exact here, not an approximation.",
+      "geometryDescriptor": {
+        "topologyIntent": "BoxGeometry(0.05, 1.55, 0.05, 1, 12, 1), translated so it runs from y=0 to y=1.55.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "none - the weathering ramp arrives as VERTEX COLOURS across 12 height segments, not as a texture",
+        "normalStrategy": "flat",
+        "note": "Left unchamfered on purpose: the post's identity feature is its sharp vertical arris, which a box already has, and a chamfer would spend triangles rounding off the one edge that reads. The 12 height segments are the ONLY triangles spent here and they exist to carry the rust ramp without a texture.",
+        "mergedAssembly": {
+          "reason": "Nothing to merge: the reference shows no flange and no cap - the post runs out of the bottom of the frame. Recorded explicitly so a later pass does not invent a footplate this sign does not have.",
+          "parts": [
+            {
+              "id": "post-shaft",
+              "level": "meso",
+              "primitive": "box",
+              "extent": {
+                "width": 0.05,
+                "height": 1.55,
+                "depth": 0.05
+              },
+              "localOffset": [
+                0.0,
+                0.775,
+                -0.02
+              ],
+              "note": "50 mm square hollow section running from ground contact at y=0 to y=1.55, PAST the plate's bottom edge at y=1.32 - the reference shows the post continuing behind the plate's lower quarter."
+            }
+          ],
+          "jointNote": "In DEPTH the plate's back face sits at z=+0.012 and the post's front face at z=+0.005: a 7 mm standoff, so the plate stands proud and no two same-facing surfaces are coincident. Prop depth spans z -0.045 to +0.042, 0.087 m against a declared 0.08 within the asset's 0.1 tolerance."
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.05,
+        "height": 1.55,
+        "depth": 0.05,
+        "units": "m",
+        "confidence": 0.8
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "The root pivot, at base-center. This is the ONLY named pivot in the prop, and it is the correct count: a bolted roadside sign has no moving parts."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0.775,
+            -0.02
+          ],
+          "scale": [
+            0.035,
+            0.775,
+            0.035
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. A vertical cylinder circumscribing the 50 mm square shaft - what a player actually walks into."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "galv-spangle",
+          "description": "Mottled grey hot-dip spangle over the post, a low-frequency crystalline blotch with no directional grain, with pale adhesive-residue patches partway up.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "foot-rust",
+          "description": "Orange-brown rust over the lowest stretch of the shaft, arriving abruptly at a splash line rather than fading up the post.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#73787A",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(115,120,122,1.0)",
+            "note": "shaft under the plate, cleanest coating, measured #73787A over 4387 neutral px"
+          },
+          {
+            "position": 0.82,
+            "color": "rgba(115,120,122,1.0)",
+            "note": "held clean: the per-band rusty-pixel scan reads 0-1 per cent at every band from y=620 to y=820"
+          },
+          {
+            "position": 0.84,
+            "color": "rgba(108,85,67,1.0)",
+            "note": "SHARP transition at the splash line, not a fade. The scan jumps to 25 per cent at y=900."
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(108,85,67,1.0)",
+            "note": "rust to ground contact, measured #6C5543 over 815 orange-biased px"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered vertical ramp measured DOWNWARD from the post top, and it is a STEP rather than a fade. Reversing it, or smoothing the step into a fade, are the two ways to get this support visibly wrong.",
+        "dominantAlbedo": "rgba(115,120,122,1.0)",
+        "secondaryAlbedo": "rgba(108,85,67,1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "sheeting",
+      "name": "Retroreflective vinyl sheeting on aluminium plate",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#3370AB",
+          "#D3D5D5",
+          "#7E8485"
+        ],
+        "samplingNotes": "White on purpose. The albedo is delivered by the face atlas assigned after material construction, and any tint here would multiply into the printed graphic."
+      },
+      "colorVariation": {
+        "palette": [
+          "#3370AB",
+          "#D3D5D5",
+          "#7E8485"
+        ],
+        "pattern": "authored-regions",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.06,
+        "map": "none",
+        "localResponse": "Calendered vinyl over aluminium: smooth, with no tight highlight anywhere on the plate."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0,
+        "notes": "Dielectric. The vinyl is what is seen; the plate underneath never reaches the surface on the front cap."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Flat plate, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "field-blue",
+          "color": "#3370AB",
+          "region": "the plate's blue ground, everywhere inside the border rule",
+          "evidenceRef": "region-field",
+          "notes": "Trimmed mean #3370AB over the full 7200 px of (420,380,120,60), a patch of clean field between the motorcycle pictogram and the legend. Notably more saturated than the u-turn plate's #4871A2 measured from its own plate - two signs of the same class weathered differently, which is why no colour is shared between these props."
+        },
+        {
+          "id": "legend-white",
+          "color": "#D3D5D5",
+          "region": "the border rule, the motorcycle pictogram and both legend lines",
+          "evidenceRef": "region-legend",
+          "notes": "Trimmed mean of the 1454 bright px (luma>170) of (470,230,60,40), on the pictogram's tank and seat. A vertical scanline through the pictogram reads 206-231, so this face is markedly cleaner than the u-turn plate."
+        },
+        {
+          "id": "edge-galv",
+          "color": "#7E8485",
+          "region": "the folded edge return and the whole back cap",
+          "evidenceRef": "region-edge",
+          "notes": "Trimmed mean #7E8485 over 8092 neutral px at (310,150,22,400), on the plate's left edge return, which the three-quarter view shows directly and at unusual width here. This is the colour every non-front-cap vertex collapses onto in the atlas. The BACK of the plate is NOT OBSERVED and is assumed to share it at confidence 0.55."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, blue field at (420,380,120,60): 7200 px trimming to #3370AB with no resolvable relief. The variation across the crop is print and weathering, not a height field.",
+          "Reference plate, folded edge return at (310,150,22,400): 8092 neutral px trimming to #7E8485 - a clean mill-cut return with no grain.",
+          "The identity of this surface is PRINTED, not textured. It arrives as a canvas atlas assigned after material construction, which the textureless declaration does not touch.",
+          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel for this one material, for a surface whose height field is flat."
+        ]
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Hot-dip galvanised steel, weathering to rust at the foot",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#73787A",
+        "secondary": [
+          "#6C5543"
+        ],
+        "samplingNotes": "White base colour because the measured vertical ramp is delivered as VERTEX COLOURS, not a texture - a tint here would multiply into it."
+      },
+      "colorVariation": {
+        "palette": [
+          "#73787A",
+          "#6C5543"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.18,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.12,
+        "map": "none",
+        "localResponse": "Mill-finish galvanising scatters rather than reflecting a lobe; the rusted foot is rougher still."
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0,
+        "notes": "Held at 0.25, not the high value a zinc coating suggests by name. There is no environment map in the target harness, so a high metalness has nothing to reflect and renders near-black. The measured luma spread of the shaft is scatter, not a lobe."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Prismatic solid, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "galv-spangle",
+          "color": "#73787A",
+          "region": "the post shaft above the splash line",
+          "evidenceRef": "region-post",
+          "notes": "Trimmed mean #73787A over the 4387 NEUTRAL pixels (|R-B|<12) of (480,640,50,90). Filtering to neutral pixels matters: an unfiltered trim of a crop holding both coating and rust reports a grey-brown that is on neither surface."
+        },
+        {
+          "id": "foot-rust",
+          "color": "#6C5543",
+          "region": "the lowest 0.25 m of the shaft",
+          "evidenceRef": "region-foot",
+          "notes": "Trimmed mean #6C5543 over the 815 ORANGE-BIASED px (R-B>28) of (480,830,50,120). A per-height-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900, so the rust is a splash line with a hard top edge rather than a bloom that fades up the post."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, post midsection at (480,640,50,90): 4387 NEUTRAL px (|R-B|<12) trimming to #73787A. Hot-dip spangle is a flat crystalline blotch, and the crop's spread is colour, not height.",
+          "Reference plate, post foot at (480,830,50,120): 815 ORANGE-BIASED px (R-B>28) trimming to #6C5543 - a surface bloom on a flat section, not a pitted profile at prop distance.",
+          "The spangle and the rust ramp arrive as VERTEX COLOURS over 12 height segments, so a synthesised five-canvas set would be discarded work.",
+          "Measured cost: five canvases at 1024 for this material alone is roughly 1.9 s inside createObjectModel, on a support whose whole geometry is 100 triangles."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T03:30:56.088112+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.126854+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.165167+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.205739+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.245413+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.285652+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.328786+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.368763+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T03:30:56.088112+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.126854+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.165167+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.205739+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.245413+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.285652+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.328786+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T03:30:56.368763+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "plate-outline",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate."
+        },
+        {
+          "id": "motorcycle-pictogram",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.82,
+          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/motorcycle-lane-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/motorcycle-lane-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "as built - already below the per-draw-call overhead, so there is no far tier worth authoring"
+    },
+    {
+      "tier": "far",
+      "distance": 40,
+      "strategy": "none. A decimated tier would save nothing measurable and would cost a unique geometry against a ceiling that is full."
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 2,
+    "textureSize": 512,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() and none was invented. Road signs are among the most heavily instanced props in a street scene, so DRAW CALLS are the binding axis and triangles are not.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "At the ceiling with nothing spare, decided in the blockout. maxDrawCalls was raised from 1 to 2 BEFORE any geometry existed, because the asset already carried maxMaterials=2, which one draw call cannot reach: one component carries one material, and a printed vinyl face and a galvanised post are not one material."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two, and there was never a third to spend. A colour difference is not a material difference: the blue field, the white pictogram and legend, and the bare edge return are THREE colours on ONE material, separated by a UV atlas."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One rounded-rect extrusion and one segmented box. Both are built once at module scope, and so is the atlas canvas - every instance shares all three."
+      },
+      "triangles": {
+        "signPlate": 76,
+        "post": 100,
+        "projectedTotal": 176,
+        "budget": 800,
+        "headroom": 624,
+        "note": "The plate is a 20-point extrusion: 18 front-cap + 18 back-cap + 40 wall. The post is a box at 12 height segments, spent to carry the rust ramp without a texture. The 624 spare triangles are deliberately NOT spent: the motorcycle pictogram is the obvious place to spend them and it must NOT be modelled - at prop distance it is a printed silhouette, and geometry for it would cost a unique geometry and a draw call, the two axes that are full."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "area",
+      "directionHint": [
+        -0.4,
+        0.54,
+        0.74
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "The plate's blue field falls from luma 108 near the top of the panel to 101 at the bottom across a vertical scanline at x=600, and the left edge return reads brighter than the right - a soft key, high and camera-left."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "directionHint": [
+        0.55,
+        0.2,
+        -0.4
+      ],
+      "intensity": 0.34,
+      "colorTemperatureK": 6500,
+      "evidence": "The deep left edge return stays at luma 131 where it turns away from the key, which only happens with real fill rather than a single source."
+    },
+    {
+      "role": "rim",
+      "type": "directional",
+      "directionHint": [
+        0.6,
+        0.3,
+        -0.75
+      ],
+      "intensity": 0.22,
+      "colorTemperatureK": 6500,
+      "evidence": "A thin bright line separates the plate's upper-right corner from the backdrop at luma 155 against 126."
+    },
+    {
+      "role": "environment",
+      "type": "studio-context",
+      "environment": "studio softbox on a flat neutral backdrop",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "evidence": "Border-ring scan over 1024 samples trimming to #7E7E7E. The backdrop was MEASURED rather than assumed to be the grey the prompt asked for.",
+      "note": "The render harness backs onto a darker ground than the plate does, so a candidate render reads darker overall and that difference is the backdrop, not the prop."
+    },
+    {
+      "role": "contact-shadow",
+      "type": "ground-shadow",
+      "intensity": 0.5,
+      "evidence": "The reference runs the post out of the bottom of the frame and shows no ground contact, so the contact shadow is grounded at y=0 by construction rather than matched to an observed one.",
+      "behavior": "Grounded at y=0, the prop's origin, so a placed instance darkens where it actually touches. Ambient occlusion is left at zero on both materials: a convex prism and a sealed plate have no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot at base-center supports whole-object placement, rotation about +Y and visibility changes; nothing else in this prop articulates"
+  ],
+  "destructionAnchors": [
+    "none - destructionGroups is empty on the asset and no component declares a fractureGroup"
+  ],
+  "risks": [
+    "One view only. The plate's back and the post's rear face are inferred, not observed, at confidence 0.55.",
+    "The Meshy proxy is holed through the post midsection - a remesh artefact - so it was used for band proportions only and never for structure.",
+    "The proxy's normalised plate width implies a 1.20 m plate against the declared 0.9 m. The declared contract wins; a reviewer comparing render to plate will see a narrower plate.",
+    "The pictogram is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful ARRANGEMENT of the motorcycle's parts rather than a copy of that particular drawing."
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Motorcycle Lane Sign",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  }
+}

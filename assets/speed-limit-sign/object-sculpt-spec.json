@@ -1,0 +1,2628 @@
+{
+  "targetName": "Speed Limit Sign",
+  "targetId": "speed-limit-sign",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "roadside regulatory traffic sign",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "planar disc",
+        "prismatic post",
+        "flanged plate"
+      ],
+      "structureKind": [
+        "rigid assembly",
+        "post-mounted panel"
+      ],
+      "motionPotential": [
+        "none - static ground-fixed prop"
+      ],
+      "materialFamilies": [
+        "hot-dip galvanised steel",
+        "retroreflective vinyl sheeting on aluminium"
+      ],
+      "notes": "A 0.6 m circular regulatory disc bolted to the front face of a square hot-dip galvanised post, which rises past the disc to a capped top and terminates at a bolted flange foot plate. Nothing articulates and nothing attaches."
+    },
+    "complexity": {
+      "tier": "simple",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 3,
+        "microFeatureGroups": 2,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Silhouette is two primitives: a thin disc and a square post on a flange. Nothing organic, nothing swept.",
+        "All identity lives in the PRINTED FACE, not in geometry: the red annulus, the cream ground and the numerals are the sign. That routes to a canvas texture, not to components.",
+        "Held to two draw calls by the asset budget, so the post, the flange foot and the top cap are one merged component and the disc is the other."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "simple",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": false,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 3,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "outer-rim-band",
+          "kind": "linework",
+          "description": "Pale yellow-cream border rule occupying 1.00R to 0.95R, outboard of the red. Trimmed mean #CABF90 over 200 px on the top arc at (505,87,25,8). A flat printed band with zero relief.",
+          "region": {
+            "x": 0.47,
+            "y": 0.05,
+            "width": 0.06,
+            "height": 0.03,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "rim-band"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.9
+        },
+        {
+          "id": "red-annulus",
+          "kind": "decal",
+          "description": "The prohibition ring, measured from the x=515 scanline at 0.95R outer to 0.717R inner - not the 0.92/0.64 first assumed. Least-shadowed limb trimmed to #C85E30 over 560 px at (382,265,14,40); the lit top arc reads #BF683D and the shadowed bottom #B27358, so #C85E30 is taken as the albedo and the other two as the key's work. Chalked well off signal red toward orange, which is this prop's strongest age cue.",
+          "region": {
+            "x": 0.36,
+            "y": 0.08,
+            "width": 0.28,
+            "height": 0.4,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "annulus-red"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.93
+        },
+        {
+          "id": "numeral-90",
+          "kind": "linework",
+          "description": "Black condensed grotesque '90' centred on the cream ground, drawn as SOLID FILL and never an outline - solid fill is what survives both prop distance and a low texture resolution. Ink trimmed to #272723 over 6338 sub-luma-70 px in (450,225,140,100); a horizontal scan at y=275 alternates cleanly between 34-40 and 200-226, so the boundary is hard and carries no relief.",
+          "region": {
+            "x": 0.44,
+            "y": 0.22,
+            "width": 0.14,
+            "height": 0.1,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-black"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.95
+        },
+        {
+          "id": "face-bolt-heads",
+          "kind": "decal",
+          "description": "Two dark hex heads on the vertical centreline at roughly 0.74R above and below centre. PRINTED, not modelled: at 14 mm across they fall under a pixel at prop distance, and modelling them would cost 64 triangles plus a unique geometry against ceilings that are already full. Classified as a DECAL and not a fastener on purpose: in this model they are printed into the face atlas and have no geometry, so calling them fasteners would claim instanced hardware that does not exist. The refusal is the budget decision, recorded rather than hidden - modelling two hex heads costs 64 triangles, and more importantly a third unique geometry and a third draw call, against ceilings of two and two.",
+          "region": {
+            "x": 0.49,
+            "y": 0.09,
+            "width": 0.03,
+            "height": 0.03,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "legend-black"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.75
+        },
+        {
+          "id": "galv-spangle",
+          "kind": "stain",
+          "description": "Mottled white-grey hot-dip spangle over mill steel: low-frequency crystalline blotch with no directional grain. Shaft mid trimmed to #848C8D over 3600 px at (487,570,30,120), upper shaft #8E8F89. The 4-luma spread between them is coating variation, not a height field.",
+          "region": {
+            "x": 0.47,
+            "y": 0.48,
+            "width": 0.06,
+            "height": 0.3,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "galv-spangle"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.85
+        },
+        {
+          "id": "base-rust-bloom",
+          "kind": "stain",
+          "description": "Orange-brown rust climbing the lowest ~0.35 m of the shaft and covering the flange plate. Shaft foot #81796C over 2240 px at (493,800,32,70); flange #7D6C5F over 3850 px at (450,900,110,35). An ordered vertical ramp, worst at the weld where the galvanising was severed - not a scatter.",
+          "region": {
+            "x": 0.44,
+            "y": 0.76,
+            "width": 0.12,
+            "height": 0.16,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "foot-rust"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.88
+        },
+        {
+          "id": "grime-streaks",
+          "kind": "stain",
+          "description": "Faint vertical grime runs down the cream ground below the upper bolt. Ground above the numerals reads #D6D4C1 and below them #D3D0BD - a 4-luma drop over the face, which is the streaking plus the key's falloff and nothing more.",
+          "region": {
+            "x": 0.46,
+            "y": 0.16,
+            "width": 0.1,
+            "height": 0.24,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "albedo",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "grime-streaks"
+          },
+          "evidenceRef": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+          "confidence": 0.6
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg"
+  },
+  "qualityContract": {
+    "qualityBar": "simple",
+    "definitionOfDone": [
+      "Disc reads as a true circle in silhouette from every turntable azimuth, and as a thin plate edge-on.",
+      "Printed face carries the rim band, the red annulus, the numerals and the two bolt heads, in the reference's proportions of the radius.",
+      "Post rises PAST the disc to a capped top and lands on a flange foot; the disc stands proud of the post front face and is never flush with it.",
+      "Built to the declared 0.6 x 2.3 x 0.08 m, with the plate's disagreeing disc proportion recorded rather than reproduced.",
+      "Two draw calls, two materials, two unique geometries, at or under 800 triangles, measured in the harness."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 0,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 2
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "disc-circularity",
+      "name": "Disc circular outline and plate thinness",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-disc"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    },
+    {
+      "id": "mast-proportion",
+      "name": "Disc-to-post proportion and mounting height",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-disc",
+        "post-assembly"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "printed-face-system",
+      "name": "Rim band, red annulus, numerals and bolt heads on the face atlas",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign-disc"
+      ],
+      "evidenceRefs": [
+        "region-annulus",
+        "region-ground",
+        "region-numeral"
+      ]
+    },
+    {
+      "id": "galvanised-and-rust",
+      "name": "Galvanised spangle with the rust ramp at the foot",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "post-assembly"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-foot"
+      ]
+    },
+    {
+      "id": "post-passes-behind-disc",
+      "name": "Post rises past the disc to a capped top and lands on a flange foot",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "post-assembly"
+      ],
+      "evidenceRefs": [
+        "full-object",
+        "turntable"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "post-assembly",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    },
+    "declaredContract": {
+      "pivots": [
+        "root at base-center"
+      ],
+      "pivotCount": 1,
+      "sockets": [],
+      "socketCount": 0,
+      "rationale": "A bolted roadside regulatory sign is a static rigid body. Nothing hinges, nothing turns, and nothing clips into it. One root pivot and zero sockets is the CORRECT answer here, not a gap: a named pivot is a promise that a part turns on that axis and a named socket is a promise that something attaches there, and this prop can keep neither.",
+      "collider": "cylinder - honoured on both components",
+      "destructionGroups": [],
+      "destructionRationale": "The asset declares no destruction groups, so no component carries a fractureGroup and the prop does not come apart."
+    }
+  },
+  "assumptions": [
+    "rear-face-graphic: Bare galvanised/grey aluminium back, standard for regulatory signage. (confidence 0.55; single-view limitation - the plate is a three-quarter front view)",
+    "post-section: Square hollow section ~50 mm; the plate shows a flat front face with a sharp vertical arris and no channel lips. (confidence 0.7; plate, post midsection)",
+    "fixing-count: Two, on the vertical centreline at 12 and 6 o'clock; both are visible in the plate. (confidence 0.85; plate, disc face)",
+    "declared-vs-observed-scale: Built to the DECLARED 0.6 m disc on a 2.3 m post (0.26). The plate and its Meshy proxy both render 0.44, which is not a real regulatory proportion; the declared contract wins and the disagreement is recorded rather than matched. (confidence 0.9; registry scale.declared + mesh_reference_compare band scan)"
+  ],
+  "coordinateFrame": {
+    "front": "+Z is the printed face of the disc, which is the camera-facing side in the reference plate",
+    "up": "+Y",
+    "scaleReference": "metres. Origin at base-center: x=0 on the post axis, y=0 at the underside of the flange foot, z=0 at the post section centre."
+  },
+  "silhouette": {
+    "boundingShape": "A thin circular disc carried high on a slender square post that lands on a wide flat foot. Read as a lollipop: 0.6 m of circle over 1.7 m of near-empty vertical.",
+    "aspectRatios": [
+      {
+        "id": "overall",
+        "wOverH": 0.261,
+        "dOverH": 0.035,
+        "note": "0.60 x 2.30 x 0.08 m declared."
+      },
+      {
+        "id": "disc-diameter-over-height",
+        "value": 0.261,
+        "note": "DECLARED. The plate and its Meshy proxy both render 0.435; that is not a real regulatory proportion and was not matched."
+      },
+      {
+        "id": "post-section-over-height",
+        "value": 0.022,
+        "note": "50 mm square on a 2.3 m sign."
+      }
+    ],
+    "symmetry": "Bilateral about the x=0 plane. No left/right pair exists, so no chirality gate applies.",
+    "dominantCurves": [
+      "the disc's single circular outline - the only curve in the prop, and its identity"
+    ],
+    "negativeSpaces": [
+      "the tall open rectangle either side of the post below the disc, roughly 0.55 of the prop's height and almost all of its empty area"
+    ],
+    "landmarks": [
+      {
+        "id": "disc-centre",
+        "position": [
+          0,
+          1.98,
+          0.0205
+        ]
+      },
+      {
+        "id": "disc-top",
+        "position": [
+          0,
+          2.28,
+          0.0205
+        ]
+      },
+      {
+        "id": "post-cap-top",
+        "position": [
+          0,
+          2.3,
+          -0.0125
+        ]
+      },
+      {
+        "id": "flange-underside",
+        "position": [
+          0,
+          0.0,
+          -0.0125
+        ]
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "sign-disc",
+      "name": "Regulatory sign disc",
+      "level": "macro",
+      "role": "panel",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A flat circular plate: two parallel planar caps joined by a short cylindrical wall, closed and rigid. Not an open-shell - the plate has real thickness and is sealed - and not a continuous-sculpt, since nothing about it is freeform. A cylinder laid on its side is the exact primitive here, not an approximation of one.",
+      "geometryDescriptor": {
+        "topologyIntent": "CylinderGeometry(0.30, 0.30, 0.012, 72), axis rotated onto +Z so the caps face front and back.",
+        "radialSegments": 72,
+        "heightSegments": 1,
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - rewritten after generation into a two-region atlas: front-cap vertices take the printed graphic region, every wall and back-cap vertex collapses to a single bare-aluminium texel. This is what lets one material carry a printed front and a plain back without spending the second draw call.",
+        "normalStrategy": "flat-shaded caps, smooth wall",
+        "segmentRationale": "72 radial segments is where the triangles go and it is the only place they are spent. The circular outline IS this prop's silhouette, so a visible polygon on the rim is the one defect that cannot be recovered by any material work. 288 triangles of an 800 budget buys a rim that reads as a true circle at the distance a player passes it."
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.6,
+        "height": 0.6,
+        "depth": 0.012,
+        "units": "m",
+        "confidence": 0.85
+      },
+      "transform": {
+        "position": [
+          0,
+          1.98,
+          0.0205
+        ],
+        "rotation": [
+          1.5707963,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "Not an articulation. The disc does not turn on anything; this is the component's own transform origin and the model exposes exactly ONE named pivot, the root."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.3,
+            0.006,
+            0.3
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. The disc's proxy is the disc itself, axis along the component's local Y which world-maps to +Z after the component rotation."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "sheeting"
+        }
+      },
+      "material": "sheeting",
+      "materialLayers": [
+        "sheeting"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "outer-rim-band",
+          "description": "Pale yellow-cream rim band from 1.00R to 0.95R, measured #CABF90. Drawn into the face atlas rather than modelled.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "red-annulus",
+          "description": "Chalked orange-red prohibition ring, 0.95R to 0.717R measured off the x=515 scanline. The widest band on the face.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "numeral-90",
+          "description": "Black condensed grotesque 90 centred on the cream ground, cap height 0.33R.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "face-bolt-heads",
+          "description": "Two dark hex heads on the vertical centreline at roughly 0.74R above and below centre. Printed, not modelled: at 14 mm across they are under a pixel at prop distance and would cost 64 triangles and a unique geometry.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#D6D4C1",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(202,191,144,1.0)",
+            "note": "rim band at 1.00R-0.95R, measured #CABF90"
+          },
+          {
+            "position": 0.05,
+            "color": "rgba(200,94,48,1.0)",
+            "note": "red annulus outer edge, measured #C85E30 off the unshadowed limb"
+          },
+          {
+            "position": 0.283,
+            "color": "rgba(200,94,48,1.0)",
+            "note": "red annulus inner edge at 0.717R, measured"
+          },
+          {
+            "position": 0.3,
+            "color": "rgba(214,212,193,1.0)",
+            "note": "cream ground, measured #D6D4C1"
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(214,212,193,1.0)",
+            "note": "cream ground to centre; the numerals sit on top of it as solid fill, not as a ramp stop"
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered RADIAL ramp, position measured inward from the disc edge, not a scatter. Every boundary in it is hard-edged printed vinyl, so the stops are doubled at each edge rather than blended. materialClass is 'plastic': the face is calendered retroreflective VINYL laminated to an aluminium plate, and it is the vinyl that is seen. The metal underneath is never the visible surface on the front cap.",
+        "dominantAlbedo": "rgba(214,212,193,1.0)",
+        "secondaryAlbedo": "rgba(200,94,48,1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      }
+    },
+    {
+      "id": "post-assembly",
+      "name": "Galvanised post, cap and flange foot",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.9,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three axis-aligned prismatic solids that never deform and never move relative to one another. Boxes are exact here, not an approximation, and merging them into one buffer costs nothing in fidelity.",
+      "geometryDescriptor": {
+        "topologyIntent": "Three boxes merged into ONE BufferGeometry at build time.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "authored - single atlas column, v mapped to world height so the rust ramp climbs the post foot and covers the flange without a second material",
+        "normalStrategy": "flat",
+        "note": "Left unchamfered on purpose. The post's identity feature is its sharp vertical arris, which a box already has; a chamfer would spend triangles rounding off the one edge that reads.",
+        "mergedAssembly": {
+          "reason": "maxDrawCalls is 2 and the printed disc must have one of them, so the post, its cap and its flange foot get ONE mesh between them. They share a material, they never move relative to each other, and merging them is invisible. Recorded here as a BLOCKOUT decision so a later pass does not 'fix' the shallow tree by splitting it and silently costing every instance of this sign an extra submission.",
+          "parts": [
+            {
+              "id": "flange-foot",
+              "level": "meso",
+              "primitive": "box",
+              "extent": {
+                "width": 0.16,
+                "height": 0.018,
+                "depth": 0.078
+              },
+              "localOffset": [
+                0.0,
+                0.009,
+                -0.0145
+              ],
+              "note": "The widest thing in the prop in DEPTH, and it is what sets the declared 0.08 m. The Meshy proxy agrees: its lowest band is its deepest, at 0.073 of height against the disc bands' 0.008 to 0.041. Depth trimmed from 0.080 to 0.078 and the whole assembly moved 2 mm back during the build: at the original z the flange's FRONT face sat 0.001 m from the disc's front face, two same-facing surfaces a millimetre apart, which check-coplanar flagged as a flicker pair over 0.10 m2. The prop's total depth is still exactly the declared 0.080 m, now spanning z -0.0535 to +0.0265 with the DISC's front face as the maximum."
+            },
+            {
+              "id": "post-shaft",
+              "level": "meso",
+              "primitive": "box",
+              "extent": {
+                "width": 0.05,
+                "height": 2.262,
+                "depth": 0.05
+              },
+              "localOffset": [
+                0.0,
+                1.149,
+                -0.0145
+              ],
+              "note": "50 mm square hollow section. Runs from the top of the flange at y=0.018 to y=2.28, PAST the back of the disc, which is what the plate shows."
+            },
+            {
+              "id": "post-cap",
+              "level": "meso",
+              "primitive": "box",
+              "extent": {
+                "width": 0.056,
+                "height": 0.02,
+                "depth": 0.056
+              },
+              "localOffset": [
+                0.0,
+                2.29,
+                -0.0145
+              ],
+              "note": "The small bracket that peeks above the disc's top edge in the plate. Deliberately 3 mm oversized on each side so no face of it is coincident with a face of the shaft - an equal-sized cap would put four co-facing pairs in the model."
+            }
+          ],
+          "jointNote": "flange top y=0.018 meets shaft bottom y=0.018, and shaft top y=2.280 meets cap bottom y=2.280. Both are OPPOSED butt joints between solids, which is how solids are meant to meet and is not a z-fighting pair. In DEPTH every face is now distinct by at least 0.002 m: disc front 0.0265, flange front 0.0245, cap front 0.0135, shaft front 0.0105, disc back 0.0145, shaft back -0.0395, cap back -0.0425, flange back -0.0535. The disc stands 0.004 m proud of the shaft's front face and is never flush with it."
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.16,
+        "height": 2.3,
+        "depth": 0.08,
+        "units": "m",
+        "confidence": 0.8
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "notes": "The root pivot, at base-center. This is the ONLY named pivot in the prop and it is the correct count: a bolted roadside sign has no moving parts."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "type": "cylinder",
+          "offset": [
+            0,
+            1.15,
+            -0.0125
+          ],
+          "scale": [
+            0.035,
+            1.131,
+            0.035
+          ],
+          "isTrigger": false,
+          "notes": "Declared collider for this asset is `cylinder`. A capsule-free vertical cylinder circumscribing the 50 mm square shaft - the cheap convex proxy a player actually walks into."
+        },
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised"
+        }
+      },
+      "material": "galvanised",
+      "materialLayers": [
+        "galvanised"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "galv-spangle",
+          "description": "Mottled white-grey hot-dip spangle, low-frequency blotch with no directional grain.",
+          "representation": "texture-region"
+        },
+        {
+          "id": "base-rust-bloom",
+          "description": "Orange-brown rust over the lowest ~0.30 m of the shaft and the whole flange plate, with a HARD top edge at the splash line rather than a fade - measured by a per-height-band count of orange-biased pixels.",
+          "representation": "texture-region"
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "colorMaterialRecipe": {
+        "base": "#878F90",
+        "stops": [
+          {
+            "position": 0.0,
+            "color": "rgba(145,150,149,1.0)",
+            "note": "cap and upper shaft, cleanest coating. Trimmed mean #919695 over the 2001 NEUTRAL px (|R-B|<12) of (490,500,30,90)."
+          },
+          {
+            "position": 0.85,
+            "color": "rgba(135,143,144,1.0)",
+            "note": "shaft field value, #878F90 over the 3277 neutral px of (487,570,32,120). Held to y>0.35 m: a rusty-pixel scan by height band reads 0 percent everywhere between 0.44 m and 1.08 m."
+          },
+          {
+            "position": 0.87,
+            "color": "rgba(110,86,65,1.0)",
+            "note": "SHARP transition, not a fade. The band scan jumps from 3 percent rusty at 0.33 m to 56 percent at 0.23 m. Shaft rust core #6E5641 over the 1038 ORANGE-BIASED px (R-B>28) of (488,790,40,95)."
+          },
+          {
+            "position": 1.0,
+            "color": "rgba(114,85,62,1.0)",
+            "note": "flange plate, the worst of it. #72553E over the 2110 orange-biased px of (450,895,110,45)."
+          }
+        ],
+        "finishStyle": "satin",
+        "notes": "An ordered vertical ramp, position measured DOWNWARD from the cap, and it is a STEP rather than a fade. A per-height-band count of orange-biased pixels (R-B>28) down the post reads 0 percent at every band from 0.44 m to 1.08 m, 3 percent at 0.33 m, then 56 percent at 0.23 m and 52 percent at 0.12 m: the rust is confined below roughly 0.30 m and arrives abruptly at the splash line. The first authoring of this recipe had it fading in from 1.5 m, which came from trimming a crop that contained BOTH rust and clean coating and reading the grey-brown average as the rust colour. Separating the two populations by hue - orange-biased for rust, neutral for coating - is what corrected both the colour and the extent. Reversing this ramp, or smoothing the step back into a fade, are the two ways to get this prop visibly wrong.",
+        "dominantAlbedo": "rgba(135,143,144,1.0)",
+        "secondaryAlbedo": "rgba(110,86,65,1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "sheeting",
+      "name": "Retroreflective vinyl sheeting on aluminium plate",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#C9BE93",
+          "#D8532B",
+          "#1A1A18"
+        ],
+        "samplingNotes": "White on purpose. The albedo is delivered by the face atlas assigned after material construction, and any tint here would multiply into the printed graphic."
+      },
+      "colorVariation": {
+        "palette": [
+          "#EDE4C4",
+          "#D8532B",
+          "#1A1A18",
+          "#A8A6A0"
+        ],
+        "pattern": "authored-regions",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.06,
+        "map": "none",
+        "localResponse": "Reflective sheeting is a smooth calendered vinyl; the chalked red has gone matter than the cream ground but not by much."
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0,
+        "notes": "Calendered vinyl over aluminium. The vinyl is what is seen and it is a dielectric; the plate underneath never reaches the surface on the front cap."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Flat plate, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "annulus-red",
+          "color": "#C85E30",
+          "region": "the prohibition ring, 0.92R to 0.64R on the front cap",
+          "evidenceRef": "region-annulus",
+          "notes": "Trimmed mean #C85E30 over 560 px on the LEAST-shadowed limb at (382,265,14,40). The lit top arc reads #BF683D and the shadowed bottom #B27358; taking the limb keeps the key's contribution out of the albedo. Ring runs 0.95R to 0.717R, measured off the x=515 scanline."
+        },
+        {
+          "id": "ground-cream",
+          "color": "#D6D4C1",
+          "region": "the inner disc ground inboard of 0.64R",
+          "evidenceRef": "region-ground",
+          "notes": "Trimmed mean #D6D4C1 over 1800 px at (495,160,45,40), above the numerals and clear of them. Warm off-white - the sheeting has yellowed and this is not paper white."
+        },
+        {
+          "id": "legend-black",
+          "color": "#272723",
+          "region": "the 90 numerals and the two bolt heads",
+          "evidenceRef": "region-numeral",
+          "notes": "Trimmed mean of the sub-luma-70 half of (450,225,140,100), 6338 px. The whole-crop mean was far lighter because the crop's bright half is cream bouncing across a hard boundary, not ink."
+        },
+        {
+          "id": "rim-band",
+          "color": "#CABF90",
+          "region": "the outer 6 percent of the radius, outboard of the annulus",
+          "evidenceRef": "region-rim",
+          "notes": "Trimmed mean #CABF90 over 200 px on the top arc at (505,87,25,8). Occupies 1.00R to 0.95R - a narrow rule, distinctly yellower than the inner ground."
+        },
+        {
+          "id": "plate-back",
+          "color": "#A8A6A0",
+          "region": "the back cap and the cylindrical rim wall",
+          "evidenceRef": "single-view-inference",
+          "notes": "NOT OBSERVED. The plate is a three-quarter front view and shows no part of the disc's back. Bare mill aluminium is the standing assumption at confidence 0.55, recorded here as an assumption and not as a measurement. This is the colour every non-front-cap vertex collapses onto in the atlas."
+        },
+        {
+          "id": "grime-streaks",
+          "color": "#C6C2AE",
+          "region": "vertical runs down the cream ground below the upper bolt",
+          "evidenceRef": "region-ground",
+          "notes": "Ground above the numerals trims to #D6D4C1 and below them to #D3D0BD. A 4-luma drop across the whole face is all the evidence there is, so the streaks are drawn faint and low-contrast rather than invented darker."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, disc face at (470,150,60,60) and (500,300,60,60): a calendered vinyl sheet with no resolvable relief. Trimmed-mean luma varies 3.1 across the crop, which is print, not surface.",
+          "Reference plate, disc rim at (395,255,12,90): the plate edge is a clean mill-cut aluminium return with no grain.",
+          "The identity of this surface is PRINTED, not textured. It arrives as a canvas atlas assigned after material construction, which the textureless declaration does not touch.",
+          "Measured cost: five synthesised canvases at 1024 would cost ~1.9 s inside createObjectModel for this one material, for a surface whose height field is flat."
+        ]
+      }
+    },
+    {
+      "id": "galvanised",
+      "name": "Hot-dip galvanised steel, weathering to rust at the foot",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#9AA0A2",
+        "secondary": [
+          "#C4C8C7",
+          "#7A5433"
+        ],
+        "samplingNotes": "White base colour because the measured vertical ramp is delivered as VERTEX COLOURS, not a texture - the post is 92 triangles and a per-vertex ramp across 8 height segments costs nothing, needs no canvas and no VRAM, and a tint here would multiply into it."
+      },
+      "colorVariation": {
+        "palette": [
+          "#9AA0A2",
+          "#C4C8C7",
+          "#7A5433",
+          "#8C6A3F"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.18,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.12,
+        "map": "none",
+        "localResponse": "Mill-finish galvanising is diffuse, not polished. The rusted foot is rougher still.",
+        "notes": "Mid, matte-leaning. Mill-finish galvanising scatters: the shaft crop at (487,570,30,120) shows a broad low-contrast mottle with no tight highlight anywhere, and the rusted foot is rougher still. Carried as a single value because the ramp that varies across this surface is albedo, not roughness."
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0,
+        "notes": "Held at 0.25, not the 0.75 a zinc coating suggests by name. There is no environment map in the target harness, so a high metalness has nothing to reflect and renders as near-black; the sibling elephant-crossing-sign settled on the same 0.25 for the same coating for the same reason. The measured luma spread of the shaft crop is scatter, not a lobe, which is what a low metalness with a mid roughness reproduces."
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.0,
+        "contactShadowBias": 0.0,
+        "notes": "Prismatic solid, no cavities."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "galv-spangle",
+          "color": "#878F90",
+          "region": "post shaft above y=0.40 and the cap",
+          "evidenceRef": "region-post",
+          "notes": "Trimmed mean #878F90 over the 3277 NEUTRAL pixels (|R-B|<12) of (487,570,32,120), and #919695 over the 2001 neutral px of (490,500,30,90) higher up. Filtering to neutral pixels matters: an unfiltered trim of the same crops pulls the coating toward the rust and reports a colour that is on neither surface. A crop above the disc at (492,60,30,18) returned #9E9E9C against a backdrop of #A2A2A2 and was DISCARDED as backdrop contamination."
+        },
+        {
+          "id": "foot-rust",
+          "color": "#6E5641",
+          "region": "the lowest 0.30 m of the shaft and the whole flange plate",
+          "evidenceRef": "region-foot",
+          "notes": "Shaft rust core #6E5641 over the 1038 ORANGE-BIASED px (R-B>28) of (488,790,40,95); flange plate #72553E over the 2110 such px of (450,895,110,45). Confined below about 0.30 m: the per-band rusty-pixel fraction is 0 percent from 0.44 m to 1.08 m, 3 percent at 0.33 m and 56 percent at 0.23 m, so this is a splash line with a hard top edge and not a bloom that fades up the post."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Reference plate, post midsection at (490,600,40,120): hot-dip spangle is a flat crystalline blotch with no relief. Trimmed-mean luma spread 14.6 across the crop is COLOUR variation, not height.",
+          "Reference plate, flange foot at (455,900,80,40): the rust is a surface bloom on a flat plate, not a scaled or pitted profile at this prop's viewing distance.",
+          "The spangle and the rust ramp arrive as one 256px atlas column assigned after material construction, so the synthesised five-canvas set would be discarded work.",
+          "Measured cost: five canvases at 1024 for this material alone is ~1.9 s inside createObjectModel, on a prop whose whole geometry is 36 triangles."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T02:51:57.548579+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.596819+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.641427+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.684817+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.398891+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.440583+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.484956+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.527292+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T02:51:57.548579+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.596819+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.641427+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:51:57.684817+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.398891+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.440583+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.484956+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T02:52:19.527292+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "disc-circularity",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "72 radial segments. The rim reads as a true circle at every azimuth in the 8-frame turntable, and edge-on at 90/270 it reads as a thin plate rather than a wedge. 288 of the prop's 444 triangles are here, which is the only place they were spent."
+        },
+        {
+          "id": "mast-proportion",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "Graded against the DECLARED registry contract, which is this prop's target, and not against the plate. The harness measured the built bounds at 0.600 x 2.300 x 0.080 m against a declared 0.6 x 2.3 x 0.08 - exact on all three axes, with the flange foot setting the depth exactly as the Meshy proxy's band scan predicted (its lowest band is its deepest, 0.073 of height against the disc bands' 0.008 to 0.041). Disc centre at 1.98 m is a real regulatory mounting height. THE PLATE DISAGREES AND IS NOT BEING MATCHED: the plate and its Meshy proxy both render the disc at 0.44-0.45 of total height (a ~1.0 m disc), which is not a real regulatory proportion for a 0.6 m sign. A reviewer comparing render to plate will see a visibly smaller disc; that is the intended result, is recorded in assumptions and risks, and is the reason this feature is graded against the contract rather than against the image."
+        },
+        {
+          "id": "printed-face-system",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Rim band 1.00R-0.95R, red annulus 0.95R-0.717R and cream ground inside it, all taken off the x=515 scanline rather than estimated; numerals at the plate's measured 1.13R width; two bolt heads at 0.74R. All four ride one UV atlas on one material, so the printed front and the bare aluminium back cost one draw call between them - confirmed in the 180 render, which shows a plain grey disc."
+        },
+        {
+          "id": "galvanised-and-rust",
+          "passed": true,
+          "score": 0.8,
+          "evidence": "CORRECTED during the build. The first ramp faded rust in from 1.5 m at #7D6C5F, both wrong, because the crop trimmed to produce it contained rust AND clean coating. Separating the populations by hue gives rust #6E5641/#72553E confined below 0.30 m, with a per-band orange-pixel count reading 0 percent from 0.44 m to 1.08 m and 56 percent at 0.23 m. Shaft raised to 16 height segments so the splash line lands on a segment boundary and resolves as an edge. Held short of 0.9 because the plate's heavy white spangle STREAKING is not reproduced - the vertex ramp carries the vertical trend and a low-amplitude blotch, not the streaks."
+        },
+        {
+          "id": "post-passes-behind-disc",
+          "passed": true,
+          "score": 0.85,
+          "evidence": "Shaft runs 0.018 m to 2.28 m, past the back of the disc, capped by a 0.02 m bracket to 2.30 m and landing on a 0.16 x 0.018 x 0.08 m flange. Visible in the 180 render. The cap peeks only ~20 mm above the disc's top edge where the plate shows a more prominent bracket."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two-component sign built to the declared 0.600 x 2.300 x 0.080 m, measured by the harness, not estimated. 444 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture, createObjectModel returning in 37 ms. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken and both are recorded. First, the spangle noise was re-keyed from vertex INDEX to quantised POSITION - on a non-indexed buffer an index key gives the three corners of every triangle different values, and the post rendered as a patchwork of flat facets. Second, the rust ramp was re-measured after the first version faded rust in from 1.5 m in a desaturated grey-brown, an artefact of trimming a crop that held both rust and clean coating; splitting the two populations by hue put the rust at #6E5641 confined below 0.30 m with a hard splash line.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/speed-limit-sign/preview.jpg",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/speed-limit-sign/cmp-final.png",
+        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus an 8-frame turntable at 0/45/90/135/180/225/270/315 and a 4-frame clay pass",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "as built - 324 triangles is already below the per-draw-call overhead, so there is no far tier worth authoring"
+    },
+    {
+      "tier": "far",
+      "distance": 40,
+      "strategy": "none. A decimated tier would save nothing measurable and would cost a second geometry against a ceiling of two."
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 2,
+    "textureSize": 512,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() and none was invented. Road signs are among the most heavily instanced props in a street scene, so DRAW CALLS are the binding axis and triangles are not.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "At the ceiling with nothing spare, decided in the blockout. Two splits were refused and each is recorded where someone tempted to make it will read it: the flange foot and the top cap fold into the shaft's buffer rather than being parts to merge later, and the two face bolts stay PRINTED rather than becoming instanced geometry. The asset's ceiling was raised from 1 to 2 before any geometry existed, because it already carried maxMaterials=2 and maxUniqueGeometries=2, which one draw call cannot reach."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two, and there was never a third to spend. A colour difference is not a material difference: the red annulus, the cream ground, the black numerals and the bare aluminium back are FOUR colours on ONE material, separated by a UV atlas. Giving the printed face its own material would have cost a material AND a draw call, on the axis that has none to give."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One 72-segment disc and one merged three-box buffer. Both are built once at module scope, and so are both canvases - every instance of this sign in a scene shares all four."
+      },
+      "triangles": {
+        "signDisc": 288,
+        "postAssembly": 36,
+        "projectedTotal": 324,
+        "budget": 800,
+        "headroom": 476,
+        "note": "The disc is 72 wall quads (144 tris) plus two 72-triangle caps. The post assembly is three boxes at 12 triangles each. The 476 spare triangles are deliberately NOT spent: the only silhouette feature this prop has is the disc's circular outline, which already has 72 segments, and every other candidate for the headroom - modelled bolts, a chamfered arris, a segmented post - would cost a GEOMETRY or a DRAW CALL, which are the axes that are actually full."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "area",
+      "directionHint": [
+        -0.45,
+        0.5,
+        0.74
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "The post's left face reads luma 159 against its right face at 145 across the same scanline (y=600), so the key is camera-LEFT. The disc face falls from 211 above the numerals to 207 below them and the cream band trims 213 at the top against 191 at the bottom, so it is also slightly high. Soft, not hard: no cast edge is sharp anywhere on the plate."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "directionHint": [
+        0.55,
+        0.2,
+        -0.4
+      ],
+      "intensity": 0.34,
+      "colorTemperatureK": 6500,
+      "evidence": "The red annulus's shadowed bottom arc still trims to luma 126 against the lit top arc's 119 - the side facing away from the key never goes darker than the side facing it, which only happens with real fill rather than a single source."
+    },
+    {
+      "role": "rim",
+      "type": "directional",
+      "directionHint": [
+        0.6,
+        0.3,
+        -0.75
+      ],
+      "intensity": 0.22,
+      "colorTemperatureK": 6500,
+      "evidence": "A thin bright line separates the disc's right edge from the backdrop; the plate's edge return stays legible where it turns away from the key."
+    },
+    {
+      "role": "environment",
+      "type": "studio-context",
+      "environment": "studio softbox on a flat neutral backdrop",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "evidence": "Border-ring scan over 512 samples: mean luma 162.1 with a standard deviation of 0.38, trimming to #A2A2A2. The backdrop was MEASURED rather than assumed to be the grey the prompt asked for, and it is not - it is a light matte, well above a mid grey.",
+      "note": "The backdrop is 162 luma. The render harness backs onto ~58, so a candidate render will read darker overall than the plate and that difference is the backdrop, not the prop."
+    },
+    {
+      "role": "contact-shadow",
+      "type": "ground-shadow",
+      "intensity": 0.55,
+      "evidence": "The plate shows a soft ground shadow pooling under and slightly camera-right of the flange foot, reaching about one flange-width before it dissolves into the backdrop's 162 luma. Its softness matches the key's area source; there is no second hard contact edge anywhere.",
+      "behavior": "Contact shadow is grounded at the flange underside, y=0, which is also the prop's origin - so a placed instance darkens where it actually touches. Ambient occlusion is left at zero on both materials: this prop is two convex prismatic solids and a sealed plate, with no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot at base-center supports whole-object placement, rotation about +Y and visibility changes; nothing else in this prop articulates"
+  ],
+  "destructionAnchors": [
+    "none - destructionGroups is empty on the asset and no component declares a fractureGroup"
+  ],
+  "risks": [
+    "The single plate is a three-quarter front view: the disc back and the post's rear face are inferred, not observed. Recorded at confidence 0.55.",
+    "The plate and its Meshy proxy disagree with the registry's declared scale on the one proportion that matters most. Built to the declared contract; a reviewer comparing render to plate WILL see a smaller disc and that is intended.",
+    "The Meshy proxy's post is missing between 0.15 and 0.50 of its height - a remesh hole - so it was used for band proportions and the flange footprint only, never for structure."
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Speed Limit Sign",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  }
+}

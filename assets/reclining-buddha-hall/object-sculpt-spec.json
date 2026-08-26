@@ -1,0 +1,2399 @@
+{
+  "targetName": "Reclining Buddha Hall",
+  "targetId": "reclining-buddha-hall",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-hall-with-statue",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "open-colonnade",
+        "shallow-tiered-roof",
+        "recumbent-figure",
+        "longitudinal-axis"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "colonnade",
+        "extruded-prism",
+        "organic-tube"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "whitewashed-stone",
+        "terracotta-roof-tile",
+        "gilded-plaster",
+        "shadowed-render"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A long low hall whose front is an open colonnade and whose back is a solid wall, sheltering a 22 m gilded Buddha lying on its right side with its head propped on its arm. A stepped stone platform steps down and out on one side as a forward apron; twelve square columns carry a shallow two-tier roof in terracotta tile with a gold border band and white bargeboards; the figure lies on its own low plinth with its soles turned down the length of the hall."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 3,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 5,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "The registry notes make an argument rather than a description: the figure is modelled as part of THIS asset and the long front is an open colonnade, because the two decisions depend on each other. A closed long low box has no recognisable feature at all and reads as a warehouse.",
+        "So this is a building AND a large statue, and its material budget has to cover both gold leaf and roofing. The figure is the only ORGANIC form in the whole kit.",
+        "Occlusion risk is the HIGHEST of the batch and scored 3: the identity of the prop is a figure seen THROUGH a colonnade, so every column is a chance to hide it, and the figure had to be reviewed from a straight-on side elevation rather than from the hero angle.",
+        "Action readiness is minimal: static landmark geometry, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The figure cannot be a box decomposition and cannot be a lathe. It is a long soft mass whose section changes at every point along it -- shoulder to waist to hip to calf -- which needs a station-by-station tube, and that is a shape helper written for this asset alone."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-reclining-figure",
+          "zone": "interior",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a 22.5 m gilded figure lying on its right side, section varying at every station from shoulder to calf",
+          "mapsTo": {
+            "ref": "figure"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-propped-head",
+          "zone": "interior",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the head raised 1.10 m and propped on the supporting arm",
+          "mapsTo": {
+            "ref": "figure"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-ushnisha",
+          "zone": "interior",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "the flame-topped cranial bump -- the single most identifying feature of a Buddha figure at any distance",
+          "mapsTo": {
+            "ref": "figure"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-soles",
+          "zone": "interior",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "squared-off stacked feet with a real toe comb, soles turned down the hall",
+          "mapsTo": {
+            "ref": "figure"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-open-colonnade",
+          "zone": "facade",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "twelve square columns leaving the whole long front open",
+          "mapsTo": {
+            "ref": "back-wall"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-gold-border",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "gold border band along both eaves of both tiers",
+          "mapsTo": {
+            "ref": "roof-band"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-forward-apron",
+          "zone": "platform",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "the platform steps down and out on +X as a forward terrace",
+          "mapsTo": {
+            "ref": "platform"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-bargeboards",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "white boards up each gable rake and along each eaves",
+          "mapsTo": {
+            "ref": "barge-boards"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-course-streaks",
+          "zone": "platform",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "black streaking on the lower platform courses, fading out by 1.75 m",
+          "mapsTo": {
+            "ref": "d9-course-streaks"
+          },
+          "onMaterial": "stone",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+    "resolvedUnknowns": [
+      "The rear elevation is a solid wall, as the plate shows on the visible side. Whether the real building is colonnaded on both long sides cannot be known from one view and no proxy exists.",
+      "The figure's robe folds, the incised hairline, the facial features and the 108 auspicious marks on the soles are NOT authored. The figure carries its posture, its proportion, its ushnisha and its toe comb -- what reads through a colonnade at prop distance -- and nothing finer.",
+      "The figure is authored at 22.5 m within a 28 m hall. The registry notes say the figure alone sets the minimum length, and this is the proportion the plate shows, but with no reference mesh there is no independent check on it.",
+      "The interior is a solid mass with a dark face, not a room. This prop is an exterior shell even though its interior is what you look at -- what you look at is the FIGURE, and behind the figure a single dark panel does the work of a room.",
+      "The roof tiles are individually laid pantiles in the plate with a woven gold border; the model carries flat tile fields and a flat band."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 14.00 x 10.00 x 28.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 3,
+      "microFeatureGroups": 3,
+      "materialLayers": 5,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "reclining-figure",
+        "name": "The reclining figure",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "A continuous soft mass whose section varies along its length",
+          "Head raised and propped on the arm, ushnisha on the crown",
+          "Feet squared off with a toe comb, soles turned down the hall",
+          "Reads as gilded, not as tan or brown"
+        ],
+        "evidenceRefs": [
+          "region-figure"
+        ],
+        "failureModes": [
+          "a box decomposition, which is a pile of luggage and not a body",
+          "the arm covering the head, which loses the pose",
+          "a measured-in-shade albedo, which renders the identity of the prop brown"
+        ]
+      },
+      {
+        "id": "open-colonnade",
+        "name": "Open colonnade",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Twelve columns leaving the whole long front open",
+          "The figure legible THROUGH the colonnade along its length",
+          "The dark behind reads as interior, not as holes through the building"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-interior"
+        ],
+        "failureModes": [
+          "a closed wall, which reads as a warehouse",
+          "columns so close together that the figure is never legible"
+        ]
+      },
+      {
+        "id": "shallow-roof",
+        "name": "Shallow two-tier roof",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two tiers at a SHALLOW pitch, not the steep tiers of an ubosot",
+          "Gold border band along both eaves",
+          "Bargeboards lying ON the rake, not standing off it"
+        ],
+        "evidenceRefs": [
+          "region-tile",
+          "region-band"
+        ],
+        "failureModes": [
+          "a steep roof, which makes a different building",
+          "bargeboards rotated by the pitch angle instead of its complement"
+        ]
+      },
+      {
+        "id": "hall-palette",
+        "name": "Hall palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Whitewashed stone streaked black at the base",
+          "Dusty brick-red tile with a gold border",
+          "Worn gilding on the figure"
+        ],
+        "evidenceRefs": [
+          "region-stone",
+          "region-tile"
+        ],
+        "failureModes": [
+          "a bright gold figure, which the plate does not show either"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "reclining-figure",
+      "name": "The reclining figure",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "figure"
+      ],
+      "evidenceRefs": [
+        "region-figure"
+      ]
+    },
+    {
+      "id": "open-colonnade",
+      "name": "Open colonnade",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "back-wall",
+        "shade"
+      ],
+      "evidenceRefs": [
+        "region-interior"
+      ]
+    },
+    {
+      "id": "shallow-roof",
+      "name": "Shallow two-tier roof",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "roof-tile",
+        "roof-band",
+        "barge-boards"
+      ],
+      "evidenceRefs": [
+        "region-tile",
+        "region-band"
+      ]
+    },
+    {
+      "id": "hall-palette",
+      "name": "Hall palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "platform",
+        "roof-tile",
+        "figure"
+      ],
+      "evidenceRefs": [
+        "region-stone",
+        "region-tile"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 8,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "platform",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "platform",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with the figure inside it."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The rear elevation is a solid wall, as the plate shows on the visible side. Whether the real building is colonnaded on both long sides cannot be known from one view and no proxy exists.",
+    "The figure's robe folds, the incised hairline, the facial features and the 108 auspicious marks on the soles are NOT authored. The figure carries its posture, its proportion, its ushnisha and its toe comb -- what reads through a colonnade at prop distance -- and nothing finer.",
+    "The figure is authored at 22.5 m within a 28 m hall. The registry notes say the figure alone sets the minimum length, and this is the proportion the plate shows, but with no reference mesh there is no independent check on it.",
+    "The interior is a solid mass with a dark face, not a room. This prop is an exterior shell even though its interior is what you look at -- what you look at is the FIGURE, and behind the figure a single dark panel does the work of a room.",
+    "The roof tiles are individually laid pantiles in the plate with a woven gold border; the model carries flat tile fields and a flat band."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up, long axis on Z, colonnade facing +X. The figure's head is at -Z and its feet at +Z. The hall is NOT centred in x: it occupies the -X side of the platform and the forward apron takes the rest, which is why the roof is centred at x=-1.72 rather than on the origin -- a roof centred on the prop would overhang the wrong side and miss the colonnade entirely."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 14.0,
+      "h": 10.0,
+      "d": 28.0
+    },
+    "description": "A long stepped platform, a colonnade to 6.60 m, and a shallow two-tier roof to a ridge at 9.78 m. The prop is nearly three times as long as it is tall, and the silhouette events are the column rhythm, the two roof steps, and the forward apron breaking the platform outline on one side. The figure is not in the silhouette at all: it is seen only THROUGH the colonnade, which is exactly what the registry notes describe.",
+    "envelopeDerivation": "x spans -7.01..+7.00 and z spans -14.00..+14.00, both set by the bottom platform slab; y spans 0.00 to 9.94, the ridge cap. The 0.01 m on -x is a bargeboard on the roof's far rake, and the roof is what had to be pulled in to get even that close: the boards sit at half-length plus 0.06 rather than plus 0.12, and the tiers came down from 5.25 and 13.90 to 5.15 and 13.80.",
+    "meshyCrossCheck": "THERE IS NO REFERENCE MESH FOR THIS ASSET, and it is the only one in the batch without one. Meshy's image-to-3d refused the plate with content_policy_violation -- almost certainly a false positive on the reclining figure -- so there is no proxy to render through the same browser route and no band-by-band proportional comparison to check against. Every other prop in this batch had its proportions corrected by that table, three of them substantially; this one has only the single plate, and its proportions are therefore the weakest-evidenced in the set. That is reported rather than worked around: the mesh is evidence and this prop is missing it."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-stone",
+      "viewpoint": "front",
+      "path": "crops/stone.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-interior",
+      "viewpoint": "front",
+      "path": "crops/dark.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-tile",
+      "viewpoint": "top",
+      "path": "crops/tile.png",
+      "confidence": 0.822
+    },
+    {
+      "id": "region-band",
+      "viewpoint": "top",
+      "path": "crops/band.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-figure",
+      "viewpoint": "front",
+      "path": "crops/gold.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.35,
+      "note": "NOT OBSERVED, and the lowest confidence in the monumental set. The plate shows the colonnade elevation and one end; the back is a solid wall in the plate too, so its blankness is at least consistent -- but with no reference mesh there is nothing to check it against, and whether the far elevation is also colonnaded is unknowable."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "platform",
+      "name": "Stone platform and statue plinth",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four stepped slabs and the figure's own low plinth, all one stone and therefore ONE component and ONE draw call.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Four slabs to y=1.75, of which the top two express the plate's forward apron by stepping down and OUT on +X, plus a 0.87 m plinth for the figure.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Slabs meet top-to-bottom, which is an opposed butt, and the plinth stands on the deck rather than in it.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-forward-apron",
+          "description": "platform stepping out on +X",
+          "delivery": "geometryDescriptor slab 3 and 4"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#b4a89b",
+        "recipe": "Whitewashed stone, roughness 0.94, no texture set.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(180, 168, 155, 1.0)",
+        "secondaryAlbedo": "rgba(180, 168, 155, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            5.0,
+            0
+          ],
+          "halfExtents": [
+            7.0,
+            5.0,
+            14.0
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with the figure inside it."
+        }
+      }
+    },
+    {
+      "id": "back-wall",
+      "name": "Back wall",
+      "level": "macro",
+      "role": "body",
+      "importance": 0.8,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The one closed elevation, solid. Its own component rather than merged into the platform because a level builder selecting \"the wall\" should get the wall.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "platform",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.90 m thick wall from y=1.75 to 6.60 along the -X side.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Stands clear of the platform edge and of the column line.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-open-colonnade",
+          "description": "twelve columns leaving the front open",
+          "delivery": "repetitionSystems.columns"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#b4a89b",
+        "recipe": "The SAME whitewashed stone as the platform.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(180, 168, 155, 1.0)",
+        "secondaryAlbedo": "rgba(180, 168, 155, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "shade",
+      "name": "Interior shade",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The dark the colonnade looks into: the back wall's inner face and the soffit above the figure. This prop is the one case in the batch where the INSIDE of a wall is genuinely seen, straight through the open front.",
+      "materialId": "dark",
+      "material": "dark",
+      "parent": "back-wall",
+      "geometryDescriptor": {
+        "topologyIntent": "Two panels -- a wall face and a soffit -- filling the gaps between the columns.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Both stand PROUD of the surfaces they sit on rather than recessed into them, and both were dropped to 6.54: at 6.60 each shared the column heads' top plane, and because the columns are an InstancedMesh that is twelve pairs at once. Moving the soffit alone fixed nothing -- both boxes reached the same height for different reasons.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "dark",
+        "baseColor": "#5b524b",
+        "recipe": "Shadowed interior render, roughness 0.96.",
+        "evidenceRef": "region-interior",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(91, 82, 75, 1.0)",
+        "secondaryAlbedo": "rgba(91, 82, 75, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-tile",
+      "name": "Tile roof fields",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two truncated gable cross-sections extruded along the hall. The pitch is 0.64 -- about 33 degrees -- deliberately NOT the ubosot's 46: this is a long low hall and its roof is shallow, and building it steep would have made a different building.",
+      "materialId": "tile",
+      "material": "tile",
+      "parent": "back-wall",
+      "geometryDescriptor": {
+        "topologyIntent": "Two shallow tiers from eaves at 6.60 to a ridge at 9.78, centred at x=-1.72.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Centred at x=-1.72 rather than on the origin, because the hall sits at the -X side of the platform; a roof centred on the prop would overhang the wrong side and miss the colonnade entirely. Each tier's tile field starts where its border band ends, meeting as opposed faces.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "tile",
+        "baseColor": "#a9695f",
+        "recipe": "Terracotta tile, roughness 0.80, no texture set.",
+        "evidenceRef": "region-tile",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(169, 105, 95, 1.0)",
+        "secondaryAlbedo": "rgba(169, 105, 95, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-band",
+      "name": "Gold eaves bands",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.75,
+      "confidence": 0.83,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The bottom 0.34 m of each tier's slope, as its own short trapezoid prism. One of only two things that separate this roof from a shed roof.",
+      "materialId": "band",
+      "material": "band",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "A gold band along the foot of both tiers.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Meets the tile field above it as an opposed butt at one height.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-gold-border",
+          "description": "gold border along both eaves",
+          "delivery": "tierProfile() extrusions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "band",
+        "baseColor": "#c6a074",
+        "recipe": "Gold roof border, roughness 0.76 -- the border is glazed where the field is not.",
+        "evidenceRef": "region-band",
+        "confidence": 0.83,
+        "dominantAlbedo": "rgba(198, 160, 116, 1.0)",
+        "secondaryAlbedo": "rgba(198, 160, 116, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.83
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "barge-boards",
+      "name": "Bargeboards and ridge",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Eight rake boards, four eaves fascias and a ridge cap merged into one geometry.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "A white board up each rake of each gable end, along each eaves, and a cap on the ridge.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The rake angle is atan2(RUN, RISE), not atan(pitch): rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At the ubosot's 46 degrees the two are three degrees apart and the error is invisible; at this hall's 33 degrees they are twenty-four apart and the boards stood off the roof like scaffolding.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d8-bargeboards",
+          "description": "boards on every rake and eaves",
+          "delivery": "geometryDescriptor merged rotated boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#b4a89b",
+        "recipe": "The same whitewashed stone as the platform and the columns.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(180, 168, 155, 1.0)",
+        "secondaryAlbedo": "rgba(180, 168, 155, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "figure",
+      "name": "Reclining Buddha figure",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.86,
+      "primitive": "tapered-sweep",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "One tapering tube of eighteen stations -- head, neck, shoulder, chest, waist, hip, thigh, calf, ankle -- because a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. The only organic form in the kit.",
+      "materialId": "gold",
+      "material": "gold",
+      "parent": "platform",
+      "geometryDescriptor": {
+        "topologyIntent": "A 22.5 m figure lying on its right side from z=-11.2 to z=+11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a toe comb.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point rather than intersecting it or floating over it.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-reclining-figure",
+          "description": "the figure itself",
+          "delivery": "tubeAlong() over eighteen stations"
+        },
+        {
+          "id": "d2-propped-head",
+          "description": "head raised on the arm",
+          "delivery": "per-station lift plus a second tube for the arm"
+        },
+        {
+          "id": "d3-ushnisha",
+          "description": "flame-topped cranial bump",
+          "delivery": "lathe merged into the figure"
+        },
+        {
+          "id": "d4-soles",
+          "description": "squared feet with a toe comb",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gold",
+        "baseColor": "#ac7741",
+        "recipe": "Gilded plaster, roughness 0.34, metalness 0.15 -- half the batch's usual, because chroma matters more than sheen on the one surface that IS the identity.",
+        "evidenceRef": "region-figure",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(172, 119, 65, 1.0)",
+        "secondaryAlbedo": "rgba(172, 119, 65, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "stone",
+      "name": "Whitewashed stone",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b4a89b",
+      "color": "#b4a89b",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stone_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b4a89b",
+        "secondary": [
+          "#A08B79",
+          "#B3A08E",
+          "#635A4E"
+        ],
+        "samplingNotes": "Measured as the mean of crops/stone.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-course-streaks",
+          "region": "platform below y=1.75",
+          "roughness": 0.94,
+          "palette": [
+            "#A29A92",
+            "#B4A89B"
+          ],
+          "evidence": "The plate streaks the platform black along its lower courses and leaves the deck above clean -- the usual direction for this kit, and the opposite of the mosque's top-down rain wash. Delivered as a per-vertex TINT on the merged platform geometry rather than as a second material."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-stone (PBR confidence 0.860) on a lit platform course.",
+          "Shared by the platform, the statue plinth, the back wall, the twelve columns AND the bargeboards -- five consumers, one stone.",
+          "Textureless: the plate's black streaking is wear at a frequency no prop-distance viewer resolves, and only its vertical gradient is carried, as a vertex tint."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/stone.png",
+        "pbrReport": "material-evidence/stone.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Shadowed interior render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#5b524b",
+      "color": "#5b524b",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/dark_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#5b524b",
+        "secondary": [
+          "#483D35",
+          "#342B24",
+          "#181511"
+        ],
+        "samplingNotes": "Measured as the mean of crops/dark.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-interior (PBR confidence 0.860) on the wall behind the figure.",
+          "Luma 82 against the harness backdrop's 58. The margin matters here more than anywhere: this surface fills the gaps BETWEEN twelve columns, so at the backdrop value the silhouette gate would read eleven separate holes through the building."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/dark.png",
+        "pbrReport": "material-evidence/dark.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "tile",
+      "name": "Terracotta roof tile",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a9695f",
+      "color": "#a9695f",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/tile_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a9695f",
+        "secondary": [
+          "#C28277",
+          "#8E4E43",
+          "#A8685E"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tile.png. extract_pbr_evidence confidence 0.822. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-tile (PBR confidence 0.822). A dusty brick red, and unlike the ubosot's this one really is reddish rather than orange.",
+          "Textureless: the plate lays individually visible pantiles, and they are below the resolvable band at the distance a 28 m hall is read from."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tile.png",
+        "pbrReport": "material-evidence/tile.pbr.json",
+        "confidence": 0.822,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "band",
+      "name": "Gold roof border",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c6a074",
+      "color": "#c6a074",
+      "roughness": {
+        "base": 0.76,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/band_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c6a074",
+        "secondary": [
+          "#F6D2A4",
+          "#DEB88B",
+          "#A37D51"
+        ],
+        "samplingNotes": "Measured as the mean of crops/band.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-band (PBR confidence 0.829). The woven gold border along both eaves is one of only two things that separate this roof from a shed roof; the other is its two-tier step.",
+          "Roughness 0.76 against the tile's 0.80 -- the border is glazed where the field is not."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/band.png",
+        "pbrReport": "material-evidence/band.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Gilded plaster",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ac7741",
+      "color": "#ac7741",
+      "roughness": {
+        "base": 0.34,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gold_roughness.png"
+      },
+      "metalness": 0.15,
+      "albedo": {
+        "dominant": "#ac7741",
+        "secondary": [
+          "#533B21",
+          "#74552D",
+          "#927145"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gold.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "This is the largest deliberate deviation on the prop and the whole reasoning is recorded. The figure is the ONE surface in this plate that is never directly lit: it lies in the deep shade of its own colonnade, behind columns, under a soffit. Its mean gilt value across 41,296 warm-hued pixels is #7D6040 and a mid-flank crop is #674D2F -- both illumination rather than albedo, and both of which render the figure BROWN under three directional lights.",
+          "The albedo taken is the brightest QUARTILE of those pixels, #AC8E6F: the least-shadowed sample of the surface rather than its average. Every other material on this prop is measured on a lit face; this is the same rule applied to a surface that has no lit face. The brightest 8% at #BEA07E was tried first and rendered cream.",
+          "Shipped at #AC7741: that measurement's hue (30.5 degrees) and value (0.675) kept exactly, with the chroma raised from 0.36 to 0.62. The gilt is genuinely worn, the plate reads it in shade, and the harness drains what chroma survives -- and \"a long tan mass lying in a hall\" is not the asset the registry notes describe. Hue and value are the measurement; saturation is the correction.",
+          "Metalness 0.15, HALF what the rest of this batch's gilding carries. With no environment map a metal's specular has nothing to reflect and its diffuse is scaled by (1 - metalness), so a high value drains chroma out of exactly the surface that has to read as gold. This is the one prop where the figure IS the identity, so the trade goes the other way."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gold.png",
+        "pbrReport": "material-evidence/gold.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "columns",
+      "name": "Colonnade",
+      "instanceCount": 12,
+      "sourceComponent": "back-wall",
+      "material": "stone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "square-column",
+      "placement": {
+        "mode": "explicit",
+        "note": "Eight along the open +X front at x=2.10, and two at each end at z=+-12.20."
+      },
+      "instanceDimensions": {
+        "width": 0.62,
+        "height": 4.85,
+        "depth": 0.62
+      },
+      "rationale": "Twelve columns at one geometry and one submission. The registry notes REQUIRE the long front to be an open colonnade rather than a wall, because a closed long low box has no recognisable feature at all.",
+      "zFightingNote": "The capital block is sunk 0.15 m into the shaft so no two top faces share a plane inside the merged unit. Because these are instances, every one of the twelve is checked separately against every other component -- which is how a single soffit at the wrong height became twelve reported pairs."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T17:51:46.791299+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:46.874684+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "open-colonnade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Twelve columns leaving the whole long front open, with the figure legible through them along its length and a dark interior face at luma 82 behind.",
+          "notes": "The registry notes require this and give the reason: a closed long low box has no recognisable feature at all and reads as a warehouse. The interior shade fills the gaps between twelve columns, so its luma margin over the backdrop's 58 matters more here than anywhere -- at the backdrop value the gate would read eleven separate holes through the building. Its two panels also had to drop from 6.60 to 6.54: at the column head height each shared that plane with every column, and because the columns are an InstancedMesh, check-coplanar reported one mistake as twelve pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:46.957559+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        },
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.042009+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.76,
+      "aiVisionScore": 0.76,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "hall-palette",
+          "tier": "important",
+          "score": 0.76,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Five materials at PBR confidence 0.822-0.860, four measured on lit faces and the fifth corrected with its reasoning recorded.",
+          "notes": "The gilt is the largest deliberate deviation on the prop. The figure is the ONE surface in this plate that is never directly lit -- deep shade, behind columns, under a soffit -- so its mean across 41,296 warm-hued pixels, #7D6040, is illumination and not albedo, and renders the figure brown. The albedo taken is the brightest QUARTILE of those pixels, #AC8E6F, which is the same 'measure a lit face' rule applied to a surface that has no lit face; the brightest 8% at #BEA07E was tried first and rendered cream. It ships at #AC7741: that hue and value kept exactly, chroma raised from 0.36 to 0.62, with metalness halved to 0.15 because a metal with no environment map has its diffuse scaled by (1-metalness) and drains the chroma out of exactly the surface that has to read as gold."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.125610+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.207323+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.295439+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.383490+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        },
+        {
+          "id": "open-colonnade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Twelve columns leaving the whole long front open, with the figure legible through them along its length and a dark interior face at luma 82 behind.",
+          "notes": "The registry notes require this and give the reason: a closed long low box has no recognisable feature at all and reads as a warehouse. The interior shade fills the gaps between twelve columns, so its luma margin over the backdrop's 58 matters more here than anywhere -- at the backdrop value the gate would read eleven separate holes through the building. Its two panels also had to drop from 6.60 to 6.54: at the column head height each shared that plane with every column, and because the columns are an InstancedMesh, check-coplanar reported one mistake as twelve pairs."
+        },
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        },
+        {
+          "id": "hall-palette",
+          "tier": "important",
+          "score": 0.76,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Five materials at PBR confidence 0.822-0.860, four measured on lit faces and the fifth corrected with its reasoning recorded.",
+          "notes": "The gilt is the largest deliberate deviation on the prop. The figure is the ONE surface in this plate that is never directly lit -- deep shade, behind columns, under a soffit -- so its mean across 41,296 warm-hued pixels, #7D6040, is illumination and not albedo, and renders the figure brown. The albedo taken is the brightest QUARTILE of those pixels, #AC8E6F, which is the same 'measure a lit face' rule applied to a surface that has no lit face; the brightest 8% at #BEA07E was tried first and rendered cream. It ships at #AC7741: that hue and value kept exactly, chroma raised from 0.36 to 0.62, with metalness halved to 0.15 because a metal with no environment map has its diffuse scaled by (1-metalness) and drains the chroma out of exactly the surface that has to read as gold."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T17:51:46.791299+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: seven components and 1 InstancedMesh system at 8 draw calls of 24 -- the lightest load in the batch on every axis. The figure is modelled as part of THIS asset and the long front left open, because the registry notes say the two decisions depend on each other.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:46.874684+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "open-colonnade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Twelve columns leaving the whole long front open, with the figure legible through them along its length and a dark interior face at luma 82 behind.",
+          "notes": "The registry notes require this and give the reason: a closed long low box has no recognisable feature at all and reads as a warehouse. The interior shade fills the gaps between twelve columns, so its luma margin over the backdrop's 58 matters more here than anywhere -- at the backdrop value the gate would read eleven separate holes through the building. Its two panels also had to drop from 6.60 to 6.54: at the column head height each shared that plane with every column, and because the columns are an InstancedMesh, check-coplanar reported one mistake as twelve pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the hall placed at the -X side of the platform with the forward apron taking the rest, the roof re-centred on the hall rather than on the prop, and the interior expressed as two dark panels rather than as a room.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:46.957559+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        },
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the arm lowered and shortened after it covered the head from the only side anyone sees this prop from; the head raised and enlarged; the ushnisha cut to 0.50 m to clear the soffit; the bargeboard rake angle corrected from the pitch to its complement.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.042009+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.76,
+      "aiVisionScore": 0.76,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "hall-palette",
+          "tier": "important",
+          "score": 0.76,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Five materials at PBR confidence 0.822-0.860, four measured on lit faces and the fifth corrected with its reasoning recorded.",
+          "notes": "The gilt is the largest deliberate deviation on the prop. The figure is the ONE surface in this plate that is never directly lit -- deep shade, behind columns, under a soffit -- so its mean across 41,296 warm-hued pixels, #7D6040, is illumination and not albedo, and renders the figure brown. The albedo taken is the brightest QUARTILE of those pixels, #AC8E6F, which is the same 'measure a lit face' rule applied to a surface that has no lit face; the brightest 8% at #BEA07E was tried first and rendered cream. It ships at #AC7741: that hue and value kept exactly, chroma raised from 0.36 to 0.62, with metalness halved to 0.15 because a metal with no environment map has its diffuse scaled by (1-metalness) and drains the chroma out of exactly the surface that has to read as gold."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 5 materials at PBR confidence 0.822-0.860. Four are lit-face measurements; the fifth is the figure, whose gilt needed the whole measurement chain recorded -- mean #7D6040, brightest quartile #AC8E6F, shipped #AC7741 with hue and value kept and chroma raised.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.125610+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: surface character is geometry and colour -- the figure's varying section, the toe comb, the gold eaves border, the column rhythm -- plus one delivered per-vertex streak gradient on the platform. No texture sets and no canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.207323+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: this plate is the darkest in the batch and its subject sits in its own shade, which is what forced the gilt correction. No rim light and no contact shadow; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.295439+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:51:47.383490+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.72,
+        "componentStructure": 0.86,
+        "formDetail": 0.83,
+        "materialSurface": 0.76,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "reclining-figure",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+        },
+        {
+          "id": "open-colonnade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Twelve columns leaving the whole long front open, with the figure legible through them along its length and a dark interior face at luma 82 behind.",
+          "notes": "The registry notes require this and give the reason: a closed long low box has no recognisable feature at all and reads as a warehouse. The interior shade fills the gaps between twelve columns, so its luma margin over the backdrop's 58 matters more here than anywhere -- at the backdrop value the gate would read eleven separate holes through the building. Its two panels also had to drop from 6.60 to 6.54: at the column head height each shared that plane with every column, and because the columns are an InstancedMesh, check-coplanar reported one mistake as twelve pairs."
+        },
+        {
+          "id": "shallow-roof",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two tiers at pitch 0.64 -- about 33 degrees -- from eaves at 6.60 to a ridge at 9.78, with a gold border along both eaves and bargeboards lying on every rake.",
+          "notes": "The pitch is deliberately NOT the ubosot's 46 degrees: this is a long low hall and a steep roof would have made a different building. That shallower pitch also exposed a real bug carried over from the ubosot. The rake angle is atan2(RUN, RISE), not atan(pitch) -- rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake needs the COMPLEMENT of the pitch angle. At 46 degrees the two are three degrees apart and the error is invisible; at 33 they are twenty-four apart and the boards stood off the roof like scaffolding. Fixed in both props. The roof is also centred at x=-1.72 rather than on the origin, because the hall sits at one side of the platform and the forward apron takes the rest."
+        },
+        {
+          "id": "hall-palette",
+          "tier": "important",
+          "score": 0.76,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Five materials at PBR confidence 0.822-0.860, four measured on lit faces and the fifth corrected with its reasoning recorded.",
+          "notes": "The gilt is the largest deliberate deviation on the prop. The figure is the ONE surface in this plate that is never directly lit -- deep shade, behind columns, under a soffit -- so its mean across 41,296 warm-hued pixels, #7D6040, is illumination and not albedo, and renders the figure brown. The albedo taken is the brightest QUARTILE of those pixels, #AC8E6F, which is the same 'measure a lit face' rule applied to a surface that has no lit face; the brightest 8% at #BEA07E was tried first and rendered cream. It ships at #AC7741: that hue and value kept exactly, chroma raised from 0.36 to 0.62, with metalness halved to 0.15 because a metal with no environment map has its diffuse scaled by (1-metalness) and drains the chroma out of exactly the surface that has to read as gold."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.79, the lowest of the fifteen and honestly so -- held down by the silhouette layer at 0.72, which has NO reference mesh behind it. Meshy refused this plate with content_policy_violation, so this is the only prop in the batch whose proportions were never checked band by band, and that check caught the largest errors on three of the other props. 1,508/32,000 triangles, 8/24 draw calls, 5/16 materials, 8/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 7,
+        "repetitionSystems": 1,
+        "projectedTotal": 8,
+        "budget": 24,
+        "headroom": 16,
+        "note": "Seven components and one repetition system: 8 of 24, the lightest draw-call load of the monumental set. The stone material alone serves the platform, the plinth, the wall, the twelve columns and the bargeboards."
+      },
+      "materials": {
+        "projectedTotal": 5,
+        "budget": 16,
+        "headroom": 11,
+        "note": "stone covers five consumers; five materials of sixteen, eleven in hand. The registry notes warn that this asset's material budget has to cover both gold leaf and roofing, and at five of sixteen it is nowhere near troubled by that."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 8,
+        "budget": 32,
+        "headroom": 24,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1508,
+        "budget": 32000,
+        "headroom": 30492,
+        "note": "1,508 of 32,000 -- the lightest prop in the batch. The figure is 18 stations at 18 segments, about 630 triangles, and it is the whole identity of the asset. There is real headroom to refine it further; what stops that is evidence rather than budget, since the single plate shows the figure only through columns and in deep shade."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "A station-by-station tube, two extruded roof prisms and boxes. The tube is the only organic form in the kit and was written for this asset alone: a reclining body is a long soft mass whose section changes at every point, which neither a lathe nor a stack of boxes can say."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh system carries 12 of the prop's 31 discrete parts. It is also the source of a lesson: every instance is checked separately by check-coplanar, so one soffit at the wrong height reported as twelve pairs rather than one."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all. The individually laid pantiles, the woven gold border, the figure's robe folds and the 108 auspicious marks on its soles are what is lost, and all of them are below the resolvable band at the distance a 28 m hall is read from -- through a colonnade."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "no-reference-mesh",
+      "severity": "high",
+      "description": "This is the ONLY asset in the batch with no reference mesh. Meshy's image-to-3d refused the plate with content_policy_violation, almost certainly a false positive on the reclining figure, so there is no band-by-band comparison to check the proportions against.",
+      "mitigation": "None available, and that is the honest answer. Every other prop in this batch had its proportions corrected by that table and three of them substantially -- the prang's terrace, the khmer sanctuary's roof and the chinese shrine's whole orientation. This one has only the single plate, and its proportions are the weakest-evidenced in the set. Reported at high severity rather than buried, because the missing check is exactly the one that caught the largest errors elsewhere."
+    },
+    {
+      "id": "gilt-saturation-raised",
+      "severity": "medium",
+      "description": "The figure ships at #AC7741 against a measured #AC8E6F -- the same hue and value, with the chroma raised from 0.36 to 0.62.",
+      "mitigation": "The figure is the one surface in the plate that is never directly lit, so its measured chroma is a shade reading; the gilt is genuinely worn; and the harness drains what chroma survives. Shipped as measured it renders a pale tan, and that is not the asset the registry notes describe. Hue and value are the measurement, saturation is the correction, and the whole chain -- mean #7D6040, quartile #AC8E6F, shipped #AC7741 -- is recorded on the material."
+    },
+    {
+      "id": "figure-detail-omitted",
+      "severity": "low",
+      "description": "Robe folds, hairline, facial features and the sole markings are absent.",
+      "mitigation": "The figure carries posture, proportion, ushnisha and toe comb -- what reads through a colonnade at prop distance. The plate itself shows the figure only in shade behind columns, so it is thin evidence for finer work as well as a poor place to spend triangles."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Reclining Buddha Hall",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.547,
+        "aspectRatioDelta": 0.0897,
+        "scaleDelta": 0.0272,
+        "bilateralSymmetryError": 0.2184,
+        "colorDelta": {
+          "checked": 7,
+          "maxDeltaE": 22.3,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 0.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 0.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 0.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.3
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.547 is below threshold 0.85",
+        "aspect-ratio delta 0.090 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "d3a455e09061b49b",
+      "passId": "blockout"
+    }
+  ]
+}

@@ -1,0 +1,2343 @@
+{
+  "targetName": "Prang",
+  "targetId": "prang",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-tower",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "redented-plan",
+        "tapering-tiers",
+        "convex-profile",
+        "four-fold-symmetric"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "stacked-terrace",
+        "extruded-plan",
+        "axial-finial"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "lichened-limestone",
+        "porcelain-encrusted-stucco",
+        "red-mineral-paint",
+        "worn-gilding"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The tall slender Thai prang of the Wat Arun type. Deliberately a separate asset from the Khmer stone sanctuary even though both descend from the same Khmer tower form, and the registry notes say why: this one is tall, slim, pale and encrusted, where the Khmer original is squat, dark sandstone and ruined. A lichened stone terrace with a balustrade and one steep stair; a redented tower body with red pilaster strips in its re-entrant corners, a blind arched door and a raised arched pediment on each face; eight receding redented tiers in a convex corn-cob taper; a domed cap and a gilt trident."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 3,
+        "hierarchyDepth": 3,
+        "repetitionDensity": 3,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 5,
+        "repetitionSystems": 3
+      },
+      "reasoning": [
+        "Silhouette is the subject and it is complex: a CONVEX corn-cob taper of eight receding redented tiers over a redented tower over a stepped terrace, with a stair breaking the symmetry.",
+        "The redented plan is the reason a box decomposition is wrong here twice over -- it is a twenty-point polygon, and two crossed boxes would also z-fight along their whole intersection.",
+        "Repetition is four-fold and real: pilasters, false doors and pediments all repeat on the four faces and all three are InstancedMesh systems.",
+        "Action readiness is minimal: static landmark geometry, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Three four-fold repetition systems and three merged multi-part components. Without the repetition systems the eight pilaster strips, four doors, four pediments and four door panels would be twenty draw calls of the twenty-four available, for four copies of three geometries."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-corncob-taper",
+          "zone": "tiers",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the CONVEX corn-cob taper -- eight tiers bulging outward before closing, not a straight cone",
+          "mapsTo": {
+            "ref": "tiers"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-tier-lips",
+          "zone": "tiers",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "a projecting ring band at the foot of every tier",
+          "mapsTo": {
+            "ref": "tiers"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-redent-pilasters",
+          "zone": "tower",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "eight red strips standing in the re-entrant faces of the four redented corners",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-false-doors",
+          "zone": "tower",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "a blind arched door on each of the four faces",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-pediments",
+          "zone": "tower",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "a raised arched pediment field above each door",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-stair",
+          "zone": "terrace",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "one steep flight cut into the +X face of the terrace, with raking cheeks",
+          "mapsTo": {
+            "ref": "terrace"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-balustrade",
+          "zone": "terrace",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "a low parapet ring on the upper platform, broken at the stair head",
+          "mapsTo": {
+            "ref": "terrace"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-trident",
+          "zone": "apex",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "gilt trident with two CURLING outer prongs and a tapered centre spike",
+          "mapsTo": {
+            "ref": "finial"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-plinth-lichen",
+          "zone": "terrace",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "lichen and ground dirt darkening the lower plinth, fading out by 2.45 m",
+          "mapsTo": {
+            "ref": "d9-plinth-lichen"
+          },
+          "onMaterial": "stone",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+    "resolvedUnknowns": [
+      "ONE stair, on the +X face. The plate shows one and the far side is unseen; real prangs often have four. Authored as one because that is what the evidence shows.",
+      "The porcelain encrustation -- thousands of coloured ceramic chips over the whole tower -- is NOT authored as texture. At prop distance on a low-end GPU it integrates to the flat cream the material carries, and the only route to it is the procedural texture set, which would cost five canvases per material and discard every measured albedo on the prop. It is the largest single departure from the plate and is reported as a risk rather than buried.",
+      "The tiers carry no scalloped arch motifs. The plate shows a small arch band on each tier; at eight tiers times four faces that is thirty-two more features, and they are below the resolvable band at the distance this 18 m tower is read from.",
+      "The blind doors are authored identical on all four faces. A prang has one real cell and three blind doors; which face carries the real one is not observable here, so all four are blind.",
+      "Rear (-Z) elevation is unobserved. Authored as the symmetric repeat of the observed faces."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 9.00 x 18.00 x 9.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 5,
+      "repetitionSystems": 3,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 9.0 x 18.0 x 9.0 m",
+          "Terrace top at about 0.18 of height, tower body constant in width to about 0.57",
+          "The tier stack reads as a corn cob, not as a ziggurat"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a straight-cone taper instead of a convex one",
+          "the terrace built to the plate's foreshortened apparent height"
+        ]
+      },
+      {
+        "id": "corncob-taper",
+        "name": "Corn-cob tier stack",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Eight receding redented tiers with a convex profile",
+          "A projecting ring band at the foot of each tier"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "tiers reading as plain flat slabs with no band"
+        ]
+      },
+      {
+        "id": "tower-face",
+        "name": "Tower face composition",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Blind ARCHED door on each face, a real concavity behind a proud frame",
+          "Raised arched pediment above each door",
+          "Red pilaster strips in the re-entrant corner faces"
+        ],
+        "evidenceRefs": [
+          "region-pilaster",
+          "region-door"
+        ],
+        "failureModes": [
+          "a square-headed door where the plate shows an arch",
+          "pilasters flush with the wall and invisible"
+        ]
+      },
+      {
+        "id": "terrace-and-stair",
+        "name": "Terrace, balustrade and stair",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Three stepped slabs with a balustrade broken at the stair head",
+          "A steep flight with raking cheeks, INSIDE the declared envelope"
+        ],
+        "evidenceRefs": [
+          "region-terrace"
+        ],
+        "failureModes": [
+          "the stair projecting past the declared 9.00 m width on one side"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "terrace",
+        "tower",
+        "tiers"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "corncob-taper",
+      "name": "Corn-cob tier stack",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "tiers",
+        "cap"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "tower-face",
+      "name": "Tower face composition",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "tower"
+      ],
+      "evidenceRefs": [
+        "region-pilaster",
+        "region-door"
+      ]
+    },
+    {
+      "id": "terrace-and-stair",
+      "name": "Terrace, balustrade and stair",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "terrace"
+      ],
+      "evidenceRefs": [
+        "region-terrace"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 8,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "terrace",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "terrace",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the tower, not with its stair treads."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "ONE stair, on the +X face. The plate shows one and the far side is unseen; real prangs often have four. Authored as one because that is what the evidence shows.",
+    "The porcelain encrustation -- thousands of coloured ceramic chips over the whole tower -- is NOT authored as texture. At prop distance on a low-end GPU it integrates to the flat cream the material carries, and the only route to it is the procedural texture set, which would cost five canvases per material and discard every measured albedo on the prop. It is the largest single departure from the plate and is reported as a risk rather than buried.",
+    "The tiers carry no scalloped arch motifs. The plate shows a small arch band on each tier; at eight tiers times four faces that is thirty-two more features, and they are below the resolvable band at the distance this 18 m tower is read from.",
+    "The blind doors are authored identical on all four faces. A prang has one real cell and three blind doors; which face carries the real one is not observable here, so all four are blind.",
+    "Rear (-Z) elevation is unobserved. Authored as the symmetric repeat of the observed faces."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up. The prop is four-fold symmetric about Y in everything EXCEPT the stair, which occupies the +X face. That single asymmetry is why the stair had to be cut into the plan rather than added to it."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 9.0,
+      "h": 18.0,
+      "d": 9.0
+    },
+    "description": "A stepped stone platform to 3.15 m with a balustrade, a redented tower body to 10.20 m, eight receding redented tiers bulging outward before closing to 16.20 m, a domed cap to 17.10 m and a trident to 18.00 m. The silhouette events are the terrace steps, the stair breaking one side, the tower's redented corners, the convex swell of the tier stack and the trident.",
+    "envelopeDerivation": "x and z both span -4.50..+4.50 = 9.00, set by the bottom terrace slab. y spans 0.00 to 18.00, the tip of the trident. The stair is the only asymmetric thing on the prop and it is cut INTO the terrace plan as a notch rather than hung off the outside: a flight projecting past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side, which is a real failure and not a rounding one. Cut in, the asymmetry costs nothing.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 2.201 : 1.243 against the declared 1 : 2.000 : 1.000. Area-weighted band comparison gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch. It was NOT close at first: built to the plate's apparent proportions, band 2 came out 0.170 of height too wide, the only band past the 0.12 flag in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-terrace",
+      "viewpoint": "front",
+      "path": "crops/stone.png",
+      "confidence": 0.796
+    },
+    {
+      "id": "region-tower",
+      "viewpoint": "front",
+      "path": "crops/porcelain.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-pilaster",
+      "viewpoint": "front",
+      "path": "crops/red.png",
+      "confidence": 0.824
+    },
+    {
+      "id": "region-door",
+      "viewpoint": "front",
+      "path": "crops/shadow.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-finial",
+      "viewpoint": "front",
+      "path": "crops/gold.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.7,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.70 rather than the 0.20 this kit gives an unseen elevation, because the tower and tiers are four-fold symmetric -- but lower than the chedi's 0.80, because the STAIR is not, and whether the real object has a second flight on the far side cannot be known from one view."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "terrace",
+      "name": "Terrace, balustrade and stair",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three slabs, five balustrade runs, twelve treads and two raking cheeks are all the same stone, so all of them ride ONE component and ONE draw call. Grouping by MATERIAL rather than by location is the draw-call lever, and here it collapses twenty-two parts into a single submission.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Three notched slabs from y=0.00 to 2.45, a balustrade ring to 3.15 broken at the stair head, and a twelve-tread flight rising in the notch.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Three separate fixes. The balustrade's side runs carry the full depth and its front and back runs stop between them -- run to full width, every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": "Primitive is recorded as \"extrude\" because the slabs are extruded plans; the whole component is one merged BufferGeometry."
+      },
+      "localFeatures": [
+        {
+          "id": "d6-stair",
+          "description": "steep flight cut into the terrace plan",
+          "delivery": "notchedSquare() plan plus merged treads and extruded cheeks"
+        },
+        {
+          "id": "d7-balustrade",
+          "description": "parapet ring broken at the stair head",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#d5c098",
+        "recipe": "Lichened limestone, roughness 0.94, no texture set.",
+        "evidenceRef": "region-terrace",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(213, 192, 152, 1.0)",
+        "secondaryAlbedo": "rgba(213, 192, 152, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            9.0,
+            0
+          ],
+          "halfExtents": [
+            4.5,
+            9.0,
+            4.5
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the tower, not with its stair treads."
+        }
+      }
+    },
+    {
+      "id": "tower",
+      "name": "Tower body",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.92,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One extrusion of a closed redented plan. The redents are what a prang has instead of corners: the plan is a twenty-point polygon, so two crossed boxes are not a simplification of it but a different shape -- and they would z-fight along their whole intersection as well.",
+      "materialId": "porcelain",
+      "material": "porcelain",
+      "parent": "terrace",
+      "geometryDescriptor": {
+        "topologyIntent": "Redented square from y=2.45 to 10.20, half-width 2.20, redent 0.30.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "A single closed plan has no interior coincidence at all, which is the reason it is built this way rather than as crossed boxes.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-redent-pilasters",
+          "description": "red strips in the re-entrant corners",
+          "delivery": "repetitionSystems.pilasters"
+        },
+        {
+          "id": "d4-false-doors",
+          "description": "blind arched door on each face",
+          "delivery": "repetitionSystems.door-frames + door-panels"
+        },
+        {
+          "id": "d5-pediments",
+          "description": "raised arched pediment above each door",
+          "delivery": "repetitionSystems.door-frames"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "porcelain",
+        "baseColor": "#d7cdbb",
+        "recipe": "Porcelain-encrusted stucco, roughness 0.70, no texture set.",
+        "evidenceRef": "region-tower",
+        "confidence": 0.92,
+        "dominantAlbedo": "rgba(215, 205, 187, 1.0)",
+        "secondaryAlbedo": "rgba(215, 205, 187, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.92
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "tiers",
+      "name": "Corn-cob tiers",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Sixteen extruded plans -- eight tiers and eight projecting lips -- merged into one component and one draw call. The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX; a linear interpolation gives a straight cone, and a straight cone is a different building.",
+      "materialId": "porcelain",
+      "material": "porcelain",
+      "parent": "tower",
+      "geometryDescriptor": {
+        "topologyIntent": "Eight receding redented tiers from y=10.20 to 16.20, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band at its foot.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each lip starts 0.02 m ABOVE its tier's own base rather than level with it. Level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-corncob-taper",
+          "description": "convex taper",
+          "delivery": "cosine-to-a-power half-width schedule"
+        },
+        {
+          "id": "d2-tier-lips",
+          "description": "projecting ring band at each tier foot",
+          "delivery": "geometryDescriptor merged extrusions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "porcelain",
+        "baseColor": "#d7cdbb",
+        "recipe": "The SAME porcelain as the tower body -- one material, two components, because they are one surface treatment over two masses.",
+        "evidenceRef": "region-tower",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(215, 205, 187, 1.0)",
+        "secondaryAlbedo": "rgba(215, 205, 187, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "cap",
+      "name": "Domed cap",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.84,
+      "primitive": "lathe",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "A surface of revolution closing the tier stack. One lathe of eleven profile points at 24 segments; the only round thing on an otherwise entirely rectilinear prop.",
+      "materialId": "porcelain",
+      "material": "porcelain",
+      "parent": "tiers",
+      "geometryDescriptor": {
+        "topologyIntent": "Closed lathe from y=16.00 to 17.10, radius 0.60 at the base to 0 on the axis.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Its base is sunk to 16.00, INSIDE the top tier, rather than resting on that tier's 16.20 top face. LatheGeometry is open at the bottom and an open rim sitting exactly on a surface is a seam the turntable gate can read through.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "porcelain",
+        "baseColor": "#d7cdbb",
+        "recipe": "The same porcelain again, roughness 0.70.",
+        "evidenceRef": "region-tower",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(215, 205, 187, 1.0)",
+        "secondaryAlbedo": "rgba(215, 205, 187, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "finial",
+      "name": "Gilt trident finial",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is its own material, and there is nothing to merge it with. Ten segments and three cylinders in one merged geometry.",
+      "materialId": "gold",
+      "material": "gold",
+      "parent": "cap",
+      "geometryDescriptor": {
+        "topologyIntent": "Collar, stem, cross bar, tapered centre spike and two CURLING outer prongs, from y=16.90 to 18.00.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Everything here is a solid intersecting another solid at an angle. Nothing is flush with anything.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d8-trident",
+          "description": "trident with curling outer prongs",
+          "delivery": "five box segments per prong, sampled along a sine"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gold",
+        "baseColor": "#b4a072",
+        "recipe": "Worn gilding, roughness 0.34, metalness 0.32 -- below physical because the harness supplies no environment map.",
+        "evidenceRef": "region-finial",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(180, 160, 114, 1.0)",
+        "secondaryAlbedo": "rgba(180, 160, 114, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "stone",
+      "name": "Lichened limestone terrace",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d5c098",
+      "color": "#d5c098",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stone_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#d5c098",
+        "secondary": [
+          "#EFDAB6",
+          "#E0CBA8",
+          "#F7E3C2"
+        ],
+        "samplingNotes": "Measured as the mean of crops/stone.png. extract_pbr_evidence confidence 0.796. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-plinth-lichen",
+          "region": "terrace below y=2.45",
+          "roughness": 0.94,
+          "palette": [
+            "#AFA48F",
+            "#D5C098"
+          ],
+          "evidence": "The plate's lower plinth measures distinctly darker and greener than the upper platform. Delivered as a per-vertex TINT on the merged terrace geometry -- (0.82, 0.83, 0.80) at y=0 fading out by y=2.45 -- rather than as a second material, which would cost a draw call and a shader switch to say that the bottom of a platform is dirtier than the top."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-terrace (PBR confidence 0.796) on the plate's LIT terrace face. The warm yellow is lichen, which covers the platform so completely in this plate that it IS the surface rather than a stain on it.",
+          "This plate is NOT the shadowless lightbox the retail plates are: its +Z return sits in real shade and the same stone measures #80807E there. That difference is illumination, not material, and the harness relights the prop itself.",
+          "Textureless: the block coursing and lichen mottling are at a frequency no prop-distance viewer resolves on an 18 m tower."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/stone.png",
+        "pbrReport": "material-evidence/stone.pbr.json",
+        "confidence": 0.796,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "porcelain",
+      "name": "Porcelain-encrusted stucco",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d7cdbb",
+      "color": "#d7cdbb",
+      "roughness": {
+        "base": 0.7,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/porcelain_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#d7cdbb",
+        "secondary": [
+          "#B2B19F",
+          "#E0CFBA",
+          "#878671"
+        ],
+        "samplingNotes": "Measured as the mean of crops/porcelain.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-tower (PBR confidence 0.860) on the lit face at #D7CDBB; the shaded return of the same surface measures #8A8579.",
+          "Roughness 0.70 rather than the 0.88 the stone carries: glazed porcelain chips set in lime give this surface a visibly tighter response than plain render, which is the one way the encrustation survives into a textureless material.",
+          "Textureless, and this is the prop's largest departure from its plate. The encrustation is thousands of individual chips; at the distance an 18 m tower is read from they integrate to the flat cream measured here, and the only route to them is the procedural texture set, which would discard this measurement outright by forcing color to white."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/porcelain.png",
+        "pbrReport": "material-evidence/porcelain.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "red",
+      "name": "Red mineral paint",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#83584d",
+      "color": "#83584d",
+      "roughness": {
+        "base": 0.82,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/red_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#83584d",
+        "secondary": [
+          "#3C1F17",
+          "#9E6F63",
+          "#B88A7D"
+        ],
+        "samplingNotes": "Measured as the mean of crops/red.png. extract_pbr_evidence confidence 0.824. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-pilaster (PBR confidence 0.824). The red strips in the tower's re-entrant corners are the only saturated colour on the building and are what stop it reading as a plain white tower.",
+          "Luma 96, well clear of the harness backdrop's 58 -- a dark saturated surface at that value is classified as background by the silhouette gate and read as a slot cut through the prop."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/red.png",
+        "pbrReport": "material-evidence/red.pbr.json",
+        "confidence": 0.824,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "shadow",
+      "name": "Blind door recess",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cabaa9",
+      "color": "#cabaa9",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/shadow_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cabaa9",
+        "secondary": [
+          "#A3907A",
+          "#96826D",
+          "#AE9E8E"
+        ],
+        "samplingNotes": "Measured as the mean of crops/shadow.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured INSIDE the plate's own blind door (viewEvidence region-door, PBR confidence 0.860). Worth stating because it is counter-intuitive: this recess is NOT dark. It reads only slightly warmer and darker than the wall around it, and authoring it as a shadow would have been inventing a depth the reference does not show. The depth comes from real geometry instead -- 0.16 m behind the frame's front plane -- and the harness shades it."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/shadow.png",
+        "pbrReport": "material-evidence/shadow.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Worn gilding",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b4a072",
+      "color": "#b4a072",
+      "roughness": {
+        "base": 0.34,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gold_roughness.png"
+      },
+      "metalness": 0.32,
+      "albedo": {
+        "dominant": "#b4a072",
+        "secondary": [
+          "#887E65",
+          "#9A804E",
+          "#785F34"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gold.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-finial (PBR confidence 0.860) at #B4A072 on the brightest gilt of the trident.",
+          "Metalness 0.32, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black, which here would lose the one feature that identifies the tower as a Thai prang. The albedo stays measured; the metalness is what the rig makes wrong."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gold.png",
+        "pbrReport": "material-evidence/gold.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "pilasters",
+      "name": "Redent pilaster strips",
+      "instanceCount": 4,
+      "sourceComponent": "tower",
+      "material": "red",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "corner-pilaster-pair",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 0.0,
+        "y": 0.0,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 0.18,
+        "height": 7.35,
+        "depth": 0.07
+      },
+      "rationale": "EIGHT strips at four instances. The unit geometry holds BOTH strips of a single redented corner and is placed at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked into the geometry -- which is how an eight-part system costs one geometry and one draw call.",
+      "zFightingNote": "Each strip stands 0.07 m proud of the re-entrant face it sits on, so it overlaps that face rather than lying in it."
+    },
+    {
+      "id": "door-frames",
+      "name": "False doors and pediments",
+      "instanceCount": 4,
+      "sourceComponent": "tower",
+      "material": "porcelain",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "door-and-pediment",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 0.0,
+        "y": 0.0,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 3.0,
+        "height": 5.85,
+        "depth": 0.34
+      },
+      "rationale": "TWO features on four faces in ONE unit: the blind door low down and the raised arched pediment above it are the same material and repeat on the same schedule, so merging them into one instanced geometry costs one draw call for eight parts.",
+      "zFightingNote": "The frame is embedded into the tower face and stands proud of it, so it OVERLAPS the opening rather than meeting its reveal edge -- the rule that stops a frame putting four coincident reveal faces in the model. The arch is swept from angle 0 to PI, over the top of the circle: written the other way it runs under and leaves the head filled solid with its own seam fighting across it, which reads as a square door with a ghost arch drawn on it."
+    },
+    {
+      "id": "door-panels",
+      "name": "Blind door panels",
+      "instanceCount": 4,
+      "sourceComponent": "tower",
+      "material": "shadow",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "door-back-panel",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 0.0,
+        "y": 0.0,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 0.87,
+        "height": 2.94,
+        "depth": 0.05
+      },
+      "rationale": "The back of each blind door, in its own slightly warmer material. A second system rather than a second colour on the first, because InstancedMesh takes one material.",
+      "zFightingNote": "Stands 0.015 m PROUD of the tower face rather than flush with it, and sits 0.16 m behind the frame's front plane. The depth is the feature: a blind door is a concavity, and the plate's own recess is barely darker than the wall, so geometry rather than albedo is what has to carry it."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T16:36:42.737915+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.822962+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        },
+        {
+          "id": "terrace-and-stair",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
+          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.906529+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.985704+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.066841+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.147695+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.227158+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.308140+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        },
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        },
+        {
+          "id": "terrace-and-stair",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
+          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T16:36:42.737915+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: five components and 3 InstancedMesh systems at 8 draw calls of 24. Plan complexity rather than tessellation carries this prop -- a twenty-point redented polygon extruded sixteen times.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/prang/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.822962+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        },
+        {
+          "id": "terrace-and-stair",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
+          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the terrace folds twenty-two parts into one submission by grouping on MATERIAL, and the door system folds two different features into one instanced unit because they share a material and a placement schedule.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.906529+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the terrace rebuilt lower on the band table rather than on the plate's foreshortened pixels, tier lips lifted 0.02 m off their own tier bases, and the trident's outer prongs rebuilt as five-segment CURLS -- two straight sticks either side of a spike read as a candelabrum, not a trident.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:42.985704+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 5 materials at PBR confidence 0.796-0.860, every albedo measured on the plate's LIT face. This plate is NOT the shadowless lightbox the retail plates are -- the same porcelain measures #D7CDBB lit and #8A8579 shaded -- so which face a crop sits on is a decision, and it is recorded. This is the layer carrying the prop's weakness: the porcelain encrustation ships as flat cream.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.066841+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.79,
+      "aiVisionScore": 0.79,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: surface character is plan and profile -- redents, tier lips, pilaster strips, arched apertures -- plus one delivered per-vertex lichen tint on the lower terrace. Roughness 0.70 on the porcelain against 0.94 on the stone is the one way the glaze survives into a textureless material.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.147695+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The trident carries metalness 0.32 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black -- which here would lose the one feature that identifies the tower as a Thai prang.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.227158+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:36:43.308140+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.87,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
+          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+        },
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
+          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
+          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+        },
+        {
+          "id": "terrace-and-stair",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
+          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.84 -- not a pass self-score, and held down by the material layer at 0.78 rather than by the shape, which measures 0.013 of height against the reference. 3,624/32,000 triangles, 8/24 draw calls, 5/16 materials, 8/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 5,
+        "repetitionSystems": 3,
+        "projectedTotal": 8,
+        "budget": 24,
+        "headroom": 16,
+        "note": "Five components and three repetition systems: 8 of 24. The terrace alone folds twenty-two parts into one submission by grouping on MATERIAL, and the door system folds two different features into one instanced unit because they share a material and a placement schedule."
+      },
+      "materials": {
+        "projectedTotal": 5,
+        "budget": 16,
+        "headroom": 11,
+        "note": "porcelain covers the tower body, the tier stack, the cap AND the door frames -- four consumers, one material, because they are one surface treatment over several masses. Five of sixteen materials, eleven in hand: this prop is nowhere near its material ceiling and does not need to be."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 8,
+        "budget": 32,
+        "headroom": 24,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 3624,
+        "budget": 32000,
+        "headroom": 28376,
+        "note": "3,624 of 32,000. This prop is cheap on every axis because its richness is PLAN complexity -- a twenty-point redented polygon extruded sixteen times -- rather than tessellation. The headroom is real and could buy the tier arch motifs the plate shows; it is deliberately not spent, because at the distance an 18 m tower is read from those motifs are below the resolvable band."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Extrusions of closed plans, plus one lathe. The redented plan is a twenty-point polygon and the notched terrace plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence. Boxes appear only in the balustrade, the treads, the door panels and the trident."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Three InstancedMesh systems carry 20 of the prop's 42 discrete parts. The pilaster system is the extreme case: eight parts from four instances of a two-part unit placed at radius zero, so the rotations do the placing and the geometry does the offsetting."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all -- this prop carries no printed graphic, so createObjectModel does no pixel work. The cost is real and reported: the porcelain encrustation that gives the prang its name integrates to a flat cream here."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "encrustation-not-authored",
+      "severity": "medium",
+      "description": "The porcelain chip encrustation over the whole tower -- named in the registry description as \"its whole surface encrusted with fine relief\" -- is not authored. The tower ships as flat measured cream.",
+      "mitigation": "The only route to it is the procedural texture set, which costs five canvases per material and, worse, forces color to white and roughness to 1 and discards every measured albedo on the prop. At the distance an 18 m tower is read from the chips integrate to exactly the cream measured here. Roughness 0.70 rather than 0.88 is the one way the glaze survives. Reported prominently rather than buried."
+    },
+    {
+      "id": "tier-arches-omitted",
+      "severity": "low",
+      "description": "The plate shows a scalloped arch motif on each tier; the model has plain tiers with a projecting lip.",
+      "mitigation": "Eight tiers times four faces is thirty-two more features for detail below the resolvable band. The triangle headroom to add them exists and is deliberately not spent."
+    },
+    {
+      "id": "single-stair",
+      "severity": "low",
+      "description": "One stair, on +X. Real prangs often have four.",
+      "mitigation": "The plate shows one and the far side is unseen, so one is what the evidence supports. Recorded as an assumption rather than closed silently, and it is why the rear-view confidence is 0.70 rather than the chedi's 0.80."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Prang",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7129,
+        "aspectRatioDelta": 0.0729,
+        "scaleDelta": 0.1043,
+        "bilateralSymmetryError": 0.0095,
+        "colorDelta": {
+          "checked": 5,
+          "maxDeltaE": 12.71,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 7.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.96
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.96
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.96
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.71
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.713 is below threshold 0.85",
+        "aspect-ratio delta 0.073 exceeds threshold 0.05",
+        "scale delta 0.104 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "132e881f3d444188",
+      "passId": "blockout"
+    }
+  ]
+}

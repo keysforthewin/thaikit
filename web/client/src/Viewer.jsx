@@ -119,7 +119,13 @@ function useModelFactory(url, exportName) {
           );
         }
 
-        const scene = factory({}, {});
+        // The module is eval'd rather than imported, so it has no import.meta and
+        // no currentScript to resolve its own shipped maps against, and a bare
+        // relative path would resolve against the SPA route instead. `url` here is
+        // /media/<id>/model.bundle.js (plus the cache-busting ?v=), so its
+        // directory is where the maps sit. new URL('.') drops the query cleanly.
+        const baseUrl = new URL('.', new URL(url, window.location.href)).href;
+        const scene = factory({}, { baseUrl });
         if (!scene?.isObject3D) throw new Error('factory did not return an Object3D');
         if (cancelled) { disposeScene(scene); return; }
 

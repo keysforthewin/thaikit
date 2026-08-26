@@ -1,0 +1,2217 @@
+{
+  "targetName": "Khmer Stone Sanctuary",
+  "targetId": "khmer-stone-sanctuary",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-ruin",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "redented-plan",
+        "stepped-mass",
+        "partial-collapse",
+        "scattered-debris"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "stacked-terrace",
+        "extruded-plan",
+        "ruin-field"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "red-laterite",
+        "weathered-sandstone",
+        "broken-stone-rubble"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. An Isan ruin, and the registry notes are unusually specific about what that means: it is authored as partly collapsed with fallen blocks on the platform rather than as an intact building, because ruination is the state it is actually found in and is what distinguishes it. A red laterite platform with a low enclosure wall and one shallow stair; a squat redented sandstone tower with a rectangular door aedicule on each face; a stepped roof whose top tier has lost a corner; and twenty blocks lying where they fell. It is deliberately a separate asset from the Thai prang: squat, dark and rough where the prang is tall, slim, pale and encrusted."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 1,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 4,
+        "repetitionSystems": 3
+      },
+      "reasoning": [
+        "The identity is RUINATION, and ruination has to be geometry: a partial top tier with one corner gone, and twenty blocks scattered across the roof and the platform.",
+        "The plan is redented, so it is one closed twenty-point polygon rather than crossed boxes -- correct shape, and no interior coincidence either.",
+        "Repetition is four-fold on the doors and twenty-fold on the debris, and all of it is instanced. The debris system is the whole difference between a building and a ruin and it costs one call.",
+        "Action readiness is minimal: static landmark geometry, box collider, and explicitly NOT breakable -- the collapse is modelled in, and the prop does not come apart further at runtime."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Three repetition systems against a ceiling of twelve draw calls and SIXTEEN unique geometries, the tightest geometry ceiling in the batch. Twenty fallen blocks as separate meshes would be twenty geometries on their own -- over the ceiling before the building exists."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-broken-tier",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the top tier is a PARTIAL ring with one corner gone -- the collapse, as geometry",
+          "mapsTo": {
+            "ref": "broken-tier"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-fallen-blocks",
+          "zone": "platform",
+          "kind": "chip",
+          "identityDefining": true,
+          "description": "twenty blocks scattered across the roof and the platform, each with its own rotation, scale and measured tone",
+          "mapsTo": {
+            "ref": "platform"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-open-doorway",
+          "zone": "tower",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "one real doorway into a dark cell, on the same face as the stair",
+          "mapsTo": {
+            "ref": "doorway"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-blind-doors",
+          "zone": "tower",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "false doors on the other three faces -- a genuine Khmer feature, not an omission",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-door-aedicules",
+          "zone": "tower",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "rectangular jamb-and-lintel surround on each face, NOT arched",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-enclosure",
+          "zone": "platform",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "low laterite enclosure wall standing inside the platform edge, broken at the stair head",
+          "mapsTo": {
+            "ref": "platform"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-cornice",
+          "zone": "tower",
+          "kind": "ridge",
+          "identityDefining": false,
+          "description": "two projecting cornice bands between the tower body and its roof tiers",
+          "mapsTo": {
+            "ref": "tower"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-course-dirt",
+          "zone": "platform",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "ground dirt darkening the lower laterite courses, fading out by 0.95 m",
+          "mapsTo": {
+            "ref": "d9-course-dirt"
+          },
+          "onMaterial": "laterite",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+    "resolvedUnknowns": [
+      "The collapse pattern on the unseen side is authored, not observed. The plate shows one corner of the top tier gone and blocks on two sides; the model carries that pattern round.",
+      "ONE open doorway, on the same face as the stair. A Khmer sanctuary has a single cell and false doors on the other three faces -- that is a genuine feature and not an omission -- and the plate shows exactly this, with the stair leading to the open face.",
+      "The carved lintel and colonnette relief the plate shows around the door are NOT authored. The aedicule carries the door's silhouette -- jambs, lintel and pediment slab -- and the carving is below the resolvable band at prop distance.",
+      "The interior behind the open doorway is a single dark panel, not a room. This prop is an exterior shell: an interior would cost draw calls, geometries and VRAM for something nobody sees.",
+      "The lichen and orange mineral staining across the plate are wear, not material, and are not authored. Only the vertical dirt gradient on the lower courses is carried, as a vertex tint."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 12.00 x 9.00 x 12.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 4,
+      "repetitionSystems": 3,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 12.0 x 9.0 x 12.0 m",
+          "Squat and heavy, NOT slim -- this is the anti-prang",
+          "The roof stays bulky rather than tapering away"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a slim tower on a tall platform, which is the prang and not this",
+          "the roof tapering to a point where the reference stays wide"
+        ]
+      },
+      {
+        "id": "ruination",
+        "name": "Ruination",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Top tier is a partial ring with a corner missing",
+          "Blocks lie scattered on BOTH the roof and the platform",
+          "Blocks vary in tone, rotation and size -- not twenty identical bricks"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-rubble"
+        ],
+        "failureModes": [
+          "an intact tower with debris sprinkled around it, which reads as litter",
+          "twenty identical blocks in identical orientations"
+        ]
+      },
+      {
+        "id": "tower-face",
+        "name": "Tower face composition",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Rectangular jamb-and-lintel aedicule on each face, not arched",
+          "ONE open doorway reading as a dark opening, three blind doors reading as recessed panels"
+        ],
+        "evidenceRefs": [
+          "region-doorway"
+        ],
+        "failureModes": [
+          "the doorway invisible because it was recessed into a solid mass",
+          "the blind doors invisible because they were flush and the same stone"
+        ]
+      },
+      {
+        "id": "stone-palette",
+        "name": "Stone palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Red laterite platform against grey-brown sandstone tower",
+          "A dark prop overall -- the plate is a shadowed ruin, not a lit monument"
+        ],
+        "evidenceRefs": [
+          "region-laterite",
+          "region-sandstone"
+        ],
+        "failureModes": [
+          "a bright orange platform, which is the measurement taken off a lit face and then brightened again by the harness"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "platform",
+        "tower"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "ruination",
+      "name": "Ruination",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "broken-tier"
+      ],
+      "evidenceRefs": [
+        "region-rubble"
+      ]
+    },
+    {
+      "id": "tower-face",
+      "name": "Tower face composition",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "tower",
+        "doorway"
+      ],
+      "evidenceRefs": [
+        "region-doorway"
+      ]
+    },
+    {
+      "id": "stone-palette",
+      "name": "Stone palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "platform",
+        "tower"
+      ],
+      "evidenceRefs": [
+        "region-laterite",
+        "region-sandstone"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 7,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "platform",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "platform",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the sanctuary, not with its fallen blocks."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The collapse pattern on the unseen side is authored, not observed. The plate shows one corner of the top tier gone and blocks on two sides; the model carries that pattern round.",
+    "ONE open doorway, on the same face as the stair. A Khmer sanctuary has a single cell and false doors on the other three faces -- that is a genuine feature and not an omission -- and the plate shows exactly this, with the stair leading to the open face.",
+    "The carved lintel and colonnette relief the plate shows around the door are NOT authored. The aedicule carries the door's silhouette -- jambs, lintel and pediment slab -- and the carving is below the resolvable band at prop distance.",
+    "The interior behind the open doorway is a single dark panel, not a room. This prop is an exterior shell: an interior would cost draw calls, geometries and VRAM for something nobody sees.",
+    "The lichen and orange mineral staining across the plate are wear, not material, and are not authored. Only the vertical dirt gradient on the lower courses is carried, as a vertex tint."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up. The prop is four-fold symmetric except for the stair and the one open doorway, which are on the SAME elevation -- the +Z face. Everything is authored with the stair notch on +X and the merged platform geometry is then rotated a quarter turn, which is how the stair and the doorway end up on one side without two separate notch constructions."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 12.0,
+      "h": 9.0,
+      "d": 12.0
+    },
+    "description": "A stepped laterite platform to 0.95 m with an enclosure wall to 2.20 m, a squat redented sandstone tower to 5.00 m, a projecting cornice, two roof tiers to 7.30 m, a partial top tier to 8.05 m, and scattered blocks reaching 9.00 m. The silhouette events are the enclosure, the cornice, and above all the BROKEN outline of the top -- an intact tier would read as a different building.",
+    "envelopeDerivation": "x and z both span -6.00..+6.00 = 12.00, set by the bottom laterite slab. y spans 0.00 to exactly 9.00, and what sets the top is a FALLEN BLOCK -- instance 5 of the scattered set, placed on purpose rather than left where a rotation happened to throw it. That is worth stating because it is the one prop in the batch whose declared height is set by rubble: three separate passes of nudging block positions were needed before the envelope closed on 9.0000 exactly, and the block that was actually setting it had to be found by measuring each instance rather than guessed at.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.850 : 1.130 against the declared 1 : 0.750 : 1.000. Area-weighted band comparison after rebuild gives mean |delta width| 0.053 and |delta depth| 0.071 of height, with one band past the 0.12 flag: band 2 depth at +0.208, which is the stair notch, asymmetric in both models and not on the same axis. The FIRST build was much worse -- bands 6 to 9 came out 0.18 to 0.21 NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. The residual is dominated by the 13% height-to-width difference: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-laterite",
+      "viewpoint": "front",
+      "path": "crops/laterite.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-sandstone",
+      "viewpoint": "front",
+      "path": "crops/sandstone.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-rubble",
+      "viewpoint": "front",
+      "path": "crops/pale.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-doorway",
+      "viewpoint": "front",
+      "path": "crops/void.png",
+      "confidence": 0.765
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.55,
+      "note": "NOT DIRECTLY OBSERVED, and the lowest rear-view confidence of the monumental set. The tower is four-fold symmetric, but a RUIN is not: which corners have fallen and where the blocks lie on the unseen side is unknowable from one view, and the far side is authored as a plausible continuation rather than a measurement."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "platform",
+      "name": "Laterite platform, enclosure and stair",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two slabs, five enclosure runs and six treads are all the same laterite, so all thirteen parts ride ONE component and ONE draw call. Grouping by MATERIAL rather than by location is the draw-call lever.",
+      "materialId": "laterite",
+      "material": "laterite",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Two notched slabs to y=0.95, an enclosure wall to 2.20 standing inside the platform edge, and a six-tread stair rising in the notch.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The enclosure's side runs carry the full depth and its front and back runs stop between them -- run to full width, every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going, so neighbours meet as opposed faces. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry, then rotated a quarter turn about Y so the +X stair notch lands on the +Z doorway elevation."
+      },
+      "localFeatures": [
+        {
+          "id": "d6-enclosure",
+          "description": "enclosure wall broken at the stair head",
+          "delivery": "geometryDescriptor merged boxes"
+        },
+        {
+          "id": "d2-fallen-blocks",
+          "description": "blocks scattered on the platform",
+          "delivery": "repetitionSystems.fallen-blocks"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "laterite",
+        "baseColor": "#735b4e",
+        "recipe": "Red laterite, roughness 0.95, no texture set.",
+        "evidenceRef": "region-laterite",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(115, 91, 78, 1.0)",
+        "secondaryAlbedo": "rgba(115, 91, 78, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            4.5,
+            0
+          ],
+          "halfExtents": [
+            6.0,
+            4.5,
+            6.0
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the sanctuary, not with its fallen blocks."
+        }
+      }
+    },
+    {
+      "id": "tower",
+      "name": "Sanctuary tower and roof tiers",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Body, two cornice bands and two intact roof tiers are one stone and one component. The plan is redented, as a Khmer tower's is, and is one closed twenty-point polygon rather than crossed boxes -- the correct shape, and the construction with no interior coincidence.",
+      "materialId": "sandstone",
+      "material": "sandstone",
+      "parent": "platform",
+      "geometryDescriptor": {
+        "topologyIntent": "Redented square from y=0.95 to 5.00 at half-width 3.00, then two cornice bands and two roof tiers stepping in gently to 7.30.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Bands and tiers meet top-to-bottom, which is an opposed butt.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-blind-doors",
+          "description": "false doors on three faces",
+          "delivery": "repetitionSystems.blind-doors"
+        },
+        {
+          "id": "d5-door-aedicules",
+          "description": "rectangular jamb-and-lintel surrounds",
+          "delivery": "repetitionSystems.door-frames"
+        },
+        {
+          "id": "d7-cornice",
+          "description": "two projecting cornice bands",
+          "delivery": "geometryDescriptor merged extrusions"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "sandstone",
+        "baseColor": "#73604b",
+        "recipe": "Weathered sandstone, roughness 0.93, no texture set.",
+        "evidenceRef": "region-sandstone",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(115, 96, 75, 1.0)",
+        "secondaryAlbedo": "rgba(115, 96, 75, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "broken-tier",
+      "name": "Collapsed top tier",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.95,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three straight runs, deliberately not four. This is the whole difference between the asset and an intact tower, and the registry notes ask for it explicitly. It is its own component rather than merged into the tower so that a level builder can see, in the runtime list, that the collapse is a named thing and not an accident of geometry.",
+      "materialId": "sandstone",
+      "material": "sandstone",
+      "parent": "tower",
+      "geometryDescriptor": {
+        "topologyIntent": "A partial ring at y 7.30..8.05: two full runs, and a third that stops short where the fallen corner used to be.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The three runs meet end-to-side, and the short run is thinner in height as well as length so no two of them share a top plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-broken-tier",
+          "description": "partial ring with one corner gone",
+          "delivery": "geometryDescriptor three merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "sandstone",
+        "baseColor": "#73604b",
+        "recipe": "The SAME sandstone as the tower -- one material, two components, because this one is a deliberately INCOMPLETE ring and the other is not.",
+        "evidenceRef": "region-sandstone",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(115, 96, 75, 1.0)",
+        "secondaryAlbedo": "rgba(115, 96, 75, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "doorway",
+      "name": "Open doorway",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.85,
+      "confidence": 0.76,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is its own material and there is exactly one of it -- a Khmer sanctuary has ONE cell, so this is deliberately not part of the four-fold instanced set.",
+      "materialId": "void",
+      "material": "void",
+      "parent": "tower",
+      "geometryDescriptor": {
+        "topologyIntent": "A dark panel filling the +Z aedicule's opening, reading as a doorway into an unlit cell.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "It stands 0.02 m PROUD of the tower face, not behind it. The tower is a SOLID mass, so a panel recessed into it is inside the solid and invisible -- which is exactly what the first build shipped. The opening reads as an opening because the aedicule's jambs and lintel stand 0.32 m in front of it, not because the panel is sunk.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-open-doorway",
+          "description": "one real doorway into a dark cell",
+          "delivery": "geometryDescriptor box in the void material"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "void",
+        "baseColor": "#4e4740",
+        "recipe": "Cell interior, roughness 0.98. Lifted from a measured #040302 for the silhouette gate.",
+        "evidenceRef": "region-doorway",
+        "confidence": 0.76,
+        "dominantAlbedo": "rgba(78, 71, 64, 1.0)",
+        "secondaryAlbedo": "rgba(78, 71, 64, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.76
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "laterite",
+      "name": "Red laterite",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#735b4e",
+      "color": "#735b4e",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/laterite_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#735b4e",
+        "secondary": [
+          "#6C4D3C",
+          "#543A2B",
+          "#885F49"
+        ],
+        "samplingNotes": "Measured as the mean of crops/laterite.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-course-dirt",
+          "region": "platform below y=0.95",
+          "roughness": 0.95,
+          "palette": [
+            "#503A2D",
+            "#735B4E"
+          ],
+          "evidence": "The plate's bottom courses measure distinctly darker than the enclosure wall above them. Delivered as a per-vertex TINT on the merged platform geometry -- (0.78, 0.79, 0.80) at y=0 fading out by y=0.95 -- rather than as a second material, which would cost a draw call and a shader switch to say that the bottom of a plinth is dirtier than the top."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-laterite (PBR confidence 0.860) on the plate's LIT plinth face at #735B4E; the same laterite in shade measures #3D2F26. This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are, so which face a crop sits on is a decision and it is recorded.",
+          "Textureless: the laterite's vesicular pitting and its block coursing are at frequencies no prop-distance viewer resolves, and a texture set would discard this measurement outright by forcing color to white."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/laterite.png",
+        "pbrReport": "material-evidence/laterite.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "sandstone",
+      "name": "Weathered sandstone",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#73604b",
+      "color": "#73604b",
+      "roughness": {
+        "base": 0.93,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/sandstone_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#73604b",
+        "secondary": [
+          "#947C62",
+          "#504131",
+          "#75614C"
+        ],
+        "samplingNotes": "Measured as the mean of crops/sandstone.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-sandstone (PBR confidence 0.829) on the lit tower face at #73604B; the shaded return of the same stone measures #4F4336.",
+          "Close in value to the laterite, and that is what the plate shows rather than a shortcut: the difference between them here is hue, not brightness. Two materials because they are two stones, not because they are two colours."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/sandstone.png",
+        "pbrReport": "material-evidence/sandstone.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "pale",
+      "name": "Broken stone rubble",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/pale_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#6E5C4C",
+          "#CDBCA7",
+          "#857361"
+        ],
+        "samplingNotes": "Measured as the mean of crops/pale.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "This material ships WHITE, and that is deliberate rather than unmeasured. It is used only by the fallen-block InstancedMesh, whose twenty instances carry their own measured tones through setColorAt -- and setColorAt MULTIPLIES with material.color, so a coloured base would darken every tone by itself. The four tones are all measured off blocks in the plate: pale sandstone #9D8D7B (viewEvidence region-rubble, PBR confidence 0.860), weathered grey #6B5D4E, ochre #B28665 and dark brown #6C5843.",
+          "One material, one geometry, four stones. Textureless: broken rock at 0.6 m across, seen from across a level."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pale.png",
+        "pbrReport": "material-evidence/pale.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "void",
+      "name": "Cell interior",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4e4740",
+      "color": "#4e4740",
+      "roughness": {
+        "base": 0.98,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/void_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4e4740",
+        "secondary": [
+          "#010100",
+          "#100C07",
+          "#010102"
+        ],
+        "samplingNotes": "Measured as the mean of crops/void.png. extract_pbr_evidence confidence 0.765. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured INSIDE the plate's own doorway (viewEvidence region-doorway, PBR confidence 0.765) at #040302 -- the plate's doorway is genuinely, almost perfectly black -- and LIFTED to #4E4740, luma 72 against the harness backdrop's 58.",
+          "Forced by the silhouette gate, which classifies background by mean luma alone. This opening is ENCLOSED by the tower's own outline, so at the measured value it is read as a hole punched through the prop rather than as a doorway into it. A deliberate deviation from the measurement, recorded with its reason and its margin."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/void.png",
+        "pbrReport": "material-evidence/void.pbr.json",
+        "confidence": 0.765,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "door-frames",
+      "name": "Door aedicules",
+      "instanceCount": 4,
+      "sourceComponent": "tower",
+      "material": "sandstone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "door-aedicule",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 0.0,
+        "y": 0.0,
+        "count": 4,
+        "startDegrees": 0,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 2.58,
+        "height": 3.51,
+        "depth": 0.46
+      },
+      "rationale": "Two jambs, a lintel and a pediment slab merged into one unit, four rotations. Sixteen parts at one geometry and one draw call, against a ceiling of SIXTEEN unique geometries -- the tightest in the batch.",
+      "zFightingNote": "The whole set is SUNK to y=0.75, below the platform top at 0.95. Started level with it, all seven door instances put their underside in the y=1.150 plane facing down together with the tower's own base -- ten coplanar co-facing pairs in one go, and the only ten this batch produced. The three door parts are sunk to three DIFFERENT depths for the same reason."
+    },
+    {
+      "id": "blind-doors",
+      "name": "Blind door panels",
+      "instanceCount": 3,
+      "sourceComponent": "tower",
+      "material": "sandstone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "blind-door-panel",
+      "placement": {
+        "mode": "radial",
+        "axis": "Y",
+        "radius": 0.0,
+        "y": 0.0,
+        "count": 3,
+        "startDegrees": 90,
+        "stepDegrees": 90
+      },
+      "instanceDimensions": {
+        "width": 1.9,
+        "height": 2.88,
+        "depth": 0.1
+      },
+      "rationale": "THREE, not four. A Khmer sanctuary has one cell and false doors on the other three faces, so the set is deliberately not a full quad: the first of the four rotations is the identity and that face is left for the real doorway.",
+      "zFightingNote": "Each panel stands 0.08 m PROUD of the wall between the jambs rather than sitting flush in it. Flush, they were the same stone at the same depth as the wall behind them and were simply invisible -- a false door has to read as a door, and with no colour difference to spend, depth is the only thing left to say it with."
+    },
+    {
+      "id": "fallen-blocks",
+      "name": "Fallen blocks",
+      "instanceCount": 20,
+      "sourceComponent": "platform",
+      "material": "pale",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "stone-block",
+      "placement": {
+        "mode": "explicit",
+        "note": "Eight tumbled across the roof tiers, twelve on the platform and its enclosure; positions authored, not scattered."
+      },
+      "instanceDimensions": {
+        "width": 0.92,
+        "height": 0.34,
+        "depth": 0.56
+      },
+      "rationale": "This is the component that makes the prop a ruin rather than a building, and it costs ONE draw call and ONE geometry. As twenty meshes it would exceed the sixteen-geometry ceiling on its own, before the building existed.",
+      "zFightingNote": "Every instance carries its own rotation and its own NON-UNIFORM scale, both derived from its index through a small integer hash -- never from a random source, so the model is byte-identical on every build. No two blocks share a plane because no two share an orientation. Per-instance tones come through setColorAt, which is why the material is white."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T16:48:23.012126+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.091321+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.170608+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.250636+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
+          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.330771+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.412377+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.494745+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.575180+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        },
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
+          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T16:48:23.012126+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: four components and 3 InstancedMesh systems at 7 draw calls, and 7 of a SIXTEEN-geometry ceiling -- the tightest geometry budget in the batch, which is why twenty fallen blocks had to be one instanced geometry from the start.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.091321+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the platform folds thirteen parts into one submission by grouping on MATERIAL, and the whole merged geometry is rotated a quarter turn so the +X stair notch lands on the +Z doorway elevation -- one notch construction, not two.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.170608+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: platform lowered and tower widened on the band table rather than on the plate; doorway moved from recessed to proud after it turned out to be buried inside a solid mass; blind panels raised 0.08 m proud so a false door reads as a door.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.250636+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
+          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 4 materials at PBR confidence 0.765-0.860, every albedo measured on the plate LIT face. The rubble material ships white on purpose so its twenty instances can carry four measured tones through setColorAt.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.330771+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: surface character is entirely geometry -- the broken tier, the scattered blocks, the proud aedicules -- plus one delivered per-vertex dirt tint on the lower laterite courses. No texture sets and no canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.412377+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Nothing on this prop is metal, so the harness's missing environment map costs nothing here.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.494745+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, and NO destruction groups -- which is the right answer and not a gap: the collapse is modelled into the geometry and the prop does not come apart further at runtime.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T16:48:23.575180+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
+          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+        },
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
+          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+        },
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
+          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
+          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.84 -- not a pass self-score. 1,084/16,000 triangles, 7/12 draw calls, 4/8 materials, 7/16 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 4,
+        "repetitionSystems": 3,
+        "projectedTotal": 7,
+        "budget": 12,
+        "headroom": 5,
+        "note": "Four components and three repetition systems: 7 of 12. The platform alone folds thirteen parts into one submission, and the fallen-block system folds twenty into another."
+      },
+      "materials": {
+        "projectedTotal": 4,
+        "budget": 8,
+        "headroom": 4,
+        "note": "sandstone covers the tower, the broken tier, the door aedicules AND the blind panels -- four consumers, one material. Four of eight materials, four in hand."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 7,
+        "budget": 16,
+        "headroom": 9,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1084,
+        "budget": 16000,
+        "headroom": 14916,
+        "note": "1,084 of 16,000 -- the lightest prop in the batch by a wide margin, because a ruin is boxes and extruded plans and nothing here is curved at all. The scarce axis is UNIQUE GEOMETRIES at 7 of 16, which is why the twenty fallen blocks had to be one instanced geometry rather than twenty meshes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Extrusions of closed plans and boxes. The redented plan is a twenty-point polygon and the notched platform plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence. Nothing on this prop is a surface of revolution -- there is not one curve on it, which is itself part of what separates it from the prang."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Three InstancedMesh systems carry 39 of the prop's 56 discrete parts. The fallen-block system is the important one: twenty instances, each with its own hash-derived rotation, non-uniform scale and measured tone, at one geometry and one draw call."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all. The variety that would otherwise need a texture is delivered by INSTANCE COLOUR instead: the four measured block tones ride setColorAt, which is why the rubble material ships white -- setColorAt multiplies with material.color rather than replacing it."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "unseen-collapse-pattern",
+      "severity": "medium",
+      "description": "Which corners have fallen and where blocks lie on the unseen side is authored, not observed. This is the lowest rear-view confidence in the monumental set at 0.55.",
+      "mitigation": "A tower is four-fold symmetric but a RUIN is not, so symmetry cannot close the gap the way it does on the chedi. The far side is authored as a plausible continuation of the observed pattern and is recorded as such rather than presented as measurement."
+    },
+    {
+      "id": "carving-not-authored",
+      "severity": "low",
+      "description": "The carved lintel and colonnette relief around the plate's doorway are absent; the aedicule carries only the door's silhouette.",
+      "mitigation": "Below the resolvable band at prop distance, and the only route to it is the texture set that would discard every measured albedo on the prop."
+    },
+    {
+      "id": "doorway-lifted",
+      "severity": "low",
+      "description": "The cell interior ships at #4E4740 rather than its measured #040302.",
+      "mitigation": "Forced by a luma-only background test on an opening ENCLOSED by the prop's own outline. Recorded with the measurement it departs from and with its margin: luma 72 against a backdrop of 58."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Khmer Stone Sanctuary",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6478,
+        "aspectRatioDelta": 0.0513,
+        "scaleDelta": 0.1792,
+        "bilateralSymmetryError": 0.0179,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 9.59,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.01
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.65
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.65
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.59
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.648 is below threshold 0.85",
+        "aspect-ratio delta 0.051 exceeds threshold 0.05",
+        "scale delta 0.179 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "07ff741e97b04162",
+      "passId": "blockout"
+    }
+  ]
+}

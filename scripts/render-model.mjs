@@ -209,10 +209,23 @@ async function main() {
         `${stats.textures} textures`);
     if (factoryMs !== null) {
       log(`factory: built in ${factoryMs} ms` +
+          (stats.textureMs ? ` (${stats.textureMs} ms of it waiting on ${stats.textures} loaded map(s))` : '') +
           (stats.gpuBytesEstimate ? ` (${(stats.gpuBytesEstimate / 1048576).toFixed(1)} MB texture VRAM)` : ''));
     }
     if (stats.triangles === 0) {
       throw new Error('the factory produced zero triangles; there is nothing to render');
+    }
+
+    // A texture that never arrived renders as a flat untextured surface -- a valid
+    // PNG of the wrong thing, which is the same class of failure as a black render.
+    // For a prop whose surface IS its identity, like a road tile whose every marking
+    // is a pixel, that is the whole prop missing.
+    if (stats.texturesPending) {
+      throw new Error(
+        `${stats.texturesPending} texture(s) never finished loading` +
+          (stats.textureErrors?.length ? `; failed: ${stats.textureErrors.join(', ')}` : '') +
+          '. The render would be untextured.',
+      );
     }
 
     // A slow factory is almost always synthesised procedural texture sets, not geometry:
@@ -220,8 +233,13 @@ async function main() {
     // in JavaScript, and the cost is the SQUARE of the resolution. Warned rather than thrown,
     // because a prop whose surface detail IS its identity earns its textures -- the oil drum's
     // rust and worn hoop crowns build in 1.0 s. What this catches is the default nobody chose.
-    if (factoryMs !== null && (factoryMs > 2000 || stats.textures > 8)) {
-      log(`WARN   : slow factory (${factoryMs} ms, ${stats.textures} textures). Almost always ` +
+    // Waiting on the network is not the factory being slow, and a prop that LOADS its
+    // maps did not synthesise anything -- warning it about procedural texture synthesis
+    // would be advice for a mistake it did not make.
+    const buildMs = factoryMs === null ? null : factoryMs - (stats.textureMs ?? 0);
+    const loadedMaps = (stats.textureMs ?? 0) > 0;
+    if (buildMs !== null && (buildMs > 2000 || (stats.textures > 8 && !loadedMaps))) {
+      log(`WARN   : slow factory (${buildMs} ms, ${stats.textures} textures). Almost always ` +
           'procedural texture synthesis rather than geometry. Declare textureless on every ' +
           'material whose surface a viewer does not resolve at prop distance -- see CLAUDE.md.');
     }

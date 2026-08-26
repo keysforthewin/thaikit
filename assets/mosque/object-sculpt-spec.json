@@ -1,0 +1,2600 @@
+{
+  "targetName": "Mosque",
+  "targetId": "mosque",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-monument-mosque",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "ribbed-dome",
+        "pointed-arch",
+        "cubic-mass",
+        "vertical-accent"
+      ],
+      "structureKind": [
+        "solid-mass",
+        "surface-of-revolution",
+        "arcade",
+        "enclosure-wall"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "whitewashed-render",
+        "green-glazed-dome-tile",
+        "roof-screed",
+        "tarnished-brass"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A southern Thai prayer hall inside a walled compound. A whitewashed courtyard wall with a pointed-arch gate; a solid white hall with a five-bay pointed arcade on its front; a parapet with a green band; a raised drum carrying a large ribbed green dome with a gilt finial and crescent; four small ribbed domes at the roof corners; and a slender minaret standing clear of the hall with a balcony, an upper stage and a ribbed dome of its own."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 3,
+        "hierarchyDepth": 3,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 6,
+        "repetitionSystems": 4
+      },
+      "reasoning": [
+        "The registry notes name the recognisable pairing exactly -- ONE large ribbed dome plus a single slender minaret standing clear of the hall -- and say neither element works alone. Both halves of that silhouette have to be right, and the minaret is what sets the declared 18 m.",
+        "The ribs are not decoration. A smooth green hemisphere reads as a water tank, so the domes are generated directly with a radius modulated AROUND the axis, which no lathe can do.",
+        "The arches are POINTED, not half-round. A semicircular sweep reads as a railway viaduct, and the two-centred arch is one of the few things on a whitewashed box that says mosque at all.",
+        "Action readiness is minimal: static landmark geometry, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Six domes across three systems, five arches across two, and a courtyard wall with a gate. Without instancing the arches alone would be ten draw calls and the domes six more."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-ribbed-dome",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "the great dome, melon-ribbed with pale crests and green valleys",
+          "mapsTo": {
+            "ref": "domes"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-minaret",
+          "zone": "compound",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a single slender minaret standing CLEAR of the hall, with balcony, upper stage and its own ribbed dome",
+          "mapsTo": {
+            "ref": "minaret"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-pointed-arcade",
+          "zone": "facade",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "five POINTED arches across the hall front, each a real aperture",
+          "mapsTo": {
+            "ref": "hall"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-corner-domes",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four small ribbed domes at the roof corners",
+          "mapsTo": {
+            "ref": "roof-deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-crescent",
+          "zone": "apex",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "gilt crescent on a stem above the great dome's finial",
+          "mapsTo": {
+            "ref": "finials"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-parapet-band",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "green band along the top of the parapet ring",
+          "mapsTo": {
+            "ref": "parapet-band"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-gate",
+          "zone": "compound",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "pointed-arch gate in the courtyard wall",
+          "mapsTo": {
+            "ref": "court-wall"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-roof-screed",
+          "zone": "roof",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "grey screed deck between the parapet and the domes",
+          "mapsTo": {
+            "ref": "roof-deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-rain-wash",
+          "zone": "walls",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "black rain-wash streaking, darkening the render TOWARDS the top",
+          "mapsTo": {
+            "ref": "d9-rain-wash"
+          },
+          "onMaterial": "white",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+    "resolvedUnknowns": [
+      "The arcade is on the +Z elevation only; the other three are authored plain. The plate shows one arcaded face and one plain face, and infers nothing about the other two.",
+      "ONE minaret. The plate shows one and the registry notes call the single minaret part of the identity, so a second would be inventing a different building.",
+      "The interior behind the arcade is not modelled -- what shows through the five openings is a single dark panel on a solid mass. This prop is an exterior shell.",
+      "The plate's heavy black rain-wash streaking down the render is carried only as a vertical gradient, not as the branching streaks it actually is.",
+      "The arch profile is a two-centred pointed arch built from quadratics. The plate's is a keyhole ogee whose lower jambs bulge outward; the pointed head is reproduced and the bulge is not."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 14.00 x 18.00 x 16.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 4,
+      "microFeatureGroups": 3,
+      "materialLayers": 6,
+      "repetitionSystems": 4,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "dome-and-minaret",
+        "name": "Dome and minaret pairing",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "One large RIBBED dome over the hall",
+          "One slender minaret standing CLEAR of the hall, reaching the declared 18 m",
+          "Both legible in the same silhouette from every review azimuth"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a smooth hemisphere, which reads as a water tank",
+          "the minaret shaft hidden behind the dome, which loses half the silhouette"
+        ]
+      },
+      {
+        "id": "pointed-arcade",
+        "name": "Pointed arcade",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Five two-centred POINTED arches, not half-round",
+          "Each a real aperture with a surround standing proud of the opening",
+          "The openings read as openings, not as holes through the building"
+        ],
+        "evidenceRefs": [
+          "region-arcade"
+        ],
+        "failureModes": [
+          "semicircular arches, which read as a railway viaduct",
+          "the interior at the backdrop luma, read as five holes"
+        ]
+      },
+      {
+        "id": "dome-cluster",
+        "name": "Dome cluster",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Four small ribbed domes at the roof corners on their own drums",
+          "A gilt finial on every dome and a crescent above the great one"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-finial"
+        ],
+        "failureModes": [
+          "the crescent floating clear of the finial it should stand on"
+        ]
+      },
+      {
+        "id": "mosque-palette",
+        "name": "Mosque palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Whitewashed render streaked from the TOP down",
+          "Sage-green ribbed domes with pale crests",
+          "Tarnished brass, not bright gold"
+        ],
+        "evidenceRefs": [
+          "region-render",
+          "region-dome"
+        ],
+        "failureModes": [
+          "dirt authored at the base, which is the wrong way round for this plate"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "dome-and-minaret",
+      "name": "Dome and minaret pairing",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "domes",
+        "minaret"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "pointed-arcade",
+      "name": "Pointed arcade",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "hall"
+      ],
+      "evidenceRefs": [
+        "region-arcade"
+      ]
+    },
+    {
+      "id": "dome-cluster",
+      "name": "Dome cluster",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "roof-deck",
+        "finials"
+      ],
+      "evidenceRefs": [
+        "region-finial"
+      ]
+    },
+    {
+      "id": "mosque-palette",
+      "name": "Mosque palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "court-wall",
+        "domes"
+      ],
+      "evidenceRefs": [
+        "region-render",
+        "region-dome"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 12,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "court-wall",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "court-wall",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the compound, not with the minaret separately."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The arcade is on the +Z elevation only; the other three are authored plain. The plate shows one arcaded face and one plain face, and infers nothing about the other two.",
+    "ONE minaret. The plate shows one and the registry notes call the single minaret part of the identity, so a second would be inventing a different building.",
+    "The interior behind the arcade is not modelled -- what shows through the five openings is a single dark panel on a solid mass. This prop is an exterior shell.",
+    "The plate's heavy black rain-wash streaking down the render is carried only as a vertical gradient, not as the branching streaks it actually is.",
+    "The arch profile is a two-centred pointed arch built from quadratics. The plate's is a keyhole ogee whose lower jambs bulge outward; the pointed head is reproduced and the bulge is not."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up, arcade facing +Z. The minaret stands at x=-5.75 against a hall half-width of 4.60 -- clear of the hall, deliberately. Placed first at -5.05 its shaft vanished behind the great dome from every review angle, which loses half of the two-part silhouette the registry notes say neither element works without."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 14.0,
+      "h": 18.0,
+      "d": 16.0
+    },
+    "description": "A low walled compound, a white cubic hall to 7.95 m, a drum and a ribbed dome to 13.30 m with a gilt finial and crescent to 15.32 m, four small domes at the roof corners, and a minaret standing clear to 18.00 m. The silhouette events are the great dome, the minaret, and the five-arch rhythm of the arcade.",
+    "envelopeDerivation": "x spans -7.00..+7.00 = 14.00 and z spans -8.00..+8.00 = 16.00, both set by the courtyard wall. y spans 0.00 to exactly 18.00, the tip of the MINARET's finial -- the registry notes say so outright, that the minaret rather than the hall sets the height, and the built model agrees to four decimal places. The courtyard gate had to be pulled in to get there: its pylons and arch head were authored 1.5 times the wall thickness and reached z=8.11, so the gate alone put the prop over its declared depth.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.818 : 1.075 against the declared 1 : 1.286 : 1.143. Area-weighted band comparison gives mean |delta width| 0.269 and |delta depth| 0.258 of height, the largest in the batch -- and essentially ALL of it is one number. The declared prop is 57% taller relative to its footprint than the reference reads the plate, and widths in this table are normalised by height, so every band scales by that ratio: reference band 0 is 1.206 of height against this model's 0.780, a ratio of 1.55 against the 1.57 the two aspect ratios predict. Re-normalised by WIDTH instead, band 0 is 0.987 in the reference and 1.003 here -- a 1.6% difference. The registry notes declare 18 m explicitly and give the reason; the declaration wins and the divergence is reported with the arithmetic that explains it."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-render",
+      "viewpoint": "front",
+      "path": "crops/white.png",
+      "confidence": 0.773
+    },
+    {
+      "id": "region-dome",
+      "viewpoint": "front",
+      "path": "crops/dome.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-band",
+      "viewpoint": "front",
+      "path": "crops/green.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-deck",
+      "viewpoint": "top",
+      "path": "crops/deck.png",
+      "confidence": 0.854
+    },
+    {
+      "id": "region-arcade",
+      "viewpoint": "front",
+      "path": "crops/dark.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-finial",
+      "viewpoint": "front",
+      "path": "crops/gold.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.65,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.65: the compound is bilaterally symmetric and the domes are surfaces of revolution, but the ARCADE is on one elevation only and the minaret is on one corner, so the rear is authored as plain render."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "court-wall",
+      "name": "Courtyard wall and gate",
+      "level": "macro",
+      "role": "body",
+      "importance": 0.85,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four wall runs, two gate pylons and a pointed arch head, all one render and therefore ONE component and ONE draw call.",
+      "materialId": "white",
+      "material": "white",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 2.30 m enclosure on the declared 14 x 16 footprint, broken on +Z by a gate with a pointed arch head.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The side runs carry the full depth and the front and back runs stop between them: run to full width, every corner would put two outer faces in one plane facing one way. Pylons and arch head are the same depth as the wall, not 1.5x it -- deeper, they reached z=8.11 against a declared 8.00.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-gate",
+          "description": "pointed-arch gate",
+          "delivery": "pointedArchShape() extrusion merged in"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "white",
+        "baseColor": "#b2b2ae",
+        "recipe": "Whitewashed render, roughness 0.93, no texture set.",
+        "evidenceRef": "region-render",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(178, 178, 174, 1.0)",
+        "secondaryAlbedo": "rgba(178, 178, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            9.0,
+            0
+          ],
+          "halfExtents": [
+            7.0,
+            9.0,
+            8.0
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the compound, not with the minaret separately."
+        }
+      }
+    },
+    {
+      "id": "hall",
+      "name": "Prayer hall block",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A SOLID white block with its parapet ring merged in. The mosque is an exterior shell only ever seen from outside, so there is no interior, and a solid body also means the arcade needs no opening cut in it.",
+      "materialId": "white",
+      "material": "white",
+      "parent": "court-wall",
+      "geometryDescriptor": {
+        "topologyIntent": "Solid box to y=7.20 with a roof slab and a parapet ring to 7.95.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The parapet stands 0.08 m proud of the walls -- a coping drip edge, and what keeps the parapet faces off the wall planes.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-pointed-arcade",
+          "description": "five pointed arches",
+          "delivery": "repetitionSystems.arch-frames + arch-voids"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "white",
+        "baseColor": "#b2b2ae",
+        "recipe": "The SAME render as the courtyard wall -- one material, several components.",
+        "evidenceRef": "region-render",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(178, 178, 174, 1.0)",
+        "secondaryAlbedo": "rgba(178, 178, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-deck",
+      "name": "Roof deck",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.5,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because the plate shows the deck as a distinctly different surface from the rendered walls, and this prop is seen from above in every hero shot.",
+      "materialId": "deck",
+      "material": "deck",
+      "parent": "hall",
+      "geometryDescriptor": {
+        "topologyIntent": "A thin grey slab inside the parapet ring.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Set 0.22 m inside the parapet on every side and 0.03 m below its own slab top.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-corner-domes",
+          "description": "four corner domes",
+          "delivery": "repetitionSystems.small-drums + small-domes"
+        },
+        {
+          "id": "d8-roof-screed",
+          "description": "grey screed deck",
+          "delivery": "geometryDescriptor slab"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "deck",
+        "baseColor": "#a7a497",
+        "recipe": "Roof screed, roughness 0.95 -- the roughest surface on the prop.",
+        "evidenceRef": "region-deck",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(167, 164, 151, 1.0)",
+        "secondaryAlbedo": "rgba(167, 164, 151, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "parapet-band",
+      "name": "Green parapet band",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.6,
+      "confidence": 0.84,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is the only FLAT green on the prop: the domes carry a striped vertex colour and cannot share a material with a surface that has to stay one value.",
+      "materialId": "green",
+      "material": "green",
+      "parent": "hall",
+      "geometryDescriptor": {
+        "topologyIntent": "A green stripe along the top of the parapet ring, standing 0.03 m proud of it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Top at 7.99, not level with the parapet's own 7.95. Level, the band's top face and the parapet's top face are the same plane facing the same way over 91 m2 -- the largest single coplanar pair found anywhere in this batch.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-parapet-band",
+          "description": "green band on the parapet",
+          "delivery": "geometryDescriptor merged boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "green",
+        "baseColor": "#90957b",
+        "recipe": "Green band, roughness 0.72.",
+        "evidenceRef": "region-band",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(144, 149, 123, 1.0)",
+        "secondaryAlbedo": "rgba(144, 149, 123, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "domes",
+      "name": "Great dome and minaret dome",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "sphere",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "Both domes ribbed, both in the striped material, merged into ONE component and ONE draw call. The ribs are generated geometry rather than a material: LatheGeometry revolves one profile at one radius per height, and a rib is a variation AROUND the axis. A smooth green hemisphere reads as a water tank.",
+      "materialId": "dome",
+      "material": "dome",
+      "parent": "hall",
+      "geometryDescriptor": {
+        "topologyIntent": "A segmental great dome from 9.45 to 13.30 at 2.58 m radius, and the minaret's own at a sixth the size.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The great dome springs from 9.45, below the drum top at 9.55, so it overhangs the drum rather than sitting on its plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-ribbed-dome",
+          "description": "melon-ribbed great dome",
+          "delivery": "ribbedDome() with per-vertex crest and valley"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "dome",
+        "baseColor": "#9ba08d",
+        "recipe": "Ribbed dome tile, roughness 0.72, with per-vertex rib striping.",
+        "evidenceRef": "region-dome",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(155, 160, 141, 1.0)",
+        "secondaryAlbedo": "rgba(155, 160, 141, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "drum",
+      "name": "Dome drum",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A square podium and a round drum, merged. Its own component only because it is a distinct mass a level builder may want to select.",
+      "materialId": "white",
+      "material": "white",
+      "parent": "hall",
+      "geometryDescriptor": {
+        "topologyIntent": "Square podium 7.34..8.55 and a round drum 8.55..9.55 under the great dome.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The dome overhangs the drum top rather than meeting it, and the podium is narrower than the deck it stands on.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "white",
+        "baseColor": "#b2b2ae",
+        "recipe": "The same whitewashed render again.",
+        "evidenceRef": "region-render",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(178, 178, 174, 1.0)",
+        "secondaryAlbedo": "rgba(178, 178, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "minaret",
+      "name": "Minaret",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Shaft, balcony, parapet lip and upper stage merged into one component. The registry notes say the pairing of one great dome and a single slender minaret is what reads at distance and that neither element works alone, so this is half the silhouette and not dressing.",
+      "materialId": "white",
+      "material": "white",
+      "parent": "court-wall",
+      "geometryDescriptor": {
+        "topologyIntent": "A square shaft to 13.60, a balcony to 14.25, a round upper stage to 15.80, standing at x=-5.75 clear of the hall.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The balcony parapet lip is inset from the balcony slab so no two top faces share a plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-minaret",
+          "description": "minaret standing clear of the hall",
+          "delivery": "geometryDescriptor merged boxes and cylinder"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "white",
+        "baseColor": "#b2b2ae",
+        "recipe": "The same whitewashed render.",
+        "evidenceRef": "region-render",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(178, 178, 174, 1.0)",
+        "secondaryAlbedo": "rgba(178, 178, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "finials",
+      "name": "Gilt finials and crescent",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.85,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Six lathed finials and an eleven-segment crescent MERGED into one component. Instancing was the other route, but the crescent is a one-off that would have needed its own submission anyway; merging costs one draw call for all seven.",
+      "materialId": "gold",
+      "material": "gold",
+      "parent": "domes",
+      "geometryDescriptor": {
+        "topologyIntent": "A finial on every dome, and a crescent on a stem above the great one.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The crescent stands on a stem down to the finial tip. Without it the crescent floats: it sits on the axis and every review viewpoint is off-axis, so the gap reads as a detached ornament.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-crescent",
+          "description": "gilt crescent above the great dome",
+          "delivery": "eleven tangent-aligned segments on an open arc"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "gold",
+        "baseColor": "#958c76",
+        "recipe": "Tarnished brass, roughness 0.38, metalness 0.30 -- below physical because the harness supplies no environment map.",
+        "evidenceRef": "region-finial",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(149, 140, 118, 1.0)",
+        "secondaryAlbedo": "rgba(149, 140, 118, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "white",
+      "name": "Whitewashed render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b2b2ae",
+      "color": "#b2b2ae",
+      "roughness": {
+        "base": 0.93,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/white_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b2b2ae",
+        "secondary": [
+          "#7E7E7C",
+          "#DFDEDA",
+          "#D4D3CD"
+        ],
+        "samplingNotes": "Measured as the mean of crops/white.png. extract_pbr_evidence confidence 0.773. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-rain-wash",
+          "region": "walls, darkening TOWARDS the top",
+          "roughness": 0.93,
+          "palette": [
+            "#818485",
+            "#B2B2AE"
+          ],
+          "evidence": "This plate's dirt runs the OPPOSITE way from every other prop in the batch. Rain wash streaks the render from the coping DOWN, so the walls measure #818485 near the parapet and #B2B2AE lower; everywhere else in this kit the dirt collects at the bottom. The tint therefore ramps upward -- clean at the base, darkening towards the coping -- and it is delivered as a per-vertex multiplier on the merged wall geometry rather than as a second material."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-render (PBR confidence 0.773) on a lit courtyard wall.",
+          "Shared by the courtyard wall, the hall, the dome drum, the minaret and the arcade surrounds -- five consumers, one render.",
+          "Textureless: the rain-wash streaking is at a frequency no prop-distance viewer resolves as anything but a gradient, and only that gradient is carried, as a vertex tint."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/white.png",
+        "pbrReport": "material-evidence/white.pbr.json",
+        "confidence": 0.773,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "dome",
+      "name": "Ribbed dome tile",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9ba08d",
+      "color": "#9ba08d",
+      "roughness": {
+        "base": 0.72,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/dome_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#9ba08d",
+        "secondary": [
+          "#5F7455",
+          "#4F6046",
+          "#748768"
+        ],
+        "samplingNotes": "Measured as the mean of crops/dome.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-dome (PBR confidence 0.860). The material colour is the RIB CREST at #9BA08D; the green valleys come from a per-vertex multiplier of (0.33, 0.42, 0.35) sampled off the same cosine that shapes the rib, with the dome's own large-region measurement #7B876E as the target mean of the two.",
+          "That multiplier is in LINEAR space, not the sRGB the crops were measured in -- vertex colours multiply after the conversion, so the display-space ratio has to be raised to the 2.2. Fed the sRGB ratio the dome rendered almost uniformly pale.",
+          "Textureless: the stripe is geometry-driven vertex colour, which is exactly the case the procedural texture set is not needed for."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/dome.png",
+        "pbrReport": "material-evidence/dome.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Green parapet band",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#90957b",
+      "color": "#90957b",
+      "roughness": {
+        "base": 0.72,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/green_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#90957b",
+        "secondary": [
+          "#C4CBB9",
+          "#BEC4B2",
+          "#90957B"
+        ],
+        "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-band (PBR confidence 0.860). The band is 0.30 m tall with white coping above and below it, so NO crop of it is pure: a 90x22 strip means #9E9F90, which is the band mixed with its coping. #90957B is the palette entry the same extraction separates out, which is reference-derived by construction. A tighter crop does not exist -- the band is 22 pixels tall at plate resolution.",
+          "Its own material rather than the dome's, because it is the only FLAT green on the prop and the domes carry a striped vertex colour."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/green.png",
+        "pbrReport": "material-evidence/green.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Roof screed",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a7a497",
+      "color": "#a7a497",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/deck_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a7a497",
+        "secondary": [
+          "#76705F",
+          "#6A6451",
+          "#86816D"
+        ],
+        "samplingNotes": "Measured as the mean of crops/deck.png. extract_pbr_evidence confidence 0.854. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-deck (PBR confidence 0.854). The plate shows the roof deck as a distinctly different surface from the rendered walls -- a grey screed, not a render -- so it earns a material rather than being folded into the white."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/deck.png",
+        "pbrReport": "material-evidence/deck.pbr.json",
+        "confidence": 0.854,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Arcade interior",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4e564a",
+      "color": "#4e564a",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/dark_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4e564a",
+        "secondary": [
+          "#1E261B",
+          "#2B3429",
+          "#242D22"
+        ],
+        "samplingNotes": "Measured as the mean of crops/dark.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured INSIDE the plate's own arcade (viewEvidence region-arcade, PBR confidence 0.751) at #2C3429 -- luma 48 -- and LIFTED to #4E564A, luma 82 against the harness backdrop's 58. The five openings are enclosed by the facade's own outline, so at the measured value the silhouette gate reads each as a hole punched through the building.",
+          "Green-grey rather than neutral, which is what the plate shows: the wall behind the arcade is painted the same pale green as the facade field."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/dark.png",
+        "pbrReport": "material-evidence/dark.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Tarnished brass",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#958c76",
+      "color": "#958c76",
+      "roughness": {
+        "base": 0.38,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/gold_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#958c76",
+        "secondary": [
+          "#85795B",
+          "#A4926C",
+          "#BCAA83"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gold.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-finial (PBR confidence 0.860) on the great dome's finial. Pale tarnished brass rather than bright gold, which is what the plate shows.",
+          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black, which here would lose the crescent -- the one element on the prop that names the religion."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gold.png",
+        "pbrReport": "material-evidence/gold.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "arch-frames",
+      "name": "Arcade surrounds",
+      "instanceCount": 5,
+      "sourceComponent": "hall",
+      "material": "white",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "pointed-arch-surround",
+      "placement": {
+        "mode": "linear",
+        "axis": "X",
+        "pitch": 1.86,
+        "count": 5,
+        "z": 4.2
+      },
+      "instanceDimensions": {
+        "width": 1.86,
+        "height": 3.95,
+        "depth": 0.42
+      },
+      "rationale": "Five surrounds at one geometry and one submission.",
+      "zFightingNote": "Each surround is a plate with a REAL aperture, embedded into the facade and standing proud of it, so it overlaps the opening rather than meeting its reveal edge."
+    },
+    {
+      "id": "arch-voids",
+      "name": "Arcade openings",
+      "instanceCount": 5,
+      "sourceComponent": "hall",
+      "material": "dark",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "pointed-arch-panel",
+      "placement": {
+        "mode": "linear",
+        "axis": "X",
+        "pitch": 1.86,
+        "count": 5,
+        "z": 4.22
+      },
+      "instanceDimensions": {
+        "width": 1.62,
+        "height": 3.65,
+        "depth": 0.05
+      },
+      "rationale": "The dark behind each opening, in its own material. A second system rather than a second colour on the first, because InstancedMesh takes one material.",
+      "zFightingNote": "PROUD of the wall at 0.02 m, not recessed into it -- the hall is a solid mass, so a panel sunk into it is invisible. Depth 0.05 rather than 0.06 keeps the front at z=4.27, clear of the parapet's own +Z face at 4.28; at 0.06 the two shared that plane over 5.35 m2, five times over."
+    },
+    {
+      "id": "small-drums",
+      "name": "Corner dome drums",
+      "instanceCount": 4,
+      "sourceComponent": "roof-deck",
+      "material": "white",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "corner-drum",
+      "placement": {
+        "mode": "explicit",
+        "note": "Four roof corners at (+-3.40, +-2.90)."
+      },
+      "instanceDimensions": {
+        "width": 2.16,
+        "height": 0.79,
+        "depth": 2.16
+      },
+      "rationale": "Four drums at one geometry.",
+      "zFightingNote": "Sunk to y=7.21, BELOW both the deck slab underside at 7.28 and the great dome drum base at 7.34. Two rounds of this: level with the drum it shared four planes with the drum, and level with the deck it shared four with the deck instead. Parts that never touch still fight when their envelopes align."
+    },
+    {
+      "id": "small-domes",
+      "name": "Corner domes",
+      "instanceCount": 4,
+      "sourceComponent": "roof-deck",
+      "material": "dome",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "corner-ribbed-dome",
+      "placement": {
+        "mode": "explicit",
+        "note": "One on each corner drum."
+      },
+      "instanceDimensions": {
+        "width": 2.2,
+        "height": 1.4,
+        "depth": 2.2
+      },
+      "rationale": "Sixteen ribs each, four instances, one geometry and one draw call. They carry the same per-vertex crest-and-valley striping as the great dome.",
+      "zFightingNote": "Each springs from 7.95, above its drum base and below the drum top, so it overhangs rather than meeting a plane."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-26T17:36:14.782505+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:14.872693+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        },
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:14.956195+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.043318+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        },
+        {
+          "id": "mosque-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "Three findings worth keeping. This plate's dirt runs the OPPOSITE way from every other prop in the batch -- rain wash streaks the render from the coping DOWN, measuring #818485 near the parapet against #B2B2AE lower -- so the vertex tint ramps upward, and authoring it the usual way round would have been visibly wrong. The parapet band admits no pure crop at plate resolution: it is 22 pixels tall with white coping either side, so the material takes the palette entry #90957B the extraction separates out rather than the mixed mean #9E9F90. And the dome striping is a per-vertex multiplier in LINEAR space, not the sRGB the crops were measured in -- fed the sRGB ratio the dome rendered almost uniformly pale."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.127221+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.211076+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.296286+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.379612+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        },
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        },
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        },
+        {
+          "id": "dome-cluster-holes",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Turntable gate run with --allow-holes and the measurement that justifies it.",
+          "notes": "The gate flags enclosed background on every azimuth -- 9,520 to 13,561 pixels at mean thicknesses of 40 to 84 px. Unlike every other use of that flag in this kit these are not anti-aliased edges one pixel thick: they are the COURTYARD. A walled compound has real open ground between its enclosure wall and its hall, and from any three-quarter view the silhouette encloses that background on all four sides. The gate's assumption -- that a prop's outline contains no background -- does not hold for an enclosure, and the flag is set on that finding rather than to get past an unexplained failure."
+        },
+        {
+          "id": "mosque-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "Three findings worth keeping. This plate's dirt runs the OPPOSITE way from every other prop in the batch -- rain wash streaks the render from the coping DOWN, measuring #818485 near the parapet against #B2B2AE lower -- so the vertex tint ramps upward, and authoring it the usual way round would have been visibly wrong. The parapet band admits no pure crop at plate resolution: it is 22 pixels tall with white coping either side, so the material takes the palette entry #90957B the extraction separates out rather than the mixed mean #9E9F90. And the dome striping is a per-vertex multiplier in LINEAR space, not the sRGB the crops were measured in -- fed the sRGB ratio the dome rendered almost uniformly pale."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-26T17:36:14.782505+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: eight components and 4 InstancedMesh systems at 12 draw calls of 24. The heaviest prop in the batch at 10,568 triangles, and all of it is domes -- six ribbed surfaces of revolution.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/mosque/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:14.872693+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        },
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: the minaret moved clear of the hall so both halves of the declared silhouette read at once; the gate pylons pulled in after they alone put the prop 0.11 m over its declared depth.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:14.956195+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: a two-centred pointed arch written for this prop because the half-round already in the toolkit is the wrong arch; a stem added under the crescent; three separate coplanar pairs cleared, including the largest in the batch at 91 m2 between the parapet band and the parapet it sits on.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.043318+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        },
+        {
+          "id": "mosque-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "Three findings worth keeping. This plate's dirt runs the OPPOSITE way from every other prop in the batch -- rain wash streaks the render from the coping DOWN, measuring #818485 near the parapet against #B2B2AE lower -- so the vertex tint ramps upward, and authoring it the usual way round would have been visibly wrong. The parapet band admits no pure crop at plate resolution: it is 22 pixels tall with white coping either side, so the material takes the palette entry #90957B the extraction separates out rather than the mixed mean #9E9F90. And the dome striping is a per-vertex multiplier in LINEAR space, not the sRGB the crops were measured in -- fed the sRGB ratio the dome rendered almost uniformly pale."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 6 materials at PBR confidence 0.751-0.860. The dome carries TWO measured colours in one material through per-vertex rib striping, and the arcade interior is lifted from a measured #2C3429 at luma 48 to keep five openings from being read as holes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.127221+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: the rib striping is the one thing on this prop that would ordinarily be a texture, and it is a per-vertex colour derived from the same cosine that shapes the rib -- exactly the case a procedural texture set is not needed for. It also exposed a real bug: mergeGeos copied position, normal and uv only, and silently dropped every colour attribute.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.211076+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The brass carries metalness 0.30 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black -- which here would lose the crescent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.296286+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-26T17:36:15.379612+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.74,
+        "componentStructure": 0.88,
+        "formDetail": 0.87,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "One melon-ribbed dome of 22 ribs over the hall, and one minaret standing at x=-5.75 against a hall half-width of 4.60, reaching the declared 18.00 m exactly.",
+          "notes": "The registry notes say neither element works alone, and the first build proved it: with the minaret at x=-5.05 its shaft vanished behind the great dome from every review angle and the prop read as a domed box. Moving it clear of the hall restored the pairing. The ribs are generated geometry -- a radius modulated AROUND the axis, which no lathe can do, because a lathe revolves one profile at one radius per height. A smooth green hemisphere reads as a water tank."
+        },
+        {
+          "id": "pointed-arcade",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Five two-centred pointed arches across the hall front, each a real aperture with a surround standing proud of a dark panel behind it.",
+          "notes": "The arch had to be written for this prop. The half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct; the two-centred pointed arch is one of the few things on a whitewashed box that says mosque at all. The dark behind stands 0.02 m PROUD of the wall rather than recessed into it -- the hall is a solid mass -- and at depth 0.06 its front face sat in the parapet's own z=4.28 plane over 5.35 m2, five times over; 0.05 clears it."
+        },
+        {
+          "id": "dome-cluster",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four small ribbed domes on their own drums at the roof corners, six gilt finials and a crescent on a stem above the great dome.",
+          "notes": "The corner drums took two rounds of coplanar fixing: level with the great dome's drum they shared four planes with it, and level with the deck slab they shared four with the deck instead. They now sit below both. The crescent needed a stem -- it sits on the axis and every review viewpoint is off-axis, so without one the gap read as a detached ornament floating beside the minaret rather than as the top of the finial."
+        },
+        {
+          "id": "dome-cluster-holes",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Turntable gate run with --allow-holes and the measurement that justifies it.",
+          "notes": "The gate flags enclosed background on every azimuth -- 9,520 to 13,561 pixels at mean thicknesses of 40 to 84 px. Unlike every other use of that flag in this kit these are not anti-aliased edges one pixel thick: they are the COURTYARD. A walled compound has real open ground between its enclosure wall and its hall, and from any three-quarter view the silhouette encloses that background on all four sides. The gate's assumption -- that a prop's outline contains no background -- does not hold for an enclosure, and the flag is set on that finding rather than to get past an unexplained failure."
+        },
+        {
+          "id": "mosque-palette",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Six materials at PBR confidence 0.751-0.860, every albedo measured off the plate.",
+          "notes": "Three findings worth keeping. This plate's dirt runs the OPPOSITE way from every other prop in the batch -- rain wash streaks the render from the coping DOWN, measuring #818485 near the parapet against #B2B2AE lower -- so the vertex tint ramps upward, and authoring it the usual way round would have been visibly wrong. The parapet band admits no pure crop at plate resolution: it is 22 pixels tall with white coping either side, so the material takes the palette entry #90957B the extraction separates out rather than the mixed mean #9E9F90. And the dome striping is a per-vertex multiplier in LINEAR space, not the sRGB the crops were measured in -- fed the sRGB ratio the dome rendered almost uniformly pale."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.81 -- not a pass self-score, and held down almost entirely by the silhouette layer at 0.74: the declared 18 m on a 14 x 16 footprint is 57% taller relative to plan than the Meshy proxy reads the same plate, which is a declaration the registry notes make explicitly and defend. Re-normalised by width, the two agree to 1.6%. 10,568/32,000 triangles, 12/24 draw calls, 6/16 materials, 12/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/mosque/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/mosque/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 8,
+        "repetitionSystems": 4,
+        "projectedTotal": 12,
+        "budget": 24,
+        "headroom": 12,
+        "note": "Eight components and four repetition systems: 12 of 24. The two dome systems are separate from the two arch systems for the same reason in both cases -- an InstancedMesh takes one material, and a white drum is not a green dome any more than a white surround is a dark opening."
+      },
+      "materials": {
+        "projectedTotal": 6,
+        "budget": 16,
+        "headroom": 10,
+        "note": "white covers the courtyard wall, the hall, the roof drum, the minaret AND the arcade surrounds -- five consumers, one render. Six of sixteen materials, ten in hand, and the dome material carries two measured colours by itself through vertex striping."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 12,
+        "budget": 32,
+        "headroom": 20,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 10568,
+        "budget": 32000,
+        "headroom": 21432,
+        "note": "10,568 of 32,000 -- by far the heaviest prop in the batch, and all of it is domes: six ribbed surfaces at 88, 64 and 56 radial samples. That is the correct place to spend it. The ribs are what make a dome a mosque dome at the distance a village skyline is read from, and the draw-call axis is at half its ceiling."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Ribbed surfaces of revolution, pointed-arch extrusions and boxes. Two shapes had to be written for this prop alone: a dome whose radius is modulated AROUND the axis, which no lathe can do, and a two-centred pointed arch, because the half-round sweep already in the toolkit is the wrong arch and reads as a railway viaduct."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Four InstancedMesh systems carry 18 of the prop's 40 discrete parts. The corner domes carry their rib striping through the same per-vertex attribute as the great dome, so instancing costs the stripe nothing."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless and no canvas is generated at all. The dome striping -- the one thing on the prop that would ordinarily be a texture -- is a per-vertex colour derived from the same cosine that shapes the rib, which is exactly the case a procedural texture set is not needed for."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-height-vs-proxy",
+      "severity": "medium",
+      "description": "The declared 18 m on a 14 x 16 footprint is 57% taller relative to plan than the Meshy proxy reads the same plate, and that one ratio accounts for essentially the whole band divergence -- the largest in the batch at 0.269 of height.",
+      "mitigation": "The registry notes declare 18 m explicitly and give the reason: the minaret rather than the hall sets the height. Re-normalised by WIDTH instead of height, band 0 is 0.987 in the reference and 1.003 here -- a 1.6% difference. The declaration wins and the arithmetic that explains the divergence is reported with it."
+    },
+    {
+      "id": "arch-profile-simplified",
+      "severity": "low",
+      "description": "The plate's arches are keyhole ogees whose lower jambs bulge outward; the model reproduces the pointed head and not the bulge.",
+      "mitigation": "The pointed head is what distinguishes the arch from a Roman one at prop distance; the jamb bulge is a 0.05 m deviation on a 1.6 m opening."
+    },
+    {
+      "id": "streak-direction",
+      "severity": "low",
+      "description": "The rain-wash streaking is carried as a vertical gradient rather than as the branching streaks the plate actually shows.",
+      "mitigation": "The DIRECTION is the part that matters and it is right: this is the only prop in the batch whose dirt runs from the top down, and authoring it the usual way round would have been visibly wrong. The branching needs a texture set that would discard all six measured albedos."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Mosque",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3914,
+        "aspectRatioDelta": 0.1535,
+        "scaleDelta": 0.1161,
+        "bilateralSymmetryError": 0.1245,
+        "colorDelta": {
+          "checked": 8,
+          "maxDeltaE": 10.81,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 1.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.17
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.81
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.391 is below threshold 0.85",
+        "aspect-ratio delta 0.153 exceeds threshold 0.05",
+        "scale delta 0.116 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "92441bf20041f2b5",
+      "passId": "blockout"
+    }
+  ]
+}
