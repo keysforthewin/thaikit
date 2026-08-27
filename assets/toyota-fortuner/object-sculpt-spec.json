@@ -1,0 +1,2298 @@
+{
+  "targetName": "Toyota Fortuner",
+  "targetId": "toyota-fortuner",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "vehicle-suv",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "extruded-side-profile",
+        "tumblehome-glasshouse",
+        "filleted-shoulder-and-nose",
+        "wagon-roofline",
+        "roof-rails",
+        "wheel-arches",
+        "bilateral-symmetry"
+      ],
+      "structureKind": [
+        "solid-shell",
+        "extruded-profile",
+        "instanced-wheels",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "rigid-body-vehicle",
+        "wheels-roll-about-axle"
+      ],
+      "materialFamilies": [
+        "dark-automotive-paint",
+        "tinted-glass",
+        "grey-plastic-chrome-and-alloy-trim"
+      ],
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A body-on-frame seven-seat SUV. The plate shows a very dark (near-black) wagon body with chrome window surrounds, alloy wheels, chrome side steps, roof rails, a spare-wheel bulge on the hatch and grey dust on the lower doors. NOTE for the asset list: the plate's badge is a three-diamond mark and the body is a Pajero-type SUV, not a Fortuner; the model is built to the plate, which is the authority, and the discrepancy is a preview-image problem."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 2
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "The identity is the side profile -- bonnet, raked screen, long wagon roof and a near-vertical hatch -- and it is one closed polygon swept across the width, with the wheel arches cut into it as notches, then narrowed above the belt for tumblehome. One geometry carries the whole shell.",
+        "One repetition system: four wheels off one lathe, each a named pivot on its axle.",
+        "A colour difference is not a material difference: every trim tone -- tyre, rim, bumper, lamp -- is a vertex colour on one white material, and the paint carries its dirt as a canvas.",
+        "Action readiness is the wheels: four hinge pivots, convex collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "A vehicle cannot be a box on a box: the raked screen, the tumblehome and the arches are what make it read at prop distance, and all three come from shaping one extrusion. The glasshouse is a second extrusion of the cab polygon offset 6 mm proud so no pane shares a plane with the body. The roof carries two rails and a dark panel between them, the hatch a spare-wheel bulge and a chrome garnish."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-side-profile",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "bonnet, raked screen, long wagon roof and a near-vertical hatch as one side outline with two arch notches",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-glasshouse",
+          "zone": "cab",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "tinted glass band round the cabin with painted pillars standing proud of it",
+          "mapsTo": {
+            "ref": "glazing"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-front",
+          "zone": "front",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "two-bar chrome grille between rectangular lamps over a grey bumper, chrome side steps along the sills",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-wheels",
+          "zone": "wheels",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four alloy wheels with shallow dishes on 0.74 m tyres",
+          "mapsTo": {
+            "ref": "wheels"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-dirt",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "grey road dust up the sills, lower doors and arches",
+          "mapsTo": {
+            "ref": "d7-dirt"
+          },
+          "onMaterial": "paint",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-fittings",
+          "zone": "body",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "door mirrors, handles, shut lines, steps, indicators",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+    "resolvedUnknowns": [
+      "The front elevation is built to type: a two-bar chrome grille between rectangular lamps over a grey bumper.",
+      "The paint is LIFTED from the measured #3f3e3a to #5a5a5e: the turntable gate read 734 x 140 px of the shaded flank as a hole at the measured value and again at #4c4c50. Recorded on the material with both measurements.",
+      "Mirrors reach 1.04 m either side of centre; the registry width of 1.86 is the body width.",
+      "No interior: the cabin is a solid in paint under a 6 mm proud tinted pane at opacity 0.92."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.86 x 1.84 x 4.80 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus one named pivot per wheel (4); zero sockets; convex collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 3,
+      "microFeatureGroups": 3,
+      "materialLayers": 3,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.86 x 1.84 x 4.80 m, +Z forward",
+          "bonnet, raked screen, long wagon roof and a near-vertical hatch read as the type at prop distance",
+          "Wheels at the proxy's stations"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a box-on-box body with no rake or tumblehome",
+          "wheels floating off the sill"
+        ]
+      },
+      {
+        "id": "front-and-fittings",
+        "name": "Front elevation and fittings",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "two-bar chrome grille between rectangular lamps over a grey bumper, chrome side steps along the sills",
+          "Mirrors, handles, steps and lamps as real parts"
+        ],
+        "evidenceRefs": [
+          "region-rim"
+        ],
+        "failureModes": [
+          "a blank nose slab",
+          "mirrors inside the body"
+        ]
+      },
+      {
+        "id": "wheels",
+        "name": "Wheels and pivots",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Four instanced wheels, rim separated from the tyre",
+          "One named pivot per wheel on the axle"
+        ],
+        "evidenceRefs": [
+          "region-tyre"
+        ],
+        "failureModes": [
+          "flat discs",
+          "no pivots, or a pivot per body panel"
+        ]
+      },
+      {
+        "id": "paint-and-dirt",
+        "name": "Paint and road dirt",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Measured paint, ratio formed in linear space",
+          "Dirt confined to sills, lower doors and arches; roof clean"
+        ],
+        "evidenceRefs": [
+          "region-side"
+        ],
+        "failureModes": [
+          "dirt speckles across the whole side like confetti",
+          "a hue shift from an sRGB ratio"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "front-and-fittings",
+      "name": "Front elevation and fittings",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "trim",
+        "glazing"
+      ],
+      "evidenceRefs": [
+        "region-rim"
+      ]
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels and pivots",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "wheels"
+      ],
+      "evidenceRefs": [
+        "region-tyre"
+      ]
+    },
+    {
+      "id": "paint-and-dirt",
+      "name": "Paint and road dirt",
+      "tier": "important",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-side"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 5,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the vehicle at base-center."
+      },
+      {
+        "name": "wheel-front-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.79,
+          0.37,
+          1.5
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-front-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.79,
+          0.37,
+          1.5
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.79,
+          0.37,
+          -1.25
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.79,
+          0.37,
+          -1.25
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this vehicle in the kit and nothing is emitted from it; a marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "convex",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as convex: one hull over the body shell. A level builder collides with the vehicle, not with its mirrors or its wheel wells."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The front elevation is built to type: a two-bar chrome grille between rectangular lamps over a grey bumper.",
+    "The paint is LIFTED from the measured #3f3e3a to #5a5a5e: the turntable gate read 734 x 140 px of the shaded flank as a hole at the measured value and again at #4c4c50. Recorded on the material with both measurements.",
+    "Mirrors reach 1.04 m either side of centre; the registry width of 1.86 is the body width.",
+    "No interior: the cabin is a solid in paint under a 6 mm proud tinted pane at opacity 0.92."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at tyre contact, +Y up, +Z FORWARD, +X the vehicle's left. Meshy returned the proxy with its long axis on X, an arbitrary output convention; the band comparison detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.86,
+      "h": 1.84,
+      "d": 4.8
+    },
+    "description": "Sill 0.44 m, wheels 0.74 m in diameter at z +1.50 and -1.25 (2.75 wheelbase, 0.90 front overhang), bonnet lip 0.92-1.00 m to a scuttle at 1.12 m, windscreen raked from z 1.36 to a roof at 1.78 m running back to z -2.10, a hatch raked from 1.72 m at z -2.26 to the bumper at z -2.40. Roof rails to 1.84 m. Roof width 0.86 of the body.",
+    "envelopeDerivation": "x spans -0.93..+0.93 on the shell (mirrors to +-1.04); y 0.00 to 1.84 at the roof rails; z -2.40..+2.40 bumper to bumper, +Z forward. The Meshy proxy normalises to L:H:W = 1 : 0.404 : 0.448 (2.47 lengths tall against the declared 2.61), so heights are proxy fractions of H and stations fractions of L at the declared metres.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.404 : 0.448, i.e. 4.80 x 1.94 x 2.15 m at the declared length -- taller and wider than the registry by 5 and 15 percent, the width being the proxy's flared arches. Side elevation (scratch/toyota-fortuner/_ev/side.png): bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L; axles 0.19 L and 0.76 L; roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-paint",
+      "viewpoint": "top",
+      "path": "crops/paint.png",
+      "confidence": 0.755
+    },
+    {
+      "id": "region-side",
+      "viewpoint": "side",
+      "path": "crops/side.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-tyre",
+      "viewpoint": "side",
+      "path": "crops/tyre.png",
+      "confidence": 0.794
+    },
+    {
+      "id": "region-rim",
+      "viewpoint": "side",
+      "path": "crops/rim.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-glass",
+      "viewpoint": "side",
+      "path": "crops/glass.png",
+      "confidence": 0.716
+    },
+    {
+      "id": "region-front",
+      "viewpoint": "front",
+      "path": null,
+      "confidence": 0.7,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.70: the plate is a rear three-quarter; the grille, lamps and front bumper are built to type and to the proxy's front elevation."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Body shell and pillars",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One extruded side profile with arch notches, the pillar extrusions and the spare-wheel bulge merged into ONE geometry and ONE draw call.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Sill 0.44, a 10 cm bonnet-lip arc at 0.86-0.96, bonnet crown to a scuttle at 1.12 at z 1.38, a 36.5-degree rake into a 12 cm roof-front arc, roof 1.78 from z 0.83 to -2.10, hatch raked to z -2.40 with a 0.70 x 0.36 m spare-wheel bulge; width 1.86 narrowing 14 percent at the roof; shoulder fillet r 0.10 from the hatch to the rake top, plan nose r 0.34 and tail r 0.12, angle-limited smooth normals.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Pillars stand 13 mm proud of the body and 7 mm proud of the glass with their bottoms 10 mm above the glass sill. check-coplanar reports the prop clean.",
+        "mergeNote": "One merged BufferGeometry with height-keyed UVs for the dirt tile."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-side-profile",
+          "description": "the side outline",
+          "delivery": "sideExtrude of the outline with arch splices"
+        },
+        {
+          "id": "d7-dirt",
+          "description": "dirt on sills and arches",
+          "delivery": "canvas as map with height UVs"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#5a5a5e",
+        "recipe": "Dark grey paint lifted for the hole gate; dust envelope on the material, clean grey as a canvas ratio.",
+        "evidenceRef": "region-side",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(90, 90, 94, 1.0)",
+        "secondaryAlbedo": "rgba(90, 90, 94, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. The body shell is the rigid root; the wheels carry their own axle pivots."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "convex",
+          "localCenter": [
+            0,
+            0.92,
+            0
+          ],
+          "halfExtents": [
+            0.93,
+            0.92,
+            2.4
+          ],
+          "notes": "Declared on the asset as convex: one hull over the body shell. A level builder collides with the vehicle, not with its mirrors or its wheel wells."
+        }
+      }
+    },
+    {
+      "id": "glazing",
+      "name": "Glazing",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.8,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The cabin polygon from belt to roof, offset 6 mm outward and swept at the body width plus 6 mm with the same tumblehome, so windscreen, side glass and rear glass are one pane band.",
+      "materialId": "glass",
+      "material": "glass",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Glass from 1.16 to 1.65 m (below the shoulder fillet foot at 1.68) from the screen, whose edge runs 1 cm ahead of the rake, to the hatch glass at z -2.30; A, B, C and D pillars as 10 cm side strips.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Offset outward along the averaged edge normals, so no pane face is coplanar with the raked body faces it covers; its top face sits below the roof.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-glasshouse",
+          "description": "glass band",
+          "delivery": "offsetPoly + sideExtrude"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "glass",
+        "baseColor": "#7a878c",
+        "recipe": "Tinted glass at opacity 0.92, lifted above the hole gate.",
+        "evidenceRef": "region-glass",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(122, 135, 140, 1.0)",
+        "secondaryAlbedo": "rgba(122, 135, 140, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Trim, lamps, bumpers and wheel wells",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Bumpers, grille, two bars, lamps, hatch garnish, roof panel and two rails, mirrors, chrome handles, shut lines, chrome side steps, indicators, exhaust, undertray, two arch flares and two inner wings: thirty-eight parts at one submission.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Bumpers 6 cm proud of nose and tail, the front corners, lower grille slot and lamps rotated boxes wrapping the 0.34 m nose; lamps at x +-0.69; steps at 0.40 m; rails at x +-0.60 seated on the 1.78 roof with a dark panel between them; flares 50 mm wide standing 20 mm proud.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every part stands proud of or butts against the shell as opposed faces; recesses are lifted above luma 58 so an enclosed dark panel is not read as a hole; the undertray top is below the sill.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-front",
+          "description": "grille and lamps",
+          "delivery": "tinted boxes"
+        },
+        {
+          "id": "d8-fittings",
+          "description": "mirrors, handles, steps",
+          "delivery": "mirrored tinted boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#6c6c6a",
+        "recipe": "White material, every tone a vertex colour.",
+        "evidenceRef": "region-rim",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(108, 108, 106, 1.0)",
+        "secondaryAlbedo": "rgba(108, 108, 106, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "level": "meso",
+      "role": "mechanism",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One lathe -- hub dish, rim lip, sidewalls, tread -- as an InstancedMesh with four instances.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "0.37 m radius, 0.25 m wide, rim 0.26 m, dish 0.35, at x +-0.79, z +1.50 and -1.25.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each wheel is a closed lathe; its inner face meets the inner wing as an opposed butt.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-wheels",
+          "description": "four wheels",
+          "delivery": "repetitionSystems.wheels"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#53534e",
+        "recipe": "Tyre and rim as vertex colours on the shared white trim material.",
+        "evidenceRef": "region-tyre",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(83, 83, 78, 1.0)",
+        "secondaryAlbedo": "rgba(83, 83, 78, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0.79,
+            0.37,
+            1.5
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ],
+          "confidence": 0.9,
+          "name": "wheel-front-l",
+          "notes": "One InstancedMesh, 4 instances; each instance is a named pivot on its axle (wheel-front-l, wheel-front-r, wheel-rear-l, wheel-rear-r) exposed on sculptRuntime.pivots with its instance index, so a host can spin any wheel by writing that instance matrix."
+        },
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": true,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "The wheels are the only mechanism on the prop."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "paint",
+      "name": "Dark automotive paint with road dust",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#86837e",
+      "color": "#86837e",
+      "roughness": {
+        "base": 0.38,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.05,
+      "albedo": {
+        "dominant": "#86837e",
+        "secondary": [
+          "#737378",
+          "#7F7E83",
+          "#5F5F63"
+        ],
+        "samplingNotes": "Measured as the mean of crops/side.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-dirt",
+          "region": "sills, lower doors and arches",
+          "roughness": 0.5,
+          "palette": [
+            "#86837E",
+            "#5A5A5E"
+          ],
+          "evidence": "Lower door dust against the flank; a wash to 0.30 of a 2 m height-keyed tile plus soft blobs at the envelope."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Clean paint measured on viewEvidence region-side (PBR confidence 0.860) at #3f3e3a, luma 62, and on the roof (region-paint) at #6e6e73 under its highlight. Shipped clean at #5a5a5e (luma 90): at #3f3e3a and again at #4c4c50 the shaded flank rendered under the backdrop's 58 and the turntable gate read it as a hole. The lower-door dust is BRIGHTER than the paint, so the material carries the dust envelope #86837e and the clean grey rides the canvas as a linear ratio.",
+          "Textureless as DECLARED: the dust is a 512 px Canvas 2D tile bound after construction as map."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/side.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Tinted glazing with a sky reflection",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7a878c",
+      "color": "#7a878c",
+      "roughness": {
+        "base": 0.3,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.05,
+      "albedo": {
+        "dominant": "#7a878c",
+        "secondary": [
+          "#1D1D1C",
+          "#3D3E3C",
+          "#3B3B39"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.716. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-glass (rear side window, PBR confidence 0.716) at #31312f, luma 49 -- below the backdrop -- and LIFTED to #5a6266, luma 97, for the silhouette gate. The material is RE-BASED to the sky-lit tone #7a878c (luma 131) a real screen reflects at its top, and a 256 px glass canvas multiplies it down to #5a6266 at the sill as a linear ratio, with five soft diagonal reflection streaks and a dash-shadow film in the lowest tenth. Opacity 0.94 over a solid cabin.",
+          "Textureless as DECLARED: the sky gradient is a post-construction canvas bound as map, keyed sill-to-top by pane UVs."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.716,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Grey trim, chrome, alloy and lamps",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.6,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/trim_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/rim.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE on purpose with vertexColors: bumpers and flares #6c6c6a (luma 108), chrome steps, garnish and bars #c4c8cc, alloy rims #b8b8b4 (region-rim #787772, 0.860, under the tyre's shadow) against tyres #53534e (region-tyre, 0.794), roof panel and rails #5e5e5c, lamps #d8dde0, tail lamps #b03030.",
+          "Textureless as DECLARED: small parts at prop distance; the InstancedMesh wheels share it."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/rim.png",
+        "pbrReport": "material-evidence/trim.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "instanceCount": 4,
+      "sourceComponent": "wheels",
+      "material": "trim",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "wheel-lathe",
+      "placement": {
+        "mode": "explicit",
+        "note": "0.37 m radius, 0.25 m wide, rim 0.26 m, dish 0.35, at x +-0.79, z +1.50 and -1.25."
+      },
+      "instanceDimensions": {
+        "width": 0.25,
+        "height": 0.74,
+        "depth": 0.74
+      },
+      "rationale": "Four wheels at one geometry and one submission; each instance is a named axle pivot.",
+      "zFightingNote": "Closed lathe; inner faces butt the wheel wells as opposed faces."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T15:54:58.988686+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.066310+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.145580+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.223986+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.302608+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two-bar chrome grille between rectangular lamps over a grey bumper; chrome side steps, roof rails, hatch garnish and spare bulge, mirrors, chrome handles, shut lines. The front is built to type: the plate is a rear three-quarter.",
+          "notes": "Built as tinted boxes on one white material, each standing proud of the shell."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.381407+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.458362+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.539054+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.620368+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.700719+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.778417+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        },
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two-bar chrome grille between rectangular lamps over a grey bumper; chrome side steps, roof rails, hatch garnish and spare bulge, mirrors, chrome handles, shut lines. The front is built to type: the plate is a rear three-quarter.",
+          "notes": "Built as tinted boxes on one white material, each standing proud of the shell."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        },
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T15:54:58.988686+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4, costed before geometry existed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.066310+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Roof rails and panel floated 2.5-5 cm above the roof; the gate read the daylight under them as a 567 x 12 px hole on both flanks. Seated on the roof.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.145580+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: one side-profile extrusion with two arch notches, tumblehome 0.14, plan rounding, a 10 cm bonnet-lip arc and a 12 cm roof-front arc; shoulder r 0.10, nose r 0.34, tail r 0.12 fillets with angle-limited smooth normals; spare bulge merged into the shell; roof rails and panel seated on the roof.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.223986+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "User review of the promoted prop: \"a bit smoother, rounder corners in the front, glass texture on the windshield\". The first build was an unshaped slab with flat normals, an A-pillar swept full-width as a bar across the screen top and the pane edge 5 mm behind the rake. Rebuilt with shoulder/nose/tail fillets and smooth normals, bonnet-lip and roof-front arcs, strip pillars, the screen edge 1 cm ahead of the rake, wrapped bumper corners and lamps, and a sky-gradient glass tile on the re-based glazing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.302608+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two-bar chrome grille between rectangular lamps over a grey bumper; chrome side steps, roof rails, hatch garnish and spare bulge, mirrors, chrome handles, shut lines. The front is built to type: the plate is a rear three-quarter.",
+          "notes": "Built as tinted boxes on one white material, each standing proud of the shell."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: glass band as an offset extrusion of the cabin polygon, its screen edge 1 cm ahead of the rake; A/B/C/D pillars as 10 cm side strips proud of it; bumper corners, lamps and indicators as rotated boxes wrapping the rounded nose; chrome steps, rails, garnish, mirrors, handles, shut lines.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.381407+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Turntable gate read the shaded flank (paint #3f3e3a, then #4c4c50), the roof panel and the glass as holes at three azimuths; paint lifted to #5a5a5e, glass to #5a6266, panel and bumpers to luma 94-108.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.458362+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.716-0.860; paint lifted twice for the hole gate and re-based to the dust envelope; glass lifted from luma 49 to 97 and re-based to the sky-lit 131 at the top of the pane.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.539054+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: two post-construction canvases: the dust tile on the paint and a sky-gradient glass tile with reflection streaks on the glazing, both ratios formed in linear space.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.620368+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Glass roughness raised so the key light does not white it out.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.700719+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: root pivot plus FOUR wheel pivots on the axles, ZERO sockets, one CONVEX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T15:54:59.778417+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.84 x 4.80 m over the body (mirrors to 2.08) against the declared 1.86 x 1.84 x 4.80; the proxy is 2.47 lengths tall against the real 2.61, a 5 percent declared-aspect residual on the band table.",
+          "notes": "Heights off the proxy side elevation (roof 1.00 H, belt 0.60 H, wheel top 0.40 H, sill 0.24 H); stations bonnet 0.03-0.27 L, screen to 0.36 L, roof to 0.97 L, near-vertical hatch; roof rails seated on the roof after the first build floated them 2.5-5 cm and the turntable gate read the daylight under them as a 567 x 12 px hole on both flanks."
+        },
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two-bar chrome grille between rectangular lamps over a grey bumper; chrome side steps, roof rails, hatch garnish and spare bulge, mirrors, chrome handles, shut lines. The front is built to type: the plate is a rear three-quarter.",
+          "notes": "Built as tinted boxes on one white material, each standing proud of the shell."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced wheels off one lathe with the rim a step apart from the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Alloy wheels in the plate (region-rim 0.86): rim #b8b8b4 with a shallow 0.35 dish against tyre #53534e."
+        },
+        {
+          "id": "paint-and-dirt",
+          "tier": "important",
+          "score": 0.78,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint measured #3f3e3a (region-side, 0.86) and shipped at #5a5a5e after two darker builds (#3f3e3a, #4c4c50) failed the turntable gate with the shaded flank read as a 734 x 140 px hole; dust envelope #86837e on the material, clean grey as a linear ratio on a 512 px canvas.",
+          "notes": "Fidelity on this layer is held down by the lift: the prop is visibly lighter than the plate and says so on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 3,984/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, two canvases (512 px dust, 256 px glass) at 1.7 MB, factory 61 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 4,
+        "repetitionSystems": 1,
+        "projectedTotal": 5,
+        "budget": 4,
+        "headroom": -1,
+        "note": "3 components and one repetition system: 4 of 4. The pillars ride the shell; every trim part rides one merge."
+      },
+      "materials": {
+        "projectedTotal": 3,
+        "budget": 3,
+        "headroom": 0,
+        "note": "paint, glass and a white vertex-coloured trim: 3 of 3. Tyres, rims, bumpers and lamps differ in albedo only."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 5,
+        "budget": 6,
+        "headroom": 1,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 3984,
+        "budget": 4000,
+        "headroom": 16,
+        "note": "3,984 of 4,000: one extrusion with two 8-segment arches, a 20-segment wheel lathe, and boxes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "A closed side-profile polygon extruded across the width and shaped per vertex (tumblehome above the belt, plan rounding at nose and tail); an offset extrusion of the cabin polygon for the glass; a lathe for the wheel; boxes for everything else."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh carries the four wheels; the right-side instances are yawed a half turn so the dish faces out. No per-instance colour, so the white base is inert."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. TWO post-construction Canvas 2D tiles: a 512 px dust tile as the paint map and a 256 px sky-gradient glass tile as the glazing map, both ratios formed in linear space. 1.7 MB of texture VRAM, factory ~60 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "paint-lifted",
+      "severity": "medium",
+      "description": "The plate's near-black paint ships at luma 90.",
+      "mitigation": "The silhouette gate classifies background by luma alone; both darker attempts read the flank as a hole. Both measurements are on the material."
+    },
+    {
+      "id": "plate-is-not-a-fortuner",
+      "severity": "medium",
+      "description": "The plate shows a three-diamond-badged Pajero-type SUV.",
+      "mitigation": "Built to the plate, which is the authority; flagged as a preview-image problem for thaikit-preview-image, not fixed here."
+    },
+    {
+      "id": "front-not-observed",
+      "severity": "low",
+      "description": "Grille and lamps built to type.",
+      "mitigation": "region-front at confidence 0.70."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Toyota Fortuner",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3214,
+        "aspectRatioDelta": 0.0023,
+        "scaleDelta": 0.0931,
+        "bilateralSymmetryError": 0.213,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 5.41,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.41
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.61
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.0
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.321 is below threshold 0.85",
+        "scale delta 0.093 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "render: 21.2% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "d918ec32afcb2d37",
+      "passId": "blockout"
+    }
+  ]
+}

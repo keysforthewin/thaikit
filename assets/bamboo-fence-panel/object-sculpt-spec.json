@@ -1,0 +1,1924 @@
+{
+  "targetName": "Bamboo Fence Panel",
+  "targetId": "bamboo-fence-panel",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "fence-panel-woven-bamboo",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "round-bamboo-posts",
+        "lashed-rails",
+        "woven-strip-panel",
+        "open-windows"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "woven-sheet",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-fence-panel"
+      ],
+      "materialFamilies": [
+        "sun-bleached-bamboo",
+        "weathered-bamboo-culm",
+        "black-cord"
+      ],
+      "notes": "Static fence panel that tiles post to post. Both faces are seen and nothing is hollow, but nothing opens, turns or swings, so every part is fixed and one root pivot and zero sockets is the correct contract. A level builder places these in runs of dozens, so the draw-call ceiling is the design constraint. ONE POST PER TILE: the post sits on the -X end and the bay runs to the +X edge, so tiles chain post-bay-post-bay along X with no doubled post at a joint. A village garden fence. Bamboo bleached silver-grey with darker nodes, black mould at the lashings, a few broken strips."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE whole-bamboo post on the -X end, a top and bottom rail lashed to its front with dark cord and running to the +X edge, and a woven split-bamboo panel between the rails with two open windows and vertical strip bundles (proxy: posts 6 of 80 columns to 0.98 H, rails 0.12-0.20 and 0.84-0.92 H, weave 0.20-0.80 H with the openings at 0.38-0.62 H).",
+        "TWO materials: split-bamboo weave (a strip tile with per-strip tone, longitudinal grain, loose weave crossings and mould, rotated on the bands and upright on the mullions) and whole culm (a tile mapped around-by-along each cylinder with two node rings per 0.6 m, grain, a drying split and mould below the nodes). Cord is a vertex colour on the culm material.",
+        "No repetition system: the strips are one merge.",
+        "Action readiness: one root pivot, zero sockets, one box collider on the frame root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is round culms with nodes, dark lashings and a woven panel with windows; the culm nodes and strip joints are canvas, the windows and lashings are geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "one round bamboo post",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-rails",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "top and bottom round rails over the weave",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-lashings",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "dark cord lashings at the two rail-post joints",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-windows",
+          "zone": "panel",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two open windows in the woven panel with vertical strip bundles",
+          "mapsTo": {
+            "ref": "weave"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-nodes",
+          "zone": "panel",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "culm nodes and strip joints",
+          "mapsTo": {
+            "ref": "d5-nodes"
+          },
+          "onMaterial": "bamboo",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-strips",
+          "zone": "panel",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "vertical strips beside the windows",
+          "mapsTo": {
+            "ref": "strips"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+    "resolvedUnknowns": [
+      "The proxy carries two posts; the tile carries one by design so tiles chain. Rails are lashed on the FRONT of the post, as the plate shows; the back shows the posts and the weave.",
+      "The broken strips at the bottom are not modelled; the weave ends 4 cm above the bottom rail.",
+      "The windows are real openings, so the turntable gate is run with --allow-holes on the _holecc measurement."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 2.00 x 1.50 x 0.08 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 2.00 x 1.50 m",
+          "Rails at 0.16 and 0.88 H"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a solid board"
+        ]
+      },
+      {
+        "id": "weave-and-windows",
+        "name": "Woven panel and windows",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two open windows",
+          "Horizontal weave, vertical mullions"
+        ],
+        "evidenceRefs": [
+          "region-weave",
+          "region-strips"
+        ],
+        "failureModes": [
+          "no openings"
+        ]
+      },
+      {
+        "id": "culms",
+        "name": "Culms and lashings",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Round posts and rails",
+          "Dark lashings"
+        ],
+        "evidenceRefs": [
+          "region-post",
+          "region-lashing"
+        ],
+        "failureModes": [
+          "square posts"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "weave"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "weave-and-windows",
+      "name": "Woven panel and windows",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "weave",
+        "strips"
+      ],
+      "evidenceRefs": [
+        "region-weave",
+        "region-strips"
+      ]
+    },
+    {
+      "id": "culms",
+      "name": "Culms and lashings",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-post",
+        "region-lashing"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 3,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static fence geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "frame",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: one proxy over the whole panel envelope, which is what a run of fence collides as."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The proxy carries two posts; the tile carries one by design so tiles chain. Rails are lashed on the FRONT of the post, as the plate shows; the back shows the posts and the weave.",
+    "The broken strips at the bottom are not modelled; the weave ends 4 cm above the bottom rail.",
+    "The windows are real openings, so the turntable gate is run with --allow-holes on the _holecc measurement."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows), +X along the run. The panel tiles post to post along X. "
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 2.0,
+      "h": 1.5,
+      "d": 0.08
+    },
+    "description": "One post 0.09 m round at x -0.943, 1.50 m tall; rails 0.08 m round at 0.24 and 1.32 m from the post to the tile edge over the weave; woven panel 1.88 x 0.96 x 0.025 m from 0.28 to 1.28 m with windows 0.42 x 0.36 m at x -0.52..-0.10 and 0.26..0.68; three strip bundles proud of the weave.",
+    "envelopeDerivation": "x spans -1.00 at the lashing collar (the one post, 0.09 m round, centred at -0.943) to +1.00 at the rail ends, flush with the tile edge; y 0.00 to 1.50 at the post top; z -0.057 (post backs) to +0.115 (rail fronts). The proxy normalises to w/h 1.240 against the declared 1.333 and d/h 0.105 (0.16 m at the rails over the posts) against the declared 0.053; the declared width is built and the band residual (mean |delta width| 0.089) is the declared aspect.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w/h 1.240, d/h 0.105. Its front depth map (scratch/bamboo-fence-panel/_ev/front.png) shows two rails lashed over a thin panel with two dark openings and a mullion between; occupancy reads the openings at 0.38-0.62 H."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-rail",
+      "viewpoint": "front",
+      "path": "crops/rail.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-post",
+      "viewpoint": "front",
+      "path": "crops/post.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-weave",
+      "viewpoint": "front",
+      "path": "crops/weave.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-strips",
+      "viewpoint": "front",
+      "path": "crops/strips.png",
+      "confidence": 0.804
+    },
+    {
+      "id": "region-lashing",
+      "viewpoint": "front",
+      "path": "crops/lashing.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the weave is the same both faces; the rails are on the front only, as the plate shows."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Post, rails and lashings",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One post, two rails and two cord collars: one merge, one draw call.",
+      "materialId": "culm",
+      "material": "culm",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Post r 0.045 at x -0.943, 1.50 m; rails r 0.04 at 0.24 and 1.32 m from the post centre to x +1.00, z 0.03; collars r 0.057, 0.07 m tall at each joint.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Rails are half-buried in the post front as interpenetrating solids; collars stand 12 mm proud of the posts; the weave passes through the rail bottoms.",
+        "mergeNote": "One merged BufferGeometry; each cylinder carries culm UVs (u around, v along, 0.6 m per tile, phased per culm) so the node rings cross every culm at real spacing."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "posts",
+          "delivery": "cylinders"
+        },
+        {
+          "id": "d2-rails",
+          "description": "rails",
+          "delivery": "cylinders"
+        },
+        {
+          "id": "d3-lashings",
+          "description": "lashings",
+          "delivery": "dark collars"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "culm",
+        "baseColor": "#aeaba6",
+        "recipe": "Culm as vertex white, cord as a dark vertex colour, one culm canvas mapped around-by-along.",
+        "evidenceRef": "region-post",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(174, 171, 166, 1.0)",
+        "secondaryAlbedo": "rgba(174, 171, 166, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC fence panel: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.75,
+            0
+          ],
+          "halfExtents": [
+            1.0,
+            0.75,
+            0.04
+          ],
+          "notes": "Declared on the asset as box: one proxy over the whole panel envelope, which is what a run of fence collides as."
+        }
+      }
+    },
+    {
+      "id": "weave",
+      "name": "Woven split-bamboo panel",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One extrusion with the two windows as holes: the openings are real, at no draw-call cost.",
+      "materialId": "bamboo",
+      "material": "bamboo",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "1.88 x 0.96 x 0.025 m from y 0.28 to 1.28, the post face to 1 cm inside the tile edge; windows at x -0.52..-0.10 and 0.26..0.68, y 0.62..0.98.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The strip bundles stand 3 mm proud of each face; the weave ends 1 cm short of the post face and the tile edge.",
+        "mergeNote": "Rotated panel UVs at 0.45 m per tile."
+      },
+      "localFeatures": [
+        {
+          "id": "d4-windows",
+          "description": "windows",
+          "delivery": "extrude holes"
+        },
+        {
+          "id": "d5-nodes",
+          "description": "strip joints",
+          "delivery": "bamboo canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "bamboo",
+        "baseColor": "#c6c3be",
+        "recipe": "Bamboo canvas rotated so the strips run horizontal.",
+        "evidenceRef": "region-weave",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(198, 195, 190, 1.0)",
+        "secondaryAlbedo": "rgba(198, 195, 190, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "strips",
+      "name": "Vertical strip bundles",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three boxes proud of the weave beside and between the windows: one merge.",
+      "materialId": "bamboo",
+      "material": "bamboo",
+      "parent": "weave",
+      "geometryDescriptor": {
+        "topologyIntent": "0.36 / 0.36 / 0.31 m wide, 0.42 m tall, 0.031 m thick, centred on the window band.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "3 mm proud of the weave on both faces; never planar with it.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-strips",
+          "description": "strips",
+          "delivery": "boxes with upright canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "bamboo",
+        "baseColor": "#e2ded8",
+        "recipe": "Bamboo canvas upright, slightly darker vertex colour.",
+        "evidenceRef": "region-strips",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(226, 222, 216, 1.0)",
+        "secondaryAlbedo": "rgba(226, 222, 216, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "bamboo",
+      "name": "Sun-bleached split-bamboo weave",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c6c3be",
+      "color": "#c6c3be",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/bamboo_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c6c3be",
+        "secondary": [
+          "#c6c3be",
+          "#e2ded8",
+          "#aca7a1"
+        ],
+        "samplingNotes": "Measured as the mean of crops/weave.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-nodes",
+          "region": "strips",
+          "roughness": 0.85,
+          "palette": [
+            "#B1ACA5",
+            "#463C30"
+          ],
+          "evidence": "Fine strip joints, grain and dark mould across the weave in region-weave; the canvas draws them per strip."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-weave (0.860) at #b1aca5 and region-strips (0.804) at #aca7a1. The strip canvas multiplies at a mean of ~0.84, so the envelope is carried at #c6c3be and renders on the measurement; the strips a touch darker (#e2ded8 vertex).",
+          "Textureless as DECLARED: one 512 px canvas after construction as map and bumpMap -- 28 strips of varied width per 0.45 m with per-strip silver/warm-grey tone, the round of each strip, 14-24 longitudinal grain hairlines, lengthwise weathering patches, three loose weave crossings and six mould speck clusters."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/weave.png",
+        "pbrReport": "material-evidence/bamboo.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "culm",
+      "name": "Whole bamboo culm",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#aeaba6",
+      "color": "#aeaba6",
+      "roughness": {
+        "base": 0.78,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/culm_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#aeaba6",
+        "secondary": [
+          "#aeaba6",
+          "#5a5750",
+          "#8f8b86"
+        ],
+        "samplingNotes": "Measured as the mean of crops/post.png. extract_pbr_evidence confidence 0.830. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d1-posts",
+          "region": "post and rails",
+          "roughness": 0.82,
+          "palette": [
+            "#9E9A93",
+            "#463C30"
+          ],
+          "evidence": "Node rings every ~0.3 m and black mould at the nodes and lashings on every culm in the plate."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-post (0.829) at #8f8b86 and region-rail (0.860) at #9f9a94; the culm canvas multiplies at ~0.90, so the envelope is carried at #aeaba6 and renders near #9e9a93. Cord collars are a #5a5750 vertex colour on this material (region-lashing #524f47, lifted above luma 58) and are phased off the tile nodes (vOff 0.45).",
+          "Textureless as DECLARED: one 512 px canvas after construction as map and bumpMap, mapped AROUND x ALONG each cylinder (culmUV) at 0.6 m per tile: two node rings per tile (groove, pale sheath ridge, shade), 260 grain hairlines per internode, two drying splits, weathering patches and mould gathered below each node, as the post and rail crops show."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/post.png",
+        "pbrReport": "material-evidence/culm.pbr.json",
+        "confidence": 0.83,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T10:55:19.553743+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.632622+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.715998+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.799137+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "culms",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round post and rails with node rings every ~0.3 m from the culm canvas (around-by-along UVs), grain, splits and mould below the nodes; two dark cord collars at the joints.",
+          "notes": "Collars are rings, not wrapped cord."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.881544+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.966211+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:20.049292+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:55:20.134044+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        },
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        },
+        {
+          "id": "culms",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round post and rails with node rings every ~0.3 m from the culm canvas (around-by-along UVs), grain, splits and mould below the nodes; two dark cord collars at the joints.",
+          "notes": "Collars are rings, not wrapped cord."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T10:55:19.553743+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components on two materials at 3 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.632622+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: one post, rails to the tile edge, weave and windows at the proxy stations.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.715998+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: lashing collars, strip bundles proud of the weave.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.799137+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "culms",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round post and rails with node rings every ~0.3 m from the culm canvas (around-by-along UVs), grain, splits and mould below the nodes; two dark cord collars at the joints.",
+          "notes": "Collars are rings, not wrapped cord."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.804-0.860, textureless with measured albedo carried as the envelope of each canvas; cord lifted above luma 58.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.881544+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a split-strip weave canvas (varied strips, grain, loose crossings, mould) rotated on the bands and upright on the mullions, and a culm canvas mapped around-by-along each cylinder with node rings at 0.3 m; both as map and bumpMap.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:19.966211+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:20.049292+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the frame root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:55:20.134044+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 2.00 x 1.50 x 0.13 m with one post per tile; rails at 0.24 and 1.32 m off the proxy's 0.16 and 0.88 H. Band table: mean |delta width| 0.089 (the declared 1.33 against the proxy's 1.24), |delta depth| 0.036.",
+          "notes": ""
+        },
+        {
+          "id": "weave-and-windows",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One holed extrusion with two open windows; horizontal weave on the bands (rotated UVs) and upright strips on the mullions, 3 mm proud.",
+          "notes": ""
+        },
+        {
+          "id": "culms",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round post and rails with node rings every ~0.3 m from the culm canvas (around-by-along UVs), grain, splits and mould below the nodes; two dark cord collars at the joints.",
+          "notes": "Collars are rings, not wrapped cord."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 324/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two canvases at 2.7 MB. Turntable: the windows are real openings, allowed on measurement; 90 (the open +X end) is UNSEGMENTABLE by size against the segmenter's 3.5% floor, 270 segments at 0.13.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 0,
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Three components, no repetition system: 3 of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "bamboo weave and culm: 2 of 3."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 6,
+        "headroom": 3,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 324,
+        "budget": 4000,
+        "headroom": 3676,
+        "note": "324 of 4,000: five cylinders, one holed extrusion, three boxes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Cylinders for culms and lashings, one holed extrusion for the weave, boxes for the strip bundles."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing repeats at one size."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Two 512 px canvases after construction (weave, culm), 2.7 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "edge-on-unsegmentable",
+      "severity": "low",
+      "description": "At 90 degrees the open +X end is a 0.025 m weave edge and two rail ends, under 3.5% of the frame; the turntable segmenter reports that azimuth unsegmented (270, the post end, segments at 0.13).",
+      "mitigation": "A property of a one-post tile seen from its open end; 0/180 segment at 0.99. Recorded, not bypassed."
+    },
+    {
+      "id": "open-windows-turntable",
+      "severity": "low",
+      "description": "The two windows enclose background inside the silhouette.",
+      "mitigation": "Real openings; --allow-holes on the _holecc measurement."
+    },
+    {
+      "id": "declared-aspect",
+      "severity": "low",
+      "description": "Proxy w/h 1.24 against the declared 1.33.",
+      "mitigation": "Declared width built; reported."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Bamboo Fence Panel",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.shader-mapping-boxgeometry-slides-receivers-grips",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[5]",
+        "score": 3.982060806801,
+        "snippets": [
+          "... ráp hình chữ nhật/khối. Recognition cues: Flat-faced, roughly rectangular volume (pistol slide, receiver/frame, grip, panel) Dấu hiệu nhận diện: Khối gần chữ nhật với các mặt phẳng (khóa nòng súng lục, thân/khung súng, tay cầm, tấm phẳng) ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4682,
+        "aspectRatioDelta": 0.0563,
+        "scaleDelta": 0.2186,
+        "bilateralSymmetryError": 0.2554,
+        "colorDelta": {
+          "checked": 3,
+          "maxDeltaE": 22.72,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.53
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.72
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.468 is below threshold 0.85",
+        "aspect-ratio delta 0.056 exceeds threshold 0.05",
+        "scale delta 0.219 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "947cf0e285283c92",
+      "passId": "blockout"
+    }
+  ]
+}

@@ -852,7 +852,14 @@
   "Lateral tail spread is taken from the reference GLB's band profile, a generative proxy. Confidence 0.50.",
   "Breast frontal width is taken as 0.60 of the body's fore-aft length. A lateral view cannot show it. Confidence 0.50.",
   "The stance is built MIRROR-SYMMETRIC with both feet at z = 0 and the toes splayed outward, where the plate shows one foot about 40 mm forward of the other. The offset is recorded in the detail inventory as NOT identity-defining, and a symmetric stance both satisfies the chirality gate cleanly and gives a level builder a neutral prop. This is a deliberate, recorded deviation from the plate, not an oversight.",
-  "The pale amber iris ring is knowingly omitted at about 4 mm on a 0.55 m prop."
+  "The pale amber iris ring is knowingly omitted at about 4 mm on a 0.55 m prop.",
+  "PLUMAGE PASS (2026-08-27, post-ship, user-reported 'smooth and shiny, not organic'): every feathered surface now carries a seeded seamless Canvas 2D tile bound post-construction as map+bumpMap (contour feathers 120 mm tile, lanceolate hackle 80 mm, pencilled pale tail 100 mm, tarsus scutes 30 mm, papillated head skin 30 mm), so every material stays declared textureless and the measured albedo is the tile's re-based mean. Tone spreads are plate ratios (hackle p5/p95 0.29/1.71, pale tail 0.57/2.09, tarsus 0.67/1.37, head skin 0.46/1.59) with the dark ends lifted for the luma-58 hole gate. Cost: 84 ms for all five tiles at 256 px on the CPU canvas path (willReadFrequently) -- the same drawing on the GPU-backed canvas cost 2.3 s under SwiftShader. 1.7 MB texture VRAM.",
+  "The SDF-polygonised meshes carry no uv, so the body is mapped cylindrically about the VERTICAL axis (a mapping about z put its pole on the breast, which rendered as a pinwheel) and the legs conically about the tarsus so scute rows run down the toes; the tapered sweeps' 0..1 uv is rescaled to metres from ring perimeter and path length.",
+  "The neck column is on plumage-oxblood, not skin-red: the plate's neck crop (720,160) is rgb 63/21/18, the hackle's own colour, against head skin at 123/71/65. Only the face and throat are bare, and those are the head's geometry.",
+  "Body smooth-union radius raised 0.03 -> 0.05 and polygonizer resolution 24 -> 36 (the five ellipsoids read as separate lobes at 0.03), with the SDF bounds padded 17-20 mm: at the original tight bounds the blended surface crossed the box and the body shipped as an open C-shell. Tapered sweeps are subdivided 3x through a centripetal Catmull-Rom (positions and radii) so the wings and sickles are no longer creased at each authored station. Triangles 20,732 -> 26,032 of 32,000; materials 10 -> 7 (the SDF meshes' duplicate createSculptMaterial instances now share materialMap's). Band table after: mean |depth error| 0.0551 of height over 19 bands against 0.0538 recorded at ship.",
+  "Feathered materials gained a low sheen lobe (body 0.18 teal, hackle 0.28 oxblood, tail 0.15) and went a step rougher (0.45 -> 0.62 body, 0.48 -> 0.58 hackle): at sheen 0.55 the whole body rendered green. Wing coverts and shoulder carry a low-frequency vertex tint (teal 0.78/1.0/0.95 linear, oxblood 1.18/0.9/0.85) on white-filled colour attributes across every plumage-dark geometry.",
+  "ANATOMY PASS (2026-08-27, user: 'looks like it's made of wood; no curve in the neck; legs not straight; head shape and eye wrong'). Rebuilt to plate landmarks (1 px = 0.625 mm, origin at the tarsus): neck is a six-station curve from (y 0.35, z 0.029) through (0.445, 0.061) and (0.515, 0.097) into the skull, radii 37 -> 13 mm, with the hackle cape following it to y 0.506 and tapering INTO the neck instead of ending in a ring; drumsticks are vertical (hip root x 0.024 straight down to the hock at 0.030 -- they walked 20 mm outward before and read knock-kneed); head node moved to the plate eye (0.531, 0.112), skull re-authored as a domed wedge 33 x 42 x 58 mm with a small nape, a trimmed wattle and a pea comb, beak base at (0.523, 0.126) with the tip at z 0.162 against the plate's 0.166; eyes are 12 mm pearl eyes on a 27 mm ring with a canvas iris (pupil 30 deg, iris 62 deg, absolute colours, drawn at u=0.5 where a SphereGeometry's +x lies); folded wings moved into the flank (x 0.052 -> 0.040, outward radius 14 mm) with the tip walked 14 mm inboard so it is buried rather than spiking out behind. Gate suite all PASS; band table 0.0516 of height (0.0538 at ship). Triangles 27,208 / 32,000.",
+  "NECK/HEAD PASS (2026-08-27, user: 'neck still too straight, deepen the S; the head should blend in at the neck -- no bump indicating a large skull'). Neck stations now run up-and-BACK off the shoulders (z 0.037 -> 0.029 over the first 50 mm), forward through the middle (to z 0.093 at y 0.51) and near-vertical into the skull; top ring 23 mm. The skull was moved forward so its rear is tangent to the neck's back line and the nape ellipsoid (33 x 44 x 38 mm, blend 15 mm) IS the neck's continuation -- the previous skull bulged 25 mm behind the neck. A 1 mm sliver where the neck's top ring cut through the skull's side (neck r 14.5 vs skull half-width 13.5 there) is fixed by the narrower top ring. The hackle cape's top station is now fully inside the neck (same material) so it ends without a ledge. Gates 8/8 PASS; band 0.0564 of height; 29,240 / 32,000 triangles."
  ],
  "coordinateFrame": {
   "front": "+Z, the direction the beak points",
@@ -1505,45 +1512,55 @@
       {
        "position": [
         0.0,
-        -0.03,
-        -0.01
+        -0.045,
+        -0.012
        ],
-       "rx": 0.04,
-       "rz": 0.036,
+       "rx": 0.037,
+       "rz": 0.035,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.006,
-        0.002
+        0.002,
+        -0.02
        ],
-       "rx": 0.032,
-       "rz": 0.029,
+       "rx": 0.033,
+       "rz": 0.031,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.042,
-        0.014
+        0.047,
+        -0.004
        ],
-       "rx": 0.025,
-       "rz": 0.023,
+       "rx": 0.029,
+       "rz": 0.027,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.076,
-        0.028
+        0.082,
+        0.024
        ],
-       "rx": 0.019,
-       "rz": 0.018,
+       "rx": 0.0235,
+       "rz": 0.0225,
+       "twist": 0.0
+      },
+      {
+       "position": [
+        0.0,
+        0.106,
+        0.04
+       ],
+       "rx": 0.0165,
+       "rz": 0.016,
        "twist": 0.0
       }
      ],
-     "radialSegments": 12,
+     "radialSegments": 14,
      "capEnds": true
     },
     "uvStrategy": "generated procedural coordinates",
@@ -1812,42 +1829,42 @@
         0.0,
         0.0
        ],
-       "rx": 0.016,
-       "rz": 0.036,
+       "rx": 0.014,
+       "rz": 0.034,
        "twist": 0.0
       },
       {
        "position": [
-        0.0,
+        -0.004,
         -0.022,
         -0.042
        ],
-       "rx": 0.015,
-       "rz": 0.042,
-       "twist": 0.0
-      },
-      {
-       "position": [
-        0.0,
-        -0.048,
-        -0.084
-       ],
-       "rx": 0.01,
+       "rx": 0.014,
        "rz": 0.032,
        "twist": 0.0
       },
       {
        "position": [
-        0.0,
-        -0.07,
-        -0.12
+        -0.009,
+        -0.048,
+        -0.084
        ],
-       "rx": 0.0,
-       "rz": 0.0,
+       "rx": 0.011,
+       "rz": 0.024,
+       "twist": 0.0
+      },
+      {
+       "position": [
+        -0.014,
+        -0.068,
+        -0.118
+       ],
+       "rx": 0.005,
+       "rz": 0.009,
        "twist": 0.0
       }
      ],
-     "radialSegments": 10,
+     "radialSegments": 12,
      "capEnds": true
     },
     "uvStrategy": "generated procedural coordinates",
@@ -1886,9 +1903,9 @@
    },
    "transform": {
     "position": [
-     0.052,
+     0.04,
      0.352,
-     0.048
+     0.046
     ],
     "rotation": [
      0.0,
@@ -1965,42 +1982,42 @@
         0.0,
         0.0
        ],
-       "rx": 0.016,
-       "rz": 0.036,
+       "rx": 0.014,
+       "rz": 0.034,
        "twist": 0.0
       },
       {
        "position": [
-        0.0,
+        0.004,
         -0.022,
         -0.042
        ],
-       "rx": 0.015,
-       "rz": 0.042,
-       "twist": 0.0
-      },
-      {
-       "position": [
-        0.0,
-        -0.048,
-        -0.084
-       ],
-       "rx": 0.01,
+       "rx": 0.014,
        "rz": 0.032,
        "twist": 0.0
       },
       {
        "position": [
-        0.0,
-        -0.07,
-        -0.12
+        0.009,
+        -0.048,
+        -0.084
        ],
-       "rx": 0.0,
-       "rz": 0.0,
+       "rx": 0.011,
+       "rz": 0.024,
+       "twist": 0.0
+      },
+      {
+       "position": [
+        0.014,
+        -0.068,
+        -0.118
+       ],
+       "rx": 0.005,
+       "rz": 0.009,
        "twist": 0.0
       }
      ],
-     "radialSegments": 10,
+     "radialSegments": 12,
      "capEnds": true
     },
     "uvStrategy": "generated procedural coordinates",
@@ -2039,9 +2056,9 @@
    },
    "transform": {
     "position": [
-     -0.052,
+     -0.04,
      0.352,
-     0.048
+     0.046
     ],
     "rotation": [
      0.0,
@@ -2100,7 +2117,7 @@
   },
   {
    "id": "neck-skin",
-   "name": "Bare red neck column",
+   "name": "Oxblood-hackled neck column",
    "level": "meso",
    "role": "neck",
    "importance": 0.85,
@@ -2115,45 +2132,65 @@
       {
        "position": [
         0.0,
-        0.0,
-        0.0
+        -0.02,
+        0.002
        ],
-       "rx": 0.032,
-       "rz": 0.032,
+       "rx": 0.037,
+       "rz": 0.036,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.06,
-        0.02
+        0.03,
+        -0.006
        ],
-       "rx": 0.024,
-       "rz": 0.024,
+       "rx": 0.031,
+       "rz": 0.03,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.105,
+        0.075,
+        0.01
+       ],
+       "rx": 0.026,
+       "rz": 0.025,
+       "twist": 0.0
+      },
+      {
+       "position": [
+        0.0,
+        0.11,
         0.038
        ],
-       "rx": 0.017,
-       "rz": 0.017,
+       "rx": 0.019,
+       "rz": 0.0185,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        0.145,
-        0.052
+        0.14,
+        0.058
        ],
-       "rx": 0.012,
+       "rx": 0.0145,
+       "rz": 0.015,
+       "twist": 0.0
+      },
+      {
+       "position": [
+        0.0,
+        0.162,
+        0.068
+       ],
+       "rx": 0.0115,
        "rz": 0.012,
        "twist": 0.0
       }
      ],
-     "radialSegments": 12,
+     "radialSegments": 14,
      "capEnds": true
     },
     "uvStrategy": "generated procedural coordinates",
@@ -2206,7 +2243,7 @@
      1.0
     ]
    },
-   "material": "skin-red",
+   "material": "plumage-oxblood",
    "actionProfile": {
     "collider": null,
     "sockets": [],
@@ -2269,15 +2306,15 @@
        "id": "skull",
        "type": "ellipsoid",
        "radii": [
-        0.0175,
-        0.0205,
-        0.0255
+        0.0155,
+        0.02,
+        0.026
        ],
        "transform": {
         "position": [
          0.0,
-         -0.0055,
-         -0.0068
+         -0.002,
+         0.003
         ]
        }
       },
@@ -2285,15 +2322,15 @@
        "id": "jaw-cheek",
        "type": "ellipsoid",
        "radii": [
-        0.0165,
-        0.015,
-        0.0215
+        0.0145,
+        0.012,
+        0.022
        ],
        "transform": {
         "position": [
          0.0,
-         -0.018,
-         -0.0143
+         -0.016,
+         0.0
         ]
        }
       },
@@ -2301,15 +2338,15 @@
        "id": "comb-ridge",
        "type": "ellipsoid",
        "radii": [
-        0.0052,
-        0.0066,
-        0.0178
+        0.0045,
+        0.0055,
+        0.014
        ],
        "transform": {
         "position": [
          0.0,
-         0.0138,
-         -0.0032
+         0.019,
+         -0.002
         ]
        }
       },
@@ -2317,15 +2354,15 @@
        "id": "wattle-nub",
        "type": "ellipsoid",
        "radii": [
-        0.006,
-        0.0072,
-        0.0058
+        0.009,
+        0.011,
+        0.01
        ],
        "transform": {
         "position": [
          0.0,
-         -0.0315,
-         0.0012
+         -0.03,
+         0.004
         ]
        }
       },
@@ -2333,15 +2370,15 @@
        "id": "nape",
        "type": "ellipsoid",
        "radii": [
-        0.015,
-        0.016,
-        0.013
+        0.0165,
+        0.022,
+        0.019
        ],
        "transform": {
         "position": [
          0.0,
-         -0.021,
-         -0.0268
+         -0.013,
+         -0.017
         ]
        }
       }
@@ -2352,41 +2389,41 @@
        "type": "smooth-union",
        "left": "skull",
        "right": "jaw-cheek",
-       "radius": 0.0058
+       "radius": 0.008
       },
       {
        "id": "head-u1",
        "type": "smooth-union",
        "left": "head-u0",
        "right": "nape",
-       "radius": 0.0058
+       "radius": 0.015
       },
       {
        "id": "head-u2",
        "type": "smooth-union",
        "left": "head-u1",
        "right": "comb-ridge",
-       "radius": 0.0058
+       "radius": 0.005
       },
       {
        "id": "head-u3",
        "type": "smooth-union",
        "left": "head-u2",
        "right": "wattle-nub",
-       "radius": 0.0058
+       "radius": 0.007
       }
      ],
-     "resolution": 34,
+     "resolution": 38,
      "bounds": {
       "min": [
-       -0.03,
-       -0.047,
-       -0.0423
+       -0.026,
+       -0.05,
+       -0.042
       ],
       "max": [
-       0.03,
-       0.031,
-       0.0317
+       0.026,
+       0.032,
+       0.036
       ]
      }
     },
@@ -2427,7 +2464,7 @@
     "position": [
      0.0,
      0.531,
-     0.1023
+     0.112
     ],
     "rotation": [
      0.0,
@@ -2520,20 +2557,20 @@
        "position": [
         0.0,
         0.0,
-        0.0
+        -0.004
        ],
        "rx": 0.011,
-       "rz": 0.01,
+       "rz": 0.0105,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
         -0.002,
-        0.018
+        0.016
        ],
        "rx": 0.0088,
-       "rz": 0.008,
+       "rz": 0.0085,
        "twist": 0.0
       },
       {
@@ -2542,22 +2579,22 @@
         -0.008,
         0.028
        ],
-       "rx": 0.005,
-       "rz": 0.0048,
+       "rx": 0.0058,
+       "rz": 0.0058,
        "twist": 0.0
       },
       {
        "position": [
         0.0,
-        -0.014,
-        0.034
+        -0.015,
+        0.036
        ],
-       "rx": 0.0,
-       "rz": 0.0,
+       "rx": 0.0025,
+       "rz": 0.0025,
        "twist": 0.0
       }
      ],
-     "radialSegments": 10,
+     "radialSegments": 12,
      "capEnds": true
     },
     "uvStrategy": "generated procedural coordinates",
@@ -2596,8 +2633,8 @@
    "transform": {
     "position": [
      0.0,
-     0.5215,
-     0.112
+     0.523,
+     0.134
     ],
     "rotation": [
      0.0,
@@ -2675,7 +2712,7 @@
      "stations": [
       {
        "position": [
-        -0.02,
+        -0.006,
         0.0,
         0.0
        ],
@@ -2685,7 +2722,7 @@
       },
       {
        "position": [
-        -0.014,
+        -0.004,
         -0.042,
         -0.001
        ],
@@ -2695,7 +2732,7 @@
       },
       {
        "position": [
-        -0.006,
+        -0.002,
         -0.088,
         -0.004
        ],
@@ -2832,7 +2869,7 @@
      "stations": [
       {
        "position": [
-        0.02,
+        0.006,
         0.0,
         0.0
        ],
@@ -2842,7 +2879,7 @@
       },
       {
        "position": [
-        0.014,
+        0.004,
         -0.042,
         -0.001
        ],
@@ -2852,7 +2889,7 @@
       },
       {
        "position": [
-        0.006,
+        0.002,
         -0.088,
         -0.004
        ],
@@ -4879,9 +4916,9 @@
    "renderAs": "InstancedMesh",
    "sharedGeometry": "eye-sphere",
    "instanceScale": [
-    0.0092,
-    0.0092,
-    0.0092
+    0.012,
+    0.012,
+    0.012
    ],
    "placement": {
     "mode": "radial",
@@ -4890,7 +4927,7 @@
      1,
      0
     ],
-    "radius": 0.033,
+    "radius": 0.027,
     "startAngleDeg": 0
    },
    "rationale": "Two eyes are a mirrored pair, which a two-element radial ring about +Y expresses exactly. The emitter's perpendicular for axis (0,1,0) is (1,0,0) and it offsets by radius*0.5, so instance 0 lands at local +X 0.0165 and instance 1 at -X 0.0165: a true reflection with x negated and nothing else touched. One InstancedMesh, one draw call, one geometry, instead of two components against a unique-geometry ceiling of 16 that this prop sits one under.",

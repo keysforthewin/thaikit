@@ -1,0 +1,2234 @@
+{
+  "targetName": "Sidecar Motorcycle",
+  "targetId": "sidecar-motorcycle",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "vehicle-cargo-sidecar-motorcycle",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "underbone-motorcycle",
+        "welded-tube-sidecar",
+        "planked-deck",
+        "canvas-canopy-on-posts",
+        "asymmetric-three-wheeler"
+      ],
+      "structureKind": [
+        "assembled-solid",
+        "tube-frame",
+        "instanced-wheels"
+      ],
+      "motionPotential": [
+        "rigid-body-vehicle",
+        "wheels-roll-about-axle"
+      ],
+      "materialFamilies": [
+        "cream-and-green-enamel",
+        "rusted-steel-tube-and-canvas",
+        "weathered-timber-deck"
+      ],
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A delivery sidecar: an old green-and-cream underbone with a welded-on cargo box on its left, rusted square tube, planked floor, low rails, four posts carrying a sagging tan canvas canopy, a spoked third wheel outboard of the box."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 2
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "Two machines welded together: an old underbone (cream leg shield and covers, green fenders and cowl) on the right and a cargo box on its LEFT -- a rusted tube frame with a planked deck, rails, four posts and a canvas canopy, on a third spoked wheel.",
+        "Three materials: paint (cream and green as vertex colours), a white vertex-coloured trim (rust tubes, chrome, canvas canopy, engine, seat, tyres) and a timber material carrying the plank canvas for the deck.",
+        "One repetition system: the two bike wheels off one lathe; the sidecar wheel is a loose lathe merged into the trim.",
+        "Action readiness: three axle pivots, convex collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The sidecar is a CAGE and reads by its gaps: rails on three sides, posts to a canopy, daylight through all of it. It is therefore tubes and a deck, not a box, and the turntable sees the backdrop through it from every side -- the vehicle, not a hole. The bike is the shared underbone template offset to x -0.42."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-two-machines",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "underbone on the right, cargo box on its left, three wheels",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-cage",
+          "zone": "sidecar",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "rusted tube deck frame, rails, four posts, top ring, outriggers and stub axle",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-canopy",
+          "zone": "sidecar",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "tan canvas canopy slab with a crown and rear valance on the posts",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-planks",
+          "zone": "sidecar",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "planked timber deck",
+          "mapsTo": {
+            "ref": "d5-planks"
+          },
+          "onMaterial": "wood",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-wheels",
+          "zone": "wheels",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two spoked bike wheels and a spoked sidecar wheel",
+          "mapsTo": {
+            "ref": "wheels"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-bike",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "cream leg shield and covers, green fenders and cowl, chrome bars and fork",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+    "resolvedUnknowns": [
+      "The canopy is built to the proxy at 1.30-1.45 m; the registry's 1.15 m height is reported as a declaration to revise.",
+      "The turntable gate's enclosed-background signal fires on the daylight through the cage from every azimuth (up to 456 x 135 px): real open air. --allow-holes is set on the _holecc measurement.",
+      "The canopy is a slab with a raised crown rather than the plate's sagging cloth; the sag is below the resolvable band.",
+      "The bike is the shared underbone template; its right side and the box rear are built to type."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.55 x 1.15 x 2.20 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus one named pivot per wheel (3); zero sockets; convex collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 3,
+      "microFeatureGroups": 3,
+      "materialLayers": 3,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Bike and box side by side in 1.55 m, box on the left",
+          "Canopy at the proxy height"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "box on the wrong side",
+          "a closed box"
+        ]
+      },
+      {
+        "id": "sidecar",
+        "name": "Cage, deck and canopy",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Tube frame with rails and posts",
+          "Planked deck",
+          "Canvas canopy, not planked"
+        ],
+        "evidenceRefs": [
+          "region-frame",
+          "region-wood",
+          "region-canvas"
+        ],
+        "failureModes": [
+          "the canopy taking the plank tile",
+          "no rails"
+        ]
+      },
+      {
+        "id": "wheels",
+        "name": "Wheels and pivots",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Three spoked wheels",
+          "A named pivot per wheel"
+        ],
+        "evidenceRefs": [
+          "region-tyre"
+        ],
+        "failureModes": [
+          "flat discs",
+          "no sidecar pivot"
+        ]
+      },
+      {
+        "id": "paint",
+        "name": "Cream and green",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Cream shield and covers, green fenders"
+        ],
+        "evidenceRefs": [
+          "region-white",
+          "region-green"
+        ],
+        "failureModes": [
+          "a single colour"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body",
+        "trim"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "sidecar",
+      "name": "Cage, deck and canopy",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "trim",
+        "sidecar"
+      ],
+      "evidenceRefs": [
+        "region-frame",
+        "region-wood",
+        "region-canvas"
+      ]
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels and pivots",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "wheels"
+      ],
+      "evidenceRefs": [
+        "region-tyre"
+      ]
+    },
+    {
+      "id": "paint",
+      "name": "Cream and green",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-white",
+        "region-green"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 5,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the vehicle at base-center."
+      },
+      {
+        "name": "wheel-front",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.42,
+          0.26,
+          0.88
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.42,
+          0.26,
+          -0.34
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-sidecar",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.8,
+          0.24,
+          -0.45
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "Sidecar hub outboard of the box; the wheel is merged into the trim, so the pivot marks the axle for a host that splits it out."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this vehicle in the kit and nothing is emitted from it; a marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "convex",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as convex: one hull over the whole machine."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The canopy is built to the proxy at 1.30-1.45 m; the registry's 1.15 m height is reported as a declaration to revise.",
+    "The turntable gate's enclosed-background signal fires on the daylight through the cage from every azimuth (up to 456 x 135 px): real open air. --allow-holes is set on the _holecc measurement.",
+    "The canopy is a slab with a raised crown rather than the plate's sagging cloth; the sag is below the resolvable band.",
+    "The bike is the shared underbone template; its right side and the box rear are built to type."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at tyre contact, +Y up, +Z FORWARD, +X the vehicle's left. Meshy returned the proxy with its long axis on X, an arbitrary output convention; the band comparison detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.55,
+      "h": 1.15,
+      "d": 2.2
+    },
+    "description": "Bike wheels 0.52 m at z +0.88 and -0.34 on x -0.42; leg shield 0.32-0.82 m; bars at 0.98 m; seat at 0.61-0.71 m; box deck at 0.34 m from x -0.04 to 0.78 and z 0.52 to -0.92; rails at 0.48 and 0.62 m; posts to 1.30 m; canopy slab 1.30-1.40 m with a crown to 1.45 m; sidecar wheel 0.48 m at x 0.80, z -0.45.",
+    "envelopeDerivation": "x spans -0.75..+0.83 (bike bars to the sidecar wheel); y 0.00 to 1.45 at the canopy crown; z -1.04..+1.14 rack to fender, +Z forward. The Meshy proxy normalises to W:H:D = 1 : 0.885 : 1.100, i.e. 1.55 x 1.37 x 1.70 m at the declared width: the CANOPY stands at 1.37 m where the registry declares 1.15. Built to the proxy (canopy posts to 1.30, crown 1.45) and reported as a declaration to revise; the declared width and length stand.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to W:H:D = 1 : 0.885 : 1.100. Its front elevation (scratch/sidecar-motorcycle/_ev/side.png -- the proxy's long axis is the width) shows the bike on one side and the box with its canopy on the other at 0.885 W tall; its side elevation shows the box with the canopy over it and the bike behind, the sidecar wheel outboard. The canopy height is the one place proxy and declaration disagree (1.37 vs 1.15 m at 1.55 wide)."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-canvas",
+      "viewpoint": "top",
+      "path": "crops/canvas.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-wood",
+      "viewpoint": "top",
+      "path": "crops/wood.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-frame",
+      "viewpoint": "side",
+      "path": "crops/frame.png",
+      "confidence": 0.763
+    },
+    {
+      "id": "region-green",
+      "viewpoint": "side",
+      "path": "crops/green.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-white",
+      "viewpoint": "front",
+      "path": "crops/white.png",
+      "confidence": 0.75
+    },
+    {
+      "id": "region-tyre",
+      "viewpoint": "side",
+      "path": "crops/tyre.png",
+      "confidence": 0.857
+    },
+    {
+      "id": "region-right",
+      "viewpoint": "right",
+      "path": null,
+      "confidence": 0.75,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the bike's right side and the box's rear are built to type (exhaust on the right, a canvas valance at the rear)."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Bodywork: leg shield, tank, fenders",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Five thin side-profile extrusions on the bike centreline x -0.42 (cream shield and covers, green front and rear fenders, green cowl) and the floor cover merged into ONE geometry.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Shield 0.32-0.82 m at z 0.36-0.60; covers 0.40-0.60 m; fenders over both wheels; cowl 0.84-0.98 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each panel its own width; nothing shares a plane with the box, which starts 0.38 m outboard of the bike centreline.",
+        "mergeNote": "One merged BufferGeometry."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-two-machines",
+          "description": "the bike half",
+          "delivery": "bike template panels"
+        },
+        {
+          "id": "d4-bike",
+          "description": "bike panels",
+          "delivery": "sideExtrude"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#cecabb",
+        "recipe": "Cream and green enamel as vertex colours.",
+        "evidenceRef": "region-white",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(206, 202, 187, 1.0)",
+        "secondaryAlbedo": "rgba(206, 202, 187, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. The body shell is the rigid root; the wheels carry their own axle pivots."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "convex",
+          "localCenter": [
+            0,
+            0.575,
+            0
+          ],
+          "halfExtents": [
+            0.775,
+            0.575,
+            1.1
+          ],
+          "notes": "Declared on the asset as convex: one hull over the whole machine."
+        }
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Frame, cage, canopy, engine, seat and fittings",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The whole cage (deck ring, rail ring, cross rails, four posts, top ring, two outriggers, stub axle), the canvas canopy slab, crown and valance, the sidecar wheel lathe, and every bike fitting (fork, stem, bars, spine, swingarm, exhaust, seat, engine, lamps, grips, pegs): one merge, one submission.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Deck ring at 0.34 m over x -0.04..0.78, z 0.52..-0.92; rails at 0.48 and 0.62 m; posts to 1.30 m; canopy 1.30-1.45 m; sidecar wheel 0.48 m at x 0.80, z -0.45.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Tubes overlap their joints by 1.2 radii; the canopy slab sits on the post tops with the posts running 4 cm into it; the deck planks sit 5 mm above the deck ring.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-cage",
+          "description": "tube cage",
+          "delivery": "tube() runs"
+        },
+        {
+          "id": "d3-canopy",
+          "description": "canvas canopy",
+          "delivery": "tinted boxes in the trim merge"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#5a4a3f",
+        "recipe": "White material, every tone a vertex colour.",
+        "evidenceRef": "region-frame",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(90, 74, 63, 1.0)",
+        "secondaryAlbedo": "rgba(90, 74, 63, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "wheels",
+      "name": "Bike wheels",
+      "level": "meso",
+      "role": "mechanism",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One spoked lathe as an InstancedMesh with two instances on the bike centreline.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "0.26 m radius at x -0.42, z +0.88 and -0.34.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Closed lathe.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-wheels",
+          "description": "bike wheels",
+          "delivery": "repetitionSystems.wheels"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#5e5a54",
+        "recipe": "Tyre #5e5a54, rim #a9a7a2, spokes as vertex colours.",
+        "evidenceRef": "region-tyre",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(94, 90, 84, 1.0)",
+        "secondaryAlbedo": "rgba(94, 90, 84, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            -0.42,
+            0.26,
+            0.88
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ],
+          "confidence": 0.9,
+          "name": "wheel-front",
+          "notes": "One InstancedMesh, 3 instances; each instance is a named pivot on its axle (wheel-front, wheel-rear, wheel-sidecar) exposed on sculptRuntime.pivots with its instance index, so a host can spin any wheel by writing that instance matrix."
+        },
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": true,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "The wheels are the only mechanism on the prop."
+      }
+    },
+    {
+      "id": "sidecar",
+      "name": "Sidecar planked deck",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is its own material: one 0.80 x 0.03 x 1.42 m deck slab with world-projected UVs for the plank tile.",
+      "materialId": "wood",
+      "material": "wood",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Deck at 0.35-0.38 m inside the deck ring.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Sits 5 mm above the deck ring tubes; its edges are inside the ring.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-planks",
+          "description": "planked deck",
+          "delivery": "plank canvas as map and bumpMap"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "wood",
+        "baseColor": "#473e34",
+        "recipe": "Timber as vertex colour under the plank canvas.",
+        "evidenceRef": "region-wood",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(71, 62, 52, 1.0)",
+        "secondaryAlbedo": "rgba(71, 62, 52, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "paint",
+      "name": "Cream and green enamel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cecabb",
+      "color": "#cecabb",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cecabb",
+        "secondary": [
+          "#cecabb",
+          "#33402f",
+          "#9a9a8a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/white.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Cream measured on viewEvidence region-white (leg shield, 0.75) at #cecabb and green on region-green (tank cover, 0.751) at #33402f; both as vertex colours on one white material.",
+          "Textureless as DECLARED: old enamel with no resolvable detail."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/white.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Rusted tube, canvas, chrome and rubber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.65,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/trim_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#5a4a3f",
+          "#c4b194",
+          "#b9bcbf"
+        ],
+        "samplingNotes": "Measured as the mean of crops/frame.png. extract_pbr_evidence confidence 0.763. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE on purpose with vertexColors: frame #5a4a3f (region-frame, 0.763), canvas canopy #c4b194 (region-canvas, 0.751), chrome #b9bcbf, engine alloy #6c6a66, seat #2e2e2a, tyres #5e5a54 and rims #a9a7a2 (region-tyre, 0.857).",
+          "Textureless as DECLARED: the canopy is in this merge so it does NOT take the deck's plank tile -- the first build had it on the timber material and rendered the canvas as boards."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/frame.png",
+        "pbrReport": "material-evidence/trim.pbr.json",
+        "confidence": 0.763,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "wood",
+      "name": "Weathered timber deck",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#473e34",
+      "color": "#473e34",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/wood_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#473e34",
+        "secondary": [
+          "#473e34",
+          "#5a4d40",
+          "#3a3128"
+        ],
+        "samplingNotes": "Measured as the mean of crops/wood.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-planks",
+          "region": "the deck",
+          "roughness": 0.92,
+          "palette": [
+            "#473E34",
+            "#2E2820"
+          ],
+          "evidence": "Deck crop shows seven boards across 0.8 m with dark joints; delivered as a plank tile at 0.8 m per repeat."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-wood (deck, PBR confidence 0.800) at #473e34, as vertex colour under a seven-board plank canvas bound after construction as map and bumpMap.",
+          "Textureless as DECLARED: the plank canvas is post-construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/wood.png",
+        "pbrReport": "material-evidence/wood.pbr.json",
+        "confidence": 0.8,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Bike wheels",
+      "instanceCount": 2,
+      "sourceComponent": "wheels",
+      "material": "trim",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "spoked-wheel-lathe",
+      "placement": {
+        "mode": "explicit",
+        "note": "x -0.42, z +0.88 and -0.34."
+      },
+      "instanceDimensions": {
+        "width": 0.07,
+        "height": 0.52,
+        "depth": 0.52
+      },
+      "rationale": "Two bike wheels at one geometry; the sidecar wheel differs in size and is a loose lathe in the trim merge.",
+      "zFightingNote": "Closed lathe."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T04:47:25.273724+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.357713+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.444920+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.526933+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.611654+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "notes": "Vertex colours on one material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.692721+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.775492+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.860457+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.944587+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        },
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        },
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "notes": "Vertex colours on one material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T04:47:25.273724+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.357713+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: bike template at x -0.42, cage of fourteen tube runs, deck, three wheels at the proxy stations.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.444920+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: canopy slab, crown and valance; outriggers; stub axle; bike fittings.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.526933+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Canopy rendered as planks because it shared the timber material; moved into the trim merge with canvas as vertex colour.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.611654+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "notes": "Vertex colours on one material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.751-0.857; canopy moved off the timber material.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.692721+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: one 512 px plank canvas on the deck as map and bump.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.775492+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.860457+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: root pivot plus THREE wheel pivots, ZERO sockets, one CONVEX collider, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:47:25.944587+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
+          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+        },
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
+          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
+          "notes": "Sixteen to eighteen spokes each."
+        },
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "notes": "Vertex colours on one material."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 3,560/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, one 512 px canvas at 1.3 MB, factory 45 ms. Turntable: enclosed background is the open cage, allowed on measurement.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 4,
+        "repetitionSystems": 1,
+        "projectedTotal": 5,
+        "budget": 4,
+        "headroom": -1,
+        "note": "Three components and one repetition system: 4 of 4. The canopy and the sidecar wheel ride the trim merge so the deck can have its own material."
+      },
+      "materials": {
+        "projectedTotal": 3,
+        "budget": 3,
+        "headroom": 0,
+        "note": "paint, trim and timber: 3 of 3."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 5,
+        "budget": 6,
+        "headroom": 1,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 3560,
+        "budget": 4000,
+        "headroom": 440,
+        "note": "3,560 of 4,000: three spoked wheel lathes are most of it."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Thin extrusions for the bike panels, polyline tubes for frame and cage, spoked lathes for the wheels, boxes for deck, canopy and fittings."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh carries the two bike wheels; the sidecar wheel is merged."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 512 px plank canvas on the timber as map and bumpMap. 1.3 MB of texture VRAM, factory 45 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-height",
+      "severity": "medium",
+      "description": "Built 1.45 m tall against a declared 1.15.",
+      "mitigation": "The proxy carries the canopy at 0.885 W = 1.37 m; the declaration should be revised to ~1.45. Reported."
+    },
+    {
+      "id": "open-cage-turntable",
+      "severity": "low",
+      "description": "The turntable gate flags daylight through the cage at every azimuth.",
+      "mitigation": "Real open air; --allow-holes on the _holecc measurement."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Sidecar Motorcycle",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.shader-mapping-reconstruction-metadata-schema",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[15]",
+        "score": 3.216345807599,
+        "snippets": [
+          "... phải truy vết một tài sản Three.js đã tạo về lại skin/paint_seed/độ hiếm nguồn để QA hoặc tái lập Three.js target: JSON sidecar: { weapon_id, paint_index, skin_id, min_float, max_float, rarity, category, source_tool, source_path, checksum, ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[15]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4061,
+        "aspectRatioDelta": 0.1586,
+        "scaleDelta": 0.2831,
+        "bilateralSymmetryError": 0.1369,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 7.08,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 2.57
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.08
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.88
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.406 is below threshold 0.85",
+        "aspect-ratio delta 0.159 exceeds threshold 0.05",
+        "scale delta 0.283 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "4fb2cd829841d602",
+      "passId": "blockout"
+    }
+  ]
+}

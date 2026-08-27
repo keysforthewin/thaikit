@@ -1,0 +1,1840 @@
+{
+  "targetName": "Tyre Stack Bin",
+  "targetId": "tyre-stack-bin",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "street-litter-bin",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "stacked-car-tyres",
+        "tread-slots",
+        "draped-bag-liner",
+        "painted-round-lid"
+      ],
+      "structureKind": [
+        "lathe",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "tyre-rubber",
+        "painted-steel-lid"
+      ],
+      "notes": "Three car tyres bolted into one rigid stack with a bag liner and a painted lid. Nothing moves and nothing attaches, so one root pivot and zero sockets is the whole contract; the bag liner is part of the tyre component as the asset notes require. Village shops, schools, petrol forecourts. Three worn tyres, the bottom one bald, a black bin bag folded over the top tyre, a red hand-painted lid with a folk figure and a leaf border."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "THREE closed-loop tyre lathes (bead, sidewall, tread, sidewall, bead, inner wall) and ONE bag lathe draped over the top tyre, all merged on the rubber material with seamless around-by-up UVs so one tread canvas gives ~38 slots around each tyre.",
+        "ONE thin disc on its own material carrying the plate's painted lid baked as a map.",
+        "Two materials: rubber and print. The bald bottom tyre, the worn middle tyre and the bag are vertex colours on the rubber material.",
+        "No repetition system: the three tyres differ in radius and shoulder, so they are three lathes in one merge rather than three instances (an InstancedMesh would cost a draw call the budget has not got).",
+        "Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is three stacked tyres with tread, a black bag over the top one and a red painted disc; the tread is a canvas of slots and rings on a lathe, not geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-tyres",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "three stacked tyres, the bottom widest",
+          "mapsTo": {
+            "ref": "tyres"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-tread",
+          "zone": "body",
+          "kind": "groove",
+          "identityDefining": true,
+          "description": "tread slots and circumferential grooves",
+          "mapsTo": {
+            "ref": "tyres"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-lid",
+          "zone": "top",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "red painted lid with a folk figure and leaf border",
+          "mapsTo": {
+            "ref": "lid"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-bag",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "black bag liner draped over the top tyre",
+          "mapsTo": {
+            "ref": "d4-bag"
+          },
+          "onMaterial": "rubber",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-wear",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "brown wear on the middle tyre",
+          "mapsTo": {
+            "ref": "tyres"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-shoulders",
+          "zone": "body",
+          "kind": "bevel",
+          "identityDefining": false,
+          "description": "rounded sidewall shoulders",
+          "mapsTo": {
+            "ref": "tyres"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+    "resolvedUnknowns": [
+      "The bag's crumples are a smooth lathe: the folds are below the resolvable band at prop distance and a crumpled surface would cost geometry the budget has not got.",
+      "The lid image is the plate's own painted disc, rectified from its ellipse to a square and flipped so the figure's head points to -Z (the far side in the plate).",
+      "The bottom tyre is modelled bald (no slot band) only in tone: the shared tread canvas gives it slots too, at a lighter vertex colour.",
+      "The tyre bolts are not modelled: inside the stack and never seen."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.62 x 0.66 x 0.62 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.62 x 0.66 m",
+          "Three tyres, the bottom widest, bag narrowing to the top"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "one cylinder",
+          "equal tyres"
+        ]
+      },
+      {
+        "id": "tread-and-rubber",
+        "name": "Tread and rubber",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Slots around each tyre",
+          "Dark rubber above the hole band"
+        ],
+        "evidenceRefs": [
+          "region-tread",
+          "region-rubber"
+        ],
+        "failureModes": [
+          "smooth grey drums",
+          "tyres read as holes"
+        ]
+      },
+      {
+        "id": "lid-and-bag",
+        "name": "Painted lid and bag",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Red disc with the figure inside the bag rim",
+          "Bag over the top tyre"
+        ],
+        "evidenceRefs": [
+          "region-print",
+          "region-bag"
+        ],
+        "failureModes": [
+          "no disc",
+          "bag wider than the tyre"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "tyres"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "tread-and-rubber",
+      "name": "Tread and rubber",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "tyres"
+      ],
+      "evidenceRefs": [
+        "region-tread",
+        "region-rubber"
+      ]
+    },
+    {
+      "id": "lid-and-bag",
+      "name": "Painted lid and bag",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "tyres",
+        "lid"
+      ],
+      "evidenceRefs": [
+        "region-print",
+        "region-bag"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "tyres",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "tyres",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as cylinder: one proxy over the whole stack."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The bag's crumples are a smooth lathe: the folds are below the resolvable band at prop distance and a crumpled surface would cost geometry the budget has not got.",
+    "The lid image is the plate's own painted disc, rectified from its ellipse to a square and flipped so the figure's head points to -Z (the far side in the plate).",
+    "The bottom tyre is modelled bald (no slot band) only in tone: the shared tread canvas gives it slots too, at a lighter vertex colour.",
+    "The tyre bolts are not modelled: inside the stack and never seen."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.62,
+      "h": 0.66,
+      "d": 0.62
+    },
+    "description": "Bottom tyre r 0.305 from 0.065 to 0.285 m with a rounded lower shoulder; middle tyre r 0.278 from 0.34 to 0.45 m; top tyre r 0.248 from 0.50 to 0.55 m; bag from r 0.252 at 0.49 m curving in to r 0.19 at 0.657 m; lid disc r 0.185 at 0.608 m inside the bag.",
+    "envelopeDerivation": "x and z span -0.305..+0.305 at the bottom tyre tread, the DECLARED 0.62 m (a 15-inch car tyre); the proxy band table reads 0.856 w/h at the widest, 0.565 m at 0.66 m, a 9% residual against the declared tyre size. y 0.00 to 0.657 at the bag's crumpled rim. Bottom tyre 0-0.31 m r 0.305, middle 0.31-0.48 m r 0.278, top 0.48-0.57 m r 0.248 under the bag; bag from r 0.252 at 0.49 narrowing to r 0.19 at 0.657; lid disc r 0.185 at 0.608 m.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bottom tyre widest (0.856 w/h), no waist at 0.26-0.33 H, top narrowing to 0.617 at 0.59-0.66 H. Band table after the third build: mean |delta width| 0.0418, |delta depth| 0.0416; band 0 +0.078 is the declared 0.62 m tyre against the proxy's rounder foot, band 4 -0.053 the bead seam between the bottom and middle tyres where the proxy is a solid hull."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-rubber",
+      "viewpoint": "front",
+      "path": "crops/rubber.png",
+      "confidence": 0.727
+    },
+    {
+      "id": "region-tread",
+      "viewpoint": "front",
+      "path": "crops/tread.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-bag",
+      "viewpoint": "top",
+      "path": "crops/bag.png",
+      "confidence": 0.686
+    },
+    {
+      "id": "region-print",
+      "viewpoint": "top",
+      "path": "crops/print.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-wear",
+      "viewpoint": "front",
+      "path": "crops/wear.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.93,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.93: three surfaces of revolution; the proxy is round to 1% in every slice."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "tyres",
+      "name": "Three tyres and bag liner",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four lathes merged into one geometry on one material: one draw call; instancing three unequal tyres would cost a second.",
+      "materialId": "rubber",
+      "material": "rubber",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Closed-loop tyre profiles (bead r 0.20, tread r 0.305 / 0.278 / 0.248) at 28 segments over 0-0.31, 0.31-0.48, 0.48-0.57 m; bag lathe from r 0.252 at 0.49 to r 0.178 at 0.612 m; around-by-up UVs at 0.05 m around and one tyre height up.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each tyre's top bead face at y1 faces up under the next tyre's bottom bead face: opposed faces, butt joints. The bag runs 4 mm outside the top tyre's tread and never shares its surface.",
+        "mergeNote": "One merged BufferGeometry; double-sided so the bag's inner face shades."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-tyres",
+          "description": "tyres",
+          "delivery": "three lathes"
+        },
+        {
+          "id": "d2-tread",
+          "description": "tread",
+          "delivery": "tread canvas on cylUV"
+        },
+        {
+          "id": "d4-bag",
+          "description": "bag",
+          "delivery": "bag lathe, vertex colour"
+        },
+        {
+          "id": "d5-wear",
+          "description": "wear",
+          "delivery": "vertex colour"
+        },
+        {
+          "id": "d6-shoulders",
+          "description": "shoulders",
+          "delivery": "lathe profile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "rubber",
+        "baseColor": "#7c7c7c",
+        "recipe": "Lifted rubber as vertex colour on white with a tread canvas; bald bottom #828282, worn middle #7e7c7a, bag #767878.",
+        "evidenceRef": "region-rubber",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(124, 124, 124, 1.0)",
+        "secondaryAlbedo": "rgba(82, 84, 86, 1.0)",
+        "materialClass": "rubber",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            0.33,
+            0
+          ],
+          "radius": 0.31,
+          "height": 0.66,
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "Declared on the asset as cylinder: one proxy over the whole stack."
+        }
+      }
+    },
+    {
+      "id": "lid",
+      "name": "Painted lid",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One thin disc on its own material: the painted figure is a map, not a colour.",
+      "materialId": "print",
+      "material": "print",
+      "parent": "tyres",
+      "geometryDescriptor": {
+        "topologyIntent": "Disc r 0.185, 10 mm thick, centred 0.608 m, 24 segments; the top cap's planar UVs carry the square image.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Its bottom at 0.603 sits 9 mm below the bag's inner edge at 0.612 and its rim 7 mm inside it: no shared face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-lid",
+          "description": "painted lid",
+          "delivery": "disc + baked map"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "tyres",
+        "localStart": [
+          0,
+          0.603,
+          0
+        ],
+        "localEnd": [
+          0,
+          0.613,
+          0
+        ],
+        "contactType": "resting",
+        "embedDepth": 0.002,
+        "gapTolerance": 0.005
+      },
+      "colorMaterialRecipe": {
+        "materialId": "print",
+        "baseColor": "#cc4713",
+        "recipe": "White material carrying the baked lid disc as its map.",
+        "evidenceRef": "region-print",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(204, 71, 19, 1.0)",
+        "secondaryAlbedo": "rgba(204, 71, 19, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "rubber",
+      "name": "Tyre rubber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7c7c7c",
+      "color": "#7c7c7c",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/rubber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#7c7c7c",
+        "secondary": [
+          "#7c7c7c",
+          "#828282",
+          "#767878"
+        ],
+        "samplingNotes": "Measured as the mean of crops/rubber.png. extract_pbr_evidence confidence 0.727. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-bag",
+          "region": "bag liner 0.49-0.657 m",
+          "roughness": 0.45,
+          "palette": [
+            "#767878"
+          ],
+          "evidence": "crops/bag.png -- #65686a sheen over near-black at 0.686; carried as the bag lathe vertex colour #767878, lifted for the silhouette gate."
+        }
+      ],
+      "finishClass": "rubber",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-rubber (0.727) at #2f3030, luma 48 -- BELOW the backdrop's 58. Shipped at #7c7c7c (luma 124): the whole silhouette is rubber and the back-lit 180 frame renders at ~0.55 of the painted luma, so #585858 (88) collapsed the 180 silhouette ratio to 0.476 and #747474 still left 15-21k px of groove and shoulder holes; bald bottom tyre #828282, worn middle tyre #7e7c7a (region-wear), bag #767878 (region-bag #65686a sheen) as vertex colours on a WHITE material.",
+          "Textureless as DECLARED: a 256 px tread canvas after construction -- two slots and two rings per 0.05 m around, darkest ratio 0.92 (luma 114 on the base, thin lines only, the bump at 0.05 carrying the relief) -- bound as map and bump."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/rubber.png",
+        "pbrReport": "material-evidence/rubber.pbr.json",
+        "confidence": 0.727,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "print",
+      "name": "Painted lid",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cc4713",
+      "color": "#cc4713",
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/print_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cc4713",
+        "secondary": [
+          "#cc4713",
+          "#eccе1d"
+        ],
+        "samplingNotes": "Measured as the mean of crops/print.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "painted-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-print (0.829): red #cc4713, extractor palette #fa0707 / #eccе1d. The material is WHITE and the plate's own disc crop (470 x 236 px ellipse rectified to 512 px, baked to a WebP data URI) is its map, assigned after construction through TextureLoader.",
+          "Textureless as DECLARED in the generator's sense: no procedural texture set; the baked graphic is a post-construction canvas route."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/print.png",
+        "pbrReport": "material-evidence/print.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T18:14:59.099516+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.185213+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.271751+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-bag",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
+          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.361559+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.448231+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.537662+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.626168+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.711180+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        },
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        },
+        {
+          "id": "lid-and-bag",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
+          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T18:14:59.099516+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2; three closed-loop tyre lathes and a bag lathe at the proxy radii.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.185213+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: bottom tyre extended to 0.31 m (no waist at 0.26-0.33 H), top tyre and bag narrowed to the band table, segments 32 -> 28 to clear 2,000 triangles; rubber lifted twice (88 -> 116 -> 124 luma) until the 180 frame held its silhouette (ratio 0.476 -> 0.992).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.271751+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-bag",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
+          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: rounded lower shoulder, bag rim narrowing over the lid, disc lowered inside the bag.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.361559+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.727-0.829; rubber lifted from luma 48 to 88 and recorded; bag and wear as vertex tones.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.448231+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: tread canvas as map and bump; baked lid disc.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.537662+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.626168+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CYLINDER collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:14:59.711180+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.83,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
+          "notes": ""
+        },
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
+          "notes": "Slots read as ribs at prop distance."
+        },
+        {
+          "id": "lid-and-bag",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
+          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,888/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas plus a 31 KB baked lid.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components, no repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "rubber and print: 2 of 2; tyre tones and the bag are vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1888,
+        "budget": 2000,
+        "headroom": 112,
+        "note": "1,888 of 2,000: four 28-segment lathes (closed-loop tyre profiles are nine points each) and a 24-segment disc."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Lathes for the three tyres and the bag; a disc for the lid."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: the three tyres differ in radius and shoulder and share one merge; a second draw call is not in the budget."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 256 px tread canvas after construction plus the 31 KB baked lid, 0.5 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "rubber-luma",
+      "severity": "medium",
+      "description": "Measured rubber is luma 48, below the backdrop; the whole silhouette could be read as background.",
+      "mitigation": "Shipped at luma 124 with grooves as thin lines at 0.92 and small lower shoulders; recorded on the material."
+    },
+    {
+      "id": "declared-vs-proxy-width",
+      "severity": "low",
+      "description": "The declared 0.62 m tyre is 9% wider than the proxy's widest band.",
+      "mitigation": "The declared 15-inch tyre is the contract; band 0 shows +0.078 and the rest are within 0.06 H."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Tyre Stack Bin",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7546,
+        "aspectRatioDelta": 0.0049,
+        "scaleDelta": 0.2705,
+        "bilateralSymmetryError": 0.0091,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 73.65,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 6.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 73.65
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.755 is below threshold 0.85",
+        "scale delta 0.271 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f0dd31774919ac49",
+      "passId": "blockout"
+    }
+  ]
+}

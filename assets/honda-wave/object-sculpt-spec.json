@@ -1,0 +1,2055 @@
+{
+  "targetName": "Honda Wave",
+  "targetId": "honda-wave",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "vehicle-underbone-motorcycle",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "step-through-frame",
+        "leg-shield",
+        "spoked-wheels",
+        "tube-frame",
+        "bilateral-symmetry"
+      ],
+      "structureKind": [
+        "assembled-solid",
+        "tube-frame",
+        "instanced-wheels"
+      ],
+      "motionPotential": [
+        "rigid-body-vehicle",
+        "wheels-roll-about-axle"
+      ],
+      "materialFamilies": [
+        "navy-automotive-paint",
+        "chrome-and-alloy",
+        "black-vinyl-and-rubber"
+      ],
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. The most common vehicle on Thai roads. The plate shows a navy underbone with white pinstripes on the leg shield and side covers, a black vinyl seat, chrome rear rack, round chrome mirrors on tall stems, a rectangular headlamp between amber indicators, silver engine cases, a chrome exhaust and wire-spoked wheels with drum hubs."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 2
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "The identity is the underbone layout: a leg shield rising to a headlamp cowl, a step-through floor, side covers under a flat seat, a chrome rack behind it, spoked wheels front and rear. It is an assembly of small parts, not one shell.",
+        "Two materials: the paint (leg shield, covers, fenders, cowl, pinstripes as vertex colours) and a white vertex-coloured trim carrying chrome, alloy, black, seat vinyl, lamp lenses and the tyres.",
+        "One repetition system: two wheels off one lathe, each a named pivot on its axle.",
+        "Action readiness is the wheels: two hinge pivots, convex collider, not breakable. Steering is not articulated."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "A motorcycle is legible by its silhouette gaps as much as its masses -- the step-through, the daylight under the seat, the space inside the fork -- so the frame is tubes and the panels are thin extrusions rather than one blocked mass. Every tube run is a polyline of cylinders merged into one geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-underbone",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "leg shield, step-through floor, side covers and seat in the underbone layout",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-fenders-cowl",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "front fender arc and headlamp cowl in the body paint",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-chrome",
+          "zone": "fittings",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "chrome rear rack, handlebar, fork legs, round mirrors on stems, exhaust",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-engine",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "alloy engine block and dark crankcase under the floor, swingarm and shock",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-wheels",
+          "zone": "wheels",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two spoked wheels with drum hubs on 0.54 m tyres",
+          "mapsTo": {
+            "ref": "wheels"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-pinstripes",
+          "zone": "body",
+          "kind": "decal",
+          "identityDefining": false,
+          "description": "white pinstripes on the side covers",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-dust",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "faint road dust on the lower panels",
+          "mapsTo": {
+            "ref": "d7-dust"
+          },
+          "onMaterial": "paint",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+    "resolvedUnknowns": [
+      "The wheels are wire-spoked in the plate; the spokes are eighteen thin boxes merged into the wheel lathe, and the hub dish behind them is a mid grey so the wheel does not read as a hole at prop distance.",
+      "The turntable gate's enclosed-background signal fires on the step-through gap and on the daylight inside the fork and under the seat: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
+      "The right side is mirrored from the left; the exhaust runs on the right."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.70 x 1.07 x 1.92 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus one named pivot per wheel (2); zero sockets; convex collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.70 x 1.07 x 1.92 m",
+          "Underbone layout: leg shield, step-through, seat, rack",
+          "Wheels 0.54 m at the proxy stations"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a scooter with a floorboard and no engine",
+          "a blocked mass with no step-through"
+        ]
+      },
+      {
+        "id": "fittings",
+        "name": "Chrome fittings and engine",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Rack, bars, mirrors, fork and exhaust in chrome tubes",
+          "Engine block and crankcase under the floor"
+        ],
+        "evidenceRefs": [
+          "region-chrome",
+          "region-engine"
+        ],
+        "failureModes": [
+          "no rack or mirrors",
+          "a solid slab where the engine is"
+        ]
+      },
+      {
+        "id": "wheels",
+        "name": "Wheels and pivots",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two instanced spoked wheels",
+          "One named pivot per wheel on the axle"
+        ],
+        "evidenceRefs": [
+          "region-tyre"
+        ],
+        "failureModes": [
+          "flat discs",
+          "no pivots"
+        ]
+      },
+      {
+        "id": "paint",
+        "name": "Paint and pinstripes",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Navy as measured with white pinstripes"
+        ],
+        "evidenceRefs": [
+          "region-paint"
+        ],
+        "failureModes": [
+          "a lifted grey-blue"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "fittings",
+      "name": "Chrome fittings and engine",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "trim"
+      ],
+      "evidenceRefs": [
+        "region-chrome",
+        "region-engine"
+      ]
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels and pivots",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "wheels"
+      ],
+      "evidenceRefs": [
+        "region-tyre"
+      ]
+    },
+    {
+      "id": "paint",
+      "name": "Paint and pinstripes",
+      "tier": "important",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-paint"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 4,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the vehicle at base-center."
+      },
+      {
+        "name": "wheel-front",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0,
+          0.27,
+          0.76
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0,
+          0.27,
+          -0.48
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this vehicle in the kit and nothing is emitted from it; a marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "convex",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as convex: one hull over the whole machine."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The wheels are wire-spoked in the plate; the spokes are eighteen thin boxes merged into the wheel lathe, and the hub dish behind them is a mid grey so the wheel does not read as a hole at prop distance.",
+    "The turntable gate's enclosed-background signal fires on the step-through gap and on the daylight inside the fork and under the seat: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
+    "The right side is mirrored from the left; the exhaust runs on the right."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at tyre contact, +Y up, +Z FORWARD, +X the vehicle's left. Meshy returned the proxy with its long axis on X, an arbitrary output convention; the band comparison detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.7,
+      "h": 1.07,
+      "d": 1.92
+    },
+    "description": "Wheels 0.54 m in diameter at z +0.76 and -0.48 (1.24 wheelbase); a front fender arc over the front wheel; fork legs up to a headlamp cowl at 0.86-1.00 m; handlebar at 1.00 m with mirrors to 1.125 m; a leg shield from 0.32 to 0.84 m at z 0.36-0.62; a step-through floor at 0.33-0.39 m; side covers 0.40-0.60 m under a seat at 0.61-0.71 m from z 0.03 to -0.59; a rack at 0.60 m to z -1.00; engine block under the floor.",
+    "envelopeDerivation": "x spans -0.35..+0.35 at the handlebar and mirror tips; y 0.00 to 1.125 at the mirror heads; z -1.04..+1.03 rear rack to front fender, +Z forward. The Meshy proxy normalises to L:H:W = 1 : 0.654 : 0.384 (1.92 x 1.26 x 0.74 at the declared length); the registry height of 1.07 is to the bar tops and the mirrors add the rest, as they do here.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.654 : 0.384. Its side elevation (scratch/honda-wave/_ev/side.png) reads wheels 0.30 H at 0.10 L and 0.87 L, seat 0.55-0.60 H over 0.45-0.65 L, leg shield 0.30-0.65 H at 0.22-0.32 L, bars 0.82 H, mirrors to 1.00 H, rack 0.55 H over 0.70-0.95 L -- and those fractions at the declared 1.92 m are what is built. The band table's residuals are the proxy's mirror-inclusive height."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-paint",
+      "viewpoint": "side",
+      "path": "crops/paint.png",
+      "confidence": 0.763
+    },
+    {
+      "id": "region-seat",
+      "viewpoint": "side",
+      "path": "crops/seat.png",
+      "confidence": 0.716
+    },
+    {
+      "id": "region-tyre",
+      "viewpoint": "side",
+      "path": "crops/tyre.png",
+      "confidence": 0.841
+    },
+    {
+      "id": "region-engine",
+      "viewpoint": "side",
+      "path": "crops/engine.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-chrome",
+      "viewpoint": "side",
+      "path": "crops/chrome.png",
+      "confidence": 0.75
+    },
+    {
+      "id": "region-right",
+      "viewpoint": "right",
+      "path": null,
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the plate shows the left side; the right is mirrored, with the exhaust on the right as the type has it."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Bodywork: leg shield, covers, fenders, cowl",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four thin side-profile extrusions (leg shield with 25 percent tumblehome, rear side covers, front fender arc, headlamp cowl), the floor cover, pinstripes and the rear mudguard tip merged into ONE geometry and ONE draw call.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Leg shield 0.32-0.84 m at z 0.36-0.62, 0.40 wide; covers 0.40-0.60 m from z 0.12 to -0.86, 0.30 wide; fender arc over the front wheel; cowl 0.86-1.00 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every panel is a separate thin extrusion at its own width; the floor cover sits between the covers at a different height; pinstripes stand 4 mm proud.",
+        "mergeNote": "One merged BufferGeometry with height-keyed UVs for the dust tile."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-underbone",
+          "description": "leg shield, floor, covers",
+          "delivery": "sideExtrude panels"
+        },
+        {
+          "id": "d2-fenders-cowl",
+          "description": "fender and cowl",
+          "delivery": "sideExtrude arcs"
+        },
+        {
+          "id": "d5-pinstripes",
+          "description": "white stripes",
+          "delivery": "tinted boxes in the body merge"
+        },
+        {
+          "id": "d7-dust",
+          "description": "faint dust",
+          "delivery": "dust canvas with height UVs"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#343f58",
+        "recipe": "Navy paint as measured; pinstripes as vertex colour.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(52, 63, 88, 1.0)",
+        "secondaryAlbedo": "rgba(52, 63, 88, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. The body shell is the rigid root; the wheels carry their own axle pivots."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "convex",
+          "localCenter": [
+            0,
+            0.535,
+            0
+          ],
+          "halfExtents": [
+            0.35,
+            0.535,
+            0.96
+          ],
+          "notes": "Declared on the asset as convex: one hull over the whole machine."
+        }
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Frame, forks, engine, seat and fittings",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Twenty tube runs (fork, stem, bars, mirror stems, spine, swingarm, shock, exhaust, rack), the seat, engine block, crankcase, lamps, grips, instrument, mirror heads and footpegs: one merge, one submission.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Handlebar 0.68 m across at 1.00 m; mirrors to 1.125 m; rack 0.32 x 0.38 m at 0.60 m; seat 0.26 x 0.62 m at 0.61-0.71 m; engine 0.22 x 0.22 x 0.30 m at 0.19-0.41 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Tubes overlap their joints by 1.2 radii and meet the panels as opposed faces; the seat sits on the covers' top face as an opposed butt.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-chrome",
+          "description": "chrome fittings",
+          "delivery": "tube() runs"
+        },
+        {
+          "id": "d4-engine",
+          "description": "engine and swingarm",
+          "delivery": "tinted boxes and tubes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#b9bcbf",
+        "recipe": "White material, every tone a vertex colour.",
+        "evidenceRef": "region-engine",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(185, 188, 191, 1.0)",
+        "secondaryAlbedo": "rgba(185, 188, 191, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "level": "meso",
+      "role": "mechanism",
+      "importance": 0.9,
+      "confidence": 0.84,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One lathe with eighteen spoke boxes merged in, as an InstancedMesh with two instances.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "0.27 m radius, 0.08 m wide, rim 0.20 m, at z +0.76 and -0.48.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Closed lathe; the fork lowers end at the hub face as opposed butts.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-wheels",
+          "description": "two spoked wheels",
+          "delivery": "repetitionSystems.wheels"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#4c4a46",
+        "recipe": "Tyre #4c4a46, rim and hub #a9a7a2, spokes #b0aea9 as vertex colours.",
+        "evidenceRef": "region-tyre",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(76, 74, 70, 1.0)",
+        "secondaryAlbedo": "rgba(76, 74, 70, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0.27,
+            0.76
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ],
+          "confidence": 0.9,
+          "name": "wheel-front",
+          "notes": "One InstancedMesh, 2 instances; each instance is a named pivot on its axle (wheel-front, wheel-rear) exposed on sculptRuntime.pivots with its instance index, so a host can spin any wheel by writing that instance matrix."
+        },
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": true,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "The wheels are the only mechanism on the prop."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "paint",
+      "name": "Navy automotive paint",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#343f58",
+      "color": "#343f58",
+      "roughness": {
+        "base": 0.4,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#343f58",
+        "secondary": [
+          "#34405B",
+          "#25324C",
+          "#414B66"
+        ],
+        "samplingNotes": "Measured as the mean of crops/paint.png. extract_pbr_evidence confidence 0.763. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-dust",
+          "region": "lower panels",
+          "roughness": 0.5,
+          "palette": [
+            "#343F58",
+            "#8B8075"
+          ],
+          "evidence": "A faint dust wash to 0.25 of a 1.2 m height-keyed tile; the plate's panels are clean above the floor."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-paint (side cover, PBR confidence 0.763) at #343f58, luma 63. Shipped as measured: the panels are thin and set against chrome and daylight, and the turntable gate did not read them as holes. White pinstripes #d8dde0 are vertex-coloured boxes 4 mm proud.",
+          "Textureless as DECLARED: a light road-dust multiplier canvas is bound after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/paint.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.763,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Chrome, alloy, vinyl and rubber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/trim_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/engine.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE on purpose with vertexColors: chrome #b9bcbf (region-chrome), engine alloy #6c6a66 (region-engine, 0.860), crankcase and swingarm #4a4742, seat vinyl #575759 (region-seat), tyres #4c4a46 and rims #a9a7a2 (region-tyre, 0.841), lamp #d8dde0, indicators #b87a3a, tail lamp #b03030.",
+          "Textureless as DECLARED: the parts are 6-40 mm; nothing resolves a texture at prop distance. No metalness: the harness has no environment map and chrome with nothing to reflect renders black."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/engine.png",
+        "pbrReport": "material-evidence/trim.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "instanceCount": 2,
+      "sourceComponent": "wheels",
+      "material": "trim",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "spoked-wheel-lathe",
+      "placement": {
+        "mode": "explicit",
+        "note": "z +0.76 and -0.48 on the centreline."
+      },
+      "instanceDimensions": {
+        "width": 0.08,
+        "height": 0.54,
+        "depth": 0.54
+      },
+      "rationale": "Two wheels at one geometry and one submission; each instance is a named axle pivot.",
+      "zFightingNote": "Closed lathe with the spokes inside the rim."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T04:43:12.393123+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.476061+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.554706+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "fittings",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
+          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.634618+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.717021+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.801585+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.883033+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.963064+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        },
+        {
+          "id": "fittings",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
+          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        },
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T04:43:12.393123+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/honda-wave/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.476061+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: four thin panel extrusions, twenty tube runs, seat, engine, wheels at the proxy stations.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.554706+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "fittings",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
+          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: fender arc, cowl tumblehome, rack bars, mirror heads, pegs, lamps.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.634618+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.716-0.860; chrome without metalness because the harness has no environment map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.717021+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: one 256 px dust canvas; pinstripes as geometry.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.801585+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.883033+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: root pivot plus TWO wheel pivots, ZERO sockets, one CONVEX collider matching the declaration, no destruction groups. Steering not articulated.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T04:43:12.963064+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.85,
+        "formDetail": 0.83,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
+          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+        },
+        {
+          "id": "fittings",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
+          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
+          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+        },
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
+          "notes": "Not lifted: the panels are thin and set against chrome."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 2,776/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, one 256 px canvas at 0.3 MB, factory 48 ms. Turntable: enclosed background is the step-through and fork daylight, allowed on measurement.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 1,
+        "projectedTotal": 4,
+        "budget": 4,
+        "headroom": 0,
+        "note": "Two components and one repetition system: 3 of 4. Forty-odd fittings ride one merge."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "paint and a white vertex-coloured trim: 2 of 3. Chrome, alloy, vinyl, rubber and lamps differ in albedo only."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 4,
+        "budget": 6,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 2776,
+        "budget": 4000,
+        "headroom": 1224,
+        "note": "2,776 of 4,000: the spoked wheel lathe is the cost (two instances of one geometry); the tubes are 8-segment cylinders."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Thin side-profile extrusions for the panels, polyline tubes for the frame and fittings, a spoked lathe for the wheel, boxes for the rest."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh carries both wheels. No per-instance colour."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 256 px dust canvas is bound after construction on the paint. 0.3 MB of texture VRAM, factory 48 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "The turntable gate flags the step-through and the daylight in the fork and under the seat.",
+      "mitigation": "Real open air on a motorcycle; --allow-holes on the _holecc measurement logged per azimuth."
+    },
+    {
+      "id": "right-side-mirrored",
+      "severity": "low",
+      "description": "The right side is not in the plate.",
+      "mitigation": "region-right at confidence 0.80."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Honda Wave",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3222,
+        "aspectRatioDelta": 0.0607,
+        "scaleDelta": 0.4152,
+        "bilateralSymmetryError": 0.1531,
+        "colorDelta": {
+          "checked": 3,
+          "maxDeltaE": 13.92,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 10.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.92
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.16
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.322 is below threshold 0.85",
+        "aspect-ratio delta 0.061 exceeds threshold 0.05",
+        "scale delta 0.415 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 2.1% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured",
+        "render: 3.7% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "246f74725379705a",
+      "passId": "blockout"
+    }
+  ]
+}

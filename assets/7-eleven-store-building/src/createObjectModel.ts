@@ -1357,28 +1357,58 @@ export function configure7ElevenStoreBuildingRenderer(renderer: THREE.WebGLRende
  * ------------------------------------------------------------------------- */
 
 /**
- * Draw the brand fascia graphic onto a canvas and bind it to the graphic face.
+ * The brand fascia graphic. The face is a BAKED image: sign/compose.py lays the measured stripe
+ * bands and end blocks (column scan at x=70/430 of the fascia crop; blocks symmetric because the
+ * plate's left/right difference is perspective) on the measured field colour at 2048 x 320 for the
+ * 6.48 x 0.80 m face (non-square pixels keep the mark's vertical resolution), and places the
+ * centre mark at the plate's own mark-height/fascia-height ratio of 0.84. The mark itself is the
+ * TRADEMARK ARTWORK -- the slab 7 with the orange corner and ELEVEn across the stem -- reproduced by
+ * fal-ai/nano-banana-2/edit from the plate's own 110 px mark crop (sign/mark-crop.png ->
+ * sign/emblem-raw.png), keyed off its white field and cut to its ink bbox. 8 KB WebP, embedded as a
+ * data URI and loaded through TextureLoader, assigned SYNCHRONOUSLY so the render harness waits on
+ * it. The previous route drew the 7 as a vector polygon and ELEVEn with fillText, and scored 0.76
+ * against a 0.80 threshold for "font-path glyphs rather than the trademark artwork"; it stays as
+ * drawFallbackFascia(), the DECODE FALLBACK only.
  *
- * The projection route required this surface to be driven by the plate's own pixels rather
- * than approximated. It is flat vector art, so a canvas reproduces its hard colour boundaries
- * exactly at any resolution, where a rectified photo crop would resample them and carry the
- * lightbox glow and the plate's perspective into the surface. Colours and band fractions are
- * MEASURED (see projection-route.json), not chosen.
- *
- * Guarded on `document`: this same module is evaluated in node for the geometry and part
- * dumps, where there is no canvas.
+ * Assigned after material construction, so the material's `textureless` declaration still holds
+ * and it pays none of createSculptMaterial's five-canvas synthesis. Guarded on `document`: this
+ * same module is evaluated in node for the geometry and part dumps, where TextureLoader throws.
  */
+const FASCIA_IMAGE_DATA_URL =
+  'data:image/webp;base64,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';
+
 function applyFasciaGraphic(root: THREE.Group): void {
   if (typeof document === 'undefined') return;
   const rt = root.userData.sculptRuntime as any;
   const face: THREE.Mesh | undefined = rt?.meshes?.['fascia-graphic-face'];
   if (!face) return;                       // not built yet in this pass
 
+  const m = (face.material as THREE.MeshStandardMaterial).clone();
+  const bind = (tex: THREE.Texture) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 8;
+    m.map = tex;
+    m.color.setRGB(1, 1, 1);               // the map carries albedo now; a map MULTIPLIES colour
+    m.emissiveMap = tex;                   // internally lit box: the graphic emits, not just reflects
+    m.emissive = new THREE.Color('#FFF6E8');
+    m.emissiveIntensity = 0.30;
+    m.needsUpdate = true;
+  };
+  const baked = new THREE.TextureLoader().load(FASCIA_IMAGE_DATA_URL, undefined, undefined, () => {
+    const canvas = drawFallbackFascia();
+    if (canvas) bind(new THREE.CanvasTexture(canvas));
+  });
+  bind(baked);
+  face.material = m;
+}
+
+function drawFallbackFascia(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
   const W = 2048, H = 256;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) return null;
 
   const FIELD = '#F4EADE', ORANGE = '#F68B29', GREEN = '#06825D', RED = '#DB2934';
   ctx.fillStyle = FIELD; ctx.fillRect(0, 0, W, H);
@@ -1462,17 +1492,7 @@ function applyFasciaGraphic(root: THREE.Group): void {
   ctx.font = `${Math.round(H * 0.08)}px Arial, Helvetica, sans-serif`;
   ctx.fillText('\u00AE', U(0.72), V(0.98));
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
-  const m = (face.material as THREE.MeshStandardMaterial).clone();
-  m.map = tex;
-  m.color.setRGB(1, 1, 1);                 // the map carries albedo now
-  m.emissiveMap = tex;                     // internally lit box: the graphic emits, not just reflects
-  m.emissive = new THREE.Color('#FFF6E8');
-  m.emissiveIntensity = 0.30;
-  m.needsUpdate = true;
-  face.material = m;
+  return canvas;
 }
 
 
@@ -1489,43 +1509,42 @@ function applyFasciaGraphic(root: THREE.Group): void {
 /**
  * What the shopfront pane shows instead of an interior.
  *
- * The plate's identity at prop distance is a BRIGHT lit shop seen through the glass: a white
- * ceiling glow, four shelf decks, a pale floor. There is no interior geometry by direction, so
- * that reading is carried by one small canvas on the pane: a cool-white field that brightens
- * towards the top, five faint deck lines with a low-saturation product band above each, and a
- * warm floor. Everything is low contrast -- it is seen through a 0.92-opacity tinted pane and
- * is meant to read as depth, not as a picture stuck on the glass. 512 x 128, one draw, well
- * under a millisecond; nothing here goes through createSculptMaterial's canvas synthesis.
+ * The plate's identity at prop distance is a BRIGHT lit shop seen through the glass: gondola
+ * shelving carrying products, a chest freezer, a counter, a pale tiled floor. There is no interior
+ * geometry by direction, so that reading is carried by the plate ITSELF: its glazed opening is
+ * homography-rectified into the shopfront plane (sign/bake_glass.py, 250 px/m over the 6.00 x
+ * 2.47 m opening, downsampled to 1024 x 422, 10.8 KB WebP) and projected onto the pane by WORLD
+ * x/y over that rect, so the shelves land where the plate shows them. The plate's own stiles and
+ * rails are inpainted out because the model draws those as geometry, and the shadows are lifted
+ * (0 -> 100, knee 170) so no enclosed region drops to the backdrop's luma 58 and reads as a hole
+ * to the turntable gate. The previous four-band canvas impression scored 0.74 as "banding rather
+ * than shelves carrying goods"; this is the same one texture, one draw, no new material.
  */
-function interiorImpression(): THREE.Texture | null {
+const GLASS_IMAGE_DATA_URL = 'data:image/webp;base64,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';
+
+function bakedInterior(): THREE.Texture | null {
   if (typeof document === 'undefined') return null;
-  const W = 512, H = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0.00, '#DCE4E8');
-  g.addColorStop(0.18, '#CFD9DD');
-  g.addColorStop(0.90, '#BFC9CD');
-  g.addColorStop(1.00, '#C9CFD0');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  // Shelf decks: the pane covers 0.33-2.80 m; decks at 0.55, 1.00, 1.45, 1.90 m read from the
-  // plate's gondolas, measured top-down in canvas v.
-  const PRODUCT = ['#C9B7A8', '#B9C2B0', '#C6B4B4', '#B6BDC4'];
-  [1.90, 1.45, 1.00, 0.55].forEach((y, i) => {
-    const v = Math.round(((2.80 - y) / 2.47) * H);
-    ctx.fillStyle = PRODUCT[i % PRODUCT.length];
-    ctx.globalAlpha = 0.55;
-    ctx.fillRect(0, v - 11, W, 10);
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#A9B1B5';
-    ctx.fillRect(0, v, W, 2);
-  });
-  const tex = new THREE.CanvasTexture(canvas);
+  const tex = new THREE.TextureLoader().load(GLASS_IMAGE_DATA_URL);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.anisotropy = 4;
   return tex;
+}
+
+/** World-planar UVs over [x0, y0, x1, y1] so the baked image lines up with the opening. */
+function projectWorldUv(mesh: THREE.Mesh, rect: [number, number, number, number]): void {
+  const geo = mesh.geometry as THREE.BufferGeometry;
+  const pos = geo.getAttribute('position');
+  const [x0, y0, x1, y1] = rect;
+  const uv = new Float32Array(pos.count * 2);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+    mesh.localToWorld(v);
+    uv[i * 2] = (v.x - x0) / (x1 - x0);
+    uv[i * 2 + 1] = (v.y - y0) / (y1 - y0);
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
 }
 
 function applyGlazing(root: THREE.Group): void {
@@ -1549,7 +1568,9 @@ function applyGlazing(root: THREE.Group): void {
     m.envMapIntensity = 1;
     m.depthWrite = true;
     m.side = THREE.DoubleSide;
-    m.map = id === 'shopfront-glazing' ? interiorImpression() : null;
+    m.map = id === 'shopfront-glazing' ? bakedInterior() : null;
+    // The pane box is 6.00 x 2.47 at (0, 1.565, 3.44): world x -3..3, y 0.33..2.80 -- the opening.
+    if (m.map) { root.updateMatrixWorld(true); projectWorldUv(mesh, [-3.0, 0.33, 3.0, 2.80]); }
     if (m.map) m.color.setRGB(1, 1, 1);   // the map carries the tone; a tint would darken it twice
     m.needsUpdate = true;
     mesh.material = m;
@@ -1557,6 +1578,246 @@ function applyGlazing(root: THREE.Group): void {
 
 }
 
+
+/* ------------------------------------------------------------------ detail pass */
+
+/**
+ * What the spec declared as relief "carried by the runtime canvas maps" and lost when every
+ * material went textureless (2026-08-25): the condenser's louvre intake, two fan cowls and feet;
+ * the duct's flange ribs; the personnel door's architrave and lever handle; the casement's frame
+ * and mullion. From that pass to this one the +X elevation was a white slab on a white wall and
+ * the plant two plain boxes floating 7-9 cm above the deck, while the review carried 0.80 / 0.72
+ * forward for detail that no longer existed. All of it is GEOMETRY now, merged per material:
+ *
+ *  - condenser-casing: casing + four feet + two cowl rings, ONE galvanised geometry. The casing's
+ *    +X face and the cowl caps sample a 512 px canvas atlas (plain / louvre / fan grille) put on
+ *    the galvanised material after construction; the louvre field is painted at luma >= 131 so a
+ *    side-lit +X face (rendered at ~0.56 of the painted value) stays above the backdrop's 58.
+ *  - roof-duct: re-run ALONG X, the way the plate shows it (left from the casing, parallel to
+ *    the fascia), on the deck, with three flange ribs; plain quadrant.
+ *  - side-fittings: architrave ring, lever handle, bulkhead lamp, casement frame + mullion, ONE
+ *    aluminium geometry. The door leaf stays render-white, set 15 mm proud inside the ring;
+ *    the plate's leaf and wall read at the same value (135 vs 137) and the door is the frame.
+ *  - side-window: becomes the PANE alone, inside the frame, and takes the glass treatment.
+ *  - building-shell: a clone of render-white at #CFCDC9. The plate's side wall measures 137
+ *    against the facade surround's 221 in the same key; lighting alone does not do that, and
+ *    the surround is the white element the image analysis called out. One material more.
+ *
+ * Every new mesh copies the sculptComponent of the part it replaces so part coverage holds, and
+ * nothing shares a co-facing plane with what it sits on (feet 0.07 tall fill the casing's real
+ * gap to the deck; frames stand proud of the wall; the pane sits inside the reveal).
+ */
+function mergeGeos(parts: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  let nv = 0, ni = 0;
+  for (const g of parts) { nv += g.getAttribute('position').count; ni += g.index ? g.index.count : g.getAttribute('position').count; }
+  const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2);
+  const idx = new Uint32Array(ni);
+  let vo = 0, io = 0;
+  for (const g of parts) {
+    const p = g.getAttribute('position'), n = g.getAttribute('normal'), t = g.getAttribute('uv');
+    pos.set(p.array as Float32Array, vo * 3);
+    nor.set(n.array as Float32Array, vo * 3);
+    if (t) uv.set(t.array as Float32Array, vo * 2);
+    const c = p.count;
+    if (g.index) { for (let i = 0; i < g.index.count; i++) idx[io + i] = g.index.getX(i) + vo; io += g.index.count; }
+    else { for (let i = 0; i < c; i++) idx[io + i] = i + vo; io += c; }
+    vo += c;
+    g.dispose();
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  out.setIndex(new THREE.BufferAttribute(idx, 1));
+  return out;
+}
+
+function box(w: number, h: number, d: number, x: number, y: number, z: number): THREE.BufferGeometry {
+  const g = new THREE.BoxGeometry(w, h, d);
+  g.translate(x, y, z);
+  return g;
+}
+
+/** Remap a geometry's UVs into an atlas quadrant [ou, ov] (each quadrant is 0.5 x 0.5). */
+function quadrantUv(g: THREE.BufferGeometry, ou: number, ov: number, pick?: (i: number) => [number, number]): void {
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) {
+    const [qu, qv] = pick ? pick(i) : [ou, ov];
+    uv.setXY(i, qu + uv.getX(i) * 0.5, qv + uv.getY(i) * 0.5);
+  }
+}
+
+function drawPlantAtlas(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
+  const S = 512, Q = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = S; canvas.height = S;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  let seed = 11;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  // galvanised spangle at the material's measured albedo #A8ACAE (plate casing 126-130 sRGB)
+  const galv = (x: number, y: number) => {
+    ctx.fillStyle = '#A8ACAE'; ctx.fillRect(x, y, Q, Q);
+    // fine spangle: many small, faint flecks. The first cut (110 rectangles to 36 px at 0.09)
+    // read as camouflage tiles at the review camera; the plate's casing is a near-uniform pale
+    // galvanised with mottle only visible up close.
+    for (let i = 0; i < 700; i++) {
+      const w = 3 + rnd() * 9, h = 2 + rnd() * 6;
+      ctx.fillStyle = rnd() < 0.5 ? 'rgba(255,255,255,0.05)' : 'rgba(60,66,72,0.05)';
+      ctx.fillRect(x + rnd() * (Q - w), y + rnd() * (Q - h), w, h);
+    }
+  };
+  // plain: u 0..0.5, v 0.5..1 -> canvas y 0..256
+  galv(0, 0);
+  // louvre intake: u 0.5..1, v 0.5..1. Field #7d8287 (luma 130), slats with a lit edge, as Big C
+  galv(Q, 0);
+  ctx.fillStyle = '#7d8287'; ctx.fillRect(Q + 16, 20, Q - 32, Q - 40);
+  for (let y = 24; y < Q - 22; y += 7) {
+    ctx.fillStyle = '#c4c9cd'; ctx.fillRect(Q + 16, y, Q - 32, 2);
+    ctx.fillStyle = '#7d838a'; ctx.fillRect(Q + 16, y + 2, Q - 32, 2);
+  }
+  // fan grille: u 0..0.5, v 0..0.5 -> canvas y 256..512. Dark disc with rings and a hub.
+  galv(0, Q);
+  ctx.fillStyle = '#62676c'; ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, 118, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#9a9fa3'; ctx.lineWidth = 2;
+  for (let r = 14; r < 118; r += 11) { ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, r, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.fillStyle = '#7d8286'; ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, 16, 0, Math.PI * 2); ctx.fill();
+  // spare quadrant: plain with a seam
+  galv(Q, Q);
+  ctx.fillStyle = 'rgba(70,75,80,0.4)'; ctx.fillRect(Q, Q + Q / 2 - 1, Q, 2);
+  return canvas;
+}
+
+function applyDetailPass(root: THREE.Group): void {
+  const rt = root.userData.sculptRuntime as any;
+  const meshes: Record<string, THREE.Mesh> = rt?.meshes ?? {};
+  const replace = (id: string, geo: THREE.BufferGeometry, material?: THREE.Material): THREE.Mesh | null => {
+    const old = meshes[id];
+    if (!old) { geo.dispose(); return null; }
+    const mesh = new THREE.Mesh(geo, material ?? old.material);
+    mesh.name = old.name;
+    mesh.userData = { ...old.userData };
+    mesh.castShadow = old.castShadow; mesh.receiveShadow = old.receiveShadow;
+    old.parent?.remove(old);
+    old.geometry.dispose();
+    root.add(mesh);                       // built in WORLD coordinates
+    meshes[id] = mesh;
+    return mesh;
+  };
+
+  /* ---- rooftop plant. Deck top is y 3.86. */
+  const DECK = 3.86;
+  {
+    const CX = 2.55, CZ = 2.25, W = 1.3, H = 0.60, D = 0.9, FEET = 0.07;   // cowl tops at 4.59, inside the 4.60 envelope   // plate: casing just behind the front parapet, hard by the +X one
+    const casing = new THREE.BoxGeometry(W, H, D);
+    // BoxGeometry faces: +X, -X, +Y, -Y, +Z, -Z (4 vertices each). +X carries the louvre.
+    quadrantUv(casing, 0, 0.5, (i) => (Math.floor(i / 4) === 0 ? [0.5, 0.5] : [0, 0.5]));
+    casing.translate(CX, DECK + FEET + H / 2, CZ);
+    const parts: THREE.BufferGeometry[] = [casing];
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      const f = box(0.10, FEET, 0.10, CX + sx * (W / 2 - 0.10), DECK + FEET / 2, CZ + sz * (D / 2 - 0.10));
+      quadrantUv(f, 0, 0.5);
+      parts.push(f);
+    }
+    for (const dx of [-0.30, 0.30]) {
+      const ring = new THREE.CylinderGeometry(0.20, 0.20, 0.06, 20, 1);
+      const nrm = ring.getAttribute('normal');
+      quadrantUv(ring, 0, 0.5, (i) => (nrm.getY(i) > 0.9 ? [0, 0] : [0, 0.5]));
+      ring.translate(CX + dx, DECK + FEET + H + 0.03, CZ);
+      parts.push(ring);
+    }
+    const mesh = replace('condenser-casing', mergeGeos(parts));
+    if (mesh) {
+      const canvas = drawPlantAtlas();
+      const mat = mesh.material as THREE.MeshStandardMaterial;
+      if (canvas && mat) {
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 4;
+        mat.map = tex;
+        mat.color.setRGB(1, 1, 1);            // the atlas carries the measured albedo
+        mat.needsUpdate = true;
+      }
+    }
+    // duct: along X from the casing's -X face towards the facade centre, on the deck
+    const DW = 0.45, DH = 0.38, DL = 2.2;
+    const dx0 = CX - W / 2, dcx = dx0 - DL / 2;
+    const duct = box(DL, DH, DW, dcx, DECK + DH / 2, CZ);
+    quadrantUv(duct, 0, 0.5);
+    const dparts: THREE.BufferGeometry[] = [duct];
+    for (const t of [0.2, 0.5, 0.8]) {
+      const rib = box(0.03, DH + 0.03, DW + 0.03, dx0 - DL * t, DECK + DH / 2 + 0.015, CZ);
+      quadrantUv(rib, 0, 0.5);
+      dparts.push(rib);
+    }
+    replace('roof-duct', mergeGeos(dparts));
+  }
+
+  /* ---- +X elevation. Wall face at x = 4.0. */
+  {
+    const WX = 4.0;
+    const DZ = 1.6, DW = 0.90, DH = 2.10, DY0 = 0.15;         // door leaf, above the plinth
+    const FR = 0.06;                                          // architrave width
+    const alu: THREE.BufferGeometry[] = [];
+    // architrave: head + two jambs, proud 0.03, wrapping the leaf
+    alu.push(box(0.06, FR, DW + 2 * FR, WX, DY0 + DH + FR / 2, DZ));
+    alu.push(box(0.06, DH, FR, WX, DY0 + DH / 2, DZ - DW / 2 - FR / 2));
+    alu.push(box(0.06, DH, FR, WX, DY0 + DH / 2, DZ + DW / 2 + FR / 2));
+    // lever handle: backplate and lever, on the leaf's +X face (leaf face at WX + 0.015)
+    alu.push(box(0.012, 0.16, 0.04, WX + 0.015 + 0.006, DY0 + 0.95, DZ + DW / 2 - 0.10));
+    alu.push(box(0.05, 0.02, 0.14, WX + 0.015 + 0.03, DY0 + 0.95, DZ + DW / 2 - 0.16));
+    // bulkhead lamp above the door
+    alu.push(box(0.14, 0.10, 0.26, WX + 0.07, DY0 + DH + 0.32, DZ));
+    // casement frame + mullion, proud 0.02, around a 0.64 x 0.94 pane
+    const WZ = -0.3, WY = 2.3, PW = 0.64, PH = 0.94;
+    alu.push(box(0.04, 0.05, PW + 0.10, WX, WY + PH / 2 + 0.025, WZ));
+    alu.push(box(0.04, 0.05, PW + 0.10, WX, WY - PH / 2 - 0.025, WZ));
+    alu.push(box(0.04, PH, 0.05, WX, WY, WZ - PW / 2 - 0.025));
+    alu.push(box(0.04, PH, 0.05, WX, WY, WZ + PW / 2 + 0.025));
+    alu.push(box(0.03, PH, 0.04, WX - 0.005, WY, WZ));
+    replace('side-fittings', mergeGeos(alu));
+    // door leaf: render-white, 15 mm proud, inside the ring
+    replace('side-door', box(0.03, DH, DW, WX + 0.015 - 0.015, DY0 + DH / 2, DZ));
+    // the pane, recessed inside the frame
+    replace('side-window', box(0.02, PH, PW, WX, WY, WZ));   // faces 3.99 / 4.01: clear of the wall (4.00) and the frame (4.02)
+  }
+
+  /* ---- parapet coping: the plate's M2, a flat cap projecting slightly proud of both faces of the
+   * parapet, white like the facade surround on the grey wall. One merged geometry on the facade
+   * material; the four runs meet as opposed butts and share no overlapping co-facing face. */
+  {
+    const T = 4.25, CH = 0.05, CW = 0.28, y = T + CH / 2;
+    const facade = meshes['facade-wall'];
+    const shell = meshes['building-shell'];
+    if (facade && shell) {
+      const runs = [
+        box(8.28, CH, CW, 0, y, 3.40),                 // front, over the facade wall (z 3.3..3.5)
+        box(8.28, CH, CW, 0, y, -3.20),                // rear (z -3.3..-3.1)
+        box(CW, CH, 6.32, 3.90, y, 0.10),              // +X (z -3.06..3.26)
+        box(CW, CH, 6.32, -3.90, y, 0.10),             // -X
+      ];
+      const cap = new THREE.Mesh(mergeGeos(runs), facade.material);
+      cap.name = 'Parapet coping';
+      cap.userData = { ...shell.userData };
+      cap.userData.sculptComponent = { ...(shell.userData.sculptComponent ?? {}), id: 'parapet-coping', name: 'Parapet coping', level: 'meso', role: 'trim' };
+      cap.castShadow = true; cap.receiveShadow = true;
+      root.add(cap);
+      meshes['parapet-coping'] = cap;
+    }
+  }
+
+  /* ---- shell tone */
+  {
+    const shell = meshes['building-shell'];
+    if (shell) {
+      const m = (shell.material as THREE.MeshStandardMaterial).clone();
+      m.name = 'render-grey';
+      m.color = new THREE.Color('#CFCDC9');
+      shell.material = m;
+    }
+  }
+}
 
 /**
  * Emit the four LINEAR repetition systems the generator cannot.
@@ -1635,24 +1896,24 @@ function applyLinearRepetition(root: THREE.Group): void {
       pos: [x, 0.41, 3.45] as [number, number, number],
       scale: [1.44, 0.12, 0.06] as [number, number, number],
     })),
+    // Leaf frames (2026-08-27): the plate's sliding leaves are fully framed -- outer stile,
+    // meeting stile and top rail in the same aluminium -- where the model's were bare panes
+    // between mullions. Same cluster, so no draw call; at z 3.44 +- 0.03 (faces 3.41 / 3.47) they
+    // share no plane with the mullions (3.40 / 3.48) or the bottom rails (3.42 / 3.48).
+    ...[-1.38, -0.08, 0.08, 1.38].map((x) => ({
+      pos: [x, 1.535, 3.44] as [number, number, number],
+      scale: [0.06, 2.37, 0.06] as [number, number, number],
+    })),
+    ...[-0.73, 0.73].map((x) => ({
+      pos: [x, 2.50, 3.44] as [number, number, number],   // just under the header box (2.55): visible, and clear of its back plane
+      scale: [1.24, 0.08, 0.06] as [number, number, number],
+    })),
+    // header pull: the small horizontal handle on the door track
+    { pos: [0, 2.56, 3.575] as [number, number, number], scale: [0.30, 0.04, 0.03] as [number, number, number] },
   ]);
 
-  // --- manifestation tabs: a row across every bay at ~1.2 m ---
-  const tabMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff, roughness: 0.40, metalness: 0, side: THREE.DoubleSide,
-  });
-  const TAB = ['#D8402C', '#E8C22A', '#2E8B57'];
-  const tabs: { pos: [number, number, number]; scale: [number, number, number]; color?: string }[] = [];
-  [-2.25, -0.75, 0.75, 2.25].forEach((bayCentre, bay) => {
-    [-0.34, 0, 0.34].forEach((dx, k) => {
-      tabs.push({
-        pos: [bayCentre + dx, 1.20, 3.46],
-        scale: [0.10, 0.04, 0.004],
-        color: TAB[(bay + k) % TAB.length],
-      });
-    });
-  });
-  cluster('manifestation-tabs', tabMat, tabs);
+  // Manifestation tabs are carried by the baked glazing image at the plate's own 1.45 m; a
+  // geometry row here at 1.20 m read as a second row, and cost a material and a draw call.
 }
 
 /**
@@ -1669,6 +1930,7 @@ export function createObjectModel(
   if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
 
   applyFasciaGraphic(root);
+  applyDetailPass(root);
   applyGlazing(root);
   applyLinearRepetition(root);
 

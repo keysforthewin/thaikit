@@ -1,0 +1,2065 @@
+{
+  "targetName": "Iced Fruit Cart",
+  "targetId": "iced-fruit-cart",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "glazed-display-push-cart",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "angle-steel-frame",
+        "glazed-case",
+        "banked-ice-bed",
+        "cut-fruit-rows",
+        "folded-cover",
+        "four-wheels"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "instanced-wheels",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "rigid-body-cart",
+        "wheels-roll-about-axle"
+      ],
+      "materialFamilies": [
+        "stainless-angle-steel",
+        "window-glass",
+        "wet-fruit-and-ice"
+      ],
+      "notes": "A glazed display cart on four wheels. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches -- the cover, jar and bag roll are dressing -- so there are no sockets. Sidewalk fruit vendors, temple fairs, office soi corners. A dented stainless frame, glass running with condensation, pineapple, mango and watermelon banked on shaved ice, a jar of bamboo skewers, a folded canvas cover on the rail, a roll of bags."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE angle-steel frame merge -- four posts, twelve rails, the chassis deck, axles, the folded cover, the skewer jar, the bag roll and its bracket; ONE glazing component of four panes; ONE bed component of ice mass, banked ice and eighteen fruit blocks; ONE InstancedMesh of four wheels: FOUR draw calls of 4 (proxy occupancy above).",
+        "Three materials: steel (vertex colours: stainless, black axles, canvas, glass jar), real TRANSPARENT glass at opacity 0.30 both-sided, and a wet material for ice and fruit -- the registry notes say the glazing is a separate render state that cannot share with the opaque parts.",
+        "One repetition system: four wheels off one two-cylinder geometry, each a named pivot.",
+        "Action readiness: four hinge pivots on the wheels, one box collider on the root, zero sockets, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the glazed case with the banked ice and three fruit colours inside, on wheels; the glass has to be real transparency or the fruit is invisible and the prop is a steel box."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-case",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "glazed case on an angle frame",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-fruit",
+          "zone": "interior",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "three fruit rows on banked ice",
+          "mapsTo": {
+            "ref": "bed"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-wheels",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four small wheels",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-jar",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "jar of skewers on the corner",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-cover",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "folded canvas cover on the rail",
+          "mapsTo": {
+            "ref": "d5-cover"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-glass",
+          "zone": "body",
+          "kind": "gloss",
+          "identityDefining": true,
+          "description": "transparent glazing",
+          "mapsTo": {
+            "ref": "glazing"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-bagroll",
+          "zone": "side",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "bag roll on a side bracket",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+    "resolvedUnknowns": [
+      "The case is 1.52 m wide inside the declared 1.70 so the bag roll on the side bracket stays inside the envelope.",
+      "Fruit is eighteen tinted blocks in three rows, not the plate's individual wedges; identity is the three colours on white ice.",
+      "The glazing is four flat panes; the plate's condensation is not carried."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.70 x 1.50 x 0.75 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 4 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 3,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.70 x 1.50 x 0.75 m",
+          "Case, wheels and cover at the proxy stations"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a box on the ground",
+          "no wheels"
+        ]
+      },
+      {
+        "id": "fruit",
+        "name": "Fruit on ice",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Pineapple, mango, watermelon rows visible through the glass"
+        ],
+        "evidenceRefs": [
+          "region-pineapple",
+          "region-melon"
+        ],
+        "failureModes": [
+          "empty case",
+          "opaque glass"
+        ]
+      },
+      {
+        "id": "frame",
+        "name": "Frame, glazing and dressing",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Stainless angle frame",
+          "Transparent panes",
+          "Cover, jar, bag roll"
+        ],
+        "evidenceRefs": [
+          "region-rail",
+          "region-glass",
+          "region-tarp"
+        ],
+        "failureModes": [
+          "no cover",
+          "wheels not turning"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "fruit",
+      "name": "Fruit on ice",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "bed",
+        "glazing"
+      ],
+      "evidenceRefs": [
+        "region-pineapple",
+        "region-melon"
+      ]
+    },
+    {
+      "id": "frame",
+      "name": "Frame, glazing and dressing",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "glazing"
+      ],
+      "evidenceRefs": [
+        "region-rail",
+        "region-glass",
+        "region-tarp"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 4,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the cart at base-center."
+      },
+      {
+        "name": "wheel-front-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.62,
+          0.11,
+          0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "cart wheel, rolls about its axle"
+      },
+      {
+        "name": "wheel-front-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.62,
+          0.11,
+          0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "cart wheel, rolls about its axle"
+      },
+      {
+        "name": "wheel-rear-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.62,
+          0.11,
+          -0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "cart wheel, rolls about its axle"
+      },
+      {
+        "name": "wheel-rear-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.62,
+          0.11,
+          -0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "cart wheel, rolls about its axle"
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "frame",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the whole cart envelope."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The case is 1.52 m wide inside the declared 1.70 so the bag roll on the side bracket stays inside the envelope.",
+    "Fruit is eighteen tinted blocks in three rows, not the plate's individual wedges; identity is the three colours on white ice.",
+    "The glazing is four flat panes; the plate's condensation is not carried."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.7,
+      "h": 1.5,
+      "d": 0.75
+    },
+    "description": "A 1.52 x 0.71 m glazed case from 0.30 to 1.18 m on a chassis over four r 0.11 wheels at +-0.62, +-0.26; ice to 0.78 m with fruit rows to 0.88; a folded cover 0.80 x 0.14 on the top rail; a jar 0.10 x 0.14 on the front-left corner to 1.41; a bag roll r 0.04 on the +X side.",
+    "envelopeDerivation": "x +-0.81 at the frame (case 1.52 wide) with the bag roll on the +X bracket reaching +0.85, the declared 1.70; y 0 at the wheel contact to 1.41 at the skewer jar (declared 1.50); z +-0.37 (declared 0.75). Proxy occupancy: wheels 0-0.18 H, case 0.18-0.94 H, cover to 0.98 H; its w:h:d 1:1.135:0.750 is bloated by the jar and the folded cover (1.93 m tall at 1.70 wide), so the DECLARED envelope governs and the proxy fixes the stations: case bottom 0.30, bed 0.78, top rail 1.18.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:1.135:0.750, 3,520 triangles. Occupancy map: wheels 0-0.18 H, case 0.18-0.94 H, cover 0.94-0.98 H; the plate is a three-quarter view so the widths foreshorten and the declared envelope is built."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-rail",
+      "viewpoint": "front",
+      "path": "crops/rail.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-glass",
+      "viewpoint": "front",
+      "path": "crops/glass.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-ice",
+      "viewpoint": "front",
+      "path": "crops/ice.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-pineapple",
+      "viewpoint": "front",
+      "path": "crops/pineapple.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-melon",
+      "viewpoint": "front",
+      "path": "crops/melon.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-tarp",
+      "viewpoint": "top",
+      "path": "crops/tarp.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.85,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: a glazed case is glazed on all four sides; the back is the front without the jar."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Stainless angle frame, chassis, cover, jar and bag roll",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Posts, rails, deck, axles, cover, bracket and three cylinders in one merge on one material: one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts 0.03 angle at +-0.76, +-0.355 from 0.30 to 1.18; rails at 0.30, 0.76 and 1.18; deck 0.024 under the case; cover on the rail; jar at the front-left corner.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Rails meet posts as interpenetrating solids; the cover sits on the rail top (opposed); the deck is under the case bottom rail (opposed). No co-facing pair.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.6 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-case",
+          "description": "frame",
+          "delivery": "angle boxes"
+        },
+        {
+          "id": "d3-wheels",
+          "description": "wheels",
+          "delivery": "InstancedMesh of four, pivots per instance"
+        },
+        {
+          "id": "d4-jar",
+          "description": "jar",
+          "delivery": "cylinders"
+        },
+        {
+          "id": "d5-cover",
+          "description": "cover",
+          "delivery": "tinted boxes"
+        },
+        {
+          "id": "d7-bagroll",
+          "description": "bag roll",
+          "delivery": "cylinder"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#9a9c9a",
+        "recipe": "Stainless as vertex colour on white with a grime canvas; cover, axles, jar and roll tinted.",
+        "evidenceRef": "region-rail",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(154, 156, 154, 1.0)",
+        "secondaryAlbedo": "rgba(154, 156, 154, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center at the wheel contact, as the asset declares. The frame is the rigid root; the four wheels carry their own axle pivots."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.75,
+            0
+          ],
+          "halfExtents": [
+            0.85,
+            0.75,
+            0.375
+          ],
+          "notes": "Declared on the asset as box: the whole cart envelope."
+        }
+      }
+    },
+    {
+      "id": "glazing",
+      "name": "Glass panes",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four 4 mm panes on the transparent material: one merge, one draw call.",
+      "materialId": "glass",
+      "material": "glass",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "Each pane 18 mm inside its frame plane, 3 cm short of the posts on every edge.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Panes are inset 18 mm from the frame faces; no pane shares a plane with a rail.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-glass",
+          "description": "glazing",
+          "delivery": "transparent boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "glass",
+        "baseColor": "#cfe0da",
+        "recipe": "Transparent green-cast glass.",
+        "evidenceRef": "region-glass",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(207, 224, 218, 1.0)",
+        "secondaryAlbedo": "rgba(207, 224, 218, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "bed",
+      "name": "Ice bed and cut fruit",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Ice mass, banked ice and eighteen fruit blocks in one merge on the wet material: one draw call.",
+      "materialId": "wet",
+      "material": "wet",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "Ice 1.56 x 0.48 x 0.65 from 0.30 to 0.78; fruit rows tilted on the bed top from x -0.60 to +0.63.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Fruit blocks are rotated and sit into the ice top; the banked ice stands 0.03 above the bed. Nothing co-facing.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-fruit",
+          "description": "fruit",
+          "delivery": "tinted rotated boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "wet",
+        "baseColor": "#d8dde0",
+        "recipe": "Ice as vertex colour; fruit tinted blocks.",
+        "evidenceRef": "region-ice",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(216, 221, 224, 1.0)",
+        "secondaryAlbedo": "rgba(216, 221, 224, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Stainless angle steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9a9c9a",
+      "color": "#9a9c9a",
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.35,
+      "albedo": {
+        "dominant": "#9a9c9a",
+        "secondary": [
+          "#9a9c9a",
+          "#c9b48c",
+          "#3a3a3a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/rail.png. extract_pbr_evidence confidence 0.820. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-cover",
+          "region": "folded canvas on the top rail",
+          "roughness": 0.9,
+          "palette": [
+            "#C9B48C"
+          ],
+          "evidence": "crops/tarp.png -- #cdb599; two stacked tinted boxes."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-rail (0.82) at #9a9a94; carried at #9a9c9a as a vertex colour on a WHITE material with the canvas cover #c9b48c (region-tarp #cdb599) and the black axles.",
+          "Metalness 0.35 for a harness with no environment map.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/rail.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.82,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Window glass",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cfe0da",
+      "color": "#cfe0da",
+      "roughness": {
+        "base": 0.08,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cfe0da",
+        "secondary": [
+          "#cfe0da"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.780. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-glass (0.78) at #767c79 -- glass over the dark interior; carried as a transparent pane at opacity 0.30 with a green cast #cfe0da, both faces.",
+          "Textureless as DECLARED: bare glass carries no texture."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.78,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "wet",
+      "name": "Wet fruit and ice",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d8dde0",
+      "color": "#d8dde0",
+      "roughness": {
+        "base": 0.25,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/wet_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#d8dde0",
+        "secondary": [
+          "#d8dde0",
+          "#e8c23a",
+          "#d94a4a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/ice.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-ice (0.80) at #95938b (ice behind glass), region-pineapple at #d6bb66, region-melon at #986d63; carried as vertex colours #d8dde0, #e8c23a, #f0b040, #d94a4a and rind #4f8a3a on one WHITE low-roughness material.",
+          "Textureless as DECLARED: the fruit reads by colour and block form at prop distance."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/ice.png",
+        "pbrReport": "material-evidence/wet.pbr.json",
+        "confidence": 0.8,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "componentRef": "frame",
+      "count": 4,
+      "primitive": "cylinder",
+      "materialId": "steel",
+      "placement": "four wheels at x +-0.62, z +-0.26, r 0.11",
+      "instanced": true,
+      "pivotPerInstance": true,
+      "notes": "One InstancedMesh of a tyre and hub cylinder pair; each instance is a named pivot on its axle."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T10:04:40.924873+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.003710+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.084917+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.163292+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.240922+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.320434+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.396119+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.473990+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.550468+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        },
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        },
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T10:04:40.924873+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4; case, wheels and bed at the proxy stations.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.003710+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Bag roll on the +X bracket overran the declared 1.70 m width (built 1.89); the case was narrowed to 1.52 m and the roll brought inside the envelope.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.084917+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: case 1.52 x 0.71 from 0.30 to 1.18, bed at 0.78, wheels r 0.11; case narrowed from 1.62 after the bag roll overran the declared width.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.163292+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: fruit rows, banked ice, folded cover, jar, bag roll, glazing beads.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.240922+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: steel 0.82, glass 0.78, wet 0.80, all textureless; glass a real transparent render state as the registry notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.320434+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: grime canvas on the steel; fruit and ice as vertex colours.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.396119+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; both recorded absent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.473990+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus FOUR wheel pivots (wheel-front-l/r, wheel-rear-l/r) on the wheel InstancedMesh, ZERO sockets, one BOX collider on the frame root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:04:41.550468+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.82,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
+          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+        },
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
+          "notes": "Blocks, not wedges."
+        },
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 1,072/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, one 256 px canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 1,
+        "projectedTotal": 4,
+        "budget": 4,
+        "headroom": 0,
+        "note": "Three components and one repetition system: 4 of 4."
+      },
+      "materials": {
+        "projectedTotal": 3,
+        "budget": 3,
+        "headroom": 0,
+        "note": "steel, glass and wet: 3 of 3, the glass a separate render state by the registry notes."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 4,
+        "budget": 6,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1072,
+        "budget": 4000,
+        "headroom": 2928,
+        "note": "1,072 of 4,000: forty boxes, three cylinders, and a two-cylinder wheel instanced four times."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes for the frame, deck, cover, panes, ice and fruit; cylinders for the jar, skewers, bag roll and wheels."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh: four wheels, each a named pivot with its instance index on sculptRuntime.pivots."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 256 px grime canvas after construction, 0.25 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "transparent-sorting",
+      "severity": "low",
+      "description": "Four transparent panes in one mesh sort as one; the far pane can draw over the near one at some angles.",
+      "mitigation": "Opacity 0.30 and a pale cast make the order invisible at prop distance; depthWrite stays on."
+    },
+    {
+      "id": "proxy-bloat",
+      "severity": "low",
+      "description": "The proxy reads 1.93 m tall at 1.70 wide because of the jar and cover.",
+      "mitigation": "The declared 1.50 m governs; built to 1.41."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Iced Fruit Cart",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.561,
+        "aspectRatioDelta": 0.1863,
+        "scaleDelta": 0.0543,
+        "bilateralSymmetryError": 0.1902,
+        "colorDelta": {
+          "checked": 3,
+          "maxDeltaE": 14.58,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 14.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.73
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.3
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.561 is below threshold 0.85",
+        "aspect-ratio delta 0.186 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "683bbdaa0c4801fe",
+      "passId": "blockout"
+    }
+  ]
+}

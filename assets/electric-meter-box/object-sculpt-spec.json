@@ -1,0 +1,1771 @@
+{
+  "targetName": "Electric Meter Box",
+  "targetId": "electric-meter-box",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "wall-mounted-meter-box",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "back-flange",
+        "box-body",
+        "rounded-door",
+        "gasket-line",
+        "conduit-stubs"
+      ],
+      "structureKind": [
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "grey-enamelled-steel"
+      ],
+      "notes": "A wall-mounted enclosure. The door is hinged in life, but at ONE draw call and ONE material it cannot be a separate mesh, so it ships sealed as part of the body and gets no pivot: a pivot on a part that cannot move independently would be a promise the prop cannot keep. One root pivot at the wall face, zero sockets. On every shophouse pillar and soi wall; usually in rows of three to six. Pale grey enamel with rust at the door head and around the fixings, yellowed warning labels, a black flexible conduit and a brass gland below."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 1,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE merge: a 12 mm back flange, the 0.26 x 0.34 x 0.12 body, a 3 mm gasket frame, the door 6 mm proud of it, two label plates, a latch, a rust streak, a conduit stub with its nut, a brass gland and four flange screws -- 332 triangles, ONE draw call.",
+        "One material: grey enamel as a vertex colour on white, with every other tone (gasket #3a3a3a, label #d9c48a, conduit #2b2b2b, brass #a8843a, rust #8a5a30) a vertex colour on the same shader.",
+        "No repetition system at one draw call.",
+        "Action readiness: one root pivot at the wall face, zero sockets, one cylinder collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the layered front -- flange, body, gasket line, door -- and the two yellow labels; each layer is a box standing proud of the one behind, so the reveals shade themselves without a texture."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-door",
+          "zone": "front",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "door standing proud inside a dark gasket line",
+          "mapsTo": {
+            "ref": "box"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-flange",
+          "zone": "back",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "wider back flange with corner screws",
+          "mapsTo": {
+            "ref": "box"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-stubs",
+          "zone": "bottom",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "black conduit stub and brass gland below",
+          "mapsTo": {
+            "ref": "box"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-latch",
+          "zone": "front",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "latch on the right edge of the door",
+          "mapsTo": {
+            "ref": "box"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-labels",
+          "zone": "front",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "two yellow warning labels",
+          "mapsTo": {
+            "ref": "d5-labels"
+          },
+          "onMaterial": "enamel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-rust",
+          "zone": "front",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rust streak at the door head",
+          "mapsTo": {
+            "ref": "box"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+    "resolvedUnknowns": [
+      "The door is sealed to the body: one draw call cannot carry a separate hinged mesh.",
+      "The labels are plain yellow plates; their print is below the resolvable band at prop distance and a canvas would need a second material or a texture set.",
+      "The conduit is a short stub, not the plate's trailing cable; a cable is scene dressing."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.30 x 0.40 x 0.16 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=800 triangles, <=1 draw calls, <=1 materials, <=2 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and layering",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.30 x 0.40 x 0.16 m",
+          "Flange, body, door as three steps"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a plain box",
+          "door flush"
+        ]
+      },
+      {
+        "id": "labels",
+        "name": "Warning labels",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two yellow plates at the plate's stations"
+        ],
+        "evidenceRefs": [
+          "region-label"
+        ],
+        "failureModes": [
+          "no labels"
+        ]
+      },
+      {
+        "id": "stubs",
+        "name": "Conduit and gland",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Black stub left, brass gland right, below the body"
+        ],
+        "evidenceRefs": [
+          "region-brass"
+        ],
+        "failureModes": [
+          "no stubs"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 1 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and layering",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "box"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "labels",
+      "name": "Warning labels",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "box"
+      ],
+      "evidenceRefs": [
+        "region-label"
+      ]
+    },
+    {
+      "id": "stubs",
+      "name": "Conduit and gland",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "box"
+      ],
+      "evidenceRefs": [
+        "region-brass"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 1,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "box",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "box",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as cylinder: one proxy about the wall normal spanning the flange diagonal, 0.16 m deep."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The door is sealed to the body: one draw call cannot carry a separate hinged mesh.",
+    "The labels are plain yellow plates; their print is below the resolvable band at prop distance and a canvas would need a second material or a texture set.",
+    "The conduit is a short stub, not the plate's trailing cable; a cable is scene dressing."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin BACK-CENTER: the centre of the wall-contact face, +Y up, +Z OUT from the wall. The box occupies z 0..0.167, y -0.21..+0.22, x +-0.15; a level builder places it against a wall by its origin."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.3,
+      "h": 0.4,
+      "d": 0.16
+    },
+    "description": "A 0.30 x 0.40 flange 12 mm thick on the wall; a 0.26 x 0.34 x 0.12 body; a door 0.22 x 0.30 standing 9 mm proud inside a dark gasket line; two labels; a latch on the right; a conduit stub and a brass gland hanging 0.07 m below the body.",
+    "envelopeDerivation": "x +-0.15 at the flange (declared 0.30); y -0.21 (conduit stub tip) to +0.22 (flange top), 0.43 against the declared 0.40, the stubs hanging below the box proper; z 0 at the wall to 0.167 at the latch (declared 0.16). Proxy: w:h:d 1:1.536:0.588 -- 0.46 m tall at 0.30 wide because it carries the stubs -- and 0.176 deep; occupancy reads the flange full width at 0.98 H and the door 0.56-0.96 H spanning cols 3-76 of 80.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d 1:1.536:0.588. The plate is a near-frontal elevation on a white matte, so the depth is the proxy's only: 0.176 m against the declared 0.16, within a gland's length."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-enamel",
+      "viewpoint": "front",
+      "path": "crops/enamel.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-label",
+      "viewpoint": "front",
+      "path": "crops/label.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-brass",
+      "viewpoint": "front",
+      "path": "crops/brass.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-side",
+      "viewpoint": "right",
+      "path": null,
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the plate is frontal; the depth stack (flange, body, door) is inferred from the shadow reveals and the proxy depth."
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.95,
+      "note": "NOT OBSERVED and never seen: the back is the wall face."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "box",
+      "name": "Meter box",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Nine boxes and seven cylinders merged into one geometry on one material: the ONE draw call the small class allows.",
+      "materialId": "enamel",
+      "material": "enamel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Flange 0.30 x 0.38 x 0.012 at z 0..0.012; body 0.26 x 0.34 x 0.12 to z 0.132; gasket 3 mm to 0.135; door 12 mm to 0.147; labels 1.2 mm proud of the door; latch to z 0.167; stubs below y -0.14.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each front layer is a smaller box standing proud of the one behind: flange/body, body/gasket, gasket/door, door/labels are all OPPOSED butt joints with a reveal; the stubs enter the body bottom as interpenetrating cylinders.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.3 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-door",
+          "description": "door",
+          "delivery": "proud box"
+        },
+        {
+          "id": "d2-flange",
+          "description": "flange",
+          "delivery": "box + screw cylinders"
+        },
+        {
+          "id": "d3-stubs",
+          "description": "stubs",
+          "delivery": "cylinders"
+        },
+        {
+          "id": "d4-latch",
+          "description": "latch",
+          "delivery": "two boxes"
+        },
+        {
+          "id": "d5-labels",
+          "description": "labels",
+          "delivery": "tinted plates"
+        },
+        {
+          "id": "d6-rust",
+          "description": "rust",
+          "delivery": "tinted strip + canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "enamel",
+        "baseColor": "#b9bcbf",
+        "recipe": "Grey enamel as vertex colour on white with a warm grime wash; gasket, labels, conduit, brass, rust as vertex colours.",
+        "evidenceRef": "region-enamel",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(185, 188, 191, 1.0)",
+        "secondaryAlbedo": "rgba(217, 196, 138, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            0,
+            0.08
+          ],
+          "radius": 0.25,
+          "height": 0.16,
+          "axis": [
+            0,
+            0,
+            1
+          ],
+          "notes": "Declared on the asset as cylinder: one proxy about the wall normal spanning the flange diagonal, 0.16 m deep."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "enamel",
+      "name": "Grey enamelled steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b9bcbf",
+      "color": "#b9bcbf",
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/enamel_roughness.png"
+      },
+      "metalness": 0.1,
+      "albedo": {
+        "dominant": "#b9bcbf",
+        "secondary": [
+          "#b9bcbf",
+          "#a6a9ac",
+          "#d9c48a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/enamel.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-labels",
+          "region": "two warning labels on the door",
+          "roughness": 0.6,
+          "palette": [
+            "#D9C48A"
+          ],
+          "evidence": "crops/label.png -- #c3b397 sd 61 with the print; carried as plain #d9c48a plates 1.2 mm proud."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-enamel (0.90) at #a3a6a6 sd 3 -- a flat swatch on a WHITE matte, so the plate exposure is high and the material is carried at #b9bcbf on the door and body, #a6a9ac on the flange, as vertex colours on a WHITE material.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction (warm wash 0.80/0.74/0.66 at 0.30)."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/enamel.png",
+        "pbrReport": "material-evidence/enamel.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T09:45:50.910890+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:50.991868+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.072689+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.153586+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "stubs",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.232950+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.313508+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.394340+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.477241+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.560574+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        },
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        },
+        {
+          "id": "stubs",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T09:45:50.910890+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: one component at 1 draw call of 1; flange, body and door stacked from the wall face.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:50.991868+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: flange 0.30 x 0.38 x 0.012, body 0.26 x 0.34 x 0.12, door 0.22 x 0.30 proud 9 mm inside the gasket.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.072689+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: labels, latch, four flange screws, conduit stub with nut, brass gland.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.153586+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "stubs",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: one enamel at PBR confidence 0.90, textureless; six tones as vertex colours; albedo carried 10% under the white-matte crop mean.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.232950+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rust blotch tile read as polka dots on the enamel; replaced by a soft warm grime wash.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.313508+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: rust tile replaced by a warm grime wash after the first build read as polka dots; rust as one streak at the door head.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.394340+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: the plate is a white matte with soft frontal light; no rim and no contact shadow, recorded absent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.477241+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot at the wall face, ZERO sockets, one CYLINDER collider on the root, no destruction groups; the door ships sealed at one draw call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:45:51.560574+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
+          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+        },
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
+          "notes": "Print not modelled."
+        },
+        {
+          "id": "stubs",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 332/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas at 0.25 MB.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 800,
+    "maxDrawCalls": 1,
+    "maxMaterials": 1,
+    "maxUniqueGeometries": 2,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the small class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 0,
+        "projectedTotal": 1,
+        "budget": 1,
+        "headroom": 0,
+        "note": "One component: 1 of 1."
+      },
+      "materials": {
+        "projectedTotal": 1,
+        "budget": 1,
+        "headroom": 0,
+        "note": "enamel only: 1 of 1; six tones as vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 1,
+        "budget": 2,
+        "headroom": 1,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 332,
+        "budget": 800,
+        "headroom": 468,
+        "note": "332 of 800: nine boxes, seven 8-segment cylinders."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes for the flange, body, gasket, door, labels, latch and rust strip; cylinders for the conduit, nut, gland and screws."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh at one draw call. In a scene the HOST instances the whole box along a wall."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "white-plate",
+      "severity": "low",
+      "description": "The plate is a WHITE product matte, not the grey backdrop, so its crop means run bright.",
+      "mitigation": "Albedo carried 10% under the crop mean on the body; the label and brass tones are read relative to it."
+    },
+    {
+      "id": "envelope-height",
+      "severity": "low",
+      "description": "Built 0.43 m tall against the declared 0.40 because the stubs hang below the box.",
+      "mitigation": "The box proper is 0.38 m within the flange; the stubs are the proxy's 1.536 h/w reading, recorded here."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Electric Meter Box",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.description-scene-graph-relational-triplets",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[2]",
+        "score": 4.647388731945,
+        "snippets": [
+          "... capturing spatial/semantic relationships between parts (e.g. <blade, attached_to, handle>), plus per-node bounding box and class label. Các phát biểu <Chủ thể, Vị ngữ, Đối tượng> nắm bắt quan hệ không gian/ngữ nghĩa giữa các bộ phận ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[2]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7456,
+        "aspectRatioDelta": 0.1204,
+        "scaleDelta": 0.0194,
+        "bilateralSymmetryError": 0.1973,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 11.03,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 11.03
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.746 is below threshold 0.85",
+        "aspect-ratio delta 0.120 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "2ebb5ba300fb0a48",
+      "passId": "blockout"
+    }
+  ]
+}

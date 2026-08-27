@@ -178,9 +178,31 @@
           "zone": "shopfront",
           "kind": "linework",
           "identityDefining": true,
-          "description": "near-black powder-coated shopfront frame and door bay",
+          "description": "near-black powder-coated frame: one window, one door bay with transom and pull bar",
           "mapsTo": {
             "ref": "shopfront-frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-interior-view",
+          "zone": "shopfront",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "restaurant interior (booths, tables, wall graphic) seen through the window and door",
+          "mapsTo": {
+            "ref": "shopfront-glazing"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-menu-lightbox",
+          "zone": "shopfront-right",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "0.80 x 2.08 m menu lightbox on the wall bay right of the door, black border, white poster",
+          "mapsTo": {
+            "ref": "shopfront-glazing"
           },
           "realization": "unreported"
         },
@@ -258,7 +280,8 @@
     "sourceImage": "/home/mulligan/code/thaikit/scratch/mk-restaurants-building/reference.png",
     "resolvedUnknowns": [
       "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render walls with no openings. Confidence 0.20 / 0.25.",
-      "The plate's glazing is TRANSPARENT and shows a full restaurant interior -- booths, tables, chairs, a menu lightbox and a wall graphic. None of it is modelled: this prop is an exterior shell. The glazing is therefore authored as a dark tinted mostly-opaque pane, and its albedo is a DESIGN value for that rule rather than a measurement, because the plate offers no glass tone to measure. Recorded as the one place on this prop where a colour was chosen rather than read.",
+      "The plate's glazing is TRANSPARENT and shows a full restaurant interior -- booths, tables, chairs, a wall graphic. None of it is modelled: this prop is an exterior shell. The interior is carried instead as a BAKED IMAGE on the glazing: the plate's own storefront rectified into the shopfront plane and projected by world x/y over the opening, so the window, the door leaf and the menu lightbox pane each sample their own region of one image. The bake is parallax-baked from the plate's one high viewpoint, so table tops sit higher on the pane than a frontal view would put them; accepted as what the single plate can give. Shadows are lifted (0 -> 100, 170 -> 170) so no enclosed region of the pane lands at the backdrop luma the silhouette gate reads as a hole. The material's flat #6E716A is the Node-side fallback only.",
+      "The shopfront has exactly the three elements the plate shows and no more: ONE butt-glazed window with no mullions, one single-leaf glass door with a short transom and a pull bar on its opening stile, and a wall bay carrying the menu lightbox. The first build's bay grid (a floating transom and three mullions at arbitrary x) was a generic retail layout, not this plate's.",
       "The rooftop shows two fan condensers and one larger ducted box. All three are built from ONE instanced casing geometry, which costs a little fidelity on the ducted unit and saves a draw call.",
       "The green front band shows panel joints in the plate; carried as flat colour, below the resolution worth geometry at prop distance."
     ],
@@ -342,14 +365,17 @@
         "threshold": 0.8,
         "qualityCriteria": [
           "Frame reads near-black, not aluminium",
-          "Tinted mostly-opaque glazing"
+          "ONE large window with no mullions, then a single glass door with a transom, then the menu lightbox on a wall bay",
+          "Interior view and menu poster carried on the glazing from the rectified plate"
         ],
         "evidenceRefs": [
-          "region-frame"
+          "region-frame",
+          "region-shopfront"
         ],
         "failureModes": [
           "frame rendered as bright metal",
-          "glazing transparent, showing an interior that does not exist"
+          "a generic bay grid: floating transom, mullions at arbitrary x",
+          "lightbox missing"
         ]
       },
       {
@@ -727,7 +753,8 @@
   },
   "assumptions": [
     "Rear (-Z) and left (-X) elevations are unobserved; authored as plain render walls with no openings. Confidence 0.20 / 0.25.",
-    "The plate's glazing is TRANSPARENT and shows a full restaurant interior -- booths, tables, chairs, a menu lightbox and a wall graphic. None of it is modelled: this prop is an exterior shell. The glazing is therefore authored as a dark tinted mostly-opaque pane, and its albedo is a DESIGN value for that rule rather than a measurement, because the plate offers no glass tone to measure. Recorded as the one place on this prop where a colour was chosen rather than read.",
+    "The plate's glazing is TRANSPARENT and shows a full restaurant interior -- booths, tables, chairs, a wall graphic. None of it is modelled: this prop is an exterior shell. The interior is carried instead as a BAKED IMAGE on the glazing: the plate's own storefront rectified into the shopfront plane and projected by world x/y over the opening, so the window, the door leaf and the menu lightbox pane each sample their own region of one image. The bake is parallax-baked from the plate's one high viewpoint, so table tops sit higher on the pane than a frontal view would put them; accepted as what the single plate can give. Shadows are lifted (0 -> 100, 170 -> 170) so no enclosed region of the pane lands at the backdrop luma the silhouette gate reads as a hole. The material's flat #6E716A is the Node-side fallback only.",
+    "The shopfront has exactly the three elements the plate shows and no more: ONE butt-glazed window with no mullions, one single-leaf glass door with a short transom and a pull bar on its opening stile, and a wall bay carrying the menu lightbox. The first build's bay grid (a floating transom and three mullions at arbitrary x) was a generic retail layout, not this plate's.",
     "The rooftop shows two fan condensers and one larger ducted box. All three are built from ONE instanced casing geometry, which costs a little fidelity on the ducted unit and saves a draw call.",
     "The green front band shows panel joints in the plate; carried as flat colour, below the resolution worth geometry at prop distance."
   ],
@@ -771,8 +798,9 @@
     {
       "id": "region-shopfront",
       "viewpoint": "front",
-      "path": "crops/glass.png",
-      "confidence": 0.6
+      "path": "sign/glass.png",
+      "confidence": 0.82,
+      "note": "The plate's storefront quad rectified into the shopfront plane by homography at 250 px/m over the 6.32 x 2.90 m opening (sign/bake_glass.py). Layout is READ off it, not estimated from the foreshortened plate: window to x=1.18, door bay 1.18..2.22, wall bay beyond with a 0.80 x 2.08 m lightbox at x 2.30..3.10."
     },
     {
       "id": "region-frame",
@@ -1080,7 +1108,7 @@
       "level": "meso",
       "role": "surface",
       "importance": 0.9,
-      "confidence": 0.6,
+      "confidence": 0.82,
       "primitive": "box",
       "topologyClass": "assembled-solid",
       "topologyRationale": "One pane, not one per bay: the mullion grid in front does the dividing, and a pane per bay would cost a draw call each to express one sheet of glass.",
@@ -1100,17 +1128,28 @@
         "zFightingNote": "Front face sits behind the frame and mullion fronts; back face is inside the facade solid. No coincident face.",
         "mergeNote": ""
       },
-      "localFeatures": [],
+      "localFeatures": [
+        {
+          "id": "d9-interior-view",
+          "description": "interior seen through the glazing",
+          "delivery": "post-construction canvas, world-projected (graphic.glass)"
+        },
+        {
+          "id": "d10-menu-lightbox",
+          "description": "menu poster on the lightbox pane",
+          "delivery": "post-construction canvas, world-projected (graphic.glass)"
+        }
+      ],
       "colorMaterialRecipe": {
         "materialId": "glass",
         "baseColor": "#6e716a",
-        "recipe": "Dark tinted pane, roughness 0.14, opacity 0.94. Mostly opaque ON PURPOSE -- there is no interior behind it. Confidence 0.60 because the plate offers no glass tone to measure: this albedo is chosen, not read.",
+        "recipe": "ONE pane over the window and the door bay (x -3.16..2.22, y 0.08..2.90, z 3.27..3.35), the door LEAF standing proud of it (z 3.33..3.40) and the menu lightbox PANE (x 2.30..3.10, z 3.36..3.39) merged into one component. Opacity 0.94, roughness 0.18 under the map. The rectified plate is projected over the opening by world x/y, so the interior view lands behind the window and door and the menu poster lands on the lightbox from one image.",
         "evidenceRef": "region-shopfront",
-        "confidence": 0.6,
+        "confidence": 0.82,
         "dominantAlbedo": "rgba(110, 113, 106, 1.0)",
         "secondaryAlbedo": "rgba(110, 113, 106, 1.0)",
         "materialClass": "glass",
-        "materialClassConfidence": 0.6
+        "materialClassConfidence": 0.82
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1135,7 +1174,7 @@
       "level": "meso",
       "role": "structure",
       "importance": 0.9,
-      "confidence": 0.8,
+      "confidence": 0.84,
       "primitive": "box",
       "topologyClass": "assembled-solid",
       "topologyRationale": "Every one of these parts is the same metal. Folding them into one component is the draw-call lever chosen in the BLOCKOUT -- a part split for authoring convenience cannot be merged afterwards once pivots hang off it.",
@@ -1165,13 +1204,13 @@
       "colorMaterialRecipe": {
         "materialId": "frame",
         "baseColor": "#3a3023",
-        "recipe": "Near-black powder-coated steel, metalness 0.25, roughness 0.55. NOT the mill-finish aluminium the sibling props use -- this shopfront is framed dark and that is a visible identity difference.",
+        "recipe": "Near-black powder-coated steel, metalness 0.25, roughness 0.55. NOT the mill-finish aluminium the sibling props use. One component carries every black part the plate shows: top rail and kick rail over window and door bay, left stile, the two jambs, the door header with the transom above it, the lightbox border on the wall bay, and the pull bar on two stand-off blocks. Rails and jambs sit at z 3.29..3.43, 3 cm BEHIND the green band face at 3.46, because the plate shows the storefront recessed under the band, not proud of it.",
         "evidenceRef": "region-frame",
-        "confidence": 0.8,
+        "confidence": 0.84,
         "dominantAlbedo": "rgba(58, 48, 35, 1.0)",
         "secondaryAlbedo": "rgba(58, 48, 35, 1.0)",
         "materialClass": "metal",
-        "materialClassConfidence": 0.8
+        "materialClassConfidence": 0.84
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1378,7 +1417,11 @@
       "metalness": 0.0,
       "albedo": {
         "dominant": "#abaaaf",
-        "secondary": [],
+        "secondary": [
+          "#A9A8AC",
+          "#ABABAF",
+          "#ADAEB2"
+        ],
         "samplingNotes": "Measured as the mean of crops/deck.png. extract_pbr_evidence confidence 0.716. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
@@ -1413,7 +1456,11 @@
       "metalness": 0.0,
       "albedo": {
         "dominant": "#396940",
-        "secondary": [],
+        "secondary": [
+          "#386941",
+          "#3B6C44",
+          "#95B89E"
+        ],
         "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.803. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
@@ -1497,7 +1544,11 @@
       "metalness": 0.0,
       "albedo": {
         "dominant": "#6e716a",
-        "secondary": [],
+        "secondary": [
+          "#211D16",
+          "#BFAF94",
+          "#958976"
+        ],
         "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
@@ -1518,7 +1569,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "The plate's glazing is TRANSPARENT and shows the restaurant interior, so it offers no glass albedo to measure. This value is a DESIGN decision required by the exterior-shell rule -- with no interior geometry behind it, a transparent pane would read as a hole punched through the wall -- and it is recorded as chosen, not measured. It is the one such value on this prop.",
+          "The plate's glazing is TRANSPARENT and shows the restaurant interior, so it offers no glass albedo to measure. Under a browser the pane carries the rectified plate as a post-construction map (graphic.glass, sign/glass.webp, 1280 x 587) with the material colour forced to white; this flat value is what the pane shows under plain Node, where there is no document and no TextureLoader, and it is recorded as chosen, not measured.",
           "Textureless regardless: plate glass is optically smooth, and every feature in the crop is either a mullion (geometry) or what is behind the glass (not the material).",
           "First authored at #4A4C48 from the plate's darkest glass region. Under the harness that composited to almost exactly the backdrop luma of 58, and the turntable gate read the entire shopfront as an interior HOLE in the silhouette -- a human reads it the same way, which is the failure the exterior-shell rule exists to prevent. Raising opacity did not help: the problem is the lit VALUE, not the blend. #6E716A is still the darkest glazing in the sibling set and reads as a surface."
         ],
@@ -1547,7 +1598,11 @@
       "metalness": 0.25,
       "albedo": {
         "dominant": "#3a3023",
-        "secondary": [],
+        "secondary": [
+          "#281F14",
+          "#1E150B",
+          "#372C20"
+        ],
         "samplingNotes": "Measured as the mean of crops/frame.png. extract_pbr_evidence confidence 0.734. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
@@ -1583,7 +1638,11 @@
       "metalness": 0.3,
       "albedo": {
         "dominant": "#9a9a9c",
-        "secondary": [],
+        "secondary": [
+          "#959392",
+          "#818183",
+          "#66686C"
+        ],
         "samplingNotes": "Measured as the mean of crops/galv.png. extract_pbr_evidence confidence 0.764. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
@@ -1607,8 +1666,8 @@
   "repetitionSystems": [
     {
       "id": "shopfront-mullions",
-      "name": "Shopfront vertical mullions",
-      "instanceCount": 3,
+      "name": "Door leaf stiles",
+      "instanceCount": 2,
       "sourceComponent": "shopfront-frame",
       "material": "frame",
       "renderAs": "InstancedMesh",
@@ -1616,20 +1675,19 @@
       "placement": {
         "axis": "X",
         "positions": [
-          -1.55,
-          0.35,
-          2.62
+          1.27,
+          2.13
         ],
-        "y": 1.53,
-        "z": 3.41
+        "y": 1.31,
+        "z": 3.395
       },
       "instanceDimensions": {
-        "width": 0.07,
-        "height": 2.84,
+        "width": 0.05,
+        "height": 2.5,
         "depth": 0.08
       },
-      "rationale": "This shopfront is divided into a few LARGE panes, not a fine grid -- three mullions, not eleven. Matching the plate matters more than reusing the sibling layout.",
-      "zFightingNote": "Mullions sit inside the frame depth band at both ends and proud of the glazing."
+      "rationale": "The window is butt-glazed with NO mullions on the plate, so the only repeated vertical in this shopfront is the pair of stiles on the door leaf. Two instances, one draw call.",
+      "zFightingNote": "Stiles z 3.355..3.435: proud of the leaf (3.40) and inside the frame band; y 0.06..2.56, clear of the leaf's own 0.04 and 2.58 faces."
     },
     {
       "id": "plant-condensers",
@@ -1789,7 +1847,7 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T14:21:37.713139+00:00",
+      "timestamp": "2026-08-27T14:46:47.035300+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.84,
       "aiVisionScore": 0.84,
@@ -1797,8 +1855,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1820,7 +1878,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:37.793614+00:00",
+      "timestamp": "2026-08-27T14:46:47.115811+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.85,
       "aiVisionScore": 0.85,
@@ -1828,8 +1886,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1869,16 +1927,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:37.876331+00:00",
+      "timestamp": "2026-08-27T14:46:47.196079+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1894,11 +1952,11 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mk-restaurants-building/reference.png",
@@ -1909,16 +1967,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:37.955218+00:00",
+      "timestamp": "2026-08-27T14:46:47.279709+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1943,11 +2001,11 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/mk-restaurants-building/reference.png",
@@ -1958,16 +2016,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:38.035209+00:00",
+      "timestamp": "2026-08-27T14:46:47.365803+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.81,
-      "aiVisionScore": 0.81,
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1979,7 +2037,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:38.118586+00:00",
+      "timestamp": "2026-08-27T14:46:47.450388+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
@@ -1987,8 +2045,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -2000,7 +2058,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:38.202251+00:00",
+      "timestamp": "2026-08-27T14:46:47.535677+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
@@ -2008,8 +2066,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -2021,16 +2079,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T14:21:38.284428+00:00",
+      "timestamp": "2026-08-27T14:46:47.621076+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2064,11 +2122,11 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         },
         {
           "id": "side-fittings",
@@ -2090,7 +2148,7 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T14:21:37.713139+00:00",
+      "timestamp": "2026-08-27T14:46:47.035300+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.84,
       "aiVisionScore": 0.84,
@@ -2098,8 +2156,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2131,7 +2189,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:37.793614+00:00",
+      "timestamp": "2026-08-27T14:46:47.115811+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.85,
       "aiVisionScore": 0.85,
@@ -2139,8 +2197,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2189,16 +2247,16 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:37.876331+00:00",
+      "timestamp": "2026-08-27T14:46:47.196079+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2214,15 +2272,15 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: pilaster bases lifted to y=0.00 from y=-0.09; sign disc rebuilt as a circle face plus body so the roundel reads upright; front parapet band extended down to the shell top after the turntable gate found background enclosed through the corner gap above the side upstands; envelope corrected to exactly 8.00 x 4.60 x 7.00.",
+      "summary": "Form refinement: shopfront rebuilt to the rectified plate -- one butt-glazed window, one door bay with transom and pull bar, wall bay with the menu lightbox; frame recessed 3 cm behind the green band. Earlier: pilaster bases lifted to y=0.00 from y=-0.09; sign disc rebuilt as a circle face plus body so the roundel reads upright; front parapet band extended down to the shell top after the turntable gate found background enclosed through the corner gap above the side upstands; envelope corrected to exactly 8.00 x 4.60 x 7.00.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2238,16 +2296,16 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:37.955218+00:00",
+      "timestamp": "2026-08-27T14:46:47.279709+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2272,15 +2330,15 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 7 materials at PBR confidence 0.716-0.860, all textureless. The frame is near-black powder-coated steel, not the siblings aluminium. The glazing albedo is the one CHOSEN value on this prop -- the plate shows a transparent shopfront with a full interior and offers no glass tone to measure.",
+      "summary": "Material pass: 7 materials at PBR confidence 0.716-0.860, all textureless. The frame is near-black powder-coated steel, not the siblings aluminium. The glazing carries the rectified plate as a world-projected post-construction map (interior view and menu poster from one 29 KB WebP); its flat albedo is the Node-side fallback only.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2296,21 +2354,21 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:38.035209+00:00",
+      "timestamp": "2026-08-27T14:46:47.365803+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.81,
-      "aiVisionScore": 0.81,
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Surface pass: surface character is geometry and colour -- mullion grid, louvre panel, panel joints carried as flat colour. No texture sets.",
+      "summary": "Surface pass: surface character is geometry and colour -- door stiles, louvre panel, panel joints carried as flat colour -- plus the one baked glazing image. No procedural texture sets.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2326,7 +2384,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:38.118586+00:00",
+      "timestamp": "2026-08-27T14:46:47.450388+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
@@ -2334,8 +2392,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -2356,7 +2414,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:38.202251+00:00",
+      "timestamp": "2026-08-27T14:46:47.535677+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
@@ -2364,8 +2422,8 @@
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -2386,16 +2444,16 @@
       }
     },
     {
-      "timestamp": "2026-08-26T14:21:38.284428+00:00",
+      "timestamp": "2026-08-27T14:46:47.621076+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.85,
         "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
+        "formDetail": 0.85,
+        "materialSurface": 0.84,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2429,11 +2487,11 @@
         {
           "id": "dark-shopfront",
           "tier": "important",
-          "score": 0.83,
+          "score": 0.88,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734) with three mullions dividing a few large panes, matching the plate rather than the siblings' fine grid.",
-          "notes": "This is the clearest material difference from the sibling props, which are all framed in mill-finish aluminium. Metalness is held at 0.25: the harness has no environment map and a darker metal with nothing to reflect would disappear entirely. The glazing tint needed a correction of its own: authored at the plate's darkest glass value it composited to the backdrop luma and the turntable gate read the whole shopfront as a HOLE in the silhouette."
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map."
         },
         {
           "id": "side-fittings",
@@ -2446,7 +2504,7 @@
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score. 796/16000 triangles, 10/12 draw calls, 7/8 materials, 10/16 unique geometries. Two draw calls in hand, spent on nothing: the split was costed against the ceiling in the blockout.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.85 -- not a pass self-score. 864/16000 triangles, 10/12 draw calls, 7/8 materials, 10/16 unique geometries, 2 textures. The shopfront rebuild added a door leaf, a lightbox and a pull bar at ZERO extra draw calls: all folded into the existing glazing and frame components.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2490,7 +2548,7 @@
         "projectedTotal": 10,
         "budget": 12,
         "headroom": 2,
-        "note": "Two repetition systems collapse 6 discrete parts into 2 InstancedMesh submissions, and the green band and both pilasters fold into one component rather than costing three. Ten of twelve draw calls, two in hand."
+        "note": "Two repetition systems collapse 5 discrete parts into 2 InstancedMesh submissions, and the green band and both pilasters fold into one component rather than costing three. Ten of twelve draw calls, two in hand."
       },
       "materials": {
         "projectedTotal": 7,
@@ -2505,9 +2563,9 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 796,
+        "measured": 864,
         "budget": 16000,
-        "headroom": 15204,
+        "headroom": 15136,
         "note": "Triangles are NOT the binding constraint on this prop -- draw calls are. The headroom is deliberately spent on silhouette quality (chamfers, cowl segments, shutter ribs) and must not be read as room to split components, which would spend the axis that is actually scarce."
       }
     }
@@ -2570,7 +2628,7 @@
     },
     {
       "id": "instancing",
-      "strategy": "Two InstancedMesh systems carry 6 of the 16 discrete parts."
+      "strategy": "Two InstancedMesh systems carry 5 of the 15 discrete parts."
     },
     {
       "id": "determinism",
@@ -2591,10 +2649,10 @@
       "mitigation": "Reported at 0.20/0.25 confidence."
     },
     {
-      "id": "glass-albedo-chosen",
-      "severity": "medium",
-      "description": "The plate's glazing is transparent and shows an interior, so the tint albedo is a design value, not a measurement.",
-      "mitigation": "Recorded explicitly as chosen on the material, the component and in assumptions, at confidence 0.60 -- the lowest on this prop."
+      "id": "glass-parallax-bake",
+      "severity": "low",
+      "description": "The interior view on the glazing is the plate rectified into the shopfront plane, so objects behind the glass carry the plate's high-viewpoint parallax and are soft (5x upscale from the plate).",
+      "mitigation": "Recorded in assumptions; at prop distance the booths, tables and wall graphic read as the plate's interior. A generative frontal re-view is the upgrade path if it is wanted."
     },
     {
       "id": "ducted-unit-collapsed",
@@ -2617,58 +2675,58 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.7446,
-        "aspectRatioDelta": 0.0723,
-        "scaleDelta": 0.1835,
-        "bilateralSymmetryError": 0.0719,
+        "silhouetteIoU": 0.744,
+        "aspectRatioDelta": 0.0782,
+        "scaleDelta": 0.1911,
+        "bilateralSymmetryError": 0.0688,
         "colorDelta": {
           "checked": 8,
-          "maxDeltaE": 16.01,
+          "maxDeltaE": 16.13,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 13.12
+              "deltaE": 13.06
             },
             {
               "componentId": null,
-              "deltaE": 11.09
+              "deltaE": 14.1
             },
             {
               "componentId": null,
-              "deltaE": 13.12
+              "deltaE": 13.06
             },
             {
               "componentId": null,
-              "deltaE": 16.01
+              "deltaE": 16.13
             },
             {
               "componentId": null,
-              "deltaE": 12.52
+              "deltaE": 6.03
             },
             {
               "componentId": null,
-              "deltaE": 15.68
+              "deltaE": 11.65
             },
             {
               "componentId": null,
-              "deltaE": 4.74
+              "deltaE": 12.79
             },
             {
               "componentId": null,
-              "deltaE": 6.13
+              "deltaE": 6.2
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.745 is below threshold 0.85",
-        "aspect-ratio delta 0.072 exceeds threshold 0.05",
-        "scale delta 0.183 exceeds threshold 0.08",
+        "silhouette IoU 0.744 is below threshold 0.85",
+        "aspect-ratio delta 0.078 exceeds threshold 0.05",
+        "scale delta 0.191 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "e325d20066009070",
+      "renderHash": "c0fa42b8d6fd4c3f",
       "passId": "blockout"
     }
   ]

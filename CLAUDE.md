@@ -244,6 +244,38 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   does nothing at all — it recompiles the old scratch source over the old scratch bundle, and the
   comparison that "proves" the shipped file is unchanged is comparing a file nothing wrote to. Emit
   into scratch, build, then promote; promote is what copies source, bundle and spec into `assets/`.
+- **Meshy's fal endpoint refuses some innocuous plates as `422 content_policy_violation`** (the
+  sleeping soi dog, twice), and `--fal-arg enable_safety_checker=false` is echoed back as `true` —
+  the endpoint forces it. There is then no proxy and no band table: build from the plate alone,
+  say so in `meshyNote` with the confidence, and keep the refused log in `scratch/<id>/`.
+- **A baked `TextureLoader` graphic must be guarded with `typeof document === 'undefined'`.**
+  `check-coplanar.mjs` and the runtime probe evaluate the bundle under plain Node, where
+  `ImageLoader` throws; unguarded, the prop passes the browser render and then fails every
+  Node-side gate with a stack trace that reads as a broken module.
+- **`LatheGeometry` shares the corner vertex between an end disc and the side wall, so
+  `computeVertexNormals` tilts the wall's first ring 45 degrees and the harness shades a dark band
+  there** — a ring the turntable gate flagged as a 4,876 px HOLE under the stainless bin's cap and a
+  black ring under the concrete bin's lid rim. `scratch/_prop/preamble.tmpl`'s `lathe()` now splits
+  every profile corner sharper than 70 degrees with a point 0.8 mm past it (`sharp: false` on a lathe
+  entry opts out where the budget cannot carry the extra ring). Luma-sample the render rows around
+  the bbox the gate prints before touching albedo: the first fix chased the opening patch instead.
+- **A back-lit turntable frame (azimuth 180) renders at ~0.55 of the painted luma, like a side-lit
+  face.** A prop whose WHOLE silhouette is one dark material has nowhere to hide: the tyre stack at
+  its measured #2f3030 collapsed the 180 ratio to 0.476, and only #7c7c7c (luma 124) held it. A
+  darker albedo under an emissive floor also passes but renders the same grey with flatter shading.
+- **A list-time declared size is an estimate, and the proxy band table is what checks it.** Three
+  of the six bins (2026-08-27) had declarations the plate contradicted by 20-40% (a 0.60 m concrete
+  bin the proxy read at 0.42, a 0.95 m tall 60 L bin, a 1.80 x 1.30 x 1.10 dumpster the proxy read
+  at w/h 0.91). Correct the declaration with `edit-assets.mjs` and write the arithmetic into `notes`
+  before building — building to a wrong envelope can never score its silhouette.
+- **An animal's spec stays `primaryDomain: object`.** `hybrid` makes `--strict-quality` demand
+  the HUMAN anatomy block (`styleHeads`, MediaPipe `faceLandmarks`), which is exactly what has
+  nothing to say about a dog; the animal handling is the chirality / swept-arc reasoning
+  recorded in `assumptions`, and `subject: animal` still selects the generic profile.
+- **Re-running a gate script on a spec whose passes are already `complete` records nothing**
+  (`cannot record submitted pass ... current unlocked pass is 'complete'`). Regenerate the spec
+  from the facts first, then run with `rebuild=True`; and a facts script must exit non-zero on a
+  strict-quality FAIL, or a `&&` chain promotes a prop whose spec never validated.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

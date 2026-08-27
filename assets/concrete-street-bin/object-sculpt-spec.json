@@ -1,0 +1,1838 @@
+{
+  "targetName": "Concrete Street Bin",
+  "targetId": "concrete-street-bin",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "street-litter-bin",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "precast-cylinder",
+        "domed-lid",
+        "exposed-aggregate-band",
+        "rectangular-throw-in-opening",
+        "angled-pipe-stub"
+      ],
+      "structureKind": [
+        "lathe",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "precast-concrete",
+        "exposed-aggregate"
+      ],
+      "notes": "A precast concrete park bin: one solid casting with a loose domed lid, too heavy to move. Nothing hinges, nothing attaches, so one root pivot and zero sockets is the whole contract; the lid is modelled seated as the asset notes require. Public parks, temple grounds, beachfronts. Weathered grey render with moss creeping over the foot, a pebble-dash band, a dark slot opening."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE body lathe (foot, straight barrel, closed top), ONE lid lathe (overhanging rim and dome), a tilted pipe-stub cylinder with a shadowed mouth disc, and three partial-cylinder patches for the throw-in opening and its lips -- all merged on the concrete material.",
+        "ONE exposed-aggregate sleeve lathe 5 mm proud of the barrel on its own material, because the pebble field is a texture the concrete grime canvas cannot carry.",
+        "Two materials: concrete and aggregate. The moss at the foot and the dome tone are vertex colours on the concrete material.",
+        "No repetition system. Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the grey cylinder with a domed lid, the pebble band low on the body and the dark rectangular opening; each is one lathe or one patch. Grime and the pebble field are post-construction canvases, not geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-barrel",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "straight precast barrel on a chamfered foot",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-dome",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "overhanging lid rim and dome with an angled pipe stub",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-opening",
+          "zone": "body",
+          "kind": "groove",
+          "identityDefining": true,
+          "description": "dark rectangular throw-in opening on the front-right with a pale lip",
+          "mapsTo": {
+            "ref": "d3-opening"
+          },
+          "onMaterial": "concrete",
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-moss",
+          "zone": "base",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "green moss over the foot",
+          "mapsTo": {
+            "ref": "d4-moss"
+          },
+          "onMaterial": "concrete",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-pebble",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "exposed-aggregate pebble band 0.107-0.335 m",
+          "mapsTo": {
+            "ref": "aggregate-band"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-grime",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rain streaks and grime on the render",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+    "resolvedUnknowns": [
+      "The opening is a shadowed recess patch 2 mm proud of the barrel, not a hole cut through the lathe: a hole through a closed lathe costs a boolean the budget does not have, and the bin is an exterior shell.",
+      "The moss edge is a vertical gradient over 0.04-0.15 m, not the plate's ragged line; the ragged edge is below the resolvable band at prop distance.",
+      "The pebble field is a seeded tile in the crop's palette, not a map of the plate's stones.",
+      "The base underside is unobserved and modelled flat."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.44 x 0.85 x 0.44 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.44 x 0.85 m",
+          "Barrel, rim and dome match the proxy within 0.02 H per band"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a drum wider than tall",
+          "no dome"
+        ]
+      },
+      {
+        "id": "pebble-band",
+        "name": "Exposed-aggregate band",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Band from 0.107 to 0.335 m",
+          "Reads as stones, not a flat brown stripe"
+        ],
+        "evidenceRefs": [
+          "region-pebble"
+        ],
+        "failureModes": [
+          "flat brown band",
+          "band at the wrong height"
+        ]
+      },
+      {
+        "id": "opening-and-moss",
+        "name": "Opening, moss and dome",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Dark rectangular opening on the front-right",
+          "Moss over the foot",
+          "Pipe stub on the dome"
+        ],
+        "evidenceRefs": [
+          "region-opening",
+          "region-moss",
+          "region-dome"
+        ],
+        "failureModes": [
+          "opening read as a hole",
+          "no pipe stub"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body",
+        "aggregate-band"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "pebble-band",
+      "name": "Exposed-aggregate band",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "aggregate-band"
+      ],
+      "evidenceRefs": [
+        "region-pebble"
+      ]
+    },
+    {
+      "id": "opening-and-moss",
+      "name": "Opening, moss and dome",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-opening",
+        "region-moss",
+        "region-dome"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as cylinder: one proxy over body and lid, the round footprint the plate shows."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The opening is a shadowed recess patch 2 mm proud of the barrel, not a hole cut through the lathe: a hole through a closed lathe costs a boolean the budget does not have, and the bin is an exterior shell.",
+    "The moss edge is a vertical gradient over 0.04-0.15 m, not the plate's ragged line; the ragged edge is below the resolvable band at prop distance.",
+    "The pebble field is a seeded tile in the crop's palette, not a map of the plate's stones.",
+    "The base underside is unobserved and modelled flat."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.44,
+      "h": 0.85,
+      "d": 0.44
+    },
+    "description": "Chamfered foot r 0.16-0.21 over 0-0.05 m; straight barrel r 0.21 to 0.71 m; lid rim r 0.22 from 0.71 to 0.735 m; dome closing from r 0.178 at 0.74 to the crown at 0.85 m; a pipe stub r 0.034 leaning outward on the front-right of the dome; pebble sleeve r 0.215 from 0.107 to 0.335 m.",
+    "envelopeDerivation": "x and z span -0.22..+0.22 at the lid rim, the declared 0.44 m (corrected from 0.60 at model time: the Meshy proxy reads r 0.21 m at 0.85 m tall in every body slice and the plate w/h is 0.49; 0.60 x 0.85 would be a squat drum the plate does not show). y 0.00 to 0.85 at the dome crown; the pipe stub is placed so its mouth stays inside 0.85. Body r 0.21 from 0.05 to 0.71 m over a chamfered foot r 0.16-0.19 (proxy slices 0-1: r50 0.15-0.16), lid rim r 0.22 at 0.71-0.735, dome r 0.178 -> 0 over 0.74-0.85 (proxy: 0.18 at 0.75, 0.15 at 0.80, 0.12 at 0.82, 0.08 at 0.84).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, scaled to 0.85 m: r 0.21 in every barrel slice, dome from 0.73 m. Band table (scratch/_mon/bands.mjs): mean |delta width| 0.0134, |delta depth| 0.0192; every band within 0.02 H except band 9 (+0.039 wide: the pipe stub, absent from the proxy crown) and band 6 depth (+0.066: the proxy dents at the opening, the candidate does not)."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-concrete",
+      "viewpoint": "front",
+      "path": "crops/concrete.png",
+      "confidence": 0.77
+    },
+    {
+      "id": "region-dome",
+      "viewpoint": "front",
+      "path": "crops/dome.png",
+      "confidence": 0.769
+    },
+    {
+      "id": "region-pebble",
+      "viewpoint": "front",
+      "path": "crops/pebble.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-moss",
+      "viewpoint": "front",
+      "path": "crops/moss.png",
+      "confidence": 0.816
+    },
+    {
+      "id": "region-opening",
+      "viewpoint": "front",
+      "path": "crops/opening.png",
+      "confidence": 0.806
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: a surface of revolution, and the proxy is round to 1% (halfX = halfZ in every slice); only the opening breaks symmetry and it is on the observed side."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Precast body and domed lid",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two lathes, two cylinders and three partial-cylinder patches merged into one geometry on one material: one draw call.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Body lathe closed on the axis at 0 and 0.71 m, 28 segments; lid lathe from 0.71 to 0.85 m; pipe stub cylinder r 0.034 tilted -0.5 rad; opening patch r 0.212 over 0.43-0.58 m and 0.76 rad.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The lid bottom disc at 0.71 faces down onto the body top disc at 0.71: opposed faces, a butt joint. The opening patch is 2 mm proud of the barrel, the lips 4-6 mm; the pipe mouth disc is on the stub's end face, 0 mm proud of a face that faces the same way -- both are end caps of the same cylinder, replaced by the disc.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.42 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-barrel",
+          "description": "barrel",
+          "delivery": "lathe profile"
+        },
+        {
+          "id": "d2-dome",
+          "description": "lid and dome",
+          "delivery": "lid lathe + tilted cylinder"
+        },
+        {
+          "id": "d3-opening",
+          "description": "opening",
+          "delivery": "partial cylinder patches, vertex colour"
+        },
+        {
+          "id": "d4-moss",
+          "description": "moss",
+          "delivery": "axis tint"
+        },
+        {
+          "id": "d6-grime",
+          "description": "grime",
+          "delivery": "grime canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#bfbfbd",
+        "recipe": "Concrete grey as vertex colour on white with a grime canvas; dome #bababa; moss axis tint at the foot; opening patch #858583.",
+        "evidenceRef": "region-concrete",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(191, 191, 189, 1.0)",
+        "secondaryAlbedo": "rgba(186, 186, 186, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            0.425,
+            0
+          ],
+          "radius": 0.22,
+          "height": 0.85,
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "Declared on the asset as cylinder: one proxy over body and lid, the round footprint the plate shows."
+        }
+      }
+    },
+    {
+      "id": "aggregate-band",
+      "name": "Exposed-aggregate band",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A short sleeve lathe on its own material, because the stone field is a texture the concrete canvas cannot carry.",
+      "materialId": "aggregate",
+      "material": "aggregate",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Sleeve r 0.215 from 0.107 to 0.335 m with 7 mm lead-in chamfers, 28 segments, seamless around-by-up UVs at 0.12 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "5 mm proud of the barrel over its whole height; its chamfers run INTO the barrel, so no face is coplanar with the body.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-pebble",
+          "description": "pebble band",
+          "delivery": "sleeve lathe + pebble canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "aggregate",
+        "baseColor": "#8c7a63",
+        "recipe": "Tan envelope with a seeded pebble canvas multiplied in.",
+        "evidenceRef": "region-pebble",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(140, 122, 99, 1.0)",
+        "secondaryAlbedo": "rgba(140, 122, 99, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "concrete",
+      "name": "Precast concrete",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#bfbfbd",
+      "color": "#bfbfbd",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#bfbfbd",
+        "secondary": [
+          "#bfbfbd",
+          "#bababa",
+          "#4f5c3a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/concrete.png. extract_pbr_evidence confidence 0.770. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-moss",
+          "region": "foot 0.00-0.15 m",
+          "roughness": 0.95,
+          "palette": [
+            "#4F5C3A"
+          ],
+          "evidence": "crops/moss.png -- #444f32 at 0.816; a per-vertex axis tint from the foot to 0.15 m, lifted to luma 85."
+        },
+        {
+          "id": "d3-opening",
+          "region": "throw-in opening 0.43-0.58 m, azimuth +0.35 rad",
+          "roughness": 0.92,
+          "palette": [
+            "#858583"
+          ],
+          "evidence": "crops/opening.png -- #0c0c0b at 0.806; shipped at #858583 for the silhouette gate."
+        }
+      ],
+      "finishClass": "matte",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-concrete (0.77) at #bfbfbd; carried as a vertex colour on a WHITE material so the dome (#bababa, region-dome 0.769), the moss (region-moss #444f32, lifted to #4f5c3a) and the opening (#0c0c0b, lifted to #858583) ride the same shader.",
+          "Opening interior lifted from luma 12 to 133 and moss from 73 to 85: the turntable gate reads anything enclosed by the silhouette at the backdrop's luma 58 as a hole, and a side-lit face renders at ~0.56 of its painted luma -- #545452 (84) came back as a 22,000 px hole at azimuth 0.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction, wash (0.66, 0.66, 0.62) at 0.35 over the bottom 30%."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/concrete.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.77,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "aggregate",
+      "name": "Exposed aggregate",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8c7a63",
+      "color": "#8c7a63",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/aggregate_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#8c7a63",
+        "secondary": [
+          "#8c7a63",
+          "#76614c",
+          "#4a3624"
+        ],
+        "samplingNotes": "Measured as the mean of crops/pebble.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "matte",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-pebble (0.829): band mean #76614c, extractor palette #4a3624 / #241409 / #735c45. The material carries a tan envelope #8c7a63 and a 512 px pebble canvas multiplies in the stones (tan, brown, grey, cream) over a dark mortar ground.",
+          "Textureless as DECLARED: the pebble field is a post-construction canvas, bound as map and bump."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pebble.png",
+        "pbrReport": "material-evidence/aggregate.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T18:13:07.777959+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:07.857659+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:07.937223+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "opening-and-moss",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
+          "notes": "Moss edge is a gradient, not the plate's ragged line."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.016538+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.095474+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.179525+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.267469+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.349641+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        },
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        },
+        {
+          "id": "opening-and-moss",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
+          "notes": "Moss edge is a gradient, not the plate's ragged line."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T18:13:07.777959+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2; body and lid lathes at the proxy radii, pebble sleeve 5 mm proud.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:07.857659+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: body top raised to 0.71 m to close the 5 mm gap under the lid rim; pipe stub lowered so its mouth stays under 0.85 m (bounds max y 0.850); lathe corners split so the rim underside no longer shades as a dark ring (turntable holes 1,352 -> 387 px at 90).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:07.937223+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "opening-and-moss",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
+          "notes": "Moss edge is a gradient, not the plate's ragged line."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: opening lips, pipe mouth disc, foot chamfer from proxy slices 0-1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.016538+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.77-0.829, both textureless with measured albedo; moss and opening lifted above the hole band and recorded.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.095474+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: grime canvas on the render, pebble canvas brightened to the crop palette after the first render read too dark.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.179525+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.267469+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CYLINDER collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:08.349641+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
+          "notes": ""
+        },
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones."
+        },
+        {
+          "id": "opening-and-moss",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
+          "notes": "Moss edge is a gradient, not the plate's ragged line."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.88. 1,544/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two canvases at 1.25 MB.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components, no repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "concrete and aggregate: 2 of 2; dome, moss and opening tones are vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1544,
+        "budget": 2000,
+        "headroom": 456,
+        "note": "1,544 of 2,000: three 28-segment lathes (sharp profile corners split for clean normals), two 12-segment cylinders and three 8-segment patches."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Lathes for the body, lid and pebble sleeve; a tilted cylinder for the pipe stub; partial open cylinders for the opening and its lips."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing repeats on a precast bin. In a scene the HOST instances the whole prop."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 256 px grime canvas and one 512 px pebble canvas after construction, 1.25 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "opening-luma",
+      "severity": "low",
+      "description": "The measured opening interior (luma 12) would be read as a hole by the silhouette gate.",
+      "mitigation": "Shipped at #858583, luma 133 (side-lit ~74); the moss at 85. Recorded on the material overrides."
+    },
+    {
+      "id": "declared-width",
+      "severity": "low",
+      "description": "The list-time declared width of 0.60 m contradicted the plate and proxy (0.42-0.44 m).",
+      "mitigation": "Declared width corrected to 0.44 m before the build and recorded in the asset notes."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Concrete Street Bin",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6057,
+        "aspectRatioDelta": 0.3303,
+        "scaleDelta": 0.3235,
+        "bilateralSymmetryError": 0.014,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.06,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 10.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.06
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.606 is below threshold 0.85",
+        "aspect-ratio delta 0.330 exceeds threshold 0.05",
+        "scale delta 0.324 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "13c3cdd0cccc3ced",
+      "passId": "blockout"
+    }
+  ]
+}

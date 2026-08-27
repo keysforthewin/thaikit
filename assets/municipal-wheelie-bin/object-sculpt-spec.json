@@ -1,0 +1,1726 @@
+{
+  "targetName": "Municipal Wheelie Bin",
+  "targetId": "municipal-wheelie-bin",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "wheelie-bin",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "tapered-box-body",
+        "hinged-lid",
+        "rear-wheels",
+        "lift-comb",
+        "side-ribs"
+      ],
+      "structureKind": [
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop",
+        "hinged-lid"
+      ],
+      "materialFamilies": [
+        "polyethylene"
+      ],
+      "notes": "A BMA 240 L wheelie bin. The lid hinges along the rear top edge, so the model ships a root pivot plus ONE named lid-hinge pivot on the lid instance; the wheels are moulded into the body component (a bin is dragged, not driven) and nothing attaches, so zero sockets. Every soi on collection day. Dark BMA green, scuffed and dusty low on the panels, black solid wheels."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 1,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE body component: the tapered frustum, the rim lip, the lift comb, four side ribs, the rear axle, the foot bar, the latch, and two wheels with hubs -- all merged on the plastic material.",
+        "ONE lid as a one-instance InstancedMesh: slab, raised centre frustum and hinge barrel, so the lid-hinge pivot names an instance the host can rotate.",
+        "One material: green polyethylene; the wheels, hubs, ribs and lid tone are vertex colours.",
+        "Action readiness: one root pivot plus lid-hinge, zero sockets, one box collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the tapered green box with a flat lid, big rear wheels and a front comb; the surface is flat plastic with grime, so every part is a box, frustum or cylinder and no canvas beyond grime is warranted."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-body",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "tapered body widening to the rim",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-lid",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "flat lid with a raised centre panel, hinged at the rear",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-comb",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "lift comb under the front rim",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-wheels",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two solid rubber rear wheels on an axle",
+          "mapsTo": {
+            "ref": "d4-wheels"
+          },
+          "onMaterial": "plastic",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-ribs",
+          "zone": "body",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "vertical stiffening ribs on the flanks",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-grime",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "dust and scuffs low on the panels",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+    "resolvedUnknowns": [
+      "The rear face is the standard 240 L layout (axle at the bottom, hinge along the top): the plate shows the left-front three-quarter.",
+      "The plate's lid vents and moulding lines are not modelled: below the resolvable band at prop distance.",
+      "The declared 0.73 m depth is kept over the proxy's 0.53 m: the proxy hallucinates the rear from a single view."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.58 x 1.07 x 0.73 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 1 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 1,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.58 x 1.07 x 0.73 m",
+          "Taper and rim flare match the proxy occupancy"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a straight box",
+          "no taper"
+        ]
+      },
+      {
+        "id": "lid-and-hinge",
+        "name": "Lid and hinge",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Lid overlaps the rim",
+          "lid-hinge pivot on the rear top edge"
+        ],
+        "evidenceRefs": [
+          "region-lid"
+        ],
+        "failureModes": [
+          "lid merged into the body",
+          "hinge at the front"
+        ]
+      },
+      {
+        "id": "wheels-and-comb",
+        "name": "Wheels and comb",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Two wheels r 0.11 at the rear",
+          "Comb under the front rim"
+        ],
+        "evidenceRefs": [
+          "region-wheel"
+        ],
+        "failureModes": [
+          "no wheels",
+          "wheels read as holes"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "lid-and-hinge",
+      "name": "Lid and hinge",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-lid"
+      ]
+    },
+    {
+      "id": "wheels-and-comb",
+      "name": "Wheels and comb",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-wheel"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the bin at base-center."
+      },
+      {
+        "name": "lid-hinge",
+        "component": "lid",
+        "type": "hinge",
+        "localPosition": [
+          0,
+          1.015,
+          -0.345
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "lid hinged along the rear top edge, swings open about X"
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the whole bin envelope."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The rear face is the standard 240 L layout (axle at the bottom, hinge along the top): the plate shows the left-front three-quarter.",
+    "The plate's lid vents and moulding lines are not modelled: below the resolvable band at prop distance.",
+    "The declared 0.73 m depth is kept over the proxy's 0.53 m: the proxy hallucinates the rear from a single view."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.58,
+      "h": 1.07,
+      "d": 0.73
+    },
+    "description": "Tapered frustum 0.46 x 0.56 at 0.03 m widening to 0.56 x 0.70 at 0.95 m; rim lip 0.58 x 0.73 at 0.96-1.00 m; lid slab 0.59 x 0.74 at 1.005-1.035 m with a raised panel 0.46 x 0.56 -> 0.34 x 0.42 to 1.07 m; comb under the front rim; wheels r 0.11 at x +-0.245, z -0.25.",
+    "envelopeDerivation": "x spans -0.295..+0.295 at the lid overlap over the 0.58 m rim, the declared width; z -0.37..+0.375 at the lid overlap over the declared 0.73 m; y 0.00 to 1.07 at the raised lid panel. Proxy occupancy: wheels 0-0.28 H at the two rear corners, body 0.76 -> 0.80 W from 0.30 to 0.74 H, rim flare at 0.84-0.90 H, lid to 0.98 H. Body frustum 0.46 x 0.56 at 0.03 m to 0.56 x 0.70 at the rim, wheels r 0.11 at z -0.25 inside the footprint (the asset notes: the wheels add nothing to the footprint).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, a three-quarter view. Band table: mean |delta width| 0.0626, |delta depth| 0.0801; width bands 3-6 within 0.06 (the proxy reads the lid 10% wider than the body, which the declared 0.58 m does not allow); every depth band reads the candidate ~0.09 deeper because the declared 0.73 m of a real 240 L bin beats the proxy's hallucinated 0.53 m rear."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-green",
+      "viewpoint": "front",
+      "path": "crops/green.png",
+      "confidence": 0.802
+    },
+    {
+      "id": "region-lid",
+      "viewpoint": "top",
+      "path": "crops/lid.png",
+      "confidence": 0.827
+    },
+    {
+      "id": "region-wheel",
+      "viewpoint": "side",
+      "path": "crops/wheel.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.85,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: a standard 240 L body is symmetric about X; the rear carries the axle and hinge, both placed from the standard and the proxy's wheel rows."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Tapered body, comb and wheels",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One frustum, nine boxes and four cylinders merged into one geometry on one material: one draw call.",
+      "materialId": "plastic",
+      "material": "plastic",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Frustum 0.46 x 0.56 -> 0.56 x 0.70 over 0.03-0.95 m; rim box 0.58 x 0.04 x 0.73 at 0.96-1.00 m; comb 0.50 x 0.06 x 0.05 under the front rim; ribs 12 mm boxes tilted 0.032 rad to the flank; wheels r 0.11 x 0.055 at x +-0.245, z -0.25, hubs r 0.055.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The rim box overlaps the frustum top by 1 cm all round (the frustum's slanted faces are never coplanar with a vertical box). The ribs are rotated to the flank's slant and stand 4 mm proud. The wheel hubs are 3 mm proud of the wheel faces.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.55 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-body",
+          "description": "body",
+          "delivery": "frustum"
+        },
+        {
+          "id": "d3-comb",
+          "description": "comb",
+          "delivery": "box"
+        },
+        {
+          "id": "d4-wheels",
+          "description": "wheels",
+          "delivery": "cylinders, vertex colour"
+        },
+        {
+          "id": "d5-ribs",
+          "description": "ribs",
+          "delivery": "tilted boxes"
+        },
+        {
+          "id": "d6-grime",
+          "description": "grime",
+          "delivery": "grime canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "plastic",
+        "baseColor": "#4d815f",
+        "recipe": "Green as vertex colour on white with a grime canvas; ribs #447556; wheels #565656; hubs #6a6a6a.",
+        "evidenceRef": "region-green",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(77, 129, 95, 1.0)",
+        "secondaryAlbedo": "rgba(86, 86, 86, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center at the ground under the front foot and the wheels, as the asset declares. The body is the rigid root; the lid carries its own hinge pivot on the rear top edge."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.535,
+            0
+          ],
+          "halfExtents": [
+            0.29,
+            0.535,
+            0.365
+          ],
+          "notes": "Declared on the asset as box: the whole bin envelope."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "plastic",
+      "name": "Green polyethylene",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4d815f",
+      "color": "#4d815f",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/plastic_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4d815f",
+        "secondary": [
+          "#4d815f",
+          "#57905f",
+          "#565656"
+        ],
+        "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.802. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-wheels",
+          "region": "rear wheels and axle",
+          "roughness": 0.85,
+          "palette": [
+            "#565656"
+          ],
+          "evidence": "crops/wheel.png -- #363636 at 0.86; shipped at #565656 for the silhouette gate."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-green (0.802) at #4d815f; carried as a vertex colour on a WHITE material so the lid (#57905f, region-lid 0.827 #67987a in the plate's top light), the ribs (#447556) and the wheels ride the same shader.",
+          "Wheels measured #363636 (luma 54, region-wheel 0.86), shipped at #565656 (luma 86) for the silhouette gate; hubs #6a6a6a.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction, wash (0.62, 0.62, 0.56) at 0.30 over the bottom 25%."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/green.png",
+        "pbrReport": "material-evidence/plastic.pbr.json",
+        "confidence": 0.802,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "lid",
+      "name": "Hinged lid",
+      "componentRef": "body",
+      "count": 1,
+      "primitive": "box",
+      "materialId": "plastic",
+      "placement": "one instance at the origin; the geometry is authored at its world position",
+      "instanced": true,
+      "pivotPerInstance": true,
+      "notes": "One InstancedMesh of one instance so the lid-hinge pivot names an instance index a host can rotate."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T18:15:35.344420+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.424935+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.509248+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.591021+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "wheels-and-comb",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.671235+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.751556+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.832007+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.912646+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        },
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        },
+        {
+          "id": "wheels-and-comb",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T18:15:35.344420+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: one component plus one instanced lid at 2 draw calls of 2; frustum body from the proxy occupancy rows.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.424935+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: rim raised to 0.98 m and the lid to 1.07 m after the first render topped out at 0.974 (the instanced set lacked frusta); wheels moved inside the declared footprint.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.509248+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: comb, ribs tilted to the flank, axle, latch, hubs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.591021+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "wheels-and-comb",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 1 material at PBR confidence 0.802-0.86; green, lid, ribs and wheels as vertex colours; wheels lifted above the hole band.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.671235+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: grime canvas lightened after the first render read as heavy dark blotches.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.751556+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.832007+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus lid-hinge, ZERO sockets, one BOX collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:15:35.912646+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
+          "notes": ""
+        },
+        {
+          "id": "lid-and-hinge",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
+          "notes": ""
+        },
+        {
+          "id": "wheels-and-comb",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 408/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One component and one repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 1,
+        "budget": 2,
+        "headroom": 1,
+        "note": "plastic only: 1 of 2; every tone a vertex colour."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 408,
+        "budget": 2000,
+        "headroom": 1592,
+        "note": "408 of 2,000: one frustum, ten boxes, four 12-16 segment cylinders, and the lid's slab, frustum and barrel."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Frusta for the tapered body and the lid panel; boxes for the rim, comb, ribs, axle, foot bar and latch; cylinders for the wheels, hubs and hinge barrel."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh: the lid, one instance, carrying the lid-hinge pivot with its instance index."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "wheel-luma",
+      "severity": "low",
+      "description": "The measured wheel black (luma 54) would be read as a hole where the wheel is enclosed by the body outline.",
+      "mitigation": "Shipped at #565656, luma 86; recorded on the material override."
+    },
+    {
+      "id": "proxy-depth",
+      "severity": "low",
+      "description": "The proxy reads the depth at 0.53 m against the declared 0.73 m.",
+      "mitigation": "The declared standard 240 L depth is the contract; the proxy's rear is hallucinated from one view and the delta is recorded in meshyNote."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Municipal Wheelie Bin",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.893,
+        "aspectRatioDelta": 0.0456,
+        "scaleDelta": 0.0563,
+        "bilateralSymmetryError": 0.048,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 8.02,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 8.02
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "bfa8b8ea2b1beee3",
+      "passId": "blockout"
+    }
+  ]
+}

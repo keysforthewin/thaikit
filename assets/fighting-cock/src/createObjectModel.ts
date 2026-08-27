@@ -313,6 +313,29 @@ function polygonizeSdf(descriptor: SdfDescriptor): THREE.BufferGeometry {
 
 type TaperedStation = { position: [number, number, number]; rx: number; rz: number; twist?: number };
 
+function subdivideStations(stations: TaperedStation[], per: number): TaperedStation[] {
+  if (per <= 1 || stations.length < 2) return stations;
+  const out: TaperedStation[] = [];
+  const at = (i: number) => stations[Math.max(0, Math.min(stations.length - 1, i))];
+  const cr = (a: number, b: number, c: number, d: number, t: number) =>
+    0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
+  for (let i = 0; i < stations.length - 1; i++) {
+    const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+    for (let k = 0; k < per; k++) {
+      const t = k / per;
+      if (k === 0) { out.push(p1); continue; }
+      out.push({
+        position: [0, 1, 2].map((ax) => cr(p0.position[ax], p1.position[ax], p2.position[ax], p3.position[ax], t)) as [number, number, number],
+        rx: Math.max(0.001, cr(p0.rx, p1.rx, p2.rx, p3.rx, t)),
+        rz: Math.max(0.001, cr(p0.rz, p1.rz, p2.rz, p3.rz, t)),
+        twist: cr(p0.twist ?? 0, p1.twist ?? 0, p2.twist ?? 0, p3.twist ?? 0, t),
+      });
+    }
+  }
+  out.push(stations[stations.length - 1]);
+  return out;
+}
+
 // Frames come from PARALLEL TRANSPORT, not from a Frenet frame. A Frenet frame is defined by
 // the curve's normal, which flips sign wherever the path has an inflection or straightens out,
 // and every flip twists the surface 180 degrees within one segment. Carrying the previous frame
@@ -321,8 +344,13 @@ type TaperedStation = { position: [number, number, number]; rx: number; rz: numb
 function buildTaperedSweepGeometry(
   sweep: { stations: TaperedStation[]; radialSegments?: number; capEnds?: boolean },
 ): THREE.BufferGeometry {
-  const stations = sweep.stations;
-  if (stations.length < 2) throw new Error('tapered-sweep needs at least two stations');
+  if (sweep.stations.length < 2) throw new Error('tapered-sweep needs at least two stations');
+  // Authored stations are a handful of key sections (four on a wing), and a straight run between
+  // them puts a visible crease in the tube at every one -- the first promoted build's wings and
+  // sickles were kinked hoses. Interpolate a centripetal Catmull-Rom through the authored
+  // stations (positions AND radii, so the taper stays smooth too) before framing. The authored
+  // stations are still passed through exactly, so every measured section holds.
+  const stations = subdivideStations(sweep.stations, sweep.stations.length >= 12 ? 1 : 3);
   const radial = Math.max(3, sweep.radialSegments ?? 10);
   const centres = stations.map((s) => new THREE.Vector3(...s.position));
 
@@ -1040,7 +1068,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   node_body_shell_0.userData.actionProfile = {"collider": {"shape": "convex", "note": "The declared collider for this asset is `convex`. One convex hull over the trunk is the whole prop's physics proxy: the legs are 13 mm thick and the tail is feathers, and neither earns its own hull on a low-end target."}, "sockets": [], "destruction": {"fractureGroup": null}};
   (nodes["root"] ?? root).add(node_body_shell_0);
   nodes["body-shell"] = node_body_shell_0;
-  const mesh_body_shell_0Geometry = polygonizeSdf({"primitives": [{"id": "body-shoulder", "type": "ellipsoid", "radii": [0.051, 0.062, 0.075], "transform": {"position": [0.0, 0.345, 0.035]}}, {"id": "body-keel", "type": "ellipsoid", "radii": [0.044, 0.055, 0.06], "transform": {"position": [0.0, 0.248, 0.03]}}, {"id": "body-mid", "type": "ellipsoid", "radii": [0.05, 0.066, 0.07], "transform": {"position": [0.0, 0.3, -0.012]}}, {"id": "body-vent", "type": "ellipsoid", "radii": [0.038, 0.048, 0.046], "transform": {"position": [0.0, 0.284, -0.055]}}, {"id": "body-pygostyle", "type": "ellipsoid", "radii": [0.026, 0.032, 0.026], "transform": {"position": [0.0, 0.3, -0.075]}}], "operations": [{"id": "body-u0", "type": "smooth-union", "left": "body-shoulder", "right": "body-keel", "radius": 0.03}, {"id": "body-u1", "type": "smooth-union", "left": "body-u0", "right": "body-mid", "radius": 0.03}, {"id": "body-u2", "type": "smooth-union", "left": "body-u1", "right": "body-vent", "radius": 0.03}, {"id": "body-u3", "type": "smooth-union", "left": "body-u2", "right": "body-pygostyle", "radius": 0.03}], "resolution": 24, "bounds": {"min": [-0.058, 0.185, -0.108], "max": [0.058, 0.412, 0.115]}});
+  const mesh_body_shell_0Geometry = polygonizeSdf({"primitives": [{"id": "body-shoulder", "type": "ellipsoid", "radii": [0.051, 0.062, 0.075], "transform": {"position": [0.0, 0.345, 0.035]}}, {"id": "body-keel", "type": "ellipsoid", "radii": [0.044, 0.055, 0.06], "transform": {"position": [0.0, 0.248, 0.03]}}, {"id": "body-mid", "type": "ellipsoid", "radii": [0.05, 0.066, 0.07], "transform": {"position": [0.0, 0.3, -0.012]}}, {"id": "body-vent", "type": "ellipsoid", "radii": [0.038, 0.048, 0.046], "transform": {"position": [0.0, 0.284, -0.055]}}, {"id": "body-pygostyle", "type": "ellipsoid", "radii": [0.026, 0.032, 0.026], "transform": {"position": [0.0, 0.3, -0.075]}}], "operations": [{"id": "body-u0", "type": "smooth-union", "left": "body-shoulder", "right": "body-keel", "radius": 0.05}, {"id": "body-u1", "type": "smooth-union", "left": "body-u0", "right": "body-mid", "radius": 0.05}, {"id": "body-u2", "type": "smooth-union", "left": "body-u1", "right": "body-vent", "radius": 0.05}, {"id": "body-u3", "type": "smooth-union", "left": "body-u2", "right": "body-pygostyle", "radius": 0.05}], "resolution": 36, "bounds": {"min": [-0.075, 0.17, -0.125], "max": [0.075, 0.43, 0.13]}});
   if (!endpoint_body_shell_0) {
     mesh_body_shell_0Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1077,7 +1105,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["hackle-cape"] = node_hackle_cape_1;
   const mesh_hackle_cape_1Geometry = endpoint_hackle_cape_1
     ? new THREE.CylinderGeometry(endpoint_hackle_cape_1.endRadius, endpoint_hackle_cape_1.baseRadius, endpoint_hackle_cape_1.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, -0.03, -0.01], "rx": 0.04, "rz": 0.036, "twist": 0.0}, {"position": [0.0, 0.006, 0.002], "rx": 0.032, "rz": 0.029, "twist": 0.0}, {"position": [0.0, 0.042, 0.014], "rx": 0.025, "rz": 0.023, "twist": 0.0}, {"position": [0.0, 0.076, 0.028], "rx": 0.019, "rz": 0.018, "twist": 0.0}], "radialSegments": 12, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, -0.045, -0.012], "rx": 0.037, "rz": 0.035, "twist": 0.0}, {"position": [0.0, 0.002, -0.02], "rx": 0.033, "rz": 0.031, "twist": 0.0}, {"position": [0.0, 0.047, -0.004], "rx": 0.029, "rz": 0.027, "twist": 0.0}, {"position": [0.0, 0.082, 0.024], "rx": 0.0235, "rz": 0.0225, "twist": 0.0}, {"position": [0.0, 0.106, 0.040], "rx": 0.0165, "rz": 0.016, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
   if (!endpoint_hackle_cape_1) {
     mesh_hackle_cape_1Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1142,7 +1170,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
     node_wing_l_3.position.copy(endpoint_wing_l_3.start);
     node_wing_l_3.rotation.set(0.0, 0.0, 0.0);
   } else {
-    node_wing_l_3.position.set(0.052, 0.352, 0.048);
+    node_wing_l_3.position.set(0.040, 0.352, 0.046);
     node_wing_l_3.rotation.set(0.0, 0.0, 0.0);
   }
   node_wing_l_3.userData.sculptComponent = {"id": "wing-l", "name": "Folded wing (left)", "level": "meso", "role": "wing", "importance": 0.7, "confidence": 0.72, "primitive": "tapered-sweep", "topologyClass": "conforming-shell", "topologyRationale": "A folded wing is a thin shell lying ON the flank, not a solid of its own and not relief carved into the body. It is swept along the wing's own fore-aft spine with a laterally thin, vertically deep cross-section that tapers to a true point at the primaries.", "geometryDescriptor": {"topologyIntent": "flank-conforming wing shell swept aft and down from the shoulder to the primary tip", "taperedSweep": {"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.016, "rz": 0.036, "twist": 0.0}, {"position": [0.0, -0.022, -0.042], "rx": 0.015, "rz": 0.042, "twist": 0.0}, {"position": [0.0, -0.048, -0.084], "rx": 0.01, "rz": 0.032, "twist": 0.0}, {"position": [0.0, -0.07, -0.12], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true}, "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Four stations x 10 radial segments, capped: about 90 triangles.", "standProudNote": "The spine sits at x = +0.048 and the section is 0.0125 half-wide, so the wing's outer surface reaches 0.060 while the body's half-width at the same height is about 0.046. The wing stands roughly 20 mm proud of the flank and is nowhere flush with it.", "chiralityNote": "A reflection of wing-r, not a rotation: every station's x is 0 in local space and the pivot's x negates. (x, y, z) -> (-x, y, z) with nothing else touched.", "parentingNote": "TRANSFORM PARENT IS THE ROOT for every component; the logical hierarchy lives in attachment.parentId. The generator parents nodes by `component.parent` and COMPOSES their transforms, and most geometry here is authored in world coordinates (both leg fields, the body field) or hung off a world-placed pivot (every sweep). Leaving the logical parent in `parent` would have added the thigh's offset to a leg already at its world position and displaced it by exactly that much. Flattening is the same fix the 7-Eleven's facade wall carries, for the same reason. The model is still fully explodable and clickable: every component is its own named node.", "correctionNote": "form-refinement correction 3. The wings did not READ in the structural render -- same material as the body and only 10 mm proud of a curved flank, so they vanished into it. The spine moves out from x +0.048 to +0.052 and the section deepens from 0.030 to 0.042 at its widest, so the wing now stands about 22 mm off the flank and casts an edge. It is a folded wing lying ON the body, so it must be visible as a distinct plane without becoming a fin.", "frameNote": "The spine runs aft and down in a plane of constant x, so the parallel-transport frame puts rx on the LATERAL axis and rz in that plane: rx is the wing's thickness away from the body and rz its vertical depth. The values are chosen accordingly -- thin across, deep down."}, "parent": null, "attachment": {"parentId": "body-shell", "parentSocket": null, "contactType": "overlap", "note": "Overlaps the flank rather than butting against it, so no two faces are coincident. No gap is permitted: gapTolerance 0.5 mm, and the joint is an overlap so no two faces are coincident and co-facing.", "localStart": [0.0, 0.0, 0.0], "localEnd": [0.0, 0.0, 0.0], "embedDepth": 0.008, "overlap": 0.008, "gapTolerance": 0.0005}, "dimensions": {"width": 0.032, "height": 0.084, "depth": 0.126}, "transform": {"position": [0.052, 0.352, 0.048], "rotation": [0.0, 0.0, 0.0], "scale": [1.0, 1.0, 1.0]}, "material": "plumage-dark", "actionProfile": {"collider": null, "sockets": [], "destruction": {"fractureGroup": null}}, "localFeatures": [{"id": "covert-iridescence", "kind": "material-variation", "description": "Teal-green structural-colour sheen on the covert tips over the wing's upper fore third.", "evidenceRefs": ["ev-covert-iridescent"]}], "evidenceRefs": ["ev-crop-body-wing"], "fidelityTier": "meso", "colorMaterialRecipe": {"baseColor": "#332E24", "secondary": ["#18150F", "#282520", "#2E2B22"], "roughness": 0.45, "metalness": 0.0, "finish": "satin dielectric", "recipe": "Flat de-lit albedo #26221A at roughness 0.45, no texture. Variation comes from colorVariation amount 0.10 on the y axis, which is what carries the surface's read in place of a map.", "sourceEvidence": ["ev-body-dark", "ev-covert-iridescent"], "dominantAlbedo": "rgba(51, 46, 36, 1.0)", "secondaryAlbedo": "rgba(24, 21, 15, 1.0)", "materialClass": "fabric", "materialClassConfidence": 0.55, "materialClassNote": "None of the ten offered classes is `feather`. Fabric is the nearest real light-transport analogue -- a fibrous dielectric with a soft, slightly anisotropic sheen and no specular lobe -- and the confidence says how near, which is not very."}};
@@ -1151,7 +1179,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["wing-l"] = node_wing_l_3;
   const mesh_wing_l_3Geometry = endpoint_wing_l_3
     ? new THREE.CylinderGeometry(endpoint_wing_l_3.endRadius, endpoint_wing_l_3.baseRadius, endpoint_wing_l_3.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.016, "rz": 0.036, "twist": 0.0}, {"position": [0.0, -0.022, -0.042], "rx": 0.015, "rz": 0.042, "twist": 0.0}, {"position": [0.0, -0.048, -0.084], "rx": 0.01, "rz": 0.032, "twist": 0.0}, {"position": [0.0, -0.07, -0.12], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.014, "rz": 0.034, "twist": 0.0}, {"position": [-0.004, -0.022, -0.042], "rx": 0.014, "rz": 0.032, "twist": 0.0}, {"position": [-0.009, -0.048, -0.084], "rx": 0.011, "rz": 0.024, "twist": 0.0}, {"position": [-0.014, -0.068, -0.118], "rx": 0.005, "rz": 0.009, "twist": 0.0}], "radialSegments": 12, "capEnds": true});
   if (!endpoint_wing_l_3) {
     mesh_wing_l_3Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1179,7 +1207,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
     node_wing_r_4.position.copy(endpoint_wing_r_4.start);
     node_wing_r_4.rotation.set(0.0, 0.0, 0.0);
   } else {
-    node_wing_r_4.position.set(-0.052, 0.352, 0.048);
+    node_wing_r_4.position.set(-0.040, 0.352, 0.046);
     node_wing_r_4.rotation.set(0.0, 0.0, 0.0);
   }
   node_wing_r_4.userData.sculptComponent = {"id": "wing-r", "name": "Folded wing (right)", "level": "meso", "role": "wing", "importance": 0.7, "confidence": 0.6, "primitive": "tapered-sweep", "topologyClass": "conforming-shell", "topologyRationale": "A folded wing is a thin shell lying ON the flank, not a solid of its own and not relief carved into the body. It is swept along the wing's own fore-aft spine with a laterally thin, vertically deep cross-section that tapers to a true point at the primaries.", "geometryDescriptor": {"topologyIntent": "flank-conforming wing shell swept aft and down from the shoulder to the primary tip", "taperedSweep": {"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.016, "rz": 0.036, "twist": 0.0}, {"position": [0.0, -0.022, -0.042], "rx": 0.015, "rz": 0.042, "twist": 0.0}, {"position": [0.0, -0.048, -0.084], "rx": 0.01, "rz": 0.032, "twist": 0.0}, {"position": [0.0, -0.07, -0.12], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true}, "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Four stations x 10 radial segments, capped: about 90 triangles.", "standProudNote": "The spine sits at x = -0.048 and the section is 0.0125 half-wide, so the wing's outer surface reaches 0.060 while the body's half-width at the same height is about 0.046. The wing stands roughly 20 mm proud of the flank and is nowhere flush with it.", "chiralityNote": "A reflection of wing-l, not a rotation: every station's x is 0 in local space and the pivot's x negates. (x, y, z) -> (-x, y, z) with nothing else touched.", "parentingNote": "TRANSFORM PARENT IS THE ROOT for every component; the logical hierarchy lives in attachment.parentId. The generator parents nodes by `component.parent` and COMPOSES their transforms, and most geometry here is authored in world coordinates (both leg fields, the body field) or hung off a world-placed pivot (every sweep). Leaving the logical parent in `parent` would have added the thigh's offset to a leg already at its world position and displaced it by exactly that much. Flattening is the same fix the 7-Eleven's facade wall carries, for the same reason. The model is still fully explodable and clickable: every component is its own named node.", "correctionNote": "form-refinement correction 3. The wings did not READ in the structural render -- same material as the body and only 10 mm proud of a curved flank, so they vanished into it. The spine moves out from x -0.048 to -0.052 and the section deepens from 0.030 to 0.042 at its widest, so the wing now stands about 22 mm off the flank and casts an edge. It is a folded wing lying ON the body, so it must be visible as a distinct plane without becoming a fin.", "frameNote": "The spine runs aft and down in a plane of constant x, so the parallel-transport frame puts rx on the LATERAL axis and rz in that plane: rx is the wing's thickness away from the body and rz its vertical depth. The values are chosen accordingly -- thin across, deep down."}, "parent": null, "attachment": {"parentId": "body-shell", "parentSocket": null, "contactType": "overlap", "note": "Overlaps the flank rather than butting against it, so no two faces are coincident. No gap is permitted: gapTolerance 0.5 mm, and the joint is an overlap so no two faces are coincident and co-facing.", "localStart": [0.0, 0.0, 0.0], "localEnd": [0.0, 0.0, 0.0], "embedDepth": 0.008, "overlap": 0.008, "gapTolerance": 0.0005}, "dimensions": {"width": 0.032, "height": 0.084, "depth": 0.126}, "transform": {"position": [-0.052, 0.352, 0.048], "rotation": [0.0, 0.0, 0.0], "scale": [1.0, 1.0, 1.0]}, "material": "plumage-dark", "actionProfile": {"collider": null, "sockets": [], "destruction": {"fractureGroup": null}}, "localFeatures": [{"id": "covert-iridescence", "kind": "material-variation", "description": "Teal-green structural-colour sheen on the covert tips over the wing's upper fore third.", "evidenceRefs": ["ev-covert-iridescent"]}], "evidenceRefs": ["ev-crop-body-wing"], "fidelityTier": "meso", "colorMaterialRecipe": {"baseColor": "#332E24", "secondary": ["#18150F", "#282520", "#2E2B22"], "roughness": 0.45, "metalness": 0.0, "finish": "satin dielectric", "recipe": "Flat de-lit albedo #26221A at roughness 0.45, no texture. Variation comes from colorVariation amount 0.10 on the y axis, which is what carries the surface's read in place of a map.", "sourceEvidence": ["ev-body-dark", "ev-covert-iridescent"], "dominantAlbedo": "rgba(51, 46, 36, 1.0)", "secondaryAlbedo": "rgba(24, 21, 15, 1.0)", "materialClass": "fabric", "materialClassConfidence": 0.55, "materialClassNote": "None of the ten offered classes is `feather`. Fabric is the nearest real light-transport analogue -- a fibrous dielectric with a soft, slightly anisotropic sheen and no specular lobe -- and the confidence says how near, which is not very."}};
@@ -1188,7 +1216,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["wing-r"] = node_wing_r_4;
   const mesh_wing_r_4Geometry = endpoint_wing_r_4
     ? new THREE.CylinderGeometry(endpoint_wing_r_4.endRadius, endpoint_wing_r_4.baseRadius, endpoint_wing_r_4.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.016, "rz": 0.036, "twist": 0.0}, {"position": [0.0, -0.022, -0.042], "rx": 0.015, "rz": 0.042, "twist": 0.0}, {"position": [0.0, -0.048, -0.084], "rx": 0.01, "rz": 0.032, "twist": 0.0}, {"position": [0.0, -0.07, -0.12], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.014, "rz": 0.034, "twist": 0.0}, {"position": [0.004, -0.022, -0.042], "rx": 0.014, "rz": 0.032, "twist": 0.0}, {"position": [0.009, -0.048, -0.084], "rx": 0.011, "rz": 0.024, "twist": 0.0}, {"position": [0.014, -0.068, -0.118], "rx": 0.005, "rz": 0.009, "twist": 0.0}], "radialSegments": 12, "capEnds": true});
   if (!endpoint_wing_r_4) {
     mesh_wing_r_4Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1225,7 +1253,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["neck-skin"] = node_neck_skin_5;
   const mesh_neck_skin_5Geometry = endpoint_neck_skin_5
     ? new THREE.CylinderGeometry(endpoint_neck_skin_5.endRadius, endpoint_neck_skin_5.baseRadius, endpoint_neck_skin_5.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.032, "rz": 0.032, "twist": 0.0}, {"position": [0.0, 0.06, 0.02], "rx": 0.024, "rz": 0.024, "twist": 0.0}, {"position": [0.0, 0.105, 0.038], "rx": 0.017, "rz": 0.017, "twist": 0.0}, {"position": [0.0, 0.145, 0.052], "rx": 0.012, "rz": 0.012, "twist": 0.0}], "radialSegments": 12, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, -0.02, 0.002], "rx": 0.037, "rz": 0.036, "twist": 0.0}, {"position": [0.0, 0.03, -0.006], "rx": 0.031, "rz": 0.03, "twist": 0.0}, {"position": [0.0, 0.075, 0.01], "rx": 0.026, "rz": 0.025, "twist": 0.0}, {"position": [0.0, 0.11, 0.038], "rx": 0.019, "rz": 0.0185, "twist": 0.0}, {"position": [0.0, 0.14, 0.058], "rx": 0.0145, "rz": 0.015, "twist": 0.0}, {"position": [0.0, 0.162, 0.068], "rx": 0.0115, "rz": 0.012, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
   if (!endpoint_neck_skin_5) {
     mesh_neck_skin_5Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1253,14 +1281,14 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
     node_head_6.position.copy(endpoint_head_6.start);
     node_head_6.rotation.set(0.0, 0.0, 0.0);
   } else {
-    node_head_6.position.set(0.0, 0.531, 0.1023);
+    node_head_6.position.set(0.0, 0.531, 0.112);
     node_head_6.rotation.set(0.0, 0.0, 0.0);
   }
   node_head_6.userData.sculptComponent = {"id": "head", "name": "Head with dressed comb and trimmed wattle", "level": "macro", "role": "head", "importance": 1.0, "confidence": 0.85, "primitive": "ellipsoid", "topologyClass": "implicit", "topologyRationale": "Skull, cheek, nape, comb and wattle are ONE continuous skin surface on a live bird. Building the comb as a separate component would put a small ridge flush on the crown -- the exact coincident-co-facing-surface pair that z-fights -- while an implicit union of five ellipsoids welds them and still leaves the comb standing proud in the silhouette.", "geometryDescriptor": {"topologyIntent": "welded head volume: skull, jaw, nape, a low dressed comb ridge and a trimmed wattle nub", "sdf": {"primitives": [{"id": "skull", "type": "ellipsoid", "radii": [0.0175, 0.0205, 0.0255], "transform": {"position": [0.0, -0.0055, -0.0068]}}, {"id": "jaw-cheek", "type": "ellipsoid", "radii": [0.0165, 0.015, 0.0215], "transform": {"position": [0.0, -0.018, -0.0143]}}, {"id": "comb-ridge", "type": "ellipsoid", "radii": [0.0052, 0.0066, 0.0178], "transform": {"position": [0.0, 0.0138, -0.0032]}}, {"id": "wattle-nub", "type": "ellipsoid", "radii": [0.006, 0.0072, 0.0058], "transform": {"position": [0.0, -0.0315, 0.0012]}}, {"id": "nape", "type": "ellipsoid", "radii": [0.015, 0.016, 0.013], "transform": {"position": [0.0, -0.021, -0.0268]}}], "operations": [{"id": "head-u0", "type": "smooth-union", "left": "skull", "right": "jaw-cheek", "radius": 0.0058}, {"id": "head-u1", "type": "smooth-union", "left": "head-u0", "right": "nape", "radius": 0.0058}, {"id": "head-u2", "type": "smooth-union", "left": "head-u1", "right": "comb-ridge", "radius": 0.0058}, {"id": "head-u3", "type": "smooth-union", "left": "head-u2", "right": "wattle-nub", "radius": 0.0058}], "resolution": 34, "bounds": {"min": [-0.03, -0.047, -0.0423], "max": [0.03, 0.031, 0.0317]}}, "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Implicit surface at resolution 30 over its own bounds; see resolutionNote for the measured cost.", "combNote": "form-refinement correction 5. Two changes, both found in the head close-up rather than by a gate. The ridge was 9.6 x 17.6 x 43.0 mm and read as a squared-off block: too TALL for a dressed comb, and longer than the plate's, which runs from behind the beak to about mid-skull rather than the whole crown. Now 10.4 x 13.2 x 35.6 mm, shifted 3.2 mm forward. It stands 6.9 mm proud of the skull's 0.5460 crown, is rounded rather than flat-topped, and still carries NO serrated points. The union radius stays a tight 5.8 mm so the blend cannot swallow it -- that constraint has held through every correction.", "parentingNote": "TRANSFORM PARENT IS THE ROOT for every component; the logical hierarchy lives in attachment.parentId. The generator parents nodes by `component.parent` and COMPOSES their transforms, and most geometry here is authored in world coordinates (both leg fields, the body field) or hung off a world-placed pivot (every sweep). Leaving the logical parent in `parent` would have added the thigh's offset to a leg already at its world position and displaced it by exactly that much. Flattening is the same fix the 7-Eleven's facade wall carries, for the same reason. The model is still fully explodable and clickable: every component is its own named node.", "pivotNote": "The head node sits at the PUPIL, world (0.0, 0.531, 0.1023), measured as the centroid of the 99 pixels below luma 45 in the plate's eye window. Its SDF is authored in local coordinates around that point. The pivot is placed there rather than at the head's volumetric centre for a concrete reason: the eye pair is an InstancedMesh, and the repetition emitter can only place instances on a ring about the parent node's own origin -- it has no per-instance offset. Putting the head's pivot on the eye line is what makes a two-element ring of radius 0.033 land both eyes exactly where they were measured, instead of at the model origin on the floor.", "resolutionNote": "Resolution 30, about 2.6 mm cells. Held higher than the body's because the comb ridge is 9.6 mm wide and must survive: 2.6 mm cells give it 3.7 across and 6.8 tall. This is the one place on the prop where resolution buys identity rather than smoothness. RAISED 30 -> 34 in form-refinement correction 5. At 30 the comb rendered with a FLAT, squared-off top: 2.6 mm cells across a 17.6 mm ridge keeps the ridge but not its roundness, and a flat-topped slab on the crown is exactly what a DRESSED comb must not look like. 34 gives 2.3 mm cells for about 1,240 extra triangles, affordable at 61 percent of the ceiling. SOURCE OF THE SATURATION, found in optimization-pass: the sweep showed resolutions 44 and 52 returning identical geometry and I recorded that as 'saturates at 44'. The real number is 40 -- forge/_shared/subdivision.py sets SDF_MAX_RESOLUTION to 40 for the `standard` tessellation tier, which targetTriangles 32000 selects. Both 44 and 52 were being clamped to 40, which is why they agreed. Every resolution on this prop (24, 34, 36) is below the cap and is therefore real."}, "parent": null, "attachment": {"parentId": "neck-skin", "parentSocket": null, "contactType": "embed", "note": "The neck's top station sits inside the nape ellipsoid; the two overlap rather than butt. No gap is permitted: gapTolerance 0.5 mm, and the joint is an embed so no two faces are coincident and co-facing.", "localStart": [0.0, 0.0, 0.0], "localEnd": [0.0, 0.0, 0.0], "embedDepth": 0.012, "overlap": 0.012, "gapTolerance": 0.0005}, "dimensions": {"width": 0.06, "height": 0.078, "depth": 0.074}, "transform": {"position": [0.0, 0.531, 0.1023], "rotation": [0.0, 0.0, 0.0], "scale": [1.0, 1.0, 1.0]}, "material": "skin-red", "actionProfile": {"collider": null, "sockets": [], "destruction": {"fractureGroup": null}}, "localFeatures": [{"id": "dressed-comb", "kind": "form", "description": "A low papillated fore-aft ridge with no points -- the comb has been trimmed.", "evidenceRefs": ["ev-comb-ridge", "ev-crop-head"]}, {"id": "trimmed-wattle", "kind": "form", "description": "One small fleshy nub under the jaw where an untrimmed bird carries two hanging lobes.", "evidenceRefs": ["ev-wattle-earlobe"]}, {"id": "ear-lobe", "kind": "material-variation", "description": "Bare skin patch behind and below the eye, measured rgb 145,79,77.", "evidenceRefs": ["ev-wattle-earlobe"]}], "evidenceRefs": ["ev-crop-head"], "fidelityTier": "macro", "colorMaterialRecipe": {"baseColor": "#9E4A40", "secondary": ["#6F3A35", "#914F4D", "#76645F"], "roughness": 0.55, "metalness": 0.0, "finish": "satin dielectric", "recipe": "Flat de-lit albedo #8A3F38 at roughness 0.55, no texture. Variation comes from colorVariation amount 0.12 on the y axis, which is what carries the surface's read in place of a map.", "sourceEvidence": ["ev-comb-ridge", "ev-head-skin-bare", "ev-wattle-earlobe"], "dominantAlbedo": "rgba(158, 74, 64, 1.0)", "secondaryAlbedo": "rgba(111, 58, 53, 1.0)", "materialClass": "skin", "materialClassConfidence": 0.9, "materialClassNote": "Bare vascular avian skin. This is the one material where the schema's class is exactly right."}};
   node_head_6.userData.actionProfile = {"collider": null, "sockets": [], "destruction": {"fractureGroup": null}};
   (nodes["root"] ?? root).add(node_head_6);
   nodes["head"] = node_head_6;
-  const mesh_head_6Geometry = polygonizeSdf({"primitives": [{"id": "skull", "type": "ellipsoid", "radii": [0.0175, 0.0205, 0.0255], "transform": {"position": [0.0, -0.0055, -0.0068]}}, {"id": "jaw-cheek", "type": "ellipsoid", "radii": [0.0165, 0.015, 0.0215], "transform": {"position": [0.0, -0.018, -0.0143]}}, {"id": "comb-ridge", "type": "ellipsoid", "radii": [0.0052, 0.0066, 0.0178], "transform": {"position": [0.0, 0.0138, -0.0032]}}, {"id": "wattle-nub", "type": "ellipsoid", "radii": [0.006, 0.0072, 0.0058], "transform": {"position": [0.0, -0.0315, 0.0012]}}, {"id": "nape", "type": "ellipsoid", "radii": [0.015, 0.016, 0.013], "transform": {"position": [0.0, -0.021, -0.0268]}}], "operations": [{"id": "head-u0", "type": "smooth-union", "left": "skull", "right": "jaw-cheek", "radius": 0.0058}, {"id": "head-u1", "type": "smooth-union", "left": "head-u0", "right": "nape", "radius": 0.0058}, {"id": "head-u2", "type": "smooth-union", "left": "head-u1", "right": "comb-ridge", "radius": 0.0058}, {"id": "head-u3", "type": "smooth-union", "left": "head-u2", "right": "wattle-nub", "radius": 0.0058}], "resolution": 34, "bounds": {"min": [-0.03, -0.047, -0.0423], "max": [0.03, 0.031, 0.0317]}});
+  const mesh_head_6Geometry = polygonizeSdf({"primitives": [{"id": "skull", "type": "ellipsoid", "radii": [0.0155, 0.02, 0.026], "transform": {"position": [0.0, -0.002, 0.003]}}, {"id": "jaw-cheek", "type": "ellipsoid", "radii": [0.0145, 0.012, 0.022], "transform": {"position": [0.0, -0.016, 0.0]}}, {"id": "comb-ridge", "type": "ellipsoid", "radii": [0.0045, 0.0055, 0.014], "transform": {"position": [0.0, 0.019, -0.002]}}, {"id": "wattle-nub", "type": "ellipsoid", "radii": [0.009, 0.011, 0.01], "transform": {"position": [0.0, -0.03, 0.004]}}, {"id": "nape", "type": "ellipsoid", "radii": [0.0165, 0.022, 0.019], "transform": {"position": [0.0, -0.013, -0.017]}}], "operations": [{"id": "head-u0", "type": "smooth-union", "left": "skull", "right": "jaw-cheek", "radius": 0.008}, {"id": "head-u1", "type": "smooth-union", "left": "head-u0", "right": "nape", "radius": 0.015}, {"id": "head-u2", "type": "smooth-union", "left": "head-u1", "right": "comb-ridge", "radius": 0.005}, {"id": "head-u3", "type": "smooth-union", "left": "head-u2", "right": "wattle-nub", "radius": 0.007}], "resolution": 38, "bounds": {"min": [-0.026, -0.05, -0.042], "max": [0.026, 0.032, 0.036]}});
   if (!endpoint_head_6) {
     mesh_head_6Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1288,7 +1316,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
     node_beak_7.position.copy(endpoint_beak_7.start);
     node_beak_7.rotation.set(0.0, 0.0, 0.0);
   } else {
-    node_beak_7.position.set(0.0, 0.5215, 0.112);
+    node_beak_7.position.set(0.0, 0.523, 0.134);
     node_beak_7.rotation.set(0.0, 0.0, 0.0);
   }
   node_beak_7.userData.sculptComponent = {"id": "beak", "name": "Hooked horn beak", "level": "micro", "role": "beak", "importance": 0.75, "confidence": 0.8, "primitive": "tapered-sweep", "topologyClass": "continuous-sculpt", "topologyRationale": "A beak is one continuous keratin form that curves AND comes to a point. Only tapered-sweep carries both a curved spine and a section that closes to zero.", "geometryDescriptor": {"topologyIntent": "stout beak hooking downward at the tip, upper mandible overhanging", "taperedSweep": {"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.011, "rz": 0.01, "twist": 0.0}, {"position": [0.0, -0.002, 0.018], "rx": 0.0088, "rz": 0.008, "twist": 0.0}, {"position": [0.0, -0.008, 0.028], "rx": 0.005, "rz": 0.0048, "twist": 0.0}, {"position": [0.0, -0.014, 0.034], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true}, "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Four stations x 10 radial segments: about 80 triangles.", "hookNote": "The spine drops 14 mm over 26 mm of forward travel and the drop accelerates over the last station -- that acceleration IS the hook. A straight cone would occupy roughly the same silhouette cells, which is why the swept-arc gate is run on this component too.", "taperNote": "Tip closes to a true point, ratio 0.", "parentingNote": "TRANSFORM PARENT IS THE ROOT for every component; the logical hierarchy lives in attachment.parentId. The generator parents nodes by `component.parent` and COMPOSES their transforms, and most geometry here is authored in world coordinates (both leg fields, the body field) or hung off a world-placed pivot (every sweep). Leaving the logical parent in `parent` would have added the thigh's offset to a leg already at its world position and displaced it by exactly that much. Flattening is the same fix the 7-Eleven's facade wall carries, for the same reason. The model is still fully explodable and clickable: every component is its own named node.", "capNote": "POST-SHIP CORRECTION 3b. The corrected point-in-mesh test measured this joint at 0.4 mm -- the beak root sat at world z 0.1200 against a skull whose fore surface at that height is 0.1205, so it was touching by half a millimetre and its cap was effectively flush with the head. The BROKEN version of the test had reported 4.6 mm here and hidden it. The pivot moves back 8 mm to z 0.1120, which is 8.5 mm inside the skull, and the stations lengthen by the same 8 mm so the tip still lands at world z 0.146 and the silhouette is unchanged. The root radius of 0.011 also fits inside the skull's 0.0129 half-width at that point, so the cap is swallowed rather than merely overlapped."}, "parent": null, "attachment": {"parentId": "head", "parentSocket": null, "contactType": "embed", "note": "Root station is inside the jaw ellipsoid, so the beak grows out of the head. No gap is permitted: gapTolerance 0.5 mm, and the joint is an embed so no two faces are coincident and co-facing.", "localStart": [0.0, 0.0, 0.0], "localEnd": [0.0, 0.0, 0.0], "embedDepth": 0.0085, "overlap": 0.012, "gapTolerance": 0.0005}, "dimensions": {"width": 0.022, "height": 0.024, "depth": 0.034}, "transform": {"position": [0.0, 0.5215, 0.112], "rotation": [0.0, 0.0, 0.0], "scale": [1.0, 1.0, 1.0]}, "material": "beak-horn", "actionProfile": {"collider": null, "sockets": [], "destruction": {"fractureGroup": null}}, "localFeatures": [{"id": "culmen-sheen", "kind": "material-variation", "description": "A satin highlight runs the length of the culmen; carried by the beak-horn roughness of 0.35.", "evidenceRefs": ["ev-beak-horn"]}], "evidenceRefs": ["ev-beak-base"], "fidelityTier": "micro", "colorMaterialRecipe": {"baseColor": "#9B8465", "secondary": ["#81654F", "#8F7E6B", "#A89070"], "roughness": 0.42, "metalness": 0.0, "finish": "satin dielectric", "recipe": "Flat de-lit albedo #9B8465 at roughness 0.35, no texture. Variation comes from colorVariation amount 0.06 on the z axis, which is what carries the surface's read in place of a map.", "sourceEvidence": ["ev-beak-horn"], "dominantAlbedo": "rgba(155, 132, 101, 1.0)", "secondaryAlbedo": "rgba(129, 101, 79, 1.0)", "materialClass": "skin", "materialClassConfidence": 0.55, "materialClassNote": "Beak keratin is a hard, polished derivative of skin. `skin` is the nearest class; the 0.35 roughness is much lower than any real skin, which is what the confidence records."}};
@@ -1297,7 +1325,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["beak"] = node_beak_7;
   const mesh_beak_7Geometry = endpoint_beak_7
     ? new THREE.CylinderGeometry(endpoint_beak_7.endRadius, endpoint_beak_7.baseRadius, endpoint_beak_7.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, 0.0], "rx": 0.011, "rz": 0.01, "twist": 0.0}, {"position": [0.0, -0.002, 0.018], "rx": 0.0088, "rz": 0.008, "twist": 0.0}, {"position": [0.0, -0.008, 0.028], "rx": 0.005, "rz": 0.0048, "twist": 0.0}, {"position": [0.0, -0.014, 0.034], "rx": 0.0, "rz": 0.0, "twist": 0.0}], "radialSegments": 10, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.0, 0.0, -0.004], "rx": 0.011, "rz": 0.0105, "twist": 0.0}, {"position": [0.0, -0.002, 0.016], "rx": 0.0088, "rz": 0.0085, "twist": 0.0}, {"position": [0.0, -0.008, 0.028], "rx": 0.0058, "rz": 0.0058, "twist": 0.0}, {"position": [0.0, -0.015, 0.036], "rx": 0.0025, "rz": 0.0025, "twist": 0.0}], "radialSegments": 12, "capEnds": true});
   if (!endpoint_beak_7) {
     mesh_beak_7Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1334,7 +1362,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["thigh-l"] = node_thigh_l_8;
   const mesh_thigh_l_8Geometry = endpoint_thigh_l_8
     ? new THREE.CylinderGeometry(endpoint_thigh_l_8.endRadius, endpoint_thigh_l_8.baseRadius, endpoint_thigh_l_8.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [-0.02, 0.0, 0.0], "rx": 0.028, "rz": 0.024, "twist": 0.0}, {"position": [-0.014, -0.042, -0.001], "rx": 0.026, "rz": 0.022, "twist": 0.0}, {"position": [-0.006, -0.088, -0.004], "rx": 0.02, "rz": 0.017, "twist": 0.0}, {"position": [0.0, -0.124, -0.005], "rx": 0.011, "rz": 0.01, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [-0.006, 0.0, 0.0], "rx": 0.028, "rz": 0.024, "twist": 0.0}, {"position": [-0.004, -0.042, -0.001], "rx": 0.026, "rz": 0.022, "twist": 0.0}, {"position": [-0.002, -0.088, -0.004], "rx": 0.02, "rz": 0.017, "twist": 0.0}, {"position": [0.0, -0.124, -0.005], "rx": 0.011, "rz": 0.01, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
   if (!endpoint_thigh_l_8) {
     mesh_thigh_l_8Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1371,7 +1399,7 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
   nodes["thigh-r"] = node_thigh_r_9;
   const mesh_thigh_r_9Geometry = endpoint_thigh_r_9
     ? new THREE.CylinderGeometry(endpoint_thigh_r_9.endRadius, endpoint_thigh_r_9.baseRadius, endpoint_thigh_r_9.length, 16, 6)
-    : buildTaperedSweepGeometry({"stations": [{"position": [0.02, 0.0, 0.0], "rx": 0.028, "rz": 0.024, "twist": 0.0}, {"position": [0.014, -0.042, -0.001], "rx": 0.026, "rz": 0.022, "twist": 0.0}, {"position": [0.006, -0.088, -0.004], "rx": 0.02, "rz": 0.017, "twist": 0.0}, {"position": [0.0, -0.124, -0.005], "rx": 0.011, "rz": 0.01, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
+    : buildTaperedSweepGeometry({"stations": [{"position": [0.006, 0.0, 0.0], "rx": 0.028, "rz": 0.024, "twist": 0.0}, {"position": [0.004, -0.042, -0.001], "rx": 0.026, "rz": 0.022, "twist": 0.0}, {"position": [0.002, -0.088, -0.004], "rx": 0.02, "rz": 0.017, "twist": 0.0}, {"position": [0.0, -0.124, -0.005], "rx": 0.011, "rz": 0.01, "twist": 0.0}], "radialSegments": 14, "capEnds": true});
   if (!endpoint_thigh_r_9) {
     mesh_thigh_r_9Geometry.scale(1.0, 1.0, 1.0);
   }
@@ -1586,9 +1614,9 @@ export function createFightingCockModel(options: ProceduralModelOptions = {}): T
     // size regardless of how non-uniformly its host component is shaped, and a
     // `radial` ring's placement stays circular instead of being squashed into an
     // ellipse by a non-uniform host.
-    const scl = [0.0092, 0.0092, 0.0092];
+    const scl = [0.012, 0.012, 0.012];
     const axis = new THREE.Vector3(0.0, 1.0, 0.0).normalize();
-    const radius = 0.033;
+    const radius = 0.027;
     const seed = Math.abs(axis.z) < 0.9 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
     const perp = new THREE.Vector3().crossVectors(axis, seed).normalize();
     // One InstancedMesh = one draw call for all repeated parts (teeth/fasteners/spokes),
@@ -1714,11 +1742,570 @@ export function configureFightingCockRenderer(renderer: THREE.WebGLRenderer): vo
  * is accepted and attached for host-side inspection -- the reconstruction data already lives in
  * this module, so it is deliberately not a second source of truth.
  */
+/* ---------------------------------------------------------------- plumage
+ * The first promoted build shipped every feathered surface as a flat, satin, textureless
+ * colour, and it read as a smooth plastic bird: the plate is nothing BUT feather structure --
+ * shingled contour feathers over the breast and flank, long lanceolate hackle streaking down the
+ * neck and saddle, a peppered grey-cream tail, horn scutes down the tarsus and a papillated
+ * comb -- and none of it was carried.
+ *
+ * It is delivered the way the chedi's peel and the bamboo fence's culms are: seeded, seamless
+ * Canvas 2D tiles assigned AFTER material construction, so the sculpt materials stay declared
+ * textureless (no five-canvas procedural set, no discarded albedo) and the whole thing is a few
+ * thousand path fills -- tens of milliseconds, five small textures, no new material and no new
+ * draw call. Each tile is a MULTIPLIER on the material colour, bound as both map and bumpMap so
+ * a feather edge reads as a step in the surface rather than a stain. The tile is drawn around a
+ * mid-grey envelope and the material colour is divided by the tile's MEASURED mean afterwards,
+ * so the mean rendered albedo is exactly the measured one that the material-pass established.
+ *
+ * Tone spreads are plate ratios against each region's median (PIL on preview.jpg, 2026-08-27):
+ * hackle p5/p95 0.29/1.71, pale tail 0.57/2.09, tarsus scutes 0.67/1.37, head skin 0.46/1.59,
+ * teal coverts 0.40/2.60. The dark ends are LIFTED (nothing below 0.55 on the plumage, 0.62 on
+ * the hackle): the plumage albedo already sits above the plate's ~25 luma for the silhouette
+ * gate's luma-58 hole test, and a 0.3 core on a shaded flank would hand it straight back.
+ *
+ * The SDF-polygonised meshes (body, head, legs) carry NO uv attribute, so they are given a
+ * cylindrical mapping in metres here; the tapered sweeps carry a 0..1 (around, along) uv which
+ * is rescaled to metres from the ring perimeters and path length so one tile is one physical
+ * size on every part. Feather tips point at +v on every tile; the hackle cape is the one sweep
+ * whose stations run head-ward, so its v is negated.
+ *
+ * Under Node -- check-coplanar and the runtime probe evaluate this bundle without a DOM -- there
+ * is no canvas, and the materials keep their flat measured colour. */
+function applyFightingCockPlumage(root: THREE.Group, options: ProceduralModelOptions): void {
+  const rt = root.userData.sculptRuntime as { meshes?: Record<string, THREE.Mesh> } | undefined;
+  const meshes = rt?.meshes ?? {};
+  const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  const timings: Record<string, number> = {};
+  let t0 = now();
+  const lap = (k: string) => { const t = now(); timings[k] = Math.round((t - t0) * 10) / 10; t0 = t; };
+
+  // The generator hands the SDF-polygonised meshes (body, head, legs) a FRESH createSculptMaterial
+  // instance each while the sweeps share materialMap's, so the body and its wings were two
+  // materials with one spec -- and a map bound on one left the other flat. Put every component of
+  // a spec on the one shared instance: three fewer shader switches, and one place to bind.
+  const share = (from: string, to: string[]) => {
+    const m = meshes[from]?.material as THREE.Material | undefined;
+    if (!m) return;
+    for (const id of to) if (meshes[id] && meshes[id].material !== m) { (meshes[id].material as THREE.Material).dispose(); meshes[id].material = m; }
+  };
+  share('wing-l', ['body-shell', 'wing-r', 'thigh-l', 'thigh-r']);
+  // The neck column was authored on the bare-skin material, but the plate's neck is oxblood
+  // hackle from the shoulder to just under the head (crop 720,160: rgb 63/21/18, which IS the
+  // hackle's #571B13, against the head skin's 123/71/65); only the face and throat are bare, and
+  // those are the head's own geometry. So the column goes on the hackle material and takes the
+  // hackle tile, tips downward.
+  share('hackle-cape', ['neck-skin']);
+  share('leg-l', ['leg-r']);
+  const headMat = meshes['head']?.material as THREE.MeshPhysicalMaterial | undefined;
+  const hasDom = typeof document !== 'undefined' && typeof (document as any).createElement === 'function';
+  // 256 px on a 30-120 mm tile is 0.12-0.47 mm per texel, far below what a prop camera resolves;
+  // the software-canvas raster cost scales with the area, and 512 px cost 2.3 s for five tiles.
+  const S = Math.max(128, Math.min(512, options.textureSize ?? 256));
+  const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+  /* ----- UVs in metres.
+   * Every mapping writes u and v so that one tile unit is `tile` metres on the surface, and the
+   * around-axis count is rounded to an integer so the seam at atan2's discontinuity lands on a
+   * tile boundary of a seamless tile. */
+  const cylindricalUv = (
+    geo: THREE.BufferGeometry, axis: 'y' | 'z', tile: number,
+    opts: { vSign?: number; coneFromRadius?: number; axisAt?: [number, number] } = {},
+  ) => {
+    const pos = geo.getAttribute('position');
+    if (!pos) return;
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox!;
+    // The two cross-axis coordinates and the along-axis one.
+    const pick = (i: number): [number, number, number] =>
+      axis === 'z'
+        ? [pos.getX(i), pos.getY(i), pos.getZ(i)]
+        : [pos.getX(i), pos.getZ(i), pos.getY(i)];
+    const c: [number, number] = opts.axisAt ?? (axis === 'z'
+      ? [(bb.min.x + bb.max.x) / 2, (bb.min.y + bb.max.y) / 2]
+      : [(bb.min.x + bb.max.x) / 2, (bb.min.z + bb.max.z) / 2]);
+    let rSum = 0;
+    for (let i = 0; i < pos.count; i++) { const p = pick(i); rSum += Math.hypot(p[0] - c[0], p[1] - c[1]); }
+    const rMean = rSum / Math.max(1, pos.count);
+    const U = Math.max(1, Math.round((2 * Math.PI * rMean) / tile));
+    const uv = new Float32Array(pos.count * 2);
+    const sign = opts.vSign ?? 1;
+    for (let i = 0; i < pos.count; i++) {
+      const p = pick(i);
+      const ang = Math.atan2(p[0] - c[0], p[1] - c[1]) / (2 * Math.PI);
+      let along = p[2];
+      // Conical option: a toe runs OUT from the tarsus axis, not along it, so distance from the
+      // axis beyond the tarsus radius is added to the along coordinate and the scute rows keep
+      // running down the toe instead of smearing round it.
+      if (opts.coneFromRadius !== undefined) along += Math.max(0, Math.hypot(p[0] - c[0], p[1] - c[1]) - opts.coneFromRadius);
+      uv[i * 2] = ang * U;
+      uv[i * 2 + 1] = (sign * along) / tile;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  };
+
+  /* A tapered sweep's uv is (j/radial, stationIndex/(n-1)). Rescale it: u by the mean ring
+   * perimeter, v by the summed distance between ring centroids -- both read off the geometry so
+   * this stays true if the stations are ever re-authored. */
+  const sweepUv = (geo: THREE.BufferGeometry, tile: number, vSign = 1, vOff = 0) => {
+    const pos = geo.getAttribute('position');
+    const uv = geo.getAttribute('uv');
+    if (!pos || !uv) return;
+    const rings = new Map<number, number[]>();
+    for (let i = 0; i < pos.count; i++) {
+      const v = Math.round(uv.getY(i) * 1e5) / 1e5;
+      if (uv.getX(i) === 0.5 && (v === 0 || v === 1)) continue; // cap centre / cap ring copies carry u=0.5
+      if (!rings.has(v)) rings.set(v, []);
+      rings.get(v)!.push(i);
+    }
+    const keys = [...rings.keys()].sort((a, b) => a - b);
+    let perimSum = 0, perimCount = 0, length = 0;
+    let prevC: THREE.Vector3 | null = null;
+    const a = new THREE.Vector3(), b = new THREE.Vector3();
+    for (const k of keys) {
+      const idx = rings.get(k)!;
+      const cen = new THREE.Vector3();
+      let per = 0;
+      for (let n = 0; n < idx.length; n++) {
+        a.fromBufferAttribute(pos, idx[n]); cen.add(a);
+        if (n > 0) { b.fromBufferAttribute(pos, idx[n - 1]); per += a.distanceTo(b); }
+      }
+      cen.divideScalar(idx.length);
+      if (per > 1e-6) { perimSum += per; perimCount++; }
+      if (prevC) length += cen.distanceTo(prevC);
+      prevC = cen;
+    }
+    const perim = perimCount ? perimSum / perimCount : tile;
+    const U = Math.max(1, Math.round(perim / tile));
+    const V = length / tile;
+    const out = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      out[i * 2] = uv.getX(i) * U;
+      out[i * 2 + 1] = vSign * uv.getY(i) * V + vOff;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
+  };
+
+  // Tile sizes in metres. One tile of contour feathers is 120 mm (about seven exposed rows of
+  // 17 mm feathers); hackle 80 mm; the tail's pencilling 100 mm; scutes 30 mm; skin 30 mm.
+  const T = { plumage: 0.12, hackle: 0.08, pale: 0.10, scute: 0.03, skin: 0.03 };
+  const G = (id: string) => meshes[id]?.geometry as THREE.BufferGeometry | undefined;
+
+  // Around the VERTICAL axis, not the body's long one: a mapping around z puts its pole on the
+  // breast, which rendered as a pinwheel on the most visible surface of the bird. Around y the
+  // poles sit on the back (under the saddle) and the belly, and the feathers run down the body.
+  if (G('body-shell')) cylindricalUv(G('body-shell')!, 'y', T.plumage, { vSign: -1 });   // tips at -y
+  if (G('head')) cylindricalUv(G('head')!, 'y', T.skin);
+  for (const id of ['leg-l', 'leg-r']) {
+    const geo = G(id);
+    if (!geo) continue;
+    // Axis at the tarsus: mean x/z of the vertices above the foot.
+    const pos = geo.getAttribute('position');
+    let sx = 0, sz = 0, n = 0;
+    for (let i = 0; i < pos.count; i++) if (pos.getY(i) > 0.06) { sx += pos.getX(i); sz += pos.getZ(i); n++; }
+    cylindricalUv(geo, 'y', T.scute, { coneFromRadius: 0.007, axisAt: n ? [sx / n, sz / n] : undefined });
+  }
+  if (G('hackle-cape')) sweepUv(G('hackle-cape')!, T.hackle, -1);   // stations run head-ward
+  if (G('saddle-cape')) sweepUv(G('saddle-cape')!, T.hackle, 1, 0.37);
+  if (G('wing-l')) sweepUv(G('wing-l')!, T.plumage, 1, 0.21);
+  if (G('wing-r')) sweepUv(G('wing-r')!, T.plumage, 1, 0.53);
+  if (G('thigh-l')) sweepUv(G('thigh-l')!, T.plumage, 1, 0.11);
+  if (G('thigh-r')) sweepUv(G('thigh-r')!, T.plumage, 1, 0.67);
+  if (G('neck-skin')) sweepUv(G('neck-skin')!, T.hackle, -1, 0.5);   // stations run head-ward
+  if (G('tail-fan')) sweepUv(G('tail-fan')!, T.pale);
+  if (G('tail-sickles')) sweepUv(G('tail-sickles')!, T.pale, 1, 0.31);
+  if (G('tail-lower-fan')) sweepUv(G('tail-lower-fan')!, T.pale, 1, 0.62);
+  lap('uv');
+
+  /* ----- Low-frequency variation as vertex colour, LINEAR multipliers.
+   * A repeating tile cannot carry the plate's large-scale colour zoning: the wing coverts are
+   * teal-green iridescent and the shoulder and upper back lean oxblood while the breast and
+   * flank are near-black. Every geometry on the plumage-dark material gets a `color` attribute
+   * (white where nothing is painted) -- a vertexColors material renders BLACK on a geometry
+   * with no colour attribute. */
+  const tintMaterialMeshes = ['body-shell', 'wing-l', 'wing-r', 'thigh-l', 'thigh-r'];
+  const teal = [0.78, 1.0, 0.95];     // a quieter red channel reads teal without lifting the value
+  const oxblood = [1.18, 0.9, 0.85];
+  const smooth = (t: number) => { const c = Math.min(1, Math.max(0, t)); return c * c * (3 - 2 * c); };
+  const world = new THREE.Vector3();
+  for (const id of tintMaterialMeshes) {
+    const mesh = meshes[id];
+    if (!mesh) continue;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.getAttribute('position');
+    const col = new Float32Array(pos.count * 3).fill(1);
+    mesh.updateWorldMatrix(true, false);
+    for (let i = 0; i < pos.count; i++) {
+      world.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      const { x, y, z } = world;
+      let r = 1, g = 1, b = 1;
+      // Coverts: a lozenge over the wing and the flank behind it, y 0.30-0.39, z -0.02..0.06.
+      const cov = smooth(1 - Math.hypot((Math.abs(x) - 0.055) / 0.03, (y - 0.345) / 0.05, (z - 0.02) / 0.06));
+      // Shoulder: the top of the back just behind the hackle, fading down the sides.
+      const sho = smooth(1 - Math.hypot((y - 0.41) / 0.045, (z - 0.04) / 0.05)) * smooth(1 - Math.abs(x) / 0.07);
+      r = r * (1 + (teal[0] - 1) * cov) * (1 + (oxblood[0] - 1) * sho);
+      g = g * (1 + (teal[1] - 1) * cov) * (1 + (oxblood[1] - 1) * sho);
+      b = b * (1 + (teal[2] - 1) * cov) * (1 + (oxblood[2] - 1) * sho);
+      col[i * 3] = r; col[i * 3 + 1] = g; col[i * 3 + 2] = b;
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
+  lap('tint');
+
+  /* ----- The tiles. */
+  type Ctx = CanvasRenderingContext2D;
+  const css = (t: number, tint: number[], a: number) =>
+    `rgba(${Math.round(Math.min(1, t * tint[0]) * 255)},${Math.round(Math.min(1, t * tint[1]) * 255)},${Math.round(Math.min(1, t * tint[2]) * 255)},${a})`;
+  const WHITE = [1, 1, 1];
+
+  // A disc added to a path, with wrapped copies only when it actually crosses a tile edge --
+  // nine copies of every speck was most of the first build's 3.5 s under a software canvas.
+  const disc = (p: Path2D, x: number, y: number, d: number) => {
+    const xs = x - d < 0 ? [0, S] : x + d > S ? [0, -S] : [0];
+    const ys = y - d < 0 ? [0, S] : y + d > S ? [0, -S] : [0];
+    for (const ox of xs) for (const oy of ys) { p.moveTo(x + ox + d, y + oy); p.arc(x + ox, y + oy, d, 0, Math.PI * 2); }
+  };
+  const makeTile = (draw: (ctx: Ctx, r: () => number, wrapped: (fn: () => void, x?: number, y?: number, m?: number) => void) => void, seed: number) => {
+    if (!hasDom) return null;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = S;
+    // willReadFrequently puts the tile on the CPU raster path. On the GPU-backed canvas every
+    // one of the ~3000 small path fills is a separate draw through the driver -- 2.3 s for five
+    // tiles under SwiftShader, and not much better on a low-end integrated GPU.
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    const r = rng(seed);
+    // A mark near an edge is drawn at the wrapped offsets too; one entirely inside is drawn once.
+    const wrapped = (fn: () => void, x = S / 2, y = S / 2, m = S) => {
+      const xs = x - m < 0 ? [0, 1] : x + m > S ? [0, -1] : [0];
+      const ys = y - m < 0 ? [0, 1] : y + m > S ? [0, -1] : [0];
+      for (const ox of xs) for (const oy of ys) { ctx.save(); ctx.translate(ox * S, oy * S); fn(); ctx.restore(); }
+    };
+    draw(ctx, r, wrapped);
+    return cv;
+  };
+
+  /* Contour feathers: rounded lanceolate tips in staggered rows, drawn from the tail end so the
+   * head-ward feather overlays the one behind it, a soft shadow just beyond each tip onto the
+   * feather beneath, a pale rachis and angled barb hairlines. Tips point UP the canvas (+v). */
+  const plumageTile = (seed: number, envelope: number, tintPool: number[][]) => makeTile((ctx, r, wrapped) => {
+    ctx.fillStyle = css(envelope, WHITE, 1); ctx.fillRect(0, 0, S, S);
+    // Cloudy drift under the feathers, so the field is not one flat value under a lattice.
+    for (let i = 0; i < 18; i++) {
+      const cx = r() * S, cy = r() * S, R = S * (0.08 + 0.14 * r());
+      const t = envelope * (r() < 0.5 ? 0.86 : 1.14);
+      wrapped(() => {
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+        g.addColorStop(0, css(t, WHITE, 0.5)); g.addColorStop(1, css(t, WHITE, 0));
+        ctx.fillStyle = g; ctx.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+      }, cx, cy, R);
+    }
+    const rows = 28, cols = 17;
+    const ph = S / rows, pw = S / cols;
+    const fh = ph * 3.8, fw = pw * 1.0;
+    for (let row = 0; row < rows; row++) {
+      for (let colI = 0; colI < cols; colI++) {
+        // Heavier jitter than a shingle wants: a perfect stagger of identical outlines read as
+        // a net, and the plate's feathers are neither aligned nor one size.
+        const cx = (colI + (row % 2 ? 0.5 : 0)) * pw + pw / 2 + (r() - 0.5) * pw * 0.55;
+        const cy = row * ph + ph / 2 + (r() - 0.5) * ph * 0.6;
+        const w = fw * (0.8 + 0.45 * r()), h = fh * (0.85 + 0.3 * r());
+        // Narrow tone spread: a dark bird's contour feathers are one colour, and the pattern is
+        // the overlap and the barb streaking, not a patchwork of vane tones (which read as scales).
+        const tone = envelope * (0.93 + 0.14 * r());
+        const rot = (r() - 0.5) * 0.24;
+        const tint = tintPool[Math.floor(r() * tintPool.length)];
+        const tip = cy - h * 0.42, base = cy + h * 0.58;
+        const shape = new Path2D();
+        shape.moveTo(cx, tip);
+        shape.bezierCurveTo(cx + w * 0.55, tip + h * 0.18, cx + w * 0.5, tip + h * 0.45, cx + w * 0.5, base);
+        shape.lineTo(cx - w * 0.5, base);
+        shape.bezierCurveTo(cx - w * 0.5, tip + h * 0.45, cx - w * 0.55, tip + h * 0.18, cx, tip);
+        const shadow = new Path2D();
+        const sh = 3.2;
+        shadow.moveTo(cx, tip - sh);
+        shadow.bezierCurveTo(cx + w * 0.55 + sh, tip + h * 0.18, cx + w * 0.5 + sh, tip + h * 0.45, cx + w * 0.5 + sh, base);
+        shadow.lineTo(cx - w * 0.5 - sh, base);
+        shadow.bezierCurveTo(cx - w * 0.5 - sh, tip + h * 0.45, cx - w * 0.55 - sh, tip + h * 0.18, cx, tip - sh);
+        const rachis = new Path2D();
+        rachis.moveTo(cx, base); rachis.lineTo(cx + (r() - 0.5) * 1.5, tip + h * 0.08);
+        // Barbs run from the rachis out past the vane edge, so the tip is a soft fringe rather
+        // than a cut edge -- a hard outline is what made the first tile read as fish scales.
+        const barbsA = new Path2D(), barbsB = new Path2D();
+        const nb = 11;
+        for (let k = 0; k < nb; k++) {
+          const yy = tip + h * (0.06 + 0.6 * (k / nb));
+          const len = w * 0.5 * (0.75 + 0.45 * r());
+          const tgt = k % 2 ? barbsA : barbsB;
+          tgt.moveTo(cx, yy); tgt.lineTo(cx + len, yy - len * 0.5);
+          tgt.moveTo(cx, yy); tgt.lineTo(cx - len, yy - len * 0.5);
+        }
+        wrapped(() => {
+          ctx.translate(cx, cy); ctx.rotate(rot); ctx.translate(-cx, -cy);
+          ctx.fillStyle = css(envelope * 0.62, WHITE, 0.28); ctx.fill(shadow);
+          ctx.fillStyle = css(tone, tint, 0.9); ctx.fill(shape);
+          ctx.lineWidth = 0.9; ctx.strokeStyle = css(tone * 0.8, tint, 0.5); ctx.stroke(barbsA);
+          ctx.lineWidth = 0.9; ctx.strokeStyle = css(Math.min(1, tone * 1.16), tint, 0.5); ctx.stroke(barbsB);
+          ctx.lineWidth = 1.0; ctx.strokeStyle = css(Math.min(1, tone * 1.18), WHITE, 0.3); ctx.stroke(rachis);
+        }, cx, cy, Math.max(w, h));
+      }
+    }
+    // Fine grain so a flat vane is not flat at the mip level the camera actually sees.
+    const grain = new Path2D();
+    for (let i = 0; i < 2200; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.2; grain.rect(x, y, d, d); }
+    ctx.fillStyle = css(envelope * 0.6, WHITE, 0.12); ctx.fill(grain);
+  }, seed);
+
+  /* Hackle and saddle: long narrow spear-tipped feathers, heavily overlapped, each with a bright
+   * shaft; the surface reads as fine streaking along the neck. Tips point UP (+v). */
+  const hackleTile = (seed: number, envelope: number) => makeTile((ctx, r, wrapped) => {
+    ctx.fillStyle = css(envelope, WHITE, 1); ctx.fillRect(0, 0, S, S);
+    const rows = 26, cols = 42;
+    const ph = S / rows, pw = S / cols;
+    for (let row = 0; row < rows; row++) {
+      for (let colI = 0; colI < cols; colI++) {
+        const cx = (colI + (row % 2 ? 0.5 : 0)) * pw + pw / 2 + (r() - 0.5) * pw * 0.5;
+        const cy = row * ph + ph / 2 + (r() - 0.5) * ph * 0.4;
+        const w = pw * (1.5 + 0.7 * r()), h = ph * (5 + 2.5 * r());
+        const tone = envelope * (0.68 + 0.6 * r());
+        const tip = cy - h * 0.45, base = cy + h * 0.55;
+        const shape = new Path2D();
+        shape.moveTo(cx, tip);
+        shape.quadraticCurveTo(cx + w * 0.5, tip + h * 0.35, cx + w * 0.45, base);
+        shape.lineTo(cx - w * 0.45, base);
+        shape.quadraticCurveTo(cx - w * 0.5, tip + h * 0.35, cx, tip);
+        const edge = new Path2D();
+        edge.moveTo(cx - w * 0.45 - 1.5, base); edge.quadraticCurveTo(cx - w * 0.5 - 1.5, tip + h * 0.35, cx, tip - 2);
+        edge.quadraticCurveTo(cx + w * 0.5 + 1.5, tip + h * 0.35, cx + w * 0.45 + 1.5, base);
+        const shaft = new Path2D();
+        shaft.moveTo(cx, base); shaft.lineTo(cx, tip + h * 0.06);
+        wrapped(() => {
+          ctx.lineWidth = 2.2; ctx.strokeStyle = css(envelope * 0.5, WHITE, 0.5); ctx.stroke(edge);
+          ctx.fillStyle = css(tone, WHITE, 1); ctx.fill(shape);
+          ctx.lineWidth = 1.2; ctx.strokeStyle = css(Math.min(1, tone * 1.55), [1, 0.95, 0.9], 0.75); ctx.stroke(shaft);
+        }, cx, cy, Math.max(w, h));
+      }
+    }
+    const grain = new Path2D();
+    for (let i = 0; i < 1800; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.2; grain.rect(x, y, d, d); }
+    ctx.fillStyle = css(envelope * 0.55, WHITE, 0.12); ctx.fill(grain);
+  }, seed);
+
+  /* The pale tail: grey-cream vanes pencilled with dark peppering, the shafts running along v,
+   * barbs angled off them, and a few broad soft bars across. */
+  const paleTile = (seed: number, envelope: number) => makeTile((ctx, r, wrapped) => {
+    ctx.fillStyle = css(envelope, WHITE, 1); ctx.fillRect(0, 0, S, S);
+    // Soft cloudy drift first.
+    for (let i = 0; i < 26; i++) {
+      const cx = r() * S, cy = r() * S, R = S * (0.05 + 0.1 * r());
+      const t = envelope * (r() < 0.5 ? 0.82 : 1.2);
+      wrapped(() => {
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+        g.addColorStop(0, css(t, WHITE, 0.55)); g.addColorStop(1, css(t, WHITE, 0));
+        ctx.fillStyle = g; ctx.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+      }, cx, cy, R);
+    }
+    // Vanes: each is a strip along v with a shaft down its middle and barbs angled toward +v.
+    const cols = 14, pw = S / cols;
+    for (let colI = 0; colI < cols; colI++) {
+      const cx = colI * pw + pw / 2 + (r() - 0.5) * pw * 0.3;
+      const shaft = new Path2D(); shaft.moveTo(cx, -4); shaft.lineTo(cx + (r() - 0.5) * 6, S + 4);
+      const barbs = new Path2D();
+      for (let y = 0; y < S; y += 2.5 + r() * 1.5) {
+        const len = pw * 0.5 * (0.7 + 0.3 * r());
+        barbs.moveTo(cx, y); barbs.lineTo(cx + len, y - len * 0.7);
+        barbs.moveTo(cx, y); barbs.lineTo(cx - len, y - len * 0.7);
+      }
+      const vaneEdge = new Path2D(); vaneEdge.moveTo(cx + pw * 0.5, -4); vaneEdge.lineTo(cx + pw * 0.5, S + 4);
+      wrapped(() => {
+        ctx.lineWidth = 0.9; ctx.strokeStyle = css(envelope * 0.78, WHITE, 0.4); ctx.stroke(barbs);
+        ctx.lineWidth = 1.4; ctx.strokeStyle = css(envelope * 0.66, WHITE, 0.5); ctx.stroke(vaneEdge);
+        ctx.lineWidth = 1.5; ctx.strokeStyle = css(envelope * 0.56, WHITE, 0.85); ctx.stroke(shaft);
+      }, cx, S / 2, pw);
+    }
+    // Peppering: clustered dark speckles, the plate's "pencilled" look.
+    const pep = new Path2D();
+    for (let c = 0; c < 320; c++) {
+      const cx = r() * S, cy = r() * S, n = 3 + Math.floor(r() * 6), R = S * 0.035;
+      for (let k = 0; k < n; k++) {
+        const x = cx + (r() - 0.5) * R, y = cy + (r() - 0.5) * R, d = 0.8 + r() * 1.3;
+        disc(pep, x, y, d);
+      }
+    }
+    ctx.fillStyle = css(envelope * 0.55, WHITE, 0.5); ctx.fill(pep);
+    const pale = new Path2D();
+    for (let i = 0; i < 700; i++) { const x = r() * S, y = r() * S, d = 1 + r() * 2; pale.rect(x, y, d, d); }
+    ctx.fillStyle = css(1, WHITE, 0.25); ctx.fill(pale);
+  }, seed);
+
+  /* Tarsus scutes: overlapping horn plates in staggered rows, each a rounded rectangle with a
+   * dark groove round it and a lighter crown toward its free (lower) edge. */
+  const scuteTile = (seed: number, envelope: number) => makeTile((ctx, r, wrapped) => {
+    ctx.fillStyle = css(envelope * 0.7, WHITE, 1); ctx.fillRect(0, 0, S, S);
+    const rows = 8, cols = 6;
+    const ph = S / rows, pw = S / cols;
+    for (let row = rows - 1; row >= 0; row--) {
+      for (let colI = 0; colI < cols; colI++) {
+        const cx = (colI + (row % 2 ? 0.5 : 0)) * pw + pw / 2 + (r() - 0.5) * pw * 0.1;
+        const cy = row * ph + ph / 2;
+        const w = pw * (0.92 + 0.1 * r()), h = ph * (1.25 + 0.1 * r());
+        const tone = envelope * (0.94 + 0.12 * r());
+        const p = new Path2D();
+        const x0 = cx - w / 2, y0 = cy - h * 0.6, rr = w * 0.22;
+        p.moveTo(x0 + rr, y0); p.lineTo(x0 + w - rr, y0); p.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + rr);
+        p.lineTo(x0 + w, y0 + h - rr * 1.6); p.quadraticCurveTo(x0 + w, y0 + h, x0 + w - rr * 1.6, y0 + h);
+        p.lineTo(x0 + rr * 1.6, y0 + h); p.quadraticCurveTo(x0, y0 + h, x0, y0 + h - rr * 1.6);
+        p.lineTo(x0, y0 + rr); p.quadraticCurveTo(x0, y0, x0 + rr, y0);
+        wrapped(() => {
+          ctx.lineWidth = 3; ctx.strokeStyle = css(envelope * 0.7, WHITE, 0.6); ctx.stroke(p);
+          ctx.fillStyle = css(tone, WHITE, 1); ctx.fill(p);
+          const g = ctx.createLinearGradient(0, y0, 0, y0 + h);
+          g.addColorStop(0, css(tone * 0.88, WHITE, 0.5)); g.addColorStop(0.7, css(tone, WHITE, 0)); g.addColorStop(1, css(Math.min(1, tone * 1.12), WHITE, 0.4));
+          ctx.fillStyle = g; ctx.fill(p);
+        }, cx, cy, Math.max(w, h));
+      }
+    }
+    const grain = new Path2D();
+    for (let i = 0; i < 1500; i++) { const x = r() * S, y = r() * S, d = 0.8 + r() * 1.6; grain.rect(x, y, d, d); }
+    ctx.fillStyle = css(envelope * 0.6, WHITE, 0.14); ctx.fill(grain);
+  }, seed);
+
+  /* Comb, wattle and head skin: dense papillae -- small soft domes each with a darker pit beside
+   * it -- over a faint wrinkle network. */
+  const skinTile = (seed: number, envelope: number) => makeTile((ctx, r, wrapped) => {
+    ctx.fillStyle = css(envelope, WHITE, 1); ctx.fillRect(0, 0, S, S);
+    for (let i = 0; i < 22; i++) {
+      const cx = r() * S, cy = r() * S, R = S * (0.06 + 0.12 * r());
+      const t = envelope * (r() < 0.5 ? 0.85 : 1.15);
+      wrapped(() => {
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+        g.addColorStop(0, css(t, WHITE, 0.5)); g.addColorStop(1, css(t, WHITE, 0));
+        ctx.fillStyle = g; ctx.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+      }, cx, cy, R);
+    }
+    const wr = new Path2D();
+    for (let i = 0; i < 160; i++) {
+      let x = r() * S, y = r() * S, a = r() * Math.PI * 2;
+      wr.moveTo(x, y);
+      for (let k = 0; k < 6; k++) { a += (r() - 0.5) * 1.4; x += Math.cos(a) * 9; y += Math.sin(a) * 9; wr.lineTo(x, y); }
+    }
+    for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { ctx.save(); ctx.translate(ox, oy); ctx.lineWidth = 1.2; ctx.strokeStyle = css(envelope * 0.7, WHITE, 0.35); ctx.stroke(wr); ctx.restore(); }
+    const dome = new Path2D(), pit = new Path2D();
+    for (let i = 0; i < 1400; i++) {
+      const x = r() * S, y = r() * S, d = 2.2 + r() * 3.4;
+      disc(dome, x, y, d);
+      disc(pit, x + d * 0.9, y + d * 0.9, d * 0.6);
+    }
+    ctx.fillStyle = css(envelope * 0.72, WHITE, 0.5); ctx.fill(pit);
+    ctx.fillStyle = css(Math.min(1, envelope * 1.22), WHITE, 0.55); ctx.fill(dome);
+  }, seed);
+
+  /* The eye. The plate's is a pearl eye -- a pale cream iris with a small dark pupil, ringed by
+   * the red orbit -- and it read as a black bead because the whole sphere was #14100D. The eye
+   * pair is an InstancedMesh whose instances have local +x pointing OUT of the head, and a
+   * SphereGeometry puts +x at u=0.5 on the equator, so the pupil is drawn at the tile centre
+   * with the iris around it; the far hemisphere is inside the skull. Absolute colours, not
+   * ratios: the material colour goes to white. Angular radii: pupil 30 deg, iris to 62 deg. */
+  const eyeTile = makeTile((ctx, r) => {
+    const cx = S / 2, cy = S / 2;
+    const ell = (ax: number, ay: number, fill: string) => {
+      ctx.beginPath(); ctx.ellipse(cx, cy, ax, ay, 0, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill();
+    };
+    ctx.fillStyle = '#7a2e28'; ctx.fillRect(0, 0, S, S);           // orbit rim, mostly buried
+    ell(S * 62 / 360, S * 62 / 180, '#e9dfc9');                 // iris field to 62 deg  (u: deg/360, v: deg/180)
+    ell(S * 50 / 360, S * 50 / 180, '#d9c9a6');                 // a warmer inner iris
+    // Radial iris fibres.
+    ctx.strokeStyle = 'rgba(120,90,50,0.35)'; ctx.lineWidth = 1;
+    for (let k = 0; k < 40; k++) {
+      const a = (k / 40) * Math.PI * 2 + r() * 0.1;
+      ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * S * 31 / 360, cy + Math.sin(a) * S * 31 / 180);
+      ctx.lineTo(cx + Math.cos(a) * S * 60 / 360, cy + Math.sin(a) * S * 60 / 180); ctx.stroke();
+    }
+    ell(S * 30 / 360, S * 30 / 180, '#120e0c');                 // pupil
+    ctx.beginPath(); ctx.ellipse(cx - S * 9 / 360, cy - S * 9 / 180, S * 8 / 360, S * 8 / 180, 0, 0, Math.PI * 2); ctx.fillStyle = '#f6f1e6'; ctx.fill();                 // catchlight, offset a touch
+  }, 8270905);
+  const eyes = root.getObjectByName('eyes') as THREE.InstancedMesh | undefined;
+  if (eyes && eyeTile) {
+    const em = eyes.material as THREE.MeshPhysicalMaterial;
+    const tex = new THREE.CanvasTexture(eyeTile);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    em.color.set('#ffffff'); em.map = tex; em.roughness = 0.28; em.needsUpdate = true;
+  }
+
+  /* ----- Bind. The material colour is re-based by the tile's measured mean so the mean rendered
+   * albedo is the measured one; the tile is sRGB display-space ratios, and dividing the sRGB
+   * colour by the sRGB mean is the same as dividing linear by linear. */
+  const bind = (
+    mat: THREE.MeshPhysicalMaterial | undefined, cv: HTMLCanvasElement | null, bumpScale: number,
+    extra: { roughness?: number; sheen?: number; sheenColor?: string; sheenRoughness?: number; vertexColors?: boolean; color?: string } = {},
+  ) => {
+    if (!mat) return;
+    if (extra.color) mat.color.set(extra.color);
+    if (extra.roughness !== undefined) mat.roughness = extra.roughness;
+    if (extra.sheen !== undefined) { mat.sheen = extra.sheen; mat.sheenColor = new THREE.Color(extra.sheenColor ?? '#ffffff'); mat.sheenRoughness = extra.sheenRoughness ?? 0.6; }
+    if (extra.vertexColors) mat.vertexColors = true;
+    if (cv) {
+      // The mean is read off a 32 px downscale on a CPU-backed canvas. getImageData on the
+      // 512 px tile itself reads back through the (software) GPU and cost 2.2 s for five tiles.
+      let mean = 1;
+      const small = document.createElement('canvas');
+      small.width = small.height = 32;
+      const sctx = small.getContext('2d', { willReadFrequently: true });
+      if (sctx) {
+        sctx.drawImage(cv, 0, 0, 32, 32);
+        const d = sctx.getImageData(0, 0, 32, 32).data;
+        let sum = 0;
+        for (let i = 0; i < d.length; i += 4) sum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        mean = Math.max(0.2, sum / (d.length / 4) / 255);
+      }
+      const c = mat.color.clone();
+      const srgb = { r: 0, g: 0, b: 0 };
+      c.getRGB(srgb, THREE.SRGBColorSpace);
+      mat.color.setRGB(Math.min(1, srgb.r / mean), Math.min(1, srgb.g / mean), Math.min(1, srgb.b / mean), THREE.SRGBColorSpace);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = options.textureAnisotropy ?? 4;
+      mat.map = tex;
+      mat.bumpMap = tex;
+      mat.bumpScale = bumpScale;
+      mat.userData.plumageTile = { mean, bumpScale };
+    }
+    mat.needsUpdate = true;
+  };
+  const matOf = (id: string) => meshes[id]?.material as THREE.MeshPhysicalMaterial | undefined;
+
+  // Per-feather tints for the dark plumage: mostly neutral, some teal (the coverts' sheen) and
+  // some warm-brown (the mantle), so the tile itself is not one flat colour of feather.
+  const darkTints = [WHITE, WHITE, WHITE, WHITE, [0.96, 1.03, 1.01], [1.04, 0.98, 0.95]];
+  // The satin roughness measured on the plate holds for a single vane; a shingled field of them
+  // scatters, so each feathered material goes a step rougher and gains a sheen lobe, which is
+  // what MeshPhysicalMaterial has for fibrous surfaces. Feathers are the case it was made for.
+  const plumage = plumageTile(20260827, 0.66, darkTints); lap('tile-plumage');
+  const hackle = hackleTile(8270901, 0.64); lap('tile-hackle');
+  const pale = paleTile(8270902, 0.66); lap('tile-pale');
+  const scute = scuteTile(8270903, 0.7); lap('tile-scute');
+  const skin = skinTile(8270904, 0.68); lap('tile-skin');
+  // Sheen is kept LOW: at 0.55 the teal lobe turned the whole body green in the first render.
+  // The plate's teal is a glint on the coverts, not the colour of the bird.
+  bind(matOf('body-shell'), plumage, 0.0045,
+    { roughness: 0.62, sheen: 0.18, sheenColor: '#2f6a5c', sheenRoughness: 0.6, vertexColors: true });
+  bind(matOf('hackle-cape'), hackle, 0.0035, { roughness: 0.58, sheen: 0.28, sheenColor: '#8a3126', sheenRoughness: 0.55 });
+  bind(matOf('tail-fan'), pale, 0.004, { roughness: 0.74, sheen: 0.15, sheenColor: '#d9cbb6', sheenRoughness: 0.7 });
+  // Tarsus: the plate's scute crop is olive-yellow (rgb 145/131/105); the shipped #A69F8B kept
+  // the material-pass lift for the hole gate but had drifted grey. Same luma, plate hue.
+  bind(matOf('leg-l'), scute, 0.0022, { roughness: 0.55, color: '#A69678' });
+  bind(headMat, skin, 0.0016, { roughness: 0.58 });
+  lap('bind');
+  root.userData.plumageTimings = timings;
+}
+
 export function createObjectModel(
   spec?: unknown,
   options: ProceduralModelOptions = {},
 ): THREE.Group {
   const root = createFightingCockModel(options);
+  applyFightingCockPlumage(root, options);
   if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
 
   const rt = root.userData.sculptRuntime as Record<string, any> | undefined;

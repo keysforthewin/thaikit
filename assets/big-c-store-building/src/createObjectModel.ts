@@ -359,7 +359,14 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
       slats.push(boxAt(-3.9 - thickness / 2, y, 1.35, thickness, SLAT_H * 0.92, 1.5));
     }
     slats.push(boxAt(-3.935, 2.485, 1.35, 0.11, 0.27, 1.6)); // head box
-    addComponent('roller-shutter', 'Roller shutter and head box', mergeGeos(slats), 'galv-plant');
+    const shutter = mergeGeos(slats);
+    {
+      // Shares galv-plant with the condensers, whose atlas is assigned to the material after
+      // construction: every slat samples the plain quadrant, never the louvre or grille.
+      const uv = shutter.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 0.5, 0.5 + uv.getY(i) * 0.5);
+    }
+    addComponent('roller-shutter', 'Roller shutter and head box', shutter, 'galv-plant');
   }
 
   /* -- R1. parapet cap course + corner quoins ---------------------------------------------
@@ -401,27 +408,38 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
     addInstanced('parapet-cap-blocks', 'Parapet cap blocks and quoins', new THREE.BoxGeometry(1, 1, 1), 'parapet-block', mats, cols);
   }
 
-  /* -- R2. entrance canopy plates, with the downlight merged in ---------------------------
-   * ONE downlight is merged into the plate geometry itself, so six plates give six downlights
-   * for ZERO extra draw calls; as its own repetition system it would have cost one. Count and
-   * spacing are INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle.
-   * Plate top at 2.74: the plate puts the canopy at 50..59 % of the front height and the
-   * reference proxy's depth peak sits in the same band (bands.mjs: 1.375..1.411 at bands 5-6),
-   * so the first build's 3.44 was a metre too high and left no room for the lightbox.
-   * Six 1.04 m plates at 1.06 m pitch span -3.18..3.18, clear of the piers at |x| >= 3.22.
-   * The canopy nose at z=3.50 IS the declared front of the envelope: the shell front face was
-   * set back to z=2.50 precisely so this 1.00 m cantilever lands on the declared 7.0 m depth
-   * instead of overrunning it. */
+  /* -- R2. entrance canopy: six slab panels, one instanced geometry --------------------
+   * Rebuilt against the plate crop (2026-08-27). The plate's canopy is ONE thin slab, not six
+   * chunky blocks: a ~0.10 m plate with a shallow nose lip on its front edge, divided into
+   * panels by narrow joints, with a round recessed fitting showing on the TOP of every panel
+   * (the discs are on the upper face in the plate, seen from its high camera). It runs from
+   * the LEFT pier's inner edge (x -3.20) across the whole front and ON PAST the right pier,
+   * ending just short of the building's +X face (3.98, not 4.00: an end face at exactly 4.000
+   * would be coplanar and co-facing with the parapet's +X face). So six 1.17 m panels on a
+   * 1.20 m pitch with 0.03 m joints, -3.20..3.98.
+   *
+   * Vertical placement is unchanged from the plate column scan: slab y 2.64..2.74 with the lip
+   * to 2.60, top overlapping the right pier's lowest block (2.72) by 0.02 m so the two are a
+   * solid overlap rather than a shared plane. The nose at z=3.50 IS the declared front of the
+   * envelope; the slab face is set 0.01 m behind the lip so the two +Z faces never coincide.
+   * Per-instance tone alternates through instanceColor -- the plate's panels read as pale and
+   * warm-grey by turns -- and, since setColorAt MULTIPLIES material.color, the tones are ratios
+   * about 1.0 rather than absolute albedos. One geometry, one draw call, as before. */
   {
-    const plate = mergeGeos([
-      boxAt(0, 0, 0, 1.04, 0.14, 1.1),
-      cylAt(0, -0.085, 0.0, 0.085, 0.03, 12),
+    const panel = mergeGeos([
+      boxAt(0, 2.69, 2.945, 1.17, 0.10, 1.09), // slab, y 2.64..2.74, z 2.40..3.49
+      boxAt(0, 2.63, 3.45, 1.17, 0.06, 0.10), // nose lip, y 2.60..2.66, z 3.40..3.50
+      cylAt(0, 2.745, 2.95, 0.10, 0.02, 16), // top fitting ring, proud 0.015 m of the slab
+      cylAt(0, 2.635, 2.95, 0.075, 0.03, 12), // soffit downlight, sunk into the slab bottom
     ]);
     const mats: THREE.Matrix4[] = [];
+    const cols: number[] = [];
+    const TONES = [0xffffff, 0xeeece8, 0xf7f6f3, 0xe9e7e3, 0xffffff, 0xf2f0ec];
     for (let i = 0; i < 6; i++) {
-      mats.push(new THREE.Matrix4().setPosition(-3.18 + 1.06 * (i + 0.5), 2.67, 2.95));
+      mats.push(new THREE.Matrix4().setPosition(-3.2 + 1.2 * (i + 0.5), 0, 0));
+      cols.push(TONES[i]);
     }
-    addInstanced('canopy-plates', 'Entrance canopy plates', plate, 'aluminium', mats);
+    addInstanced('canopy-plates', 'Entrance canopy plates', panel, 'aluminium', mats, cols);
   }
 
   /* -- R3. shopfront mullions --------------------------------------------------------------
@@ -443,34 +461,61 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
   }
 
   /* -- R4. rooftop condenser units ---------------------------------------------------------
-   * Casing, circular fan cowl and four feet MERGED into a single instanced geometry: four
-   * units, one geometry, one draw call. The plate shows two visually similar unit types;
-   * collapsing them to one costs a little fidelity and saves a whole draw call, and is
-   * reported as a deliberate simplification. Alternating yaw gives the cluster variety without
-   * a second geometry. Feet start at y=3.60, sunk 0.02 m INTO the roof deck (top 3.62), so the
-   * two overlap rather than sharing a plane. */
+   * Rebuilt against the plate crop (2026-08-27). Each unit in the plate is a pale galvanised
+   * cabinet about 1.05 x 0.74 x 0.90 m standing on a welded angle-steel STAND ~0.22 m tall,
+   * with a dark circular fan grille let into a raised rim on the top and a dark louvred intake
+   * panel on one long side; rust bleeds down the panel seams. The first build was a bare box
+   * with a cylinder on it and no stand, which is what read as wrong.
+   *
+   * Still ONE geometry and ONE draw call for all four: casing, rim, stand rails and legs are
+   * merged, and the grille, louvres and rust are carried by a 512 px canvas ATLAS assigned to
+   * the shared galv-plant material after construction (applyPlantAtlas). The casing's six
+   * faces get authored UVs into atlas quadrants -- top: fan grille; +-X: louvres; +-Z: panel
+   * with rust; bottom: plain -- and every other part on the material, including the roller
+   * shutter's slats, samples the plain quadrant. Louvres and grille are painted at a luma
+   * well above the backdrop's 58 (louvre field #7d8287, slats #7d838a with #c4c9cd edges, measured to render at a minimum of ~64 side-lit against the backdrop's 58; grille field #62676c) so
+   * the turntable gate cannot read a dark side panel as a hole.
+   *
+   * Placement follows the plate: one pair hard against the -X parapet near the front, one
+   * pair on the +X side towards the rear, each pair staggered. All four face the same way (the
+   * louvred side towards -X) as the plate shows. Legs start at y=3.60, sunk 0.02 m into the
+   * deck (top 3.62); legs stop inside the rails and the cross rails sit 5 mm lower than the
+   * long rails so no two merged parts share a co-facing plane. */
   {
-    const parts: THREE.BufferGeometry[] = [
-      boxAt(0, 0.46, 0, 0.95, 0.72, 0.85), // casing
-      cylAt(0, 0.87, 0, 0.3, 0.1, 16), // fan cowl
-    ];
-    for (const fx of [-0.4, 0.4]) {
-      for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.1, 0.08));
+    // H 0.74 on a 0.20 m stand: the rim then tops out at 4.59, inside the declared 4.60 m envelope.
+    const W = 1.05, H = 0.74, D = 0.90;
+    const casing = new THREE.BoxGeometry(W, H, D);
+    {
+      // BoxGeometry face order: +X, -X, +Y, -Y, +Z, -Z; four vertices each, UVs 0..1 per face.
+      // Atlas quadrants (u, v origin): plain (0, 0.5), louvre (0.5, 0.5), grille (0, 0), rust (0.5, 0).
+      const Q: [number, number][] = [[0.5, 0.5], [0.5, 0.5], [0, 0], [0, 0.5], [0.5, 0], [0.5, 0]];
+      const uv = casing.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) {
+        const [ou, ov] = Q[Math.floor(i / 4)];
+        uv.setXY(i, ou + uv.getX(i) * 0.5, ov + uv.getY(i) * 0.5);
+      }
+      casing.translate(0, 0.215 + H / 2, 0);
     }
+    const parts: THREE.BufferGeometry[] = [casing];
+    const plain = (g: THREE.BufferGeometry) => {
+      const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, 0.05 + uv.getX(i) * 0.02, 0.9 + uv.getY(i) * 0.02);
+      return g;
+    };
+    // fan rim: a thin open ring standing 0.03 m proud of the lid around the painted grille
+    parts.push(plain(new THREE.CylinderGeometry(0.31, 0.31, 0.03, 20, 1, true).translate(0, 0.215 + H + 0.012, 0)));
+    // stand: four legs, two long rails (x), two cross rails (z)
+    for (const lx of [-0.5, 0.5]) for (const lz of [-0.4, 0.4]) parts.push(plain(boxAt(lx, 0.085, lz, 0.05, 0.17, 0.05)));
+    for (const lz of [-0.4, 0.4]) parts.push(plain(boxAt(0, 0.195, lz, W + 0.06, 0.05, 0.05)));
+    for (const lx of [-0.5, 0.5]) parts.push(plain(boxAt(lx, 0.19, 0, 0.05, 0.05, 0.8)));
     const unit = mergeGeos(parts);
-    const placements: [number, number, number, number][] = [
-      [-2.5, 3.6, -0.6, 0],
-      [-1.6, 3.6, -1.3, Math.PI / 2],
-      [0.9, 3.6, -0.5, 0],
-      [1.8, 3.6, -1.2, Math.PI / 2],
+    const placements: [number, number, number][] = [
+      [-3.0, 3.6, 1.0],
+      [-2.05, 3.6, 0.15],
+      [2.35, 3.6, -1.5],
+      [3.2, 3.6, -2.4],
     ];
-    const mats = placements.map(([x, y, z, yaw]) =>
-      new THREE.Matrix4().compose(
-        new THREE.Vector3(x, y, z),
-        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
-        new THREE.Vector3(1, 1, 1),
-      ),
-    );
+    const mats = placements.map(([x, y, z]) => new THREE.Matrix4().setPosition(x, y, z));
     addInstanced('plant-condensers', 'Rooftop condenser units', unit, 'galv-plant', mats);
   }
 
@@ -592,6 +637,89 @@ function applyFasciaGraphic(root: THREE.Group): void {
   material.needsUpdate = true;
 }
 
+
+/* ------------------------------------------------------------------ plant atlas */
+
+/**
+ * A 512 px canvas atlas for the galv-plant material, drawn once after construction (so the
+ * material stays `textureless` in the spec and pays none of createSculptMaterial's five-canvas
+ * synthesis): plain galvanised sheet top-left, the louvred intake top-right, the fan grille
+ * bottom-left and a rust-streaked panel bottom-right. Painted at the albedo the plate measures
+ * for the units (pale galvanised ~#9fa4a8), with the material's colour then set to white
+ * because a map MULTIPLIES colour. A few hundred rectangle fills: under 10 ms.
+ */
+function drawPlantAtlas(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
+  const S = 512, Q = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = S; canvas.height = S;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  let seed = 7;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  const galv = (x: number, y: number) => {
+    ctx.fillStyle = '#9fa4a8'; ctx.fillRect(x, y, Q, Q);
+    for (let i = 0; i < 90; i++) {
+      const w = 12 + rnd() * 40, h = 8 + rnd() * 30;
+      ctx.fillStyle = rnd() < 0.5 ? 'rgba(255,255,255,0.10)' : 'rgba(60,66,72,0.10)';
+      ctx.fillRect(x + rnd() * (Q - w), y + rnd() * (Q - h), w, h);
+    }
+  };
+  const rust = (x: number, y: number, n: number) => {
+    for (let i = 0; i < n; i++) {
+      const rx = x + 6 + rnd() * (Q - 12), ry = y + Q * (0.45 + rnd() * 0.5), len = 10 + rnd() * 50;
+      ctx.fillStyle = `rgba(150,82,40,${0.22 + rnd() * 0.3})`;
+      ctx.fillRect(rx, ry - len, 2 + rnd() * 3, len);
+      ctx.fillStyle = 'rgba(120,60,28,0.35)';
+      ctx.fillRect(rx - 2, ry - 3, 6 + rnd() * 5, 3);
+    }
+  };
+  // plain (top-left in canvas space is v 0.5..1): canvas y runs down, so quadrant v 0.5..1 is y 0..256
+  galv(0, 0);
+  ctx.fillStyle = 'rgba(70,75,80,0.35)'; ctx.fillRect(0, 0, Q, 2); ctx.fillRect(0, Q - 2, Q, 2);
+  // louvre panel (u 0.5..1, v 0.5..1): frame border, then dark slats with a lit top edge each
+  galv(Q, 0);
+  // Lifted twice for the turntable gate: at #4a4f54/#3c4146 the +X louvre, lit only by fill at the
+  // 90 degree frame, rendered below the backdrop's luma 58 and was flagged as a hole (8,060 px).
+  // Measured: the harness renders a side-lit +X face at ~0.56 of the painted value (painted luma 93
+  // came back at 52), so the darkest slat line is painted at luma ~131; at ~121 the 90-degree frame still bottomed out at exactly 58.
+  ctx.fillStyle = '#7d8287'; ctx.fillRect(Q + 14, 18, Q - 28, Q - 36);
+  for (let y = 22; y < Q - 20; y += 7) {
+    ctx.fillStyle = '#c4c9cd'; ctx.fillRect(Q + 14, y, Q - 28, 2);
+    ctx.fillStyle = '#7d838a'; ctx.fillRect(Q + 14, y + 2, Q - 28, 2);
+  }
+  rust(Q, 0, 6);
+  // fan grille (u 0..0.5, v 0..0.5 -> canvas y 256..512): lid, raised square rim, dark disc with rings and a hub
+  galv(0, Q);
+  ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(30, Q + 30, Q - 60, Q - 60);
+  ctx.fillStyle = '#62676c'; ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, 78, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#979ca0'; ctx.lineWidth = 1.5;
+  for (let r = 12; r < 78; r += 9) { ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, r, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.fillStyle = '#7d8286'; ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, 12, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#b5babe'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(Q / 2, Q + Q / 2, 80, 0, Math.PI * 2); ctx.stroke();
+  // rust-streaked panel (u 0.5..1, v 0..0.5): a seam line and streaks bleeding down from it
+  galv(Q, Q);
+  ctx.fillStyle = 'rgba(70,75,80,0.4)'; ctx.fillRect(Q, Q + 60, Q, 2); ctx.fillRect(Q + Q / 2 - 1, Q, 2, Q);
+  rust(Q, Q, 14);
+  return canvas;
+}
+
+function applyPlantAtlas(root: THREE.Group): void {
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const mesh = rt?.meshes?.['plant-condensers'];
+  if (!mesh) return;
+  const material = mesh.material as THREE.MeshStandardMaterial;
+  const canvas = drawPlantAtlas();
+  if (!material || !canvas) return;
+  const tex = new THREE.CanvasTexture(canvas);
+  const srgb = (THREE as any).SRGBColorSpace;
+  if (srgb) tex.colorSpace = srgb;
+  tex.anisotropy = 4;
+  material.map = tex;
+  material.color.setHex(0xffffff); // the atlas carries the measured albedo
+  material.needsUpdate = true;
+}
+
 /* ------------------------------------------------------------------ thaikit entry point */
 
 /**
@@ -605,6 +733,7 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
 
   applyFasciaGraphic(root);
+  applyPlantAtlas(root);
 
   const rt = root.userData.sculptRuntime as Record<string, any> | undefined;
   if (rt) {

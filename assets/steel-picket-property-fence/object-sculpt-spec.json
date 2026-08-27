@@ -1,0 +1,1969 @@
+{
+  "targetName": "Steel Picket Property Fence",
+  "targetId": "steel-picket-property-fence",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "fence-panel-picket-on-wall",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "low-rendered-wall",
+        "rendered-piers-with-pyramid-caps",
+        "spear-point-pickets",
+        "two-rail-panel"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "instanced-pickets",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-fence-panel"
+      ],
+      "materialFamilies": [
+        "cream-cement-render",
+        "dark-green-enamelled-steel",
+        "rust"
+      ],
+      "notes": "Static fence panel that tiles post to post. Both faces are seen and nothing is hollow, but nothing opens, turns or swings, so every part is fixed and one root pivot and zero sockets is the correct contract. A level builder places these in runs of dozens, so the draw-call ceiling is the design constraint. ONE POST PER TILE: the post sits on the -X end and the bay runs to the +X edge, so tiles chain post-bay-post-bay along X with no doubled post at a joint. The middle-class house and shophouse fence and the wall of most Bangkok schools. Cream render with rain streaks and black mildew at the base, dark green enamel chipped to rust at the rails, a cracked pier cap."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "A 0.60 m rendered wall from ONE 0.28 m rendered pier with a plinth-and-pyramid cap to the +X edge, and fourteen square steel pickets with spear finials on two rails across the bay (proxy: wall full width to 0.33 H, rails at 0.33 and 0.80 H, tips at 0.92 H, pickets at a 5-column 0.19 m pitch, piers 9 columns with caps 11 wide).",
+        "Two materials: the cream render with a mildew canvas, and a white vertex-coloured steel carrying the dark green as a vertex colour with a rust canvas. A colour difference is not a material difference.",
+        "One repetition system: the fourteen pickets as one InstancedMesh.",
+        "Action readiness: one root pivot, zero sockets, one box collider on the masonry root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the rhythm of spear pickets over a stained cream wall between capped piers; the pickets have to be geometry with real finials, the staining is canvas."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-pickets",
+          "zone": "panel",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "fourteen square pickets with spear finials and collars",
+          "mapsTo": {
+            "ref": "pickets"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-rails",
+          "zone": "panel",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "two horizontal rails from the pier to the tile edge",
+          "mapsTo": {
+            "ref": "rails"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-wall",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "low rendered wall from the pier to the tile edge",
+          "mapsTo": {
+            "ref": "masonry"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-caps",
+          "zone": "piers",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "plinth-and-pyramid pier cap",
+          "mapsTo": {
+            "ref": "masonry"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-mildew",
+          "zone": "base",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "black mildew and rain streaks at the base",
+          "mapsTo": {
+            "ref": "d5-mildew"
+          },
+          "onMaterial": "render",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-rust",
+          "zone": "panel",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "enamel chipped to rust at the rails",
+          "mapsTo": {
+            "ref": "rails"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+    "resolvedUnknowns": [
+      "The back face mirrors the front; the mildew canvas is height-keyed so it lands at the base on both faces.",
+      "The proxy carries two piers; the tile carries one by design so tiles chain, and the band table's right-hand residual is that difference. Fourteen pickets fill the 2.68 m bay at the proxy's 0.19 m pitch; the cracked cap is not modelled as a crack.",
+      "Cap overhang 0.32 m against the declared 0.30 m depth; the proxy reads 0.38 m, so the residual is the declared aspect."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 3.00 x 1.80 x 0.30 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 2,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 3.00 x 1.80 m",
+          "Wall to 0.33 H, rails at 0.33 and 0.80 H, tips at 0.92 H"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "pickets to the ground",
+          "no pier"
+        ]
+      },
+      {
+        "id": "pickets",
+        "name": "Picket panel",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Fourteen pickets with spear points",
+          "Two rails"
+        ],
+        "evidenceRefs": [
+          "region-picket"
+        ],
+        "failureModes": [
+          "a flat green panel"
+        ]
+      },
+      {
+        "id": "render-weathering",
+        "name": "Render and mildew",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Cream render",
+          "Mildew at the base"
+        ],
+        "evidenceRefs": [
+          "region-render",
+          "region-mildew"
+        ],
+        "failureModes": [
+          "clean white"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "masonry",
+        "pickets"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "pickets",
+      "name": "Picket panel",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "pickets",
+        "rails"
+      ],
+      "evidenceRefs": [
+        "region-picket"
+      ]
+    },
+    {
+      "id": "render-weathering",
+      "name": "Render and mildew",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "masonry"
+      ],
+      "evidenceRefs": [
+        "region-render",
+        "region-mildew"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 4,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "masonry",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static fence geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "masonry",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: one proxy over the whole panel envelope, which is what a run of fence collides as."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The back face mirrors the front; the mildew canvas is height-keyed so it lands at the base on both faces.",
+    "The proxy carries two piers; the tile carries one by design so tiles chain, and the band table's right-hand residual is that difference. Fourteen pickets fill the 2.68 m bay at the proxy's 0.19 m pitch; the cracked cap is not modelled as a crack.",
+    "Cap overhang 0.32 m against the declared 0.30 m depth; the proxy reads 0.38 m, so the residual is the declared aspect."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows), +X along the run. The panel tiles post to post along X. "
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 3.0,
+      "h": 1.8,
+      "d": 0.3
+    },
+    "description": "Wall 2.72 x 0.60 x 0.20 m from the pier to 0.02 m past the tile edge; one pier 0.28 m square to 1.66 m at x -1.34 with a 0.32 m cap and a 0.10 m pyramid to 1.80 m; rails 35 mm at 0.70 and 1.44 m; fourteen 22 mm pickets from 0.62 m to spear tips at 1.66 m at a 0.191 m pitch.",
+    "envelopeDerivation": "x spans -1.50 at the one pier cap (pier 0.28 m square centred at -1.34) to +1.52 where the wall and rails run 0.02 m past the tile edge into the next tile's pier; y 0.00 to 1.80 at the cap apex; z -0.16..+0.16 at the caps, the wall at +-0.10. The proxy normalises to w/h 1.627 against the declared 1.667 and d/h 0.213 (0.38 m at the caps, over the declared 0.30 -- the caps are built at 0.32).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w/h 1.627, d/h 0.213. Its front depth map (scratch/steel-picket-property-fence/_ev/front.png) shows the wall to 0.33 H, two rails at 0.33 and 0.80 H and spear tips at 0.92 H; the band table against the built model reads mean |delta width| 0.044 and |delta depth| 0.020 of height."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-render",
+      "viewpoint": "front",
+      "path": "crops/pier.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-cap",
+      "viewpoint": "top",
+      "path": "crops/cap.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-picket",
+      "viewpoint": "front",
+      "path": "crops/picket.png",
+      "confidence": 0.827
+    },
+    {
+      "id": "region-mildew",
+      "viewpoint": "front",
+      "path": "crops/mildew.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.85,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: the fence is symmetric front to back; the pickets sit 2 cm behind the rail axis on both faces."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "masonry",
+      "name": "Rendered wall and pier",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Wall, one pier shaft, one cap plinth and one pyramid: one merge, one draw call.",
+      "materialId": "render",
+      "material": "render",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Wall 2.72 x 0.60 x 0.20 m, 2 cm into the pier and 2 cm past the tile edge; pier 0.28 m square to 1.66 m at x -1.34; plinth 0.32 x 0.04 m; pyramid 0.30 m base, 0.10 m high.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Wall faces at z +-0.10 against pier faces at +-0.14; wall ends inside the pier solids; plinths sit on the shafts as opposed butts and overhang on every side.",
+        "mergeNote": "One merged BufferGeometry with panel UVs at 1.8 m per tile."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-wall",
+          "description": "wall",
+          "delivery": "box"
+        },
+        {
+          "id": "d4-caps",
+          "description": "caps",
+          "delivery": "plinth box and spike()"
+        },
+        {
+          "id": "d5-mildew",
+          "description": "mildew",
+          "delivery": "grime canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "render",
+        "baseColor": "#cfc6b0",
+        "recipe": "Cream render as vertex white under the mildew canvas.",
+        "evidenceRef": "region-render",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(207, 198, 176, 1.0)",
+        "secondaryAlbedo": "rgba(207, 198, 176, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC fence panel: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.9,
+            0
+          ],
+          "halfExtents": [
+            1.5,
+            0.9,
+            0.15
+          ],
+          "notes": "Declared on the asset as box: one proxy over the whole panel envelope, which is what a run of fence collides as."
+        }
+      }
+    },
+    {
+      "id": "rails",
+      "name": "Rails",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two rails into the piers: one merge.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": "masonry",
+      "geometryDescriptor": {
+        "topologyIntent": "35 mm square, 2.72 m long, 2 cm into the pier and 2 cm past the tile edge, at 0.70 and 1.44 m, 12 mm forward of the picket axis.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Rail ends are inside the pier solids; pickets pass 2 cm behind the rail axis so rail and picket faces overlap as solids, never as coplanar faces.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-rails",
+          "description": "rails",
+          "delivery": "tinted boxes"
+        },
+        {
+          "id": "d6-rust",
+          "description": "rust",
+          "delivery": "rust canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#4a5a4e",
+        "recipe": "Dark green vertex colour on white steel with rust canvas.",
+        "evidenceRef": "region-picket",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(74, 90, 78, 1.0)",
+        "secondaryAlbedo": "rgba(74, 90, 78, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "pickets",
+      "name": "Spear-point pickets",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One picket (shaft, collar, spear) as an InstancedMesh with fourteen instances.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": "rails",
+      "geometryDescriptor": {
+        "topologyIntent": "22 mm shaft from 0.62 to 1.56 m, 34 mm collar, 44 mm spear to 1.66 m; pitch 0.191 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Closed solids; the spear base sits on the collar top as an opposed butt.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-pickets",
+          "description": "pickets",
+          "delivery": "repetitionSystems.pickets"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#4a5a4e",
+        "recipe": "Dark green vertex colour.",
+        "evidenceRef": "region-picket",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(74, 90, 78, 1.0)",
+        "secondaryAlbedo": "rgba(74, 90, 78, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "render",
+      "name": "Cream cement render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cfc6b0",
+      "color": "#cfc6b0",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/render_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cfc6b0",
+        "secondary": [
+          "#cfc6b0",
+          "#d3cbb8",
+          "#9e9888"
+        ],
+        "samplingNotes": "Measured as the mean of crops/pier.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-mildew",
+          "region": "bottom 0.5 m of the wall and piers",
+          "roughness": 0.95,
+          "palette": [
+            "#CFC6B0",
+            "#3A3A36"
+          ],
+          "evidence": "Black mildew and rain streaks at the base in the plate (region-mildew); a 0.75 wash over the bottom 0.30 of a 1.8 m tile with streaks from above."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-render (pier, PBR confidence 0.831) at #cdc4ae and region-cap (0.860) at #d3cbb8; mildew on region-mildew (0.860) at #9e9888 delivered as a 0.32 grey wash in the grime canvas.",
+          "Textureless as DECLARED: one 512 px grime canvas after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pier.png",
+        "pbrReport": "material-evidence/render.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Dark green enamelled steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4a5a4e",
+      "color": "#4a5a4e",
+      "roughness": {
+        "base": 0.5,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.2,
+      "albedo": {
+        "dominant": "#4a5a4e",
+        "secondary": [
+          "#4a5a4e",
+          "#6a5a48",
+          "#2e3a32"
+        ],
+        "samplingNotes": "Measured as the mean of crops/picket.png. extract_pbr_evidence confidence 0.827. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-picket (0.827) at #435147, luma 76; carried at #4a5a4e as a vertex colour on a WHITE material with a rust canvas.",
+          "Textureless as DECLARED: a 256 px rust canvas after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/picket.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.827,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "pickets",
+      "name": "Spear-point pickets",
+      "instanceCount": 14,
+      "sourceComponent": "pickets",
+      "material": "steel",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "picket-with-spear",
+      "placement": {
+        "mode": "linear",
+        "note": "x from -1.08 to +1.40 at a 0.191 m pitch, z -0.02."
+      },
+      "instanceDimensions": {
+        "width": 0.044,
+        "height": 1.04,
+        "depth": 0.044
+      },
+      "rationale": "Fourteen identical pickets at one geometry and one draw call.",
+      "zFightingNote": "Instances are 0.14 m apart on a 0.044 m envelope."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T09:08:40.764381+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:40.846517+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:40.926625+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "pickets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.008417+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.089833+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.171215+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.256675+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.345825+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        },
+        {
+          "id": "pickets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
+          "notes": ""
+        },
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T09:08:40.764381+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:40.846517+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: wall, one pier and cap, rails and pickets at the proxy stations.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:40.926625+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "pickets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: spear points with collars, a pyramid cap on its plinth.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.008417+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.827-0.860, both textureless with measured albedo.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.089833+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: mildew canvas on the render, rust canvas on the steel.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.171215+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.256675+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the masonry root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T09:08:41.345825+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.88,
+        "materialSurface": 0.8,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": ""
+        },
+        {
+          "id": "pickets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
+          "notes": ""
+        },
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.8,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
+          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 516/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two canvases at 1.7 MB.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 1,
+        "projectedTotal": 4,
+        "budget": 4,
+        "headroom": 0,
+        "note": "Two components and one repetition system: 3 of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "render and steel: 2 of 3."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 4,
+        "budget": 6,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 516,
+        "budget": 4000,
+        "headroom": 3484,
+        "note": "516 of 4,000: boxes, two spikes and fourteen instances of one picket."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Tinted boxes for the masonry and rails, four-sided cones for the pier caps and spear points, one InstancedMesh for the pickets."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh carries the fourteen pickets."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Two canvases after construction (512 and 256 px), 1.7 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "cap-depth",
+      "severity": "low",
+      "description": "Caps at 0.32 m against the declared 0.30 m depth.",
+      "mitigation": "Proxy reads 0.38 m; reported as the declared aspect."
+    },
+    {
+      "id": "open-panel-turntable",
+      "severity": "low",
+      "description": "Daylight between the pickets is enclosed by the silhouette.",
+      "mitigation": "Real open air; the gate is run with the _holecc thickness logged."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Steel Picket Property Fence",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-anisotropy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[6]",
+        "score": 2.761412737115,
+        "snippets": [
+          "... highlights (not round) that stay aligned with visible brush/groove marks as the view angle changes; Common on brushed steel/titanium knife finishes and gunsmith metal bases Dấu hiệu nhận diện: Điểm sáng kéo dài, có vệt (không tròn) luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-metalness",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[0]",
+        "score": 2.582280899206,
+        "snippets": [
+          "Binary or scalar property defining whether a surface is dielectric (0.0) or conductive metal (1.0); intermediate values blend the two. Thuộc tính nhị phân hoặc vô hướng xác định bề mặt là điện môi (0.0) hay kim loại dẫn điện (1.0); giá trị trung ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[0]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-controlled-vocabulary-aat-facets",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[5]",
+        "score": 2.5410713068,
+        "snippets": [
+          "... không nhất quán. Recognition cues: Material/attribute terms should be drawn from a fixed enumerated list (e.g. 'brushed steel', 'anodized aluminum') rather than free-form phrasing that varies between descriptions of the same material Dấu ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4858,
+        "aspectRatioDelta": 0.0525,
+        "scaleDelta": 0.264,
+        "bilateralSymmetryError": 0.3244,
+        "colorDelta": {
+          "checked": 3,
+          "maxDeltaE": 11.27,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.08
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.486 is below threshold 0.85",
+        "aspect-ratio delta 0.052 exceeds threshold 0.05",
+        "scale delta 0.264 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f48dadff5d88fa98",
+      "passId": "blockout"
+    }
+  ]
+}

@@ -1,0 +1,2416 @@
+{
+  "targetName": "Toyota Hilux",
+  "targetId": "toyota-hilux",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "vehicle-pickup-truck",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "extruded-side-profile",
+        "tumblehome-glasshouse",
+        "open-cargo-bed",
+        "wheel-arches",
+        "bilateral-symmetry"
+      ],
+      "structureKind": [
+        "solid-shell",
+        "extruded-profile",
+        "instanced-wheels",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "rigid-body-vehicle",
+        "wheels-roll-about-axle"
+      ],
+      "materialFamilies": [
+        "muddy-automotive-paint",
+        "tinted-glass",
+        "black-plastic-and-rubber-trim"
+      ],
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. The best-selling vehicle in Thailand: a working double-cab pickup. The plate shows a muted blue extended cab with a quarter light behind the door, a chrome-barred grille between clear rectangular lamps over a black bumper, black wheel-arch flares, steel wheels caked in tan mud, mud sprayed up the lower doors and sills, and a short open bed with a dark liner."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 2
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "The identity is the side profile -- bonnet, raked screen, cab, open bed -- and it is one closed polygon swept across the width, with the wheel arches cut into it as notches, then narrowed above the belt for tumblehome. One geometry carries the whole shell.",
+        "One repetition system: four wheels off one lathe, each a named pivot on its axle.",
+        "Three materials, because a colour difference is not a material difference: the paint carries the mud envelope with the clean blue on a canvas tile, and every trim tone -- tyre, rim, bumper, lamp, liner -- is a vertex colour on one white material.",
+        "Action readiness is the wheels: four hinge pivots, convex collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "A pickup cannot be a box on a box: the raked screen, the tumblehome and the arches are what make it read as a truck at prop distance, and all three come from shaping one extrusion. The bed is open, so its walls, bulkhead and tailgate are boxes merged into the same shell, and the glasshouse is a second extrusion of the cab polygon offset 6 mm proud so no pane shares a plane with the body."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-side-profile",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "bonnet, raked windscreen, cab and open bed as one side outline with two arch notches",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-glasshouse",
+          "zone": "cab",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "tinted glass band round the cab with A, B and C pillars and a quarter-light divider",
+          "mapsTo": {
+            "ref": "glazing"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-open-bed",
+          "zone": "bed",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "open cargo bed with side walls, bulkhead, tailgate, rail caps and a dark liner floor",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-grille-lamps",
+          "zone": "front",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "three chrome grille bars in a dark recess between two rectangular lamps over a black bumper",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-arch-flares",
+          "zone": "body",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "black wheel-arch flares standing proud of the body over each arch",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-wheels",
+          "zone": "wheels",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four steel wheels with dished rims on 0.75 m tyres",
+          "mapsTo": {
+            "ref": "wheels"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-mud-spray",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "tan mud sprayed up the sills, lower doors and arches",
+          "mapsTo": {
+            "ref": "d7-mud-spray"
+          },
+          "onMaterial": "paint",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-fittings",
+          "zone": "body",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "door mirrors, handles, shut lines, sill steps, indicators, exhaust",
+          "mapsTo": {
+            "ref": "trim"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+    "resolvedUnknowns": [
+      "The plate shows an EXTENDED cab (one long door and a quarter light a side); the registry text says double-cab. The plate is the authority for the build, and the rear handle is placed on the quarter panel as the rear-hinged access door of an extended cab.",
+      "The rear elevation is built to type: a flat tailgate with a recessed skin, vertical tail lamps and a black bumper. Not visible in the plate.",
+      "Mirrors reach 1.03 m either side of centre; the registry width of 1.86 is the body width.",
+      "No interior. The cab is a solid in paint under a 6 mm proud tinted pane at opacity 0.92, so the glass reads as glass and not as a hole through the wall.",
+      "The wheels are steel and muddy in the plate; the rim tone is lifted a step above the tyre so the two still separate at prop distance."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.86 x 1.82 x 5.33 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=8000 triangles, <=6 draw calls, <=4 materials, <=8 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus one named pivot per wheel (4); zero sockets; convex collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 3,
+      "microFeatureGroups": 3,
+      "materialLayers": 3,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.86 x 1.82 x 5.33 m, +Z forward",
+          "Bonnet, raked screen, cab and open bed read as the pickup profile",
+          "Wheels 0.75 m at the proxy's stations"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a box-on-box body with no rake or tumblehome",
+          "a sealed bed"
+        ]
+      },
+      {
+        "id": "front-and-fittings",
+        "name": "Front elevation and fittings",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Chrome-barred grille between clear lamps over a black bumper",
+          "Black arch flares, mirrors, handles, sill steps"
+        ],
+        "evidenceRefs": [
+          "region-bumper"
+        ],
+        "failureModes": [
+          "a blank nose slab",
+          "mirrors inside the body"
+        ]
+      },
+      {
+        "id": "wheels",
+        "name": "Wheels and pivots",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Four instanced wheels, dished steel rims separated from the tyre",
+          "One named pivot per wheel on the axle"
+        ],
+        "evidenceRefs": [
+          "region-tyre"
+        ],
+        "failureModes": [
+          "flat discs",
+          "no pivots, or a pivot per body panel"
+        ]
+      },
+      {
+        "id": "paint-and-mud",
+        "name": "Paint and mud",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Muted blue, not purple: the ratio is formed in linear space",
+          "Mud confined to sills, lower doors and arches; roof clean"
+        ],
+        "evidenceRefs": [
+          "region-paint",
+          "region-sill"
+        ],
+        "failureModes": [
+          "mud speckles across the whole side like confetti",
+          "purple paint from an sRGB ratio"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 6 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "front-and-fittings",
+      "name": "Front elevation and fittings",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "trim",
+        "glazing"
+      ],
+      "evidenceRefs": [
+        "region-bumper"
+      ]
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels and pivots",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "wheels"
+      ],
+      "evidenceRefs": [
+        "region-tyre"
+      ]
+    },
+    {
+      "id": "paint-and-mud",
+      "name": "Paint and mud",
+      "tier": "important",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-paint",
+        "region-sill"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 5,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the vehicle at base-center."
+      },
+      {
+        "name": "wheel-front-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.79,
+          0.375,
+          1.715
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-front-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.79,
+          0.375,
+          1.715
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.79,
+          0.375,
+          -1.37
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      },
+      {
+        "name": "wheel-rear-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.79,
+          0.375,
+          -1.37
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "A wheel turns on its axle; the pivot sits at the hub. Doors, bonnet and tailgate are part of the shell and get no axis: nothing in this kit opens them."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this vehicle in the kit and nothing is emitted from it; a marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "convex",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as convex: one hull over the body shell. A level builder collides with the truck, not with its mirrors or its wheel wells."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The plate shows an EXTENDED cab (one long door and a quarter light a side); the registry text says double-cab. The plate is the authority for the build, and the rear handle is placed on the quarter panel as the rear-hinged access door of an extended cab.",
+    "The rear elevation is built to type: a flat tailgate with a recessed skin, vertical tail lamps and a black bumper. Not visible in the plate.",
+    "Mirrors reach 1.03 m either side of centre; the registry width of 1.86 is the body width.",
+    "No interior. The cab is a solid in paint under a 6 mm proud tinted pane at opacity 0.92, so the glass reads as glass and not as a hole through the wall.",
+    "The wheels are steel and muddy in the plate; the rim tone is lifted a step above the tyre so the two still separate at prop distance."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at tyre contact, +Y up, +Z FORWARD, +X the vehicle's left. Meshy returned the proxy with its long axis on X, an arbitrary output convention; the band comparison detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.86,
+      "h": 1.82,
+      "d": 5.33
+    },
+    "description": "Sill at 0.42 m, wheels 0.75 m in diameter at z +1.715 and -1.37 (3.085 wheelbase, 0.95 front overhang), bonnet lip at 0.86-0.94 m rising to a scuttle at 1.08 m, windscreen raked from z 1.45 to a roof at 1.80 m over 0.12 m corner arcs, a vertical cab back at z -0.72 dropping to a bed floor at 0.80 m, bed rails at 1.20 m to a tailgate at z -2.60. Roof width 0.83 of the body. The silhouette events are the nose, the raked screen, the cab step down to the bed and the two arches. Sheet metal crowns over a 0.13 m shoulder fillet from the cab back to the top of the rake and wraps a 0.24 m plan radius at the nose (0.06 at the tail).",
+    "envelopeDerivation": "x spans -0.93..+0.93 on the body shell (the door mirrors reach +-1.03 and are reported, as a real Hilux is 1.855 m over the body and ~2.1 over its mirrors); y 0.00 (tyre contact) to 1.80 (roof); z -2.665..+2.665 bumper to bumper, +Z forward. The registry declares the real vehicle; the Meshy proxy normalises to L:H:W = 1 : 0.437 : 0.448, a truck only 2.29 lengths tall, so heights were read off the proxy as fractions of H and stations as fractions of L, and the declared metres win on both axes.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.437 : 0.448 -- a truck 2.29 lengths tall against the real 2.93. The area-weighted band table (scratch/_mon/bands.mjs) therefore reads a mean |delta depth| of 0.44 of height that is almost entirely that declared aspect: at bands 2-5 the proxy's depth is 2.04-2.16 H and the candidate's 2.76-2.86 H, and 5.33 / 1.82 = 2.93. The proxy's heights agree with the plate (roof 1.00 H, belt and bed rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and are what was built. Its cab width at the top three bands (0.72-0.80 H) is narrower than the first build's 0.94, which is why the tumblehome was deepened to 0.17."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-paint",
+      "viewpoint": "top",
+      "path": "crops/paint.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-sill",
+      "viewpoint": "side",
+      "path": "crops/sill.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-tyre",
+      "viewpoint": "side",
+      "path": "crops/tyre.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-glass",
+      "viewpoint": "front",
+      "path": "crops/glass.png",
+      "confidence": 0.716
+    },
+    {
+      "id": "region-bumper",
+      "viewpoint": "front",
+      "path": "crops/bumper.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-bed",
+      "viewpoint": "top",
+      "path": "crops/bed.png",
+      "confidence": 0.836
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.75,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the plate shows the front three-quarter and the bed from above; the tailgate face, its lamps and the rear bumper are built to the type (a plain tailgate with vertical lamps either side) and to the proxy's rear elevation."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Body shell, pillars and bed",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One extruded side profile with arch notches, shaped per vertex over 14 edge-biased width columns (tumblehome, plan taper, shoulder / nose / tail fillets, 50-degree smooth normals), four pillar side strips, bed walls, bulkhead, tailgate and rail caps merged into ONE geometry and ONE draw call.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Sill 0.42, bonnet lip arc 0.86-0.95, scuttle 1.08 at z 1.45, rake to 1.70 at z 1.06, roof 1.80 from z 0.90 to -0.48 with 0.12 m corner arcs, cab back at z -0.72, bed floor 0.80, rails 1.20, tailgate at z -2.60; width 1.86 narrowing 17 percent at the roof, shoulder r 0.13, nose r 0.24.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Pillar strips stand 13 mm proud of the body and 7 mm proud of the glass with their bottoms 10 mm above the glass sill; bed walls are inset 4 mm from the shell side; the rail caps stand 5 mm proud of the walls; the bulkhead front face sits 20 mm off the cab back, clear of the rear pane standing 12 mm proud of it.",
+        "mergeNote": "One merged BufferGeometry with height-keyed UVs for the 2 m mud tile."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-side-profile",
+          "description": "the pickup outline",
+          "delivery": "sideExtrude of the outline with archNotch splices"
+        },
+        {
+          "id": "d3-open-bed",
+          "description": "open bed walls and tailgate",
+          "delivery": "merged boxes"
+        },
+        {
+          "id": "d7-mud-spray",
+          "description": "mud on sills and arches",
+          "delivery": "mud canvas as map with height UVs"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#385176",
+        "recipe": "Muddy blue paint: mud envelope on the material, clean blue as a canvas ratio.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(56, 81, 118, 1.0)",
+        "secondaryAlbedo": "rgba(56, 81, 118, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. The body shell is the rigid root; the wheels carry their own axle pivots."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "convex",
+          "localCenter": [
+            0,
+            0.91,
+            0
+          ],
+          "halfExtents": [
+            0.93,
+            0.91,
+            2.665
+          ],
+          "notes": "Declared on the asset as convex: one hull over the body shell. A level builder collides with the truck, not with its mirrors or its wheel wells."
+        }
+      }
+    },
+    {
+      "id": "glazing",
+      "name": "Glazing",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.8,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The cab polygon from belt to roof, offset 6 mm outward and swept at the body width plus 6 mm with the same tumblehome, so windscreen, side glass and rear glass are one pane band.",
+      "materialId": "glass",
+      "material": "glass",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Glass from 1.12 to 1.64 m, windscreen 1 cm AHEAD of the body rake from z 1.435 to 1.11, rear glass at z -0.726; the top stays 0.16 m under the roof, below the shoulder fillet zone.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Offset outward along the averaged edge normals, so no pane face is coplanar with the raked body faces it covers; the screen edge is authored ahead of the rake rather than on it, because a pane offset only along the normal of a rake it shares a plane with is what the first build buried under the bonnet; its top face sits 160 mm below the roof.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-glasshouse",
+          "description": "glass band",
+          "delivery": "offsetPoly + sideExtrude"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "glass",
+        "baseColor": "#46505a",
+        "recipe": "Tinted glass at opacity 0.92, lifted above the hole gate.",
+        "evidenceRef": "region-glass",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(70, 80, 90, 1.0)",
+        "secondaryAlbedo": "rgba(70, 80, 90, 1.0)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Trim, lamps, bumpers and wheel wells",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Bumpers, grille, bars, lamps, mirrors, handles, shut lines, steps, indicators, exhaust, bed liner tub with four inner skins, undertray, two arch flares and two inner wings: forty-four parts at one submission.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Front bumper 7 cm proud of the nose at 0.41-0.63 m, its corners rotated 0.70 rad to wrap the 0.24 m plan nose; grille recess with three chrome bars; lamps at x +-0.70 rotated 0.45 rad to follow the corner; flares 60 mm wide standing 35 mm proud; inner wings filling each arch between the wheels' inner faces.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every part stands proud of or butts against the shell as opposed faces; the liner's sides meet the bed walls' inner faces as opposed butts; the undertray top is 40 mm below the sill. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-grille-lamps",
+          "description": "grille and lamps",
+          "delivery": "tinted boxes"
+        },
+        {
+          "id": "d5-arch-flares",
+          "description": "arch flares",
+          "delivery": "flare() half-annulus extrusions"
+        },
+        {
+          "id": "d8-fittings",
+          "description": "mirrors, handles, steps",
+          "delivery": "mirrored tinted boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#45443f",
+        "recipe": "White material, every tone a vertex colour.",
+        "evidenceRef": "region-bumper",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(69, 68, 63, 1.0)",
+        "secondaryAlbedo": "rgba(69, 68, 63, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "level": "meso",
+      "role": "mechanism",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One lathe -- hub dish, rim lip, sidewalls, tread -- as an InstancedMesh with four instances.",
+      "materialId": "trim",
+      "material": "trim",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "0.375 m radius, 0.25 m wide, rim 0.215 m, at x +-0.79, z +1.715 and -1.37.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each wheel is a closed lathe; its inner face meets the inner wing as an opposed butt.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d6-wheels",
+          "description": "four wheels",
+          "delivery": "repetitionSystems.wheels"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "trim",
+        "baseColor": "#5e5750",
+        "recipe": "Tyre #5e5750 and rim #8a827a as vertex colours on the shared white trim material.",
+        "evidenceRef": "region-tyre",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(94, 87, 80, 1.0)",
+        "secondaryAlbedo": "rgba(94, 87, 80, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0.79,
+            0.375,
+            1.715
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ],
+          "confidence": 0.9,
+          "name": "wheel-front-l",
+          "notes": "One InstancedMesh, 4 instances; each instance is a named pivot on its axle (wheel-front-l, wheel-front-r, wheel-rear-l, wheel-rear-r) exposed on sculptRuntime.pivots with its instance index, so a host can spin any wheel by writing that instance matrix."
+        },
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": true,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "The wheels are the only mechanism on the prop."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "paint",
+      "name": "Muddy blue automotive paint",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8b8075",
+      "color": "#8b8075",
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#8b8075",
+        "secondary": [
+          "#385076",
+          "#395177",
+          "#385175"
+        ],
+        "samplingNotes": "Measured as the mean of crops/paint.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-mud-spray",
+          "region": "sills, lower doors and arches",
+          "roughness": 0.55,
+          "palette": [
+            "#8B8075",
+            "#385176"
+          ],
+          "evidence": "Sill crop #8b8075 against the roof's #385176. Delivered as a wash rising from the ground to 0.36 of a 2 m height-keyed tile plus ninety soft blobs above it, all at the envelope colour, on a base that is the clean ratio. Height-keyed UVs keep the roof clean."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Clean paint measured on viewEvidence region-paint (the roof, PBR confidence 0.751) at #385176; the mud on the sill (region-sill, 520..580 x 690..720) measures #8b8075 and is BRIGHTER than the paint in every channel, so the material carries the MUD ENVELOPE and the clean blue is painted back as the linear-space ratio (0.43, 0.65, 1.00) of it on a post-construction canvas.",
+          "Textureless as DECLARED: the mud is a seamless 512 px Canvas 2D tile bound after material construction as map, so no procedural texture set is synthesised. Body vertex colours are white."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/paint.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Tinted glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#46505a",
+      "color": "#46505a",
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.05,
+      "albedo": {
+        "dominant": "#46505a",
+        "secondary": [
+          "#464646",
+          "#434343",
+          "#494949"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.716. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-glass (windscreen, PBR confidence 0.716) at #474747 and LIFTED to #46505a, luma 80 against the harness backdrop's 58: the panes are enclosed by the prop's own outline and a darker value is read as a hole by the silhouette gate.",
+          "Opacity 0.92 over a solid cab: with no interior the pane has to be mostly opaque to read as glass rather than as a window onto nothing. Roughness 0.42 so the key light does not white it out.",
+          "Textureless: flat tinted glass carries no resolvable surface detail."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.716,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "trim",
+      "name": "Black trim, rubber and lamps",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/trim_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/bumper.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE on purpose with vertexColors: every trim tone is a vertex colour. Bumpers #45443f (bumper crop #2f2f2b, luma 47, lifted to 68 for the hole gate), tyres #5e5750 and rims #8a827a (region-tyre, PBR confidence 0.860, a muddy steel wheel), bed liner tub #5c5850 (region-bed #323843, luma 55, lifted to 88: in shade from the side it still had to clear 58), chrome grille bars #bfc4c8, lamps #d8dde0, tail lamps #b03030; the tailgate skin recess #4a4844 at luma 72, after the turntable gate read it at #2e2d2a as a hole at azimuth 180.",
+          "Textureless as DECLARED: forty small parts at prop distance carry no resolvable texture; the InstancedMesh wheels share it and setColorAt is unused, so the white base multiplies nothing."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/bumper.png",
+        "pbrReport": "material-evidence/trim.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Wheels",
+      "instanceCount": 4,
+      "sourceComponent": "wheels",
+      "material": "trim",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "wheel-lathe",
+      "placement": {
+        "mode": "explicit",
+        "note": "x +-0.79 at z +1.715 and -1.37, right-side instances yawed a half turn."
+      },
+      "instanceDimensions": {
+        "width": 0.25,
+        "height": 0.75,
+        "depth": 0.75
+      },
+      "rationale": "Four wheels at one geometry and one submission; each instance is a named axle pivot.",
+      "zFightingNote": "Closed lathe; inner faces butt the wheel wells as opposed faces."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T16:14:59.189356+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.267711+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.349112+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.433567+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.519316+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.600097+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three chrome bars in a dark grille recess between two rectangular lamps over a black bumper 7 cm proud of the nose, its corners and the lamps rotated to wrap the 0.24 m plan nose; windscreen 1 cm ahead of the rake and reading as glass; black arch flares, mirrors on stems, handles, shut lines, sill steps, indicators.",
+          "notes": "The plate's front is the crop 200..300 x 700..760: black bumper full width, lamps outboard, barred grille centred. Built as forty tinted boxes on one white material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.680327+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.761297+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.840259+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.920224+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.004047+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.087915+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.168648+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        },
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three chrome bars in a dark grille recess between two rectangular lamps over a black bumper 7 cm proud of the nose, its corners and the lamps rotated to wrap the 0.24 m plan nose; windscreen 1 cm ahead of the rake and reading as glass; black arch flares, mirrors on stems, handles, shut lines, sill steps, indicators.",
+          "notes": "The plate's front is the crop 200..300 x 700..760: black bumper full width, lamps outboard, barred grille centred. Built as forty tinted boxes on one white material."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        },
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T16:14:59.189356+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 6, costed before geometry existed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.267711+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Bed rail cap had been authored full width and sealed the bed; split into two side caps and a tailgate cap. Tumblehome deepened 0.10 -> 0.17 on the band table.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.349112+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Second pass (user review): the shell was a slab -- hard roof corners, a box nose, and a plan taper folded across one flat-shaded cap triangle per outline edge, which drew a diagonal crease from the bonnet lip to the sill on both front fenders. Rebuilt on the shaped template: bonnet-lip and roof-corner arcs in the outline, shoulder fillet r 0.13 from the cab back to the top of the rake, plan nose r 0.24 and tail r 0.06, 14 edge-biased width columns, 50-degree smooth normals. Crease gone at 0, 90, 180 and 270; check-coplanar clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.433567+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: one side-profile extrusion with two arch notches, tumblehome 0.17 above the belt, plan rounding at nose and tail; bed walls, bulkhead, tailgate and rail caps merged into the shell.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.519316+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Second pass (user review): the windscreen rendered as paint. The glass band was offset along the normal of a rake it shared with the body, and the offset landed its front edge BEHIND the scuttle, under the bonnet. Screen edge re-authored 1 cm ahead of the rake (z 1.435 -> 1.11 over y 1.12 -> 1.64), band top held 0.16 m under the roof so the shoulder fillet never pulls its side vertices in; pillars changed from full-width sweeps to 10 cm side strips; bumper corners and lamps rotated to follow the nose. Screen reads as glass at azimuth 0 and in the hero.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.600097+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three chrome bars in a dark grille recess between two rectangular lamps over a black bumper 7 cm proud of the nose, its corners and the lamps rotated to wrap the 0.24 m plan nose; windscreen 1 cm ahead of the rake and reading as glass; black arch flares, mirrors on stems, handles, shut lines, sill steps, indicators.",
+          "notes": "The plate's front is the crop 200..300 x 700..760: black bumper full width, lamps outboard, barred grille centred. Built as forty tinted boxes on one white material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: glass band as an offset extrusion of the cab polygon; A/B/C pillars and quarter divider proud of it; grille, lamps, flares, mirrors, steps, shut lines.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.680327+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Turntable gate read the tailgate skin recess (#2e2d2a, luma 46) at azimuth 180 as a 370 x 78 px hole through the model: enclosed by the silhouette and below the backdrop luma of 58. Recess lifted to #4a4844 (luma 72). A second run then flagged the bed interior from the side (liner and the shaded blue inner wall faces at luma 58-59) and the grille recess in the bars' shadow; the liner became a tub of four inner skins at #5c5850 (luma 88) hiding the shaded blue, the grille recess went to #5a5852. Turntable passes at all four azimuths.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.761297+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.716-0.860; paint re-based to the mud envelope; glass lifted to luma 80; bumper lifted to luma 68 for the hole gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.840259+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "First render purple: the clean-paint ratio had been formed in sRGB; re-formed in linear space. Splatter cut from 220 to 90 blobs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:14:59.920224+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: one post-construction mud canvas, ratio formed in linear space after the sRGB ratio rendered purple; splatter cut from 220 to 90 blobs after the first pass read as confetti.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.004047+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.8,
+      "aiVisionScore": 0.8,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Glass roughness 0.42 so the key light does not white it out.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.087915+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: root pivot plus FOUR wheel pivots on the axles, ZERO sockets, one CONVEX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T16:15:00.168648+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 1.86 x 1.80 x 5.33 m over the body (mirrors to 2.06) against a declared 1.86 x 1.82 x 5.33; band table against the Meshy proxy mean |delta width| 0.14, |delta depth| 0.44 of height, of which the depth is the declared aspect (proxy 2.29 L/H, real 2.93) and the width the proxy's narrower cab.",
+          "notes": "Heights read off the proxy side elevation (roof 1.00 H, belt and rail 0.66 H, wheel top 0.40 H, sill 0.26 H) and stations as fractions of length (cab roof 0.29-0.625 L). The proxy cab is narrower at the top three bands (0.72-0.80 H against 0.94) and the tumblehome was deepened to 0.17 in response."
+        },
+        {
+          "id": "front-and-fittings",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three chrome bars in a dark grille recess between two rectangular lamps over a black bumper 7 cm proud of the nose, its corners and the lamps rotated to wrap the 0.24 m plan nose; windscreen 1 cm ahead of the rake and reading as glass; black arch flares, mirrors on stems, handles, shut lines, sill steps, indicators.",
+          "notes": "The plate's front is the crop 200..300 x 700..760: black bumper full width, lamps outboard, barred grille centred. Built as forty tinted boxes on one white material."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Four instanced 0.75 m wheels off one lathe with a dished rim a step lighter than the tyre; pivots wheel-front-l/r and wheel-rear-l/r on the axle at each hub, exposed on sculptRuntime.",
+          "notes": "Muddy steel wheels in the plate (region-tyre 0.86); rim #8a827a against tyre #5e5750."
+        },
+        {
+          "id": "paint-and-mud",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Paint material carries the mud envelope #8b8075; the clean #385176 rides a 512 px canvas as the linear-space ratio (0.43, 0.65, 1.00); mud as a wash to 0.36 of a 2 m height-keyed tile plus soft blobs.",
+          "notes": "The first render was PURPLE: the ratio had been formed in sRGB. Re-formed in linear space it renders the plate's muted blue. The first splatter read as confetti and was cut from 220 to 90 blobs."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 4,568/8,000 triangles, 4/6 draw calls, 3/4 materials, 4/8 unique geometries, one 512 px canvas at 1.3 MB, factory 74 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-hilux/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 8000,
+    "maxDrawCalls": 6,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 4,
+        "repetitionSystems": 1,
+        "projectedTotal": 5,
+        "budget": 6,
+        "headroom": 1,
+        "note": "Three components and one repetition system: 4 of 6. The bed and the pillars ride the shell; forty trim parts ride one merge."
+      },
+      "materials": {
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "paint, glass and a white vertex-coloured trim: 3 of 4. Tyres, rims, bumpers, lamps and the liner differ in albedo only."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 5,
+        "budget": 8,
+        "headroom": 3,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 4568,
+        "budget": 8000,
+        "headroom": 3432,
+        "note": "4,568 of 8,000: one extrusion with two 8-segment arches over 14 width columns, four pillar strips, a 20-segment wheel lathe, and boxes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "A closed side-profile polygon extruded across the width in 14 edge-biased columns and shaped per vertex (tumblehome above the belt, plan taper, a shoulder fillet along the roof edge, plan-radius nose and tail, angle-limited smooth normals); an offset extrusion of the cab polygon for the glass; a lathe for the wheel; boxes for everything else."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh carries the four wheels; the right-side instances are yawed a half turn so the dish faces out. No per-instance colour, so the white base is inert."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. ONE 512 px Canvas 2D mud tile is bound after construction as the paint map: base is the clean-paint ratio of the mud envelope formed in linear space, mud is a wash and soft blobs at the envelope. 1.3 MB of texture VRAM, factory 86 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-aspect-vs-proxy",
+      "severity": "low",
+      "description": "The proxy is 2.29 lengths tall; the real truck is 2.93. The band table's depth residual is that ratio.",
+      "mitigation": "Declared metres win; heights and stations were read off the proxy as fractions. Reported with the arithmetic."
+    },
+    {
+      "id": "rear-not-observed",
+      "severity": "low",
+      "description": "The tailgate face and rear lamps are built to type.",
+      "mitigation": "Recorded as region-rear at confidence 0.75."
+    },
+    {
+      "id": "extended-vs-double-cab",
+      "severity": "low",
+      "description": "Plate shows an extended cab; registry text says double cab.",
+      "mitigation": "Built to the plate, which is the authority; noted for the asset list."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Toyota Hilux",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.413,
+        "aspectRatioDelta": 0.3517,
+        "scaleDelta": 0.2827,
+        "bilateralSymmetryError": 0.1676,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 13.58,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 8.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.3
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.48
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.413 is below threshold 0.85",
+        "aspect-ratio delta 0.352 exceeds threshold 0.05",
+        "scale delta 0.283 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "e167d52c2de81aee",
+      "passId": "blockout"
+    }
+  ]
+}

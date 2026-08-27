@@ -1,0 +1,1839 @@
+{
+  "targetName": "Municipal Steel Dumpster",
+  "targetId": "municipal-steel-dumpster",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "steel-waste-container",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "tapered-steel-box",
+        "rim-frame",
+        "twin-hinged-lids",
+        "front-doors",
+        "handle-bar",
+        "castors"
+      ],
+      "structureKind": [
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop",
+        "hinged-lid"
+      ],
+      "materialFamilies": [
+        "painted-steel"
+      ],
+      "notes": "A municipal steel waste container. Two lids hinge along the rear top rail, so the model ships a root pivot plus lid-hinge-l and lid-hinge-r on the two lid instances; the castors are moulded into the body (the container is lifted by a truck, not driven) and nothing attaches, so zero sockets. Markets and shophouse rows. Navy body under a sky-blue rim and lids, chipped to rust on the lids and streaked below the handle bar; orange handles; four castors."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 1,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE body component: the tapered frustum, four rim rails and the deck, the door seam strip, the orange handle bar on two brackets, the orange lift handle, two trunnions with plates, four castor forks and four castors with hubs -- all merged on the steel material.",
+        "ONE lids InstancedMesh of two instances at x +-0.32: panel, chamfer slab and hinge knuckle, so lid-hinge-l and lid-hinge-r each name an instance a host can rotate.",
+        "One material: painted steel; the light-blue lids and rails, the orange handles, the seam and the castors are vertex colours.",
+        "Action readiness: one root pivot plus two lid hinges, zero sockets, one box collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the blue steel box with a paler rim and two paler lids, the orange bar across the front doors and the rust; every part is a box, frustum or cylinder and the rust is a grime canvas in the measured drip tone."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-body",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "tapered steel box on castors with a rim frame",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-lids",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two pale-blue lids hinged at the rear, chipped to rust",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-handles",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "orange handle bar across the doors and an orange lift handle at the seam",
+          "mapsTo": {
+            "ref": "d3-handles"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-rust",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "rust drips below the bar and chips on the lids",
+          "mapsTo": {
+            "ref": "d4-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-castors",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "four castors in forks",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-seam",
+          "zone": "body",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "door seam and side trunnions",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+    "resolvedUnknowns": [
+      "The rear face is plain steel with the hinge rail: the plate shows the front and top only.",
+      "The doors are read as a seam strip and the handle bar, not as separate leaves: the doors do not open in this kit and a seam is what the plate shows.",
+      "The declared 1.80 x 1.30 x 1.10 was corrected to 1.40 x 1.40 x 0.65 from the proxy band table and the plate's own top-face geometry; recorded in the asset notes with the arithmetic."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.40 x 1.40 x 0.65 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 2 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 1,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.40 x 1.40 x 0.65 m",
+          "Body and rim match the proxy within 0.02 H in width"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a squat box",
+          "no rim frame"
+        ]
+      },
+      {
+        "id": "lids-and-hinges",
+        "name": "Lids and hinges",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two lids on the deck",
+          "lid-hinge-l / -r on the rear rail"
+        ],
+        "evidenceRefs": [
+          "region-lid"
+        ],
+        "failureModes": [
+          "one lid",
+          "lids merged into the body"
+        ]
+      },
+      {
+        "id": "handles-and-rust",
+        "name": "Handles and rust",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Orange bar and lift handle on the front",
+          "Rust in the measured drip tone"
+        ],
+        "evidenceRefs": [
+          "region-orange",
+          "region-rust"
+        ],
+        "failureModes": [
+          "no bar",
+          "rust as grey smudges"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "lids-and-hinges",
+      "name": "Lids and hinges",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-lid"
+      ]
+    },
+    {
+      "id": "handles-and-rust",
+      "name": "Handles and rust",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-orange",
+        "region-rust"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the container at base-center."
+      },
+      {
+        "name": "lid-hinge-l",
+        "component": "lids",
+        "type": "hinge",
+        "localPosition": [
+          -0.32,
+          1.375,
+          -0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "left lid, hinged on the rear top rail, swings open about X"
+      },
+      {
+        "name": "lid-hinge-r",
+        "component": "lids",
+        "type": "hinge",
+        "localPosition": [
+          0.32,
+          1.375,
+          -0.26
+        ],
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "justification": "right lid, hinged on the rear top rail, swings open about X"
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the full body."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The rear face is plain steel with the hinge rail: the plate shows the front and top only.",
+    "The doors are read as a seam strip and the handle bar, not as separate leaves: the doors do not open in this kit and a seam is what the plate shows.",
+    "The declared 1.80 x 1.30 x 1.10 was corrected to 1.40 x 1.40 x 0.65 from the proxy band table and the plate's own top-face geometry; recorded in the asset notes with the arithmetic."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.4,
+      "h": 1.4,
+      "d": 0.65
+    },
+    "description": "Frustum 1.24 x 0.56 at 0.22 m to 1.30 x 0.60 at 1.32 m; rim frame 1.32 x 0.62 x 0.04 m; two lids 0.58 x 0.03 x 0.50 m at 1.36-1.39 m; handle bar 1.02 m across the front at 0.70 m; lift handle 0.16 m tall at the seam at 0.93 m; trunnions at 1.15 m on both ends; four castors r 0.09 at x +-0.48, z +-0.18.",
+    "envelopeDerivation": "x spans -0.70..+0.70 at the lift trunnion plates over the 1.32 m rim frame, the declared 1.40 m; z -0.31..+0.3375 at the handle bar over the 0.62 m body; y 0.00 to 1.393 at the lids. Declared 1.40 x 1.40 x 0.65 (corrected from 1.80 x 1.30 x 1.10 at model time: the proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate shows a container as tall as wide). Castors 0-0.18 m (proxy rows 0-0.16 H), body 0.22-1.32 m from 1.24 x 0.56 to 1.30 x 0.60 (proxy sides vertical within one column), rim frame 1.32-1.36 m, lids 1.36-1.39 m.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate. Band table at the corrected envelope: mean |delta width| 0.0186, |delta depth| 0.0453; width bands 2-7 within 0.012; every depth band reads -0.04..-0.06 because the declared 0.65 m holds the handle bar and the body is 0.62 m deep behind it."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-blue",
+      "viewpoint": "front",
+      "path": "crops/blue.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-lid",
+      "viewpoint": "top",
+      "path": "crops/lid.png",
+      "confidence": 0.751
+    },
+    {
+      "id": "region-rust",
+      "viewpoint": "front",
+      "path": "crops/rust.png",
+      "confidence": 0.752
+    },
+    {
+      "id": "region-orange",
+      "viewpoint": "front",
+      "path": "crops/orange.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-wheel",
+      "viewpoint": "front",
+      "path": "crops/wheel.png",
+      "confidence": 0.854
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.85,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: the rear is the mirror of the front without the doors and bar; the hinge rail is placed from the lids' rear edge in the plate."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Body, rim frame, handles and castors",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One frustum, twenty boxes and eight cylinders merged into one geometry on one material: one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Frustum 1.24 x 0.56 -> 1.30 x 0.60 over 0.22-1.32 m; rails 0.07 x 0.04 around the top 1 cm proud; deck 5 mm below the rails; seam strip 12 mm wide tilted to the front face; bar 1.02 x 0.045 at 0.70 m on brackets; castors r 0.09 x 0.05 with hubs r 0.04.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The rails overlap the frustum top by 1 cm (slanted faces, never coplanar with a box); the deck top is 5 mm below the rail tops; the seam strip is 1.6 mm proud of the slanted front and rotated to it; the bar stands 27 mm proud on brackets 2 cm inside the face; hubs are 2 mm proud of the castor faces.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.35 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-body",
+          "description": "body",
+          "delivery": "frustum + rail boxes"
+        },
+        {
+          "id": "d3-handles",
+          "description": "handles",
+          "delivery": "boxes, vertex colour"
+        },
+        {
+          "id": "d4-rust",
+          "description": "rust",
+          "delivery": "grime canvas"
+        },
+        {
+          "id": "d5-castors",
+          "description": "castors",
+          "delivery": "cylinders + fork boxes"
+        },
+        {
+          "id": "d6-seam",
+          "description": "seam and trunnions",
+          "delivery": "boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#2f6a95",
+        "recipe": "Lifted navy as vertex colour on white with a rust grime canvas; rails #7fa6c2; handles #b8703f; seam #2a5c85; castors #565656.",
+        "evidenceRef": "region-blue",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(47, 106, 149, 1.0)",
+        "secondaryAlbedo": "rgba(127, 166, 194, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center at the ground under the castors, as the asset declares. The body is the rigid root; each lid carries its own hinge pivot on the rear top rail."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.7,
+            0
+          ],
+          "halfExtents": [
+            0.7,
+            0.7,
+            0.325
+          ],
+          "notes": "Declared on the asset as box: the full body."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Painted steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#2f6a95",
+      "color": "#2f6a95",
+      "roughness": {
+        "base": 0.58,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.25,
+      "albedo": {
+        "dominant": "#2f6a95",
+        "secondary": [
+          "#2f6a95",
+          "#a3cce3",
+          "#b8703f"
+        ],
+        "samplingNotes": "Measured as the mean of crops/blue.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-rust",
+          "region": "lids and the panels below the handle bar",
+          "roughness": 0.75,
+          "palette": [
+            "#8A4A22"
+          ],
+          "evidence": "crops/rust.png -- #582810 cores at 0.752, drip bodies #8a4a22; multiplied in by the grime canvas as a ratio against the shipped blue."
+        },
+        {
+          "id": "d3-handles",
+          "region": "handle bar and lift handle",
+          "roughness": 0.55,
+          "palette": [
+            "#B8703F"
+          ],
+          "evidence": "crops/orange.png -- #af6a43 at 0.829; vertex colour on the bar and handle boxes."
+        }
+      ],
+      "finishClass": "painted-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-blue (0.751) at #1a4567, luma 60 -- on the backdrop's 58. Shipped at #2f6a95 (luma 93) so no shaded panel is read as background; carried as a vertex colour on a WHITE material so the lids and rails (#a3cce3 / #7fa6c2, region-lid 0.751), the orange handles (#b8703f, region-orange 0.829 #af6a43), the seam (#2a5c85) and the castors (#565656, region-wheel #3a3a3a lifted) ride the same shader.",
+          "Metalness 0.25 for painted steel with no environment map. Rust: the drip BODIES measure #8a4a22 on the lighter panels and the cores #582810 (region-rust 0.752); the canvas multiplies the body tone as a ratio against the shipped blue, because the core is below the hole band on a shaded flank.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction, 34 rust streaks from the top edge, blotches at 0.30 over the bottom 22%."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/blue.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.751,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "lids",
+      "name": "Hinged lids",
+      "componentRef": "body",
+      "count": 2,
+      "primitive": "box",
+      "materialId": "steel",
+      "placement": "two instances at x -0.32 and +0.32 on the deck; the geometry is authored at its world height",
+      "instanced": true,
+      "pivotPerInstance": true,
+      "notes": "One InstancedMesh of panel, chamfer slab and knuckle; each instance is a named hinge pivot on the rear rail."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T18:16:11.040781+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.120544+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.201570+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.284523+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.367882+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.447791+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.531311+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.614523+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        },
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        },
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T18:16:11.040781+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: one component plus one instanced lid pair at 2 draw calls of 2; frustum body from the proxy occupancy rows.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.120544+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: envelope re-derived after the first band table read every band +0.33 -- the declared 1.80 x 1.30 x 1.10 was the residual, corrected to 1.40 x 1.40 x 0.65; trunnions and bar pulled inside it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.201570+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: rim rails and deck, door seam tilted to the front face, brackets, trunnion plates, castor forks and hubs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.284523+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 1 material at PBR confidence 0.751-0.854; body lifted from luma 60 to 93 and recorded; lids, rails, handles, castors as vertex colours.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.367882+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: rust canvas re-toned to the drip body #8a4a22 with 34 streaks from the top edge.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.447791+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.531311+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus lid-hinge-l and lid-hinge-r, ZERO sockets, one BOX collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:16:11.614523+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.83
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+          "notes": ""
+        },
+        {
+          "id": "lids-and-hinges",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+          "notes": ""
+        },
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 696/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One component and one repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 1,
+        "budget": 2,
+        "headroom": 1,
+        "note": "steel only: 1 of 2; every tone a vertex colour."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 696,
+        "budget": 2000,
+        "headroom": 1304,
+        "note": "696 of 2,000: one frustum, twenty boxes, eight 10-14 segment cylinders, and three boxes instanced twice."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "A frustum for the body; boxes for the rails, deck, seam, handles, trunnions, forks and lids; cylinders for the castors and hubs."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh: the two lids, each a named hinge pivot with its instance index."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "body-luma",
+      "severity": "medium",
+      "description": "The measured navy is luma 60, two levels off the backdrop; every shaded panel would be read as background.",
+      "mitigation": "Shipped at #2f6a95, luma 93; recorded on the material."
+    },
+    {
+      "id": "declared-size",
+      "severity": "low",
+      "description": "The list-time 1.80 x 1.30 x 1.10 contradicted the proxy (w/h 0.91, d/h 0.46) and the plate.",
+      "mitigation": "Corrected to 1.40 x 1.40 x 0.65 before the build and recorded in the asset notes with the arithmetic."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Municipal Steel Dumpster",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-anisotropy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[6]",
+        "score": 2.761412737115,
+        "snippets": [
+          "... highlights (not round) that stay aligned with visible brush/groove marks as the view angle changes; Common on brushed steel/titanium knife finishes and gunsmith metal bases Dấu hiệu nhận diện: Điểm sáng kéo dài, có vệt (không tròn) luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-controlled-vocabulary-aat-facets",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[5]",
+        "score": 2.5410713068,
+        "snippets": [
+          "... không nhất quán. Recognition cues: Material/attribute terms should be drawn from a fixed enumerated list (e.g. 'brushed steel', 'anodized aluminum') rather than free-form phrasing that varies between descriptions of the same material Dấu ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7571,
+        "aspectRatioDelta": 0.3239,
+        "scaleDelta": 0.0396,
+        "bilateralSymmetryError": 0.1542,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 10.65,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 10.65
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.757 is below threshold 0.85",
+        "aspect-ratio delta 0.324 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "98d4c83c4396324b",
+      "passId": "blockout"
+    }
+  ]
+}

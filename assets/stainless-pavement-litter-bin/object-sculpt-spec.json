@@ -1,0 +1,1840 @@
+{
+  "targetName": "Stainless Pavement Litter Bin",
+  "targetId": "stainless-pavement-litter-bin",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "street-litter-bin",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "brushed-steel-cylinder",
+        "foot-flange",
+        "lift-off-cap",
+        "sand-ashtray-top",
+        "rectangular-throw-in-opening"
+      ],
+      "structureKind": [
+        "lathe",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "brushed-stainless-steel",
+        "ashtray-sand"
+      ],
+      "notes": "A stainless pavement bin: a brushed cylinder whose cap lifts off to empty the inner bucket. Nothing hinges and nothing attaches, so one root pivot and zero sockets is the whole contract; the cap is modelled seated as the asset notes require. Office towers, BTS stairs, mall entrances in the CBD. Brushed satin steel with vertical reflection banding, a sand ashtray on top, a slot opening."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE body lathe (foot flange, barrel, closed top), ONE cap lathe (sleeve, step, rolled edge, sunk dish), ONE bright rim ring at the seam, and two partial-cylinder patches for the opening and its lip -- all merged on the steel material.",
+        "ONE sand disc in the dish on its own rough, non-metallic material: sand is a different shader response, not a colour difference.",
+        "Two materials: steel and sand. The rim and opening tones are vertex colours on the steel material.",
+        "No repetition system. Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the plain brushed cylinder with a wider foot, a cap seam near the top and the dark slot; the brushed grain is a post-construction canvas of fine vertical bands, not geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-barrel",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "plain brushed barrel on a wider foot flange",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-cap",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "lift-off cap with a step, a rolled top edge and a bright seam ring",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-opening",
+          "zone": "body",
+          "kind": "groove",
+          "identityDefining": true,
+          "description": "dark rectangular slot opening on the front-left with a bright lip",
+          "mapsTo": {
+            "ref": "d3-opening"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-sand",
+          "zone": "top",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "sand-filled ashtray dish in the cap top",
+          "mapsTo": {
+            "ref": "ashtray"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-brushing",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "vertical brushed-reflection banding",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-foot",
+          "zone": "base",
+          "kind": "bevel",
+          "identityDefining": false,
+          "description": "foot flange chamfer",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+    "resolvedUnknowns": [
+      "The chrome reflection banding in the plate is a canvas of fine vertical bands, not an environment reflection: the harness supplies no environment map, so metalness is held at 0.35 and the banding is painted.",
+      "The opening is a shadowed patch 2 mm proud of the barrel, not a hole through the lathe.",
+      "The inner bucket is not modelled: the cap is seated and the bin is an exterior shell."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.40 x 0.90 x 0.40 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.40 x 0.90 m",
+          "Barrel and cap match the proxy within 0.03 H per band"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a tapered can",
+          "no cap seam"
+        ]
+      },
+      {
+        "id": "cap-and-ashtray",
+        "name": "Cap and sand ashtray",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Seam ring at 0.70 m",
+          "Sand dish visible from above"
+        ],
+        "evidenceRefs": [
+          "region-rim",
+          "region-sand"
+        ],
+        "failureModes": [
+          "no dish",
+          "cap wider than the body"
+        ]
+      },
+      {
+        "id": "finish-and-opening",
+        "name": "Brushed finish and opening",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Satin steel, not flat white",
+          "Dark slot on the front-left"
+        ],
+        "evidenceRefs": [
+          "region-steel",
+          "region-opening"
+        ],
+        "failureModes": [
+          "chalk white",
+          "opening read as a hole"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "cap-and-ashtray",
+      "name": "Cap and sand ashtray",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "body",
+        "ashtray"
+      ],
+      "evidenceRefs": [
+        "region-rim",
+        "region-sand"
+      ]
+    },
+    {
+      "id": "finish-and-opening",
+      "name": "Brushed finish and opening",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "region-steel",
+        "region-opening"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as cylinder: one proxy over foot, body and cap."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The chrome reflection banding in the plate is a canvas of fine vertical bands, not an environment reflection: the harness supplies no environment map, so metalness is held at 0.35 and the banding is painted.",
+    "The opening is a shadowed patch 2 mm proud of the barrel, not a hole through the lathe.",
+    "The inner bucket is not modelled: the cap is seated and the bin is an exterior shell."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.4,
+      "h": 0.9,
+      "d": 0.4
+    },
+    "description": "Foot flange r 0.20 over 0-0.03 m with a short chamfer to the barrel; barrel r 0.199 to 0.705 m; cap sleeve r 0.20 from 0.705 to 0.80 m; step to r 0.193 to 0.885 m; rolled edge to the top at 0.90 m; dish sunk 12 mm at r 0.125; opening patch over 0.57-0.66 m, 0.78 rad wide, centred 0.32 rad left of front.",
+    "envelopeDerivation": "x and z span -0.20..+0.20 at the foot flange, the DECLARED 0.40 m; the proxy band table reads w/h 0.45 in every body band (0.405 m at 0.90 m), a 1% residual on the declaration. y 0.00 to 0.90 at the cap top. Foot flange r 0.20 to 0.035 m, body r 0.199 to 0.705 m, cap sleeve r 0.20 to 0.80 m stepping in to r 0.193 and a rolled top edge at 0.885-0.90 m, ashtray dish sunk 12 mm inside r 0.125.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, scaled to 0.90 m: r 0.21 (r95) in every barrel slice, a side dent at 0.68-0.76 m (the opening), a groove at 0.79 m (the cap seam). Band table: mean |delta width| 0.0209, |delta depth| 0.0229; bands 1-6 read -0.016 (the declared 0.40 against the proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge, absent from the proxy's flat crown."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-steel",
+      "viewpoint": "front",
+      "path": "crops/steel.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-rim",
+      "viewpoint": "front",
+      "path": "crops/rim.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-sand",
+      "viewpoint": "top",
+      "path": "crops/sand.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-opening",
+      "viewpoint": "front",
+      "path": "crops/opening.png",
+      "confidence": 0.716
+    },
+    {
+      "id": "region-cap",
+      "viewpoint": "front",
+      "path": "crops/cap.png",
+      "confidence": 0.71
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.93,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.93: a surface of revolution; the proxy is round to 1% in every slice; only the opening breaks symmetry and it is on the observed side."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "body",
+      "name": "Steel body and cap",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Three lathes and two partial-cylinder patches merged into one geometry on one material: one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Body lathe closed at 0 and 0.705 m with a foot flange r 0.20 to 0.03 m and no inset grooves, 28 segments; cap lathe from 0.705 to 0.90 m with the dish sunk 12 mm; seam ring r 0.203 at 0.70-0.718 m; opening patch r 0.201 over 0.57-0.66 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The cap bottom disc at 0.705 faces down onto the body top disc at 0.705: opposed faces. The cap sleeve is 1 mm proud of the barrel, the seam ring 2 mm proud of the sleeve, the opening patch 2 mm and its lip 6 mm proud of the barrel.",
+        "mergeNote": "One merged BufferGeometry with seamless around-by-up UVs at 0.12 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-barrel",
+          "description": "barrel",
+          "delivery": "lathe profile"
+        },
+        {
+          "id": "d2-cap",
+          "description": "cap",
+          "delivery": "cap lathe + seam ring lathe"
+        },
+        {
+          "id": "d3-opening",
+          "description": "opening",
+          "delivery": "partial cylinder patches, vertex colour"
+        },
+        {
+          "id": "d5-brushing",
+          "description": "brushing",
+          "delivery": "stripes canvas"
+        },
+        {
+          "id": "d6-foot",
+          "description": "foot chamfer",
+          "delivery": "lathe profile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#bdbab2",
+        "recipe": "Satin steel as vertex colour on white with a stripes canvas; cap #c4bfb6; seam ring #b3b0a8; opening #8a847c.",
+        "evidenceRef": "region-steel",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(189, 186, 178, 1.0)",
+        "secondaryAlbedo": "rgba(196, 191, 182, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            0.45,
+            0
+          ],
+          "radius": 0.2,
+          "height": 0.9,
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "Declared on the asset as cylinder: one proxy over foot, body and cap."
+        }
+      }
+    },
+    {
+      "id": "ashtray",
+      "name": "Sand ashtray dish",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.8,
+      "confidence": 0.86,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One thin disc on its own material: sand is a different shader response (rough, non-metallic), not a colour difference.",
+      "materialId": "sand",
+      "material": "sand",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Disc r 0.118, 6 mm thick, top at 0.8945 m inside the sunk dish, 20 segments.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Its bottom faces down onto the dish floor at 0.888 (opposed faces); its top at 0.8945 sits 5.5 mm below the cap top, so no co-facing pair.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-sand",
+          "description": "sand dish",
+          "delivery": "disc + pebble canvas"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "body",
+        "localStart": [
+          0,
+          0.8885,
+          0
+        ],
+        "localEnd": [
+          0,
+          0.8945,
+          0
+        ],
+        "contactType": "resting",
+        "embedDepth": 0.0005,
+        "gapTolerance": 0.002
+      },
+      "colorMaterialRecipe": {
+        "materialId": "sand",
+        "baseColor": "#b2a596",
+        "recipe": "Sand tone as vertex colour on white with a fine pebble canvas.",
+        "evidenceRef": "region-sand",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(178, 165, 150, 1.0)",
+        "secondaryAlbedo": "rgba(178, 165, 150, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Brushed stainless steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#bdbab2",
+      "color": "#bdbab2",
+      "roughness": {
+        "base": 0.38,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.35,
+      "albedo": {
+        "dominant": "#bdbab2",
+        "secondary": [
+          "#bdbab2",
+          "#b3b0a8",
+          "#c4bfb6"
+        ],
+        "samplingNotes": "Measured as the mean of crops/steel.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d3-opening",
+          "region": "throw-in opening 0.57-0.66 m, azimuth -0.32 rad",
+          "roughness": 0.6,
+          "palette": [
+            "#8A847C"
+          ],
+          "evidence": "crops/opening.png -- #1d130e at 0.716; shipped at #8a847c for the silhouette gate."
+        }
+      ],
+      "finishClass": "brushed-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-steel (0.831) at #bdbab2; carried as a vertex colour on a WHITE material so the rim (#b3b0a8, region-rim 0.86), the cap (#c4bfb6) and the opening interior ride the same shader.",
+          "Metalness 0.35, not the physical 1.0: the thaikit harness has no environment map and a full metal renders black. Roughness 0.38 from the satin sheen in the crop.",
+          "Opening interior measured #1d130e (luma 22), shipped at #8a847c (luma 132): the turntable gate reads an enclosed patch at the backdrop luma 58 as a hole and a side-lit face renders at ~0.56 of its painted luma. The first build's 6 mm inset under the cap seam and 4 mm inset above the foot were flagged the same way and removed.",
+          "Textureless as DECLARED: a 256 px stripes canvas after construction -- 16 bands per 0.12 m around the body at 1.0 / 0.90 -- the brushed reflection banding the plate shows."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/steel.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "sand",
+      "name": "Ashtray sand",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b2a596",
+      "color": "#b2a596",
+      "roughness": {
+        "base": 1.0,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/sand_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b2a596",
+        "secondary": [
+          "#b2a596",
+          "#a49888"
+        ],
+        "samplingNotes": "Measured as the mean of crops/sand.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "matte",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-sand (0.86) at #b2a596, carried as a vertex colour on white; a 256 px fine pebble canvas (2,600 grains at 1-2 mm) multiplies in the grain.",
+          "Textureless as DECLARED: the grain is a post-construction canvas."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/sand.png",
+        "pbrReport": "material-evidence/sand.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T18:13:46.122679+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.206111+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.294178+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "cap-and-ashtray",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Cap sleeve 0.705-0.80 m stepping to r 0.193, seam ring #b3b0a8 at 0.70-0.718 m, sand disc r 0.118 at 0.8945 m on its own rough material with a 2,600-grain canvas; body top raised to 0.705 to close the shadow gap.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.375230+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.457329+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.537464+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.618857+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.701272+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        },
+        {
+          "id": "cap-and-ashtray",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Cap sleeve 0.705-0.80 m stepping to r 0.193, seam ring #b3b0a8 at 0.70-0.718 m, sand disc r 0.118 at 0.8945 m on its own rough material with a 2,600-grain canvas; body top raised to 0.705 to close the shadow gap.",
+          "notes": ""
+        },
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T18:13:46.122679+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2; body and cap lathes at the proxy radius 0.199-0.20.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.206111+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: radius restored from 0.195 to 0.199 after the band table read every body band -0.025; cap top squared toward the proxy crown; inset grooves removed and lathe corners split after the turntable gate flagged the seam shadow as a 4,876 px hole (now 34).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.294178+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "cap-and-ashtray",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Cap sleeve 0.705-0.80 m stepping to r 0.193, seam ring #b3b0a8 at 0.70-0.718 m, sand disc r 0.118 at 0.8945 m on its own rough material with a 2,600-grain canvas; body top raised to 0.705 to close the shadow gap.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: seam ring, rolled cap edge, sunk dish, opening lip.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.375230+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.831-0.86, both textureless; metalness held at 0.35 for a harness with no environment.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.457329+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: brushed banding as a 16-band stripes canvas; sand grain canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.537464+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.618857+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CYLINDER collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T18:13:46.701272+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.85,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+          "notes": ""
+        },
+        {
+          "id": "cap-and-ashtray",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Cap sleeve 0.705-0.80 m stepping to r 0.193, seam ring #b3b0a8 at 0.70-0.718 m, sand disc r 0.118 at 0.8945 m on its own rough material with a 2,600-grain canvas; body top raised to 0.705 to close the shadow gap.",
+          "notes": ""
+        },
+        {
+          "id": "finish-and-opening",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+          "notes": "Chrome reflections are painted banding, not reflections."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,400/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases at 0.5 MB.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-pavement-litter-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components, no repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "steel and sand: 2 of 2; rim, cap and opening tones are vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1400,
+        "budget": 2000,
+        "headroom": 600,
+        "note": "1,400 of 2,000: three 28-segment lathes (sharp profile corners split for clean normals), two 8-segment patches and a 20-segment disc."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Lathes for the body, cap and seam ring; partial open cylinders for the opening and lip; a disc for the sand."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing repeats on a pavement bin. In a scene the HOST instances the whole prop."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. One 256 px stripes canvas and one 256 px pebble canvas after construction, 0.5 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "no-environment",
+      "severity": "medium",
+      "description": "Brushed chrome with no environment map cannot reflect; a physical metalness renders black.",
+      "mitigation": "Metalness 0.35, roughness 0.38, and the reflection banding painted as a 16-band stripes canvas at 1.0 / 0.90."
+    },
+    {
+      "id": "opening-luma",
+      "severity": "low",
+      "description": "The measured opening interior (luma 22) would be read as a hole.",
+      "mitigation": "Shipped at #8a847c, luma 132 (side-lit ~74), recorded on the material override; the inset grooves that were also flagged are gone."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Stainless Pavement Litter Bin",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.8292,
+        "aspectRatioDelta": 0.2103,
+        "scaleDelta": 0.0381,
+        "bilateralSymmetryError": 0.0044,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.32,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.77
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.829 is below threshold 0.85",
+        "aspect-ratio delta 0.210 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "7bf40a1fb3bc1332",
+      "passId": "blockout"
+    }
+  ]
+}

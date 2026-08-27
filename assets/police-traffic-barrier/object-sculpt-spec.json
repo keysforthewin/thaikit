@@ -1,0 +1,1842 @@
+{
+  "targetName": "Police Traffic Barrier",
+  "targetId": "police-traffic-barrier",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "a-frame-police-barrier",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "tube-a-frames",
+        "top-bar",
+        "chevron-sign-panel",
+        "diagonal-stays"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "galvanised-tube-steel",
+        "printed-enamel-sign"
+      ],
+      "notes": "A rigid welded A-frame barrier: nothing opens, turns or swings, nothing attaches, so one root pivot and zero sockets. It repeats in rows of five to ten, so the draw-call ceiling is the design constraint. Checkpoints, festival closures, accident scenes; rows of five to ten. Rusting galvanised tube, a chevron panel with the Royal Thai Police badge and ตำรวจ, grime along the bottom edge."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE tube merge -- two A-frames of two legs and a brace each, the top bar, two diagonal stays, two hanger clips and six rust blocks -- on galvanised steel; ONE sign panel box on a BAKED material: TWO draw calls of 2.",
+        "Two materials: galvanised steel (vertex colours: zinc, rust) with a rust canvas, and the printed sign face as a baked WebP data URI -- the registry notes say the badge and lettering are a printed graphic and belong on a canvas.",
+        "No repetition system: two A-frames are two tube sets in one merge.",
+        "Action readiness: one root pivot, zero sockets, one box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the red-and-white chevron panel with the police badge and ตำรวจ on tube A-frames; the graphic is projected from the plate's own printed region because a drawn wordmark differs per machine and a wrong badge is a wrong prop."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-frames",
+          "zone": "legs",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two tube A-frames with braces",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-chevrons",
+          "zone": "panel",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "red and white chevron stripes",
+          "mapsTo": {
+            "ref": "sign"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-badge",
+          "zone": "panel",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "Royal Thai Police badge and ตำรวจ",
+          "mapsTo": {
+            "ref": "sign"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-stays",
+          "zone": "legs",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "diagonal stays to the panel foot",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-rust",
+          "zone": "legs",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rust at the feet and joints",
+          "mapsTo": {
+            "ref": "d5-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-topbar",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "top bar between the apexes with hanger clips",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+    "resolvedUnknowns": [
+      "The panel is printed on both faces (box UVs sample the same image); the plate shows the front only.",
+      "The chevrons are drawn at a regular 150 px pitch; the badge and wordmark are the plate's own pixels, feathered onto the drawn field.",
+      "Grime on the panel is not carried; the sign is a single baked map."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.50 x 1.10 x 0.55 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.50 x 1.10 x 0.55 m",
+          "Panel from 0.56 to 1.04 on two A-frames"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a fence panel",
+          "no A-frames"
+        ]
+      },
+      {
+        "id": "graphic",
+        "name": "Chevrons, badge and wordmark",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Red/white chevrons",
+          "Badge left of ตำรวจ"
+        ],
+        "evidenceRefs": [
+          "region-sign"
+        ],
+        "failureModes": [
+          "plain red panel",
+          "tofu glyphs"
+        ]
+      },
+      {
+        "id": "hardware",
+        "name": "Tube and rust",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Galvanised tube",
+          "Rust at the feet"
+        ],
+        "evidenceRefs": [
+          "region-tube"
+        ],
+        "failureModes": [
+          "clean chrome"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "graphic",
+      "name": "Chevrons, badge and wordmark",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "sign"
+      ],
+      "evidenceRefs": [
+        "region-sign"
+      ]
+    },
+    {
+      "id": "hardware",
+      "name": "Tube and rust",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-tube"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "frame",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the whole barrier envelope."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The panel is printed on both faces (box UVs sample the same image); the plate shows the front only.",
+    "The chevrons are drawn at a regular 150 px pitch; the badge and wordmark are the plate's own pixels, feathered onto the drawn field.",
+    "Grime on the panel is not carried; the sign is a single baked map."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.5,
+      "h": 1.1,
+      "d": 0.55
+    },
+    "description": "Two tube A-frames 1.10 m tall at x +-0.66 with feet splayed to +-0.275, a brace at 0.34 and a top bar between the apexes; a 1.30 x 0.48 x 0.02 sign panel hung from 0.56 to 1.04; two diagonal stays from the braces to the panel foot.",
+    "envelopeDerivation": "x +-0.689 at the tube feet (declared 1.50: the panel is 1.30 and the frames sit inside it); y 0 to 1.098 at the top bar crown (declared 1.10); z +-0.275 at the splayed feet (declared 0.55). Proxy occupancy: panel 0.46-0.98 H across the full width, legs below at both ends with a brace at ~0.30 H and a diagonal stay; w:h 1.648 (0.91 m tall at 1.50) is the plate's foreshortening and the declared 1.10 governs.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:0.607:0.463, 1,501 triangles; occupancy reads the panel 0.46-0.98 H full width and the legs, brace and stays below."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-tube",
+      "viewpoint": "front",
+      "path": "crops/tube.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-sign",
+      "viewpoint": "front",
+      "path": "crops/sign.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-red",
+      "viewpoint": "front",
+      "path": "crops/red.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-white",
+      "viewpoint": "front",
+      "path": "crops/white.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the back of the panel is assumed printed the same way, as the box UVs sample the same image on both faces; a plain steel back is the alternative."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Tube A-frames",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.86,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Nine tubes and eight boxes merged on one material: one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Legs r 0.018 from the apex at 1.08 to feet at z +-0.255; braces at 0.34; top bar apex to apex; stays r 0.013 to the panel foot; clips 0.02 x 0.06.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Tubes meet as interpenetrating cylinders; rust blocks wrap the tube ends; clips enter the top bar. Nothing planar meets.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.35 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-frames",
+          "description": "A-frames",
+          "delivery": "tubes"
+        },
+        {
+          "id": "d4-stays",
+          "description": "stays",
+          "delivery": "tubes"
+        },
+        {
+          "id": "d5-rust",
+          "description": "rust",
+          "delivery": "blocks + canvas"
+        },
+        {
+          "id": "d6-topbar",
+          "description": "top bar",
+          "delivery": "tube + clip boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#9a9c9c",
+        "recipe": "Zinc as vertex colour on white with a rust canvas; rust blocks at the feet and joints.",
+        "evidenceRef": "region-tube",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(154, 156, 156, 1.0)",
+        "secondaryAlbedo": "rgba(154, 156, 156, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.55,
+            0
+          ],
+          "halfExtents": [
+            0.75,
+            0.55,
+            0.275
+          ],
+          "notes": "Declared on the asset as box: the whole barrier envelope."
+        }
+      }
+    },
+    {
+      "id": "sign",
+      "name": "Chevron sign panel",
+      "level": "meso",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One box on the baked material: one draw call; box UVs put the whole image on each face.",
+      "materialId": "sign",
+      "material": "sign",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "1.30 x 0.48 x 0.02 centred at 0.80 m, in the plane of the top bar.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The panel hangs 2 cm below the top bar centre and the clips enter its top edge; no face shares a plane with a tube.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-chevrons",
+          "description": "chevrons",
+          "delivery": "baked map"
+        },
+        {
+          "id": "d3-badge",
+          "description": "badge and wordmark",
+          "delivery": "plate crop in the baked map"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "sign",
+        "baseColor": "#b8302a",
+        "recipe": "Baked chevron field with the plate's badge and wordmark.",
+        "evidenceRef": "region-sign",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(184, 48, 42, 1.0)",
+        "secondaryAlbedo": "rgba(184, 48, 42, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Galvanised tube steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9a9c9c",
+      "color": "#9a9c9c",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#9a9c9c",
+        "secondary": [
+          "#9a9c9c",
+          "#8a6040"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tube.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-rust",
+          "region": "feet and joints",
+          "roughness": 0.7,
+          "palette": [
+            "#8A6040"
+          ],
+          "evidence": "crops/rust.png -- rust at every foot and weld; six tinted blocks plus the rust canvas."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-tube (0.84) at #717170 (a leg in shade); carried at #9a9c9c as a vertex colour on a WHITE material with rust blocks #8a6040 at the feet and joints.",
+          "Textureless as DECLARED: a 256 px rust canvas after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tube.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.84,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "sign",
+      "name": "Printed chevron sign",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b8302a",
+      "color": "#b8302a",
+      "roughness": {
+        "base": 0.5,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/sign_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b8302a",
+        "secondary": [
+          "#b8302a",
+          "#e9e4dc"
+        ],
+        "samplingNotes": "Measured as the mean of crops/sign.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-sign (0.90): red #b8302a and white #e9e4dc drawn as a chevron field, the badge and wordmark lifted from the plate crop [395,300,335,160] and feathered on; baked to a 28 KB WebP data URI (scratch/_prop/mksign.mjs).",
+          "Textureless as DECLARED for the generator: the baked map is assigned after construction through TextureLoader, which the declaration does not touch."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/sign.png",
+        "pbrReport": "material-evidence/sign.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-27T10:02:48.977698+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.054249+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.142838+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.218804+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Zinc #9a9c9c tubes with rust blocks at six joints and a rust canvas.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.296933+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.377050+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.456162+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.533872+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        },
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        },
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Zinc #9a9c9c tubes with rust blocks at six joints and a rust canvas.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-27T10:02:48.977698+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2; A-frames and panel.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.054249+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: legs to feet at +-0.255 z, brace at 0.34, top bar at 1.08, panel 1.30 x 0.48 from 0.56.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.142838+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: stays, hanger clips, rust blocks.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.218804+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Zinc #9a9c9c tubes with rust blocks at six joints and a rust canvas.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: steel 0.84 textureless with a rust canvas; sign face as a baked WebP from the plate crop.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.296933+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: chevrons drawn, badge and wordmark projected from the plate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.377050+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim, no contact shadow in the plate; recorded absent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.456162+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T10:02:49.533872+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.38 x 1.10 x 0.55 m; panel 0.56-1.04 on two A-frames with braces and stays -- the proxy stations.",
+          "notes": ""
+        },
+        {
+          "id": "graphic",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Baked chevron field with the plate's own badge and ตำรวจ; decoded in the harness (texturesPending 0).",
+          "notes": "Feathered crop edge visible at close range."
+        },
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.82,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Zinc #9a9c9c tubes with rust blocks at six joints and a rust canvas.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 380/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one 256 px canvas and one 28 KB baked map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/police-traffic-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components, no repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "steel and sign: 2 of 2."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 380,
+        "budget": 2000,
+        "headroom": 1620,
+        "note": "380 of 2,000: nine 6-8 segment tubes, nine boxes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Tubes for every leg, brace, bar and stay; a box for the panel; boxes for rust and clips."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: two A-frames are one merge. In a scene the HOST instances the barrier along a row."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. One 256 px rust canvas plus one baked 1024 x 384 WebP (28 KB) after construction."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "baked-decode",
+      "severity": "low",
+      "description": "The sign is a TextureLoader data URI; a host that blocks data URIs shows a white panel.",
+      "mitigation": "The harness reported texturesPending 0 and no textureErrors; the material colour is white so a failed load reads as an unprinted panel, not black."
+    },
+    {
+      "id": "back-face-print",
+      "severity": "low",
+      "description": "The back of the panel shows the same graphic mirrored.",
+      "mitigation": "Recorded as an assumption; real panels are usually printed both sides."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Police Traffic Barrier",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5789,
+        "aspectRatioDelta": 0.2895,
+        "scaleDelta": 0.0448,
+        "bilateralSymmetryError": 0.1689,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 3.15,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.42
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.579 is below threshold 0.85",
+        "aspect-ratio delta 0.289 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.2% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "ec5bd59b843c07c1",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5789,
+        "aspectRatioDelta": 0.2895,
+        "scaleDelta": 0.0448,
+        "bilateralSymmetryError": 0.1689,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 3.15,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.42
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.579 is below threshold 0.85",
+        "aspect-ratio delta 0.289 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.2% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "ec5bd59b843c07c1",
+      "passId": "blockout"
+    }
+  ]
+}
