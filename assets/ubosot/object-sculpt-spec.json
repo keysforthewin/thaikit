@@ -70,7 +70,9 @@
       "primaryType": "architectural-monument-hall",
       "primaryDomain": "object",
       "formLanguage": [
-        "nested-gable-prisms",
+        "telescoped-gable-roof",
+        "layered-slopes",
+        "hipped-portico-skirt",
         "peristyle-colonnade",
         "stepped-platform",
         "axial-symmetry"
@@ -89,9 +91,10 @@
         "red-lacquer-timber",
         "terracotta-roof-tile",
         "olive-glazed-tile",
-        "tarnished-gilding"
+        "tarnished-gilding",
+        "gilt-carved-lacquer"
       ],
-      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The ordination hall of a wat and its visual anchor. A stepped white stone platform with a stair on the short end; twenty-four red columns forming a peristyle round a solid white hall body; three steep descending roof tiers in terracotta tile with olive-glazed eaves bands, white bargeboards and red ridge and eaves trim; gilt pediments in the topmost gable; fourteen curved chofa horns; and eight bai sema boundary stones. The registry notes are explicit that the sema are what make this an ORDINATION hall rather than a general assembly hall, so they belong to the asset and are not optional dressing."
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The ordination hall of a wat and its visual anchor. A stepped white terrace and plinth with a stair at each end; thirty red columns forming a peristyle round a solid white hall body with eight windows a side and a door at each end; a hipped portico skirt over the colonnade; a 45-degree middle roof layer; a top gable telescoped into three sections, centre highest; glazed eaves bands, white risers and bargeboards, red trim, carved gilt pediments in both end gables; sixteen curved horns; and eight bai sema boundary stones. The registry notes are explicit that the sema are what make this an ORDINATION hall rather than a general assembly hall, so they belong to the asset and are not optional dressing."
     },
     "complexity": {
       "tier": "complex",
@@ -109,13 +112,13 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 6,
-        "repetitionSystems": 3
+        "materialLayers": 7,
+        "repetitionSystems": 5
       },
       "reasoning": [
-        "The registry notes put the identity in the ROOF -- three steep descending tiers with curved horn finials -- so the roof is where the geometry budget goes, and it is built as nested TRUNCATED gable prisms rather than as a stack of boxes.",
-        "Three repetition systems: twenty-four columns, fourteen chofa and eight boundary stones. All three are instanced; as separate meshes the columns alone would be the entire draw-call budget.",
-        "Material layering is the highest of the monumental set at six -- stone, red, tile, olive glaze, gilt and shade -- because a Thai temple roof is genuinely polychrome.",
+        "The identity is the ROOF, and it is not a stack: a hipped portico skirt round the colonnade, a 45-degree middle layer the full 18 m of the core, and a top gable TELESCOPED along the length into a 12 m centre with its ridge at 14.8 m and two 3 m ends at 14.0 m -- read off the proxy's side elevation, where the layer lines run continuous and only the ridges step.",
+        "Five repetition systems: thirty columns, sixteen chofa and rake-foot horns, sixteen window surrounds, sixteen window leaves and eight boundary stones. Every one is instanced.",
+        "Material layering is seven -- stone, red lacquer, tile, olive glaze, gilt, shade and the carved pediment canvas -- because a Thai temple roof is genuinely polychrome, and four of them carry post-construction weathering canvases.",
         "Action readiness is minimal: static landmark geometry, box collider, not breakable."
       ]
     },
@@ -130,7 +133,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The roof cannot be expressed without nesting, and the nesting cannot be expressed with full gables: three full gables at one pitch put the WIDEST tier's ridge highest, which is upside down. Each lower tier has to be truncated at the height where the next tier's eaves begin."
+      "rationale": "The roof cannot be expressed as nested full gables, and it cannot be expressed as one prism either: the layers step in plan on the SIDE slopes while the end gable is a single triangle from the middle layer's eaves to the ridge, and the ridge itself steps along the length. Each layer is therefore three solids -- a white riser, a glaze band, a tile field -- and the gable ends are their own slabs following the stacked outline."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -139,11 +142,11 @@
       "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
       "details": [
         {
-          "id": "d1-tiered-roof",
+          "id": "d1-telescoped-roof",
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "three steep descending tiers, each truncated where the next tier's eaves begin",
+          "description": "portico skirt, 45-degree middle layer, and a top gable telescoped into three sections with the centre ridge 0.8 m above the ends",
           "mapsTo": {
             "ref": "roof-tile"
           },
@@ -154,7 +157,7 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "fourteen CURVED horn finials at every gable apex and every rake foot",
+          "description": "CURVED horn finials: 2.35 m chofa at every gable apex, horns at every rake foot and skirt corner",
           "mapsTo": {
             "ref": "roof-tile"
           },
@@ -176,7 +179,7 @@
           "zone": "body",
           "kind": "linework",
           "identityDefining": true,
-          "description": "twenty-four red columns forming a peristyle round the hall body",
+          "description": "thirty red columns forming a peristyle round the hall body, with a low parapet between their bases",
           "mapsTo": {
             "ref": "wall"
           },
@@ -187,7 +190,7 @@
           "zone": "roof",
           "kind": "linework",
           "identityDefining": true,
-          "description": "olive-glazed band along the foot of every tier's slope",
+          "description": "olive-glazed band along the foot of every roof register",
           "mapsTo": {
             "ref": "roof-band"
           },
@@ -198,7 +201,7 @@
           "zone": "roof",
           "kind": "ridge",
           "identityDefining": true,
-          "description": "white bargeboards up each gable rake with red fascia outside them",
+          "description": "white bargeboard with a red outer strip up each gable rake, and white risers under every layer's eaves",
           "mapsTo": {
             "ref": "barge-boards"
           },
@@ -209,33 +212,68 @@
           "zone": "gable",
           "kind": "decal",
           "identityDefining": true,
-          "description": "gilt field filling the topmost gable at each end",
+          "description": "carved gilt kranok field filling each end gable from the middle eaves to the ridge",
           "mapsTo": {
             "ref": "pediment"
           },
           "realization": "unreported"
         },
         {
-          "id": "d8-doorway",
+          "id": "d8-doorways",
           "zone": "body",
           "kind": "seam",
           "identityDefining": false,
-          "description": "one doorway on the +Z short end at the head of the stair",
+          "description": "a doorway in a proud stone surround at the head of each stair",
           "mapsTo": {
             "ref": "doorway"
           },
           "realization": "unreported"
         },
         {
-          "id": "d9-plinth-streaks",
+          "id": "d12-windows",
+          "zone": "body",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "eight windows a side in proud stone surrounds between the columns",
+          "mapsTo": {
+            "ref": "wall"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-whitewash-weathering",
           "zone": "platform",
           "kind": "stain",
-          "identityDefining": false,
-          "description": "black weathering streaks darkening the plinth, fading out by 1.75 m",
+          "identityDefining": true,
+          "description": "grey-black weathering washes and streaks down every whitewashed face, darkest on the plinth",
           "mapsTo": {
-            "ref": "d9-plinth-streaks"
+            "ref": "d9-whitewash-weathering"
           },
           "onMaterial": "stone",
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-lacquer-peel",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "red lacquer peeling to pale plaster on the columns, with dark grime washes",
+          "mapsTo": {
+            "ref": "d10-lacquer-peel"
+          },
+          "onMaterial": "red",
+          "realization": "unreported"
+        },
+        {
+          "id": "d11-tile-courses",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "individually laid, visibly overlapping tile courses with grey-green growth",
+          "mapsTo": {
+            "ref": "d11-tile-courses"
+          },
+          "onMaterial": "tile",
           "realization": "unreported"
         }
       ]
@@ -267,18 +305,18 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
     "resolvedUnknowns": [
-      "ONE stair and ONE doorway, on the +Z short end. Most ubosots have a matching pair at the far end; the plate shows one and the other end is unseen, so one is what the evidence supports.",
-      "The gilt pediment is a plain triangular field. The plate's pediment is dense pierced carving -- the single most ornate thing on the building -- and it is authored as a proud flat panel. This is the largest deliberate simplification on the prop and is reported as a risk.",
-      "The plate's roof tiles are individually laid and visibly overlapping; the model carries flat tile fields. At the distance a 24 m hall is read from, the tile course is below the resolvable band, and the only route to it is the procedural texture set that discards every measured albedo.",
-      "The pink glazed rosettes along the bargeboards and the naga finials at the rake feet are not authored; the chofa horns are.",
-      "The interior is not modelled. The dark between the columns is a single solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+      "A stair and a doorway at BOTH ends. The plate shows the near end; the proxy is symmetric end to end and the type conventionally has both, so both are built.",
+      "The three-section telescoping is read off the proxy: the layer lines are continuous along the side elevation and only the ridges step (14.8 m over 12 m, 14.0 m over 3 m at each end). Whether the real building steps its lower layers too is not resolvable from one plate.",
+      "The end gables carry ONE pediment from the middle layer's eaves to the ridge, as the plate's gilt triangle does; the top layer's step therefore shows only on the side slopes.",
+      "The pediment carving is a drawn kranok-scroll canvas, not the plate's actual relief: dense mirrored gilt scrolls with a central flame and sawtooth borders on red lacquer, at the pediment's own aspect. It reads as carved gilt at prop distance; it is not a likeness.",
+      "The interior is not modelled. The dark between the columns is a solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 12.00 x 12.00 x 24.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "Rendered model matches the reference silhouette, the 14.00 x 17.00 x 24.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
       "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
@@ -286,10 +324,10 @@
     ],
     "minimumSpecDepth": {
       "macroComponents": 3,
-      "mesoComponents": 5,
-      "microFeatureGroups": 3,
-      "materialLayers": 6,
-      "repetitionSystems": 3,
+      "mesoComponents": 7,
+      "microFeatureGroups": 4,
+      "materialLayers": 7,
+      "repetitionSystems": 5,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -299,34 +337,35 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 12.0 x 12.0 x 24.0 m with the long axis on Z",
-          "Platform, colonnade and roof read as three distinct horizontal registers",
-          "The roof is nearly half the total height"
+          "Envelope 14.0 x 17.0 x 24.0 m with the long axis on Z",
+          "Platform, colonnade, skirt and roof core read as distinct horizontal registers",
+          "The roof is well over half the total height and the ridge steps along the length"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "a chofa pushing the prop past its declared width",
-          "the roof reading as a lid rather than as the dominant mass"
+          "a squat declaration: the first build at 12 m read as a lid on a box",
+          "a horn pushing the prop past its declared width"
         ]
       },
       {
         "id": "tiered-roof",
-        "name": "Three-tier roof and chofa",
+        "name": "Telescoped, layered roof and chofa",
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Three steep tiers stepping in AND up, correctly nested",
-          "Horn finials that CURVE, at every gable apex and rake foot",
-          "Olive glaze bands, white bargeboards and red trim all present"
+          "Hipped portico skirt, middle layer and top gable, each with riser, glaze band and tile field",
+          "Three sections along the length with the centre ridge higher, its gable faces showing above the end ridges",
+          "Horn finials that CURVE, at every gable apex, rake foot and skirt corner",
+          "One big pediment per end gable from the middle eaves to the ridge"
         ],
         "evidenceRefs": [
           "view-full",
           "region-tile"
         ],
         "failureModes": [
-          "full gables that cannot nest, putting the widest tier highest",
+          "concentric same-length tiers, which is a wedding cake and not a Thai roof",
           "straight spikes instead of curved horns, which read as lightning rods"
         ]
       },
@@ -336,7 +375,8 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Twenty-four red columns in a regular peristyle",
+          "Thirty red columns in a regular peristyle with a parapet between their bases",
+          "Windows and doors in stone surrounds on the body behind them",
           "EIGHT pointed boundary stones on pedestals around the platform"
         ],
         "evidenceRefs": [
@@ -344,17 +384,18 @@
         ],
         "failureModes": [
           "the sema omitted, which makes it an assembly hall and not an ordination hall",
-          "the wall body rendering black because a vertexColors material found no colour attribute"
+          "a bare wall body with no openings"
         ]
       },
       {
         "id": "polychrome",
-        "name": "Polychrome palette",
+        "name": "Polychrome palette and weathering",
         "required": false,
         "threshold": 0.75,
         "qualityCriteria": [
           "Muted terracotta tile, OLIVE glaze, tarnished gilt -- as measured",
-          "Red lacquer columns against whitewashed stone"
+          "Streaked whitewash, peeling red lacquer and laid tile courses, each a measured ratio",
+          "A carved gilt pediment rather than a flat triangle"
         ],
         "evidenceRefs": [
           "region-tile",
@@ -362,7 +403,8 @@
           "region-gilt"
         ],
         "failureModes": [
-          "bright orange tile and saturated green trim authored from memory rather than from the plate"
+          "flat paint on a hero prop whose plate is visibly weathered",
+          "peel dense enough to read as spots or camouflage rather than as lacquer"
         ]
       }
     ],
@@ -528,7 +570,7 @@
     },
     {
       "id": "tiered-roof",
-      "name": "Three-tier roof and chofa",
+      "name": "Telescoped, layered roof and chofa",
       "tier": "critical",
       "passIds": [
         "form-refinement",
@@ -539,8 +581,11 @@
       "componentRefs": [
         "roof-tile",
         "roof-band",
+        "roof-risers",
+        "gable-walls",
         "barge-boards",
-        "roof-trim"
+        "roof-trim",
+        "pediment"
       ],
       "evidenceRefs": [
         "region-tile"
@@ -557,7 +602,8 @@
       "mustPass": true,
       "componentRefs": [
         "wall",
-        "platform"
+        "platform",
+        "doorway"
       ],
       "evidenceRefs": [
         "region-column"
@@ -565,17 +611,19 @@
     },
     {
       "id": "polychrome",
-      "name": "Polychrome palette",
+      "name": "Polychrome palette and weathering",
       "tier": "important",
       "passIds": [
-        "material-pass"
+        "material-pass",
+        "surface-pass"
       ],
       "minimumScore": 0.75,
       "mustPass": false,
       "componentRefs": [
         "roof-tile",
         "roof-band",
-        "pediment"
+        "pediment",
+        "platform"
       ],
       "evidenceRefs": [
         "region-tile",
@@ -680,7 +728,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 11,
+    "partCount": 15,
     "pivotInventory": [
       {
         "name": "root",
@@ -706,18 +754,18 @@
         "component": "platform",
         "shape": "box",
         "matchesAssetDeclaration": true,
-        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its twenty-four individual columns."
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its thirty individual columns."
       }
     ],
     "destructionGroups": [],
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "ONE stair and ONE doorway, on the +Z short end. Most ubosots have a matching pair at the far end; the plate shows one and the other end is unseen, so one is what the evidence supports.",
-    "The gilt pediment is a plain triangular field. The plate's pediment is dense pierced carving -- the single most ornate thing on the building -- and it is authored as a proud flat panel. This is the largest deliberate simplification on the prop and is reported as a risk.",
-    "The plate's roof tiles are individually laid and visibly overlapping; the model carries flat tile fields. At the distance a 24 m hall is read from, the tile course is below the resolvable band, and the only route to it is the procedural texture set that discards every measured albedo.",
-    "The pink glazed rosettes along the bargeboards and the naga finials at the rake feet are not authored; the chofa horns are.",
-    "The interior is not modelled. The dark between the columns is a single solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
+    "A stair and a doorway at BOTH ends. The plate shows the near end; the proxy is symmetric end to end and the type conventionally has both, so both are built.",
+    "The three-section telescoping is read off the proxy: the layer lines are continuous along the side elevation and only the ridges step (14.8 m over 12 m, 14.0 m over 3 m at each end). Whether the real building steps its lower layers too is not resolvable from one plate.",
+    "The end gables carry ONE pediment from the middle layer's eaves to the ridge, as the plate's gilt triangle does; the top layer's step therefore shows only on the side slopes.",
+    "The pediment carving is a drawn kranok-scroll canvas, not the plate's actual relief: dense mirrored gilt scrolls with a central flame and sawtooth borders on red lacquer, at the pediment's own aspect. It reads as carved gilt at prop distance; it is not a likeness.",
+    "The interior is not modelled. The dark between the columns is a solid wall body -- this prop is an exterior shell, and an interior would cost draw calls, geometries and VRAM for something nobody sees."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -725,17 +773,17 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center as the asset declares, +Y up, LONG AXIS ON Z -- the declared 12 x 12 x 24 puts the 24 m on depth. That matters for the reference comparison: Meshy returned this building with its long axis on X, which is an arbitrary output convention and not a disagreement, and the band comparison now detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring. Read without that rotation it reported a mean depth error of 1.05 of height -- a coordinate convention masquerading as a fidelity failure."
+    "notes": "Origin base-center as the asset declares, +Y up, LONG AXIS ON Z -- the declared 14 x 17 x 24 puts the 24 m on depth. Meshy returned this building with its long axis on X, which is an arbitrary output convention and not a disagreement; the band comparison detects the mismatch from the two footprints and rotates the reference a quarter turn before measuring."
   },
   "silhouette": {
     "envelope": {
-      "w": 12.0,
-      "h": 12.0,
+      "w": 14.0,
+      "h": 17.0,
       "d": 24.0
     },
-    "description": "A stepped white platform to 1.75 m, a red colonnade to 6.10 m, and then five and a half metres of roof: three tiers stepping in and up to a ridge at 11.40 m, with horns at every gable apex and every rake foot reaching 12.00 m. The silhouette events are the colonnade's rhythm, the three roof steps, and the fourteen horns breaking every edge of the roofline.",
-    "envelopeDerivation": "x spans -6.00..+6.00 = 12.00 and z spans -12.00..+12.00 = 24.00, both set by the bottom stone slab; the long axis is Z. y spans 0.00 to 12.00, the tip of the chofa at the topmost gable apex. The roof is NOT what sets the width, and that took a rebuild to get right: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00. The roof came in to 5.45; the platform sets the envelope, as it should.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to long:h:short = 1 : 0.712 : 0.574 against the declared 1 : 0.500 : 0.500 -- the reference is 42% TALLER relative to its length, and slightly wider. After correcting the axis convention, area-weighted band comparison gives mean |delta width| 0.173 and |delta depth| 0.446 of height, the largest divergence of the monumental set. Almost all of it is that one ratio: widths are normalised by height, so a model squashed from 17 m to 12 m reads proportionally wider in every band, and 1.75/1.20 on the long axis is 1.46 against the 1.42 the two aspect ratios predict. This is the Bangkok Hospital case again -- the proxy and the declaration disagree about the SUBJECT's proportions, not about its framing. The registry notes call 24 m long correct for a full ordination hall and declare 12 m of height; the declaration wins, and the divergence is reported rather than quietly split."
+    "description": "A stepped white platform to 1.30 m, a red colonnade to 6.6 m under a 37-degree portico skirt whose eaves are at 6.9 m, then the roof core: a 45-degree middle layer from 9.0 to 10.85 m and a top gable from 10.9 m whose ridge is 14.8 m over the 12 m centre and 14.0 m over each 3 m end, with the centre's gable faces showing 0.8 m above the end ridges. Horns at every gable apex (to 16.9 m), every rake foot and every skirt corner. The silhouette events are the colonnade's rhythm, the three roof registers, the telescoped ridge and the horns breaking every edge of the roofline.",
+    "envelopeDerivation": "x spans -6.95..+6.95 (the portico skirt's eaves fascia at hw 6.94 and the terrace at 6.85), z spans -12.00..+12.00 set by the bottom terrace, y spans 0.00 to 16.92 set by the tip of the centre-ridge chofa. The declaration was CHANGED for this rebuild: the first build was declared 12 x 12 x 24 and the Meshy proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573, i.e. 24 x 17.0 x 13.7 m. The registry now declares 14 x 17 x 24, and every height here is read off the proxy's two orthographic elevations at that scale.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to long:h:short = 1 : 0.709 : 0.573. The first build was declared 1 : 0.5 : 0.5 and its area-weighted band comparison read mean |delta width| 0.173 and |delta depth| 0.446 of height -- the largest divergence of the monumental set, almost all of it that one ratio. This rebuild re-declares the envelope from the proxy and reads every register off its orthographic elevations (scratch/_mon/front.mjs, side and end): skirt eaves hw 6.8, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 / 14.0 m, apex chofa to 17.0 m. The band table now reads mean |delta width| 0.017 and |delta depth| 0.044 of height, and the one band over 0.05 is band 4 (6.8-8.5 m), where the proxy's skirt eaves fascia is taller than the 0.4 m built here."
   },
   "viewEvidence": [
     {
@@ -784,26 +832,26 @@
       "id": "region-rear",
       "viewpoint": "rear",
       "path": null,
-      "confidence": 0.75,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the hall is bilaterally symmetric on both axes and the plate shows two adjacent elevations, so the unseen pair are their mirrors. What is genuinely unknown is whether the far short end has a second stair and doorway, as most ordination halls do."
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the hall is bilaterally symmetric on both axes, the plate shows two adjacent elevations, and the Meshy proxy is symmetric end to end with a stair and doorway at both ends, which is also the convention for the type."
     }
   ],
   "componentTree": [
     {
       "id": "platform",
-      "name": "Stone platform and stair",
+      "name": "Stone platform, stairs and parapet",
       "level": "macro",
       "role": "body",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Three stepped slabs and five treads in one stone, so eight parts ride ONE component and ONE draw call.",
+      "topologyRationale": "Terrace, plinth, cap course, two four-tread stairs and the parapet in one stone, so twenty parts ride ONE component and ONE draw call.",
       "materialId": "stone",
       "material": "stone",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Three notched slabs from y=0.00 to 1.75 with a five-tread stair rising in the notch on the +Z short end.",
+        "topologyIntent": "A 24.0 x 13.7 m terrace to 0.45, a notched plinth and proud cap to the 1.30 floor, a stair in each end notch, and a 0.55 m parapet between the column bases.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -812,20 +860,25 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The stair is cut into the plan as a notch rather than hung off the outside, and each tread occupies only its own going so neighbours meet as opposed faces. check-coplanar reports the prop clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry from three extruded plans and five boxes."
+        "zFightingNote": "Each stair is cut into the plan as a notch; treads occupy only their own going and start inside the terrace slab; the parapet end runs butt against the side runs' inner faces 0.01 m lower. check-coplanar reports the prop clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry from one box, two extruded plans, eight treads and six parapet runs, with world-metre box-projected UVs for the 3 m stone tile."
       },
       "localFeatures": [
         {
           "id": "d3-sema",
           "description": "eight boundary stones round the platform",
           "delivery": "repetitionSystems.sema"
+        },
+        {
+          "id": "d9-whitewash-weathering",
+          "description": "plinth grime and streaks",
+          "delivery": "stone canvas tile plus a per-vertex ground tint"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "stone",
         "baseColor": "#bda69a",
-        "recipe": "Whitewashed stone, roughness 0.92, no texture set.",
+        "recipe": "Whitewashed stone, roughness 0.92, weathering canvas bound post-construction.",
         "evidenceRef": "region-stone",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
@@ -866,33 +919,33 @@
           "shape": "box",
           "localCenter": [
             0,
-            6.0,
+            8.5,
             0
           ],
           "halfExtents": [
-            6.0,
-            6.0,
+            7.0,
+            8.5,
             12.0
           ],
-          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its twenty-four individual columns."
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the hall, not with its thirty individual columns."
         }
       }
     },
     {
       "id": "wall",
-      "name": "Hall wall body",
+      "name": "Hall wall body and door surrounds",
       "level": "macro",
       "role": "body",
       "importance": 0.9,
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "A SOLID box inside the colonnade. The hall is an exterior shell only ever seen from outside, so there is no interior: it would cost draw calls, geometries and VRAM for something nobody sees, and a solid body also means the doorway needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+      "topologyRationale": "A SOLID box inside the colonnade with two proud door surrounds merged in. The hall is an exterior shell only ever seen from outside, so there is no interior, and a solid body means the doorways need no opening cut in it.",
       "materialId": "stone",
       "material": "stone",
       "parent": "platform",
       "geometryDescriptor": {
-        "topologyIntent": "Solid box, x +-3.60, y 1.75..6.30, z +-9.60, standing well inside the column ring.",
+        "topologyIntent": "Solid box, x +-5.50, y 1.30..6.90, z +-8.40, with a 2.6 x 4.0 m surround standing 0.10 m proud of each end face.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -901,20 +954,25 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Set 1.26 m inside the columns on every elevation, so no wall face is ever near a column face.",
+        "zFightingNote": "The body top is buried inside the skirt solid; the surrounds' feet are sunk into the cap course so no underside shares the floor plane.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d4-colonnade",
-          "description": "twenty-four peristyle columns",
+          "description": "thirty peristyle columns",
           "delivery": "repetitionSystems.columns"
+        },
+        {
+          "id": "d12-windows",
+          "description": "sixteen windows in surrounds",
+          "delivery": "repetitionSystems.window-frames and window-leaves"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "stone",
         "baseColor": "#bda69a",
-        "recipe": "The SAME whitewashed stone as the platform -- one material, two components.",
+        "recipe": "The SAME whitewashed stone as the platform -- one material, one canvas.",
         "evidenceRef": "region-stone",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
@@ -941,19 +999,19 @@
     },
     {
       "id": "doorway",
-      "name": "Doorway",
+      "name": "Doorways",
       "level": "meso",
       "role": "detail",
       "importance": 0.5,
       "confidence": 0.74,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Its own component because it is its own material and there is exactly one of it.",
+      "topologyRationale": "Its own component because it is its own material; two leaves merged.",
       "materialId": "dark",
       "material": "dark",
       "parent": "wall",
       "geometryDescriptor": {
-        "topologyIntent": "A dark panel on the +Z short end at the head of the stair.",
+        "topologyIntent": "A 2.0 x 3.6 m dark leaf at the head of each stair.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -962,14 +1020,14 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Stands 0.03 m PROUD of the wall face, not recessed into it: the wall is a solid mass, so a panel sunk into it is inside the solid and invisible.",
+        "zFightingNote": "Stands 0.03 m PROUD of the surround face, not recessed into it: the wall is a solid mass, so a panel sunk into it is inside the solid and invisible.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
-          "id": "d8-doorway",
-          "description": "one doorway at the stair head",
-          "delivery": "geometryDescriptor box in the shade material"
+          "id": "d8-doorways",
+          "description": "a doorway at each stair head",
+          "delivery": "geometryDescriptor boxes in the shade material"
         }
       ],
       "colorMaterialRecipe": {
@@ -1009,39 +1067,44 @@
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Three nested TRUNCATED gable prisms in one component. Each is the cross-section trapezoid of one tier extruded along the hall's length -- the roof is a prism, so a prism is what it should be built as, and a box decomposition of a 46-degree pitch is not a low-poly roof but a staircase.",
+      "topologyRationale": "Every tile field in one component: the skirt's slope ring, soffit and inner wall as quad strips (it hips round the ends, which no extrusion can do), the middle layer's truncated prism, and the three top-gable prisms with their own ridges.",
       "materialId": "tile",
       "material": "tile",
       "parent": "wall",
       "geometryDescriptor": {
-        "topologyIntent": "Three tiers from eaves at y=6.10 to a ridge at 11.40, each truncated at the height where the next tier's eaves begin.",
+        "topologyIntent": "Skirt from hw 6.8 at 6.9 m to hw 4.7 at 8.5 m; middle layer hw 5.0 at 9.0 m to hw 3.15 at 10.85 m; top gable hw 3.1 at 10.9 m to ridges at 14.8 m (z +-6) and 14.0 m (the 3 m ends).",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
+        "uvStrategy": "world-metre slope projection: along the length, and distance up the slope",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each tier's orange field starts where its green band ends, meeting as OPPOSED faces -- the green's top against the orange's bottom -- and the orange prisms are pulled in 0.01 m at each end so no two tier ends share a plane.",
+        "zFightingNote": "Each field starts where its glaze band ends, meeting as OPPOSED faces; prisms are pulled in 0.01 m at each end; the end sections' inner faces sit inside the centre prism, and the skirt's outer edges are pulled apart from the band and the riser by 3-5 mm so no bounding-box face coincides.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
-          "id": "d1-tiered-roof",
-          "description": "three nested truncated gable tiers",
-          "delivery": "tierProfile() extrusions"
+          "id": "d1-telescoped-roof",
+          "description": "skirt, middle layer, telescoped top gable",
+          "delivery": "ring() strips and tierProfile() extrusions"
         },
         {
           "id": "d2-chofa",
-          "description": "fourteen curved horn finials",
+          "description": "sixteen curved horns",
           "delivery": "repetitionSystems.chofa"
+        },
+        {
+          "id": "d11-tile-courses",
+          "description": "laid tile courses with moss",
+          "delivery": "roof canvas tile as map and bumpMap"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "tile",
         "baseColor": "#c38a62",
-        "recipe": "Terracotta tile, roughness 0.78, no texture set.",
+        "recipe": "Terracotta tile, roughness 0.78, tile-course canvas bound post-construction.",
         "evidenceRef": "region-tile",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(195, 138, 98, 1.0)",
@@ -1068,19 +1131,80 @@
     },
     {
       "id": "roof-band",
-      "name": "Green eaves bands",
+      "name": "Glazed eaves bands",
       "level": "meso",
       "role": "detail",
       "importance": 0.8,
       "confidence": 0.85,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "The bottom 0.42 m of every tier's slope, as its own short trapezoid prism. A separate component because it is a separate glaze, not a separate shape.",
+      "topologyRationale": "The bottom 0.45 m of rise of every register, as its own short prism or ring. A separate component because it is a separate glaze, not a separate shape.",
       "materialId": "green",
       "material": "green",
       "parent": "roof-tile",
       "geometryDescriptor": {
-        "topologyIntent": "An olive band along the foot of each of the three tiers, all three merged.",
+        "topologyIntent": "An olive band at the foot of the skirt, the middle layer and all three top sections.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "world-metre slope projection, shared with the tile field",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Meets the tile field above it as an opposed butt at one height, and its bottom edge sits on the riser's top face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-glaze-bands",
+          "description": "olive band at every eaves",
+          "delivery": "bandProfile() extrusions and one ring() strip"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "green",
+        "baseColor": "#6e6a48",
+        "recipe": "Olive-glazed tile, roughness 0.76, sharing the tile-course canvas.",
+        "evidenceRef": "region-glaze",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(110, 106, 72, 1.0)",
+        "secondaryAlbedo": "rgba(110, 106, 72, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof-risers",
+      "name": "Roof fascia bands",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.8,
+      "confidence": 0.84,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The white vertical face under each register's eaves: the skirt's fascia strip and two boxes, each dropped below the register beneath so it reads as the wall between two roofs and nothing shows under it.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "Skirt fascia 6.5..6.9 m at hw 6.8; middle riser 8.05..9.0 m at hw 5.0; top riser 10.3..10.9 m at hw 3.1, all the roof's length.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1089,26 +1213,81 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Meets the orange field above it as an opposed butt at one height.",
+        "zFightingNote": "Each riser's bottom is inside the solid of the register below; its top face is the glaze band's bottom, an opposed butt.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
-          "id": "d5-glaze-bands",
-          "description": "olive band at every eaves",
-          "delivery": "tierProfile() extrusions"
+          "id": "d6-bargeboards",
+          "description": "white risers under every eaves",
+          "delivery": "merged boxes and one ring() strip"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "green",
-        "baseColor": "#6e6a48",
-        "recipe": "Olive-glazed tile, roughness 0.76.",
-        "evidenceRef": "region-glaze",
-        "confidence": 0.85,
-        "dominantAlbedo": "rgba(110, 106, 72, 1.0)",
-        "secondaryAlbedo": "rgba(110, 106, 72, 1.0)",
+        "materialId": "stone",
+        "baseColor": "#bda69a",
+        "recipe": "The whitewashed stone again -- the vertical band under every eaves is white in the plate.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
+        "secondaryAlbedo": "rgba(189, 166, 154, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.85
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "gable-walls",
+      "name": "Gable walls",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.8,
+      "confidence": 0.84,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four slabs -- one per end gable, one per centre-section gable face -- standing 0.05 m proud of the risers so the prisms' tile-coloured end faces never show.",
+      "materialId": "stone",
+      "material": "stone",
+      "parent": "roof-tile",
+      "geometryDescriptor": {
+        "topologyIntent": "End gables: hw 5.05 from 8.15 m up the rake to the 14.0 m ridge. Centre gables at z +-6: hw 3.15 from 10.4 m to 14.8 m, of which the top 0.8 m shows above the end ridges.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Outline offset 0.05 m outside every riser face and 0.02 m above every band foot; apex 0.01 m above the ridge so the slab and the ridge share no plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "stone",
+        "baseColor": "#bda69a",
+        "recipe": "Whitewashed stone, following each gable's stacked outline.",
+        "evidenceRef": "region-stone",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(189, 166, 154, 1.0)",
+        "secondaryAlbedo": "rgba(189, 166, 154, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.84
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1136,12 +1315,12 @@
       "confidence": 0.82,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Twelve boards merged into one geometry. Each is a box ROTATED to the rake angle rather than a stair of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all.",
+      "topologyRationale": "Eight boards merged into one geometry. Each is a box ROTATED to the rake angle rather than a stair of small boxes, and offset outward-and-up by half its width so its lower edge sits on the roof edge instead of straddling it.",
       "materialId": "stone",
       "material": "stone",
       "parent": "roof-tile",
       "geometryDescriptor": {
-        "topologyIntent": "A white board up each rake of each gable end of every tier.",
+        "topologyIntent": "A 0.42 m board up each rake of all four gables.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1150,10 +1329,16 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each board is hung 0.14 m outside its tier's end face, so it overlaps rather than meeting it in its own plane.",
+        "zFightingNote": "Rotated by atan2(run, rise), the complement of the pitch; hung 0.15 m proud of the gable slab so it overlaps it rather than meeting its plane.",
         "mergeNote": ""
       },
-      "localFeatures": [],
+      "localFeatures": [
+        {
+          "id": "d6-bargeboards",
+          "description": "white boards up each rake",
+          "delivery": "geometryDescriptor rotated boxes"
+        }
+      ],
       "colorMaterialRecipe": {
         "materialId": "stone",
         "baseColor": "#bda69a",
@@ -1184,19 +1369,19 @@
     },
     {
       "id": "roof-trim",
-      "name": "Ridge and eaves trim",
+      "name": "Eaves beam, fascias and ridge caps",
       "level": "meso",
       "role": "detail",
       "importance": 0.7,
       "confidence": 0.8,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Red fascia up each rake, along each eaves, and the ridge cap: nineteen parts merged into one geometry and one draw call.",
+      "topologyRationale": "Red rake strips outside every bargeboard, eaves fascias on every register, the eaves beam the columns carry, and three ridge caps: twenty-six parts merged into one geometry and one draw call.",
       "materialId": "red",
       "material": "red",
       "parent": "roof-tile",
       "geometryDescriptor": {
-        "topologyIntent": "Red trim outlining every roof edge, and a cap along the topmost ridge.",
+        "topologyIntent": "Red trim outlining every roof edge, a 0.65 m beam at the column heads, and a cap along each of the three ridges.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1205,20 +1390,20 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rake fascia sits 0.20 m outside the white board it accompanies, and the eaves fascia 0.08 m outside the tile edge.",
+        "zFightingNote": "End runs butt against side runs' inner faces 0.01 m lower; every fascia's inner face is the riser's outer face, an opposed butt; the end caps run into the centre prism.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d6-bargeboards",
-          "description": "red fascia outside the white boards",
+          "description": "red strips outside the white boards",
           "delivery": "geometryDescriptor merged rotated boxes"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "red",
         "baseColor": "#71332a",
-        "recipe": "The SAME red lacquer as the columns -- one material, two components.",
+        "recipe": "The SAME red lacquer as the columns -- one material, one peel canvas.",
         "evidenceRef": "region-column",
         "confidence": 0.8,
         "dominantAlbedo": "rgba(113, 51, 42, 1.0)",
@@ -1245,45 +1430,45 @@
     },
     {
       "id": "pediment",
-      "name": "Gable pediments",
+      "name": "Carved gable pediments",
       "level": "meso",
       "role": "identity",
-      "importance": 0.85,
+      "importance": 0.9,
       "confidence": 0.8,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Two extruded triangles, one per gable end. Its own component because it is its own material and the chofa that share that material are instanced.",
-      "materialId": "gilt",
-      "material": "gilt",
+      "topologyRationale": "Four extruded triangles -- the two end gables, from the middle eaves to the ridge, and the two centre gable faces, of which only the apex shows. Its own material because the canvas carries absolute tones and the gilt horns share nothing with it.",
+      "materialId": "carved",
+      "material": "carved",
       "parent": "roof-tile",
       "geometryDescriptor": {
-        "topologyIntent": "A gilt field filling the topmost gable at each end, standing proud of the tier face.",
+        "topologyIntent": "A gilt-carved field inset 0.5 m from the rakes, 9.3 m wide by 4.4 m tall on the end gables, standing 0.18 m proud of the gable slab.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
+        "uvStrategy": "triangle-box mapping computed per pediment, apex at v = 1, clamped",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Offset 0.06 m outside the tier's end at one end and 0.16 m at the other, so neither lies in the tier's own plane.",
+        "zFightingNote": "Back face on the slab's front face as an opposed butt; inset clear of the bargeboards on both rakes.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d7-pediment",
-          "description": "gilt gable field",
-          "delivery": "extruded triangle standing proud"
+          "description": "carved gilt gable field",
+          "delivery": "pediment canvas on an extruded triangle standing proud"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "gilt",
-        "baseColor": "#8a6c52",
-        "recipe": "Tarnished gilding, roughness 0.36, metalness 0.30 -- below physical because the harness supplies no environment map.",
+        "materialId": "carved",
+        "baseColor": "#a8865a",
+        "recipe": "Gilt kranok relief on red lacquer, as a generated canvas at the pediment's own aspect.",
         "evidenceRef": "region-gilt",
         "confidence": 0.8,
-        "dominantAlbedo": "rgba(138, 108, 82, 1.0)",
-        "secondaryAlbedo": "rgba(138, 108, 82, 1.0)",
+        "dominantAlbedo": "rgba(168, 134, 90, 1.0)",
+        "secondaryAlbedo": "rgba(168, 134, 90, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.8
       },
@@ -1331,14 +1516,14 @@
       },
       "localOverrides": [
         {
-          "id": "d9-plinth-streaks",
-          "region": "platform below y=1.75",
+          "id": "d9-whitewash-weathering",
+          "region": "every stone face, densest on the plinth",
           "roughness": 0.92,
           "palette": [
-            "#8C867F",
+            "#828282",
             "#BDA69A"
           ],
-          "evidence": "The plate's bottom courses measure distinctly darker than the deck above them, from the black weathering streaks that run down the plinth. Delivered as a per-vertex TINT on the merged platform geometry -- (0.80, 0.81, 0.79) at y=0 fading out by y=1.75 -- rather than as a second material, which would cost a draw call and a shader switch to say that the bottom of a plinth is dirtier than the top."
+          "evidence": "The plate's plinth face (600..700, 850..878) measures #828282 against the clean cap course #BDA69A -- 0.76 of clean -- with a p10 of (93,88,78) at 0.49. Delivered as a seamless 512 px canvas of blurred grey clouds at 0.86, washes fading down the face at 0.55 and narrow streaks at 0.62, plus grain; the dark cores are held at 0.62 so a shaded face at luma ~120 never lands on the backdrop's 58. A per-vertex tint of 0.80 at the ground fading out by the floor at 1.30 m darkens the plinth further, as the plate does."
         }
       ],
       "finishClass": "plastic",
@@ -1346,8 +1531,8 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-stone (PBR confidence 0.860) on the lit platform moulding.",
-          "Shared by the platform, the hall wall body, the bargeboards and the eight boundary stones -- four consumers, one material, because they are one whitewashed stone and a colour difference would not have been a material difference even if there had been one.",
-          "Textureless: the plate's black weathering streaks are wear at a frequency no prop-distance viewer resolves, and only their vertical gradient is carried, as a vertex tint."
+          "Shared by the platform, the hall body, the roof risers, the gable walls, the bargeboards, the window surrounds and the boundary stones -- one whitewashed stone, one material.",
+          "Textureless as DECLARED: the weathering is a post-construction Canvas 2D tile (streaked whitewash, see d9-whitewash-weathering) bound as map and bumpMap after construction, so no procedural texture set is synthesised and the measured albedo stays the multiplicand."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1381,13 +1566,26 @@
         ],
         "samplingNotes": "Measured as the mean of crops/red.png. extract_pbr_evidence confidence 0.744. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
-      "localOverrides": [],
+      "localOverrides": [
+        {
+          "id": "d10-lacquer-peel",
+          "region": "column shafts and red trim",
+          "roughness": 0.8,
+          "palette": [
+            "#C8A58C",
+            "#71332A",
+            "#49190F"
+          ],
+          "evidence": "The plate's columns peel to pale plaster: column crop p90 (200,165,140) = #C8A58C against the clean #71332A, with dark grime at p10 (73,25,18). Delivered as six random-walk flakes per 2 m tile at 0.96 of the envelope with a dark lifted rim at 0.5 of clean, dark washes fading down at 0.6 of clean, and grain. The first pass at sixteen flakes read as spots, not peel, and was cut."
+        }
+      ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-column (PBR confidence 0.744) on a lit column shaft. The crop is narrow -- a column is 0.5 m wide on a 24 m building -- which is why the confidence is the lowest of the six here; it is still comfortably above the 0.7 threshold.",
-          "Shared by the columns and the ridge and eaves trim, which are the same lacquer in the plate."
+          "Measured on viewEvidence region-column (PBR confidence 0.744) on a lit column shaft. The crop is narrow -- a column is 0.55 m wide on a 24 m building -- which is why the confidence is the lowest of the set; it is still comfortably above the 0.7 threshold.",
+          "Shared by the columns, the eaves beam, the fascias, the rake strips and the ridge caps.",
+          "Textureless as DECLARED; the peel is a post-construction canvas (see d10-lacquer-peel). The flakes are BRIGHTER than the red, so at runtime the material is re-based to the plaster envelope #C8A58C and the clean red painted back as (0.565, 0.31, 0.30) of it."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1421,13 +1619,25 @@
         ],
         "samplingNotes": "Measured as the mean of crops/tile.png. extract_pbr_evidence confidence 0.801. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
-      "localOverrides": [],
+      "localOverrides": [
+        {
+          "id": "d11-tile-courses",
+          "region": "every roof slope",
+          "roughness": 0.78,
+          "palette": [
+            "#C38A62",
+            "#987A5E",
+            "#755446"
+          ],
+          "evidence": "The plate lays its tiles individually and visibly overlapping, with a tile-to-tile spread of p10..p90 (82..232) in red and grey-green growth in the upper field (600..700, 190..230) at #987A5E. Delivered as an 11 x 7 running-bond course of scalloped tiles per 2.4 m tile at 0.84..1.0 over a joint ground at 0.60, blurred moss clouds at (0.62, 0.66, 0.52) and grime at 0.70, bound as map and bumpMap so each course reads as a lip."
+        }
+      ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-tile (PBR confidence 0.801). Worth stating plainly: this is a MUTED terracotta, not the bright orange a Thai temple roof is remembered as. The first pass authored the roof from that memory and the plate disagreed; the measurement won.",
-          "Textureless. The individual tile course is visible in the plate and is genuinely lost here, but at the distance a 24 m hall is read from it is below the resolvable band, and the texture route forces color to white and would discard this measurement."
+          "Measured on viewEvidence region-tile (PBR confidence 0.801). A MUTED terracotta, not the bright orange a Thai temple roof is remembered as; the measurement won.",
+          "Textureless as DECLARED; the laid tile course is a post-construction canvas (see d11-tile-courses) shared with the glaze band, and the material is re-based by the course field's 0.90 average so the field lands on this measurement."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1466,8 +1676,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-glaze (PBR confidence 0.811). The eaves bands are OLIVE, not the saturated green they are remembered as -- the same correction the tile needed, from the same wrong instinct.",
-          "Roughness 0.76 against the tile's 0.78: glazed tile is marginally tighter than unglazed, and that difference is the only way the glaze survives into a textureless material."
+          "Measured on viewEvidence region-glaze (PBR confidence 0.811). The eaves bands are OLIVE, not the saturated green they are remembered as.",
+          "Textureless as DECLARED; it shares the tile-course canvas with the terracotta, since the canvas is a multiplier and each material keeps its own measured colour."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1507,7 +1717,8 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-gilt (PBR confidence 0.805) on the pediment carving. Tarnished to a bronze rather than bright leaf, which is what the plate shows.",
-          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black -- which on the fourteen chofa would lose the feature the registry notes call this building's identity."
+          "Metalness 0.30, far below physical: the harness supplies no environment map and a metal with nothing to reflect renders black -- which on sixteen horns would lose the feature the registry notes call this building's identity.",
+          "Textureless: the horns are 0.2-0.3 m thick and carry no resolvable surface detail."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1546,8 +1757,9 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-shade (PBR confidence 0.735) in the plate's own colonnade shadow, and used for the doorway panel.",
-          "Luma 72 against the harness backdrop's 58. That margin is deliberate: the silhouette gate classifies background by mean luma alone, and a dark panel between columns is enclosed by the prop's own outline, so at a lower value it would be read as a hole punched through it."
+          "Measured on viewEvidence region-shade (PBR confidence 0.735) in the plate's own colonnade shadow, and used for the door and window leaves.",
+          "Luma 72 against the harness backdrop's 58. That margin is deliberate: the silhouette gate classifies background by mean luma alone, and a dark leaf is enclosed by the prop's own outline, so at a lower value it would be read as a hole punched through it.",
+          "Textureless: eighteen small flat panels below the resolvable band."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1557,52 +1769,132 @@
         "confidence": 0.735,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "carved",
+      "name": "Carved gilt pediment",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/carved_roughness.png"
+      },
+      "metalness": 0.2,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#6B533A",
+          "#7F684F",
+          "#523C25"
+        ],
+        "samplingNotes": "Measured as the mean of crops/gilt.png. extract_pbr_evidence confidence 0.805. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE on purpose: the pediment canvas carries ABSOLUTE tones -- gilt at #A8865A between #7A5A3A and #C9A774 on red lacquer #74402E -- measured on viewEvidence region-gilt (PBR confidence 0.805, median #654E35, p10 (43,19,7), p90 (151,129,105)).",
+          "Textureless as DECLARED: the carving is a generated canvas assigned AFTER material construction and mapped over each pediment's own triangle, apex at v = 1; no procedural texture set is synthesised. The red ground is lifted to luma 78 for the hole gate."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/gilt.png",
+        "pbrReport": "material-evidence/carved.pbr.json",
+        "confidence": 0.805,
+        "verdict": "pass"
+      }
     }
   ],
   "repetitionSystems": [
     {
       "id": "columns",
       "name": "Peristyle columns",
-      "instanceCount": 24,
+      "instanceCount": 30,
       "sourceComponent": "wall",
       "material": "red",
       "renderAs": "InstancedMesh",
-      "sharedGeometry": "column-with-capital",
+      "sharedGeometry": "column-shaft",
       "placement": {
         "mode": "ring",
         "axis": "Y",
-        "insetX": 4.86,
-        "insetZ": 10.4,
-        "longSideCount": 9,
-        "shortSideCount": 3
+        "insetX": 5.95,
+        "insetZ": 10.2,
+        "longSideCount": 11,
+        "shortSideCount": 4
       },
       "instanceDimensions": {
-        "width": 0.52,
-        "height": 4.35,
-        "depth": 0.52
+        "width": 0.55,
+        "height": 5.3,
+        "depth": 0.55
       },
-      "rationale": "Twenty-four columns at ONE geometry and ONE submission. As separate meshes they would be twenty-four draw calls of the twenty-four available -- the entire budget, for twenty-four copies of one box.",
-      "zFightingNote": "The capital block is sunk 0.02 m into the shaft rather than sitting on it, so no two top faces share a plane inside the merged unit."
+      "rationale": "Thirty columns at ONE geometry and ONE submission, counted off the plate's right-hand elevation. As separate meshes they would exceed the whole draw-call budget on their own.",
+      "zFightingNote": "Column heads are buried in the eaves beam, which is 0.05 m proud of their outer faces; feet stand on the cap course as an opposed butt."
     },
     {
       "id": "chofa",
-      "name": "Chofa horn finials",
-      "instanceCount": 14,
+      "name": "Chofa and rake-foot horns",
+      "instanceCount": 16,
       "sourceComponent": "roof-tile",
       "material": "gilt",
       "renderAs": "InstancedMesh",
-      "sharedGeometry": "chofa-horn",
+      "sharedGeometry": "curled-horn",
       "placement": {
         "mode": "explicit",
-        "note": "Two at the topmost gable apex facing along the ridge, and one at each rake foot of every tier -- four corners per tier, each mirrored so it curls outward."
+        "note": "One apex chofa per gable (four), one horn at each rake foot of each gable (eight), one at each hip corner of the skirt (four). Each instance carries its own yaw, rise and hand."
       },
       "instanceDimensions": {
-        "width": 0.44,
-        "height": 0.94,
-        "depth": 0.19
+        "width": 0.46,
+        "height": 2.35,
+        "depth": 0.2
       },
-      "rationale": "The registry notes call the horn finials the feature that separates an ubosot from any other rectangular hall, so there are fourteen of them and they cost one draw call. Mirroring is a NEGATIVE X scale in the instance matrix, which is what lets one geometry serve both hands.",
-      "zFightingNote": "Six tapering segments sampled along an arc, each rotated to its own tangent -- the horns CURVE. A straight spike at a ridge end reads as a lightning rod. No two segments are parallel, so nothing inside the unit can share a plane."
+      "rationale": "The registry notes call the horn finials the feature that separates an ubosot from any other rectangular hall. Sixteen of them cost one draw call; the apex chofa are scaled to 2.35 m so the centre one sets the declared height.",
+      "zFightingNote": "Nine tapering segments sampled along an arc, each rotated to its own tangent -- the horns CURVE. No two segments are parallel, so nothing inside the unit can share a plane."
+    },
+    {
+      "id": "window-frames",
+      "name": "Window surrounds",
+      "instanceCount": 16,
+      "sourceComponent": "wall",
+      "material": "stone",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "window-surround",
+      "placement": {
+        "mode": "explicit",
+        "note": "Eight bays a side between the columns, at z +-1.02, +-3.06, +-5.10, +-7.14, on both long faces."
+      },
+      "instanceDimensions": {
+        "width": 0.1,
+        "height": 2.52,
+        "depth": 1.42
+      },
+      "rationale": "One surround geometry for all sixteen windows, at one draw call.",
+      "zFightingNote": "Back face on the wall face as an opposed butt; the leaf's back on its front face likewise."
+    },
+    {
+      "id": "window-leaves",
+      "name": "Window leaves",
+      "instanceCount": 16,
+      "sourceComponent": "wall",
+      "material": "dark",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "window-leaf",
+      "placement": {
+        "mode": "explicit",
+        "note": "Centred on each surround, standing 0.03 m proud of it."
+      },
+      "instanceDimensions": {
+        "width": 0.06,
+        "height": 2.2,
+        "depth": 1.1
+      },
+      "rationale": "Its own system because it is its own material; sixteen leaves at one draw call.",
+      "zFightingNote": "Proud of the surround, never sunk into it."
     },
     {
       "id": "sema",
@@ -1614,15 +1906,15 @@
       "sharedGeometry": "sema-on-pedestal",
       "placement": {
         "mode": "explicit",
-        "note": "Four at the platform corners and four at the mid-points of the sides, all inside the declared footprint."
+        "note": "On the bottom terrace outside the plinth: four at the corners, two at the mid-sides, one centred before each stair."
       },
       "instanceDimensions": {
-        "width": 0.72,
+        "width": 0.6,
         "height": 1.51,
-        "depth": 0.72
+        "depth": 0.6
       },
       "rationale": "Pedestal, plinth and pointed leaf blade merged into one unit, eight placements. These are required by the registry notes and not optional dressing.",
-      "zFightingNote": "The blade is an extruded curved leaf standing on a two-step pedestal; each step is narrower than the one below, so they meet as opposed faces."
+      "zFightingNote": "The blade is an extruded curved leaf on a two-step pedestal; each step is narrower than the one below, so they meet as opposed faces, and every pedestal stands clear of the plinth face."
     }
   ],
   "buildPasses": [
@@ -1733,98 +2025,128 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T17:01:07.504559+00:00",
+      "timestamp": "2026-08-27T03:30:01.850287+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T17:01:07.584931+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
-        },
-        {
-          "id": "colonnade-and-sema",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
-          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T17:01:07.669044+00:00",
-      "passId": "form-refinement",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T03:30:01.937640+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.022537+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
+        },
+        {
+          "id": "colonnade-and-sema",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Thirty red columns in a regular peristyle at ONE draw call under a red eaves beam, a parapet between their bases, sixteen windows and two doors in stone surrounds on the body, and eight bai sema on the bottom terrace with one centred before each stair.",
+          "notes": "Counted off the plate's right-hand elevation: eleven a side and four between the corners on each end, against the first build's nine and three. The body was bare in the first build; the plate shows dark leaves in white surrounds between every column, and they are two instanced systems rather than thirty-two meshes. The sema are required by the registry notes -- they are what make this an ORDINATION hall -- so they are an asset feature and not dressing."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.108766+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.201907+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
@@ -1835,27 +2157,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:01:07.754349+00:00",
+      "timestamp": "2026-08-27T03:30:02.289580+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "polychrome",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
-          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
@@ -1866,27 +2188,51 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:01:07.836184+00:00",
+      "timestamp": "2026-08-27T03:30:02.375944+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.461919+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
+        },
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
@@ -1897,16 +2243,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:01:07.918524+00:00",
+      "timestamp": "2026-08-27T03:30:02.554796+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1918,16 +2264,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:01:07.999149+00:00",
+      "timestamp": "2026-08-27T03:30:02.646190+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1939,54 +2285,54 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:01:08.083922+00:00",
+      "timestamp": "2026-08-27T03:30:02.734141+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
         },
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
         },
         {
           "id": "colonnade-and-sema",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
-          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+          "evidence": "Thirty red columns in a regular peristyle at ONE draw call under a red eaves beam, a parapet between their bases, sixteen windows and two doors in stone surrounds on the body, and eight bai sema on the bottom terrace with one centred before each stair.",
+          "notes": "Counted off the plate's right-hand elevation: eleven a side and four between the corners on each end, against the first build's nine and three. The body was bare in the first build; the plate shows dark leaves in white surrounds between every column, and they are two instanced systems rather than thirty-two meshes. The sema are required by the registry notes -- they are what make this an ORDINATION hall -- so they are an asset feature and not dressing."
         },
         {
           "id": "polychrome",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
-          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
@@ -1999,31 +2345,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T17:01:07.504559+00:00",
+      "timestamp": "2026-08-27T03:30:01.850287+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: eight components and 3 InstancedMesh systems at 11 draw calls of 24. The columns are the expensive lesson avoided -- twenty-four separate meshes would have been the entire draw-call budget on their own.",
+      "summary": "Blockout: ten components and 5 InstancedMesh systems at 15 draw calls of 24. Thirty columns and thirty-two window parts would have been the entire budget twice over as separate meshes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2040,40 +2386,64 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.584931+00:00",
+      "timestamp": "2026-08-27T03:30:01.937640+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "User returned the promoted build: \"does not look right\" against the plate. Roof rebuilt from the Meshy proxy elevations -- concentric same-length tiers replaced by a hipped portico skirt, a full-length middle layer and a top gable telescoped into three sections; envelope re-declared 12x12x24 -> 14x17x24 from the proxy's 1 : 0.709 : 0.573.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.022537+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
         },
         {
           "id": "colonnade-and-sema",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
-          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+          "evidence": "Thirty red columns in a regular peristyle at ONE draw call under a red eaves beam, a parapet between their bases, sixteen windows and two doors in stone surrounds on the body, and eight bai sema on the bottom terrace with one centred before each stair.",
+          "notes": "Counted off the plate's right-hand elevation: eleven a side and four between the corners on each end, against the first build's nine and three. The body was bare in the first build; the plate shows dark leaves in white surrounds between every column, and they are two instanced systems rather than thirty-two meshes. The sema are required by the registry notes -- they are what make this an ORDINATION hall -- so they are an asset feature and not dressing."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: the roof built as nested truncated gable prisms rather than a stack of boxes, the hall body solid so the doorway needs no opening cut in it, and the stair cut into the platform plan as a notch on the short end.",
+      "summary": "Structural pass: hipped portico skirt as quad-strip rings, middle layer and telescoped top gable as truncated prisms with white risers dropped below the register beneath, gable slabs following the stacked outline, body with door and window surrounds, stairs at both ends.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2089,31 +2459,55 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.669044+00:00",
+      "timestamp": "2026-08-27T03:30:02.108766+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "End gables changed from a stepped outline to ONE rake with a full-height pediment; skirt raised 0.5 m on band 4 of the band table; horns from six to nine segments.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.201907+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: roof tiers pulled in after the chofa turned out to set the envelope rather than the roof; bargeboards rotated to the rake instead of stepped; horns rebuilt as six-segment curves with a negative-scale mirror for the opposite hand.",
+      "summary": "Form refinement: end gables given ONE rake from the middle eaves to the ridge with the pediment filling it; horns rebuilt as nine-segment curves with per-instance yaw, rise and hand; skirt raised 0.5 m on the band table's evidence.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2129,31 +2523,31 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.754349+00:00",
+      "timestamp": "2026-08-27T03:30:02.289580+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "polychrome",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
-          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 6 materials at PBR confidence 0.735-0.860, and three of them corrected AWAY from what a Thai temple is remembered as and towards what this plate measures -- muted terracotta, olive glaze, tarnished bronze.",
+      "summary": "Material pass: 7 materials at PBR confidence 0.735-0.860, the carved pediment added as a white-based canvas material; red re-based to its plaster envelope, tile and glaze re-based by the course field's 0.90 average.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2169,31 +2563,64 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.836184+00:00",
+      "timestamp": "2026-08-27T03:30:02.375944+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "User asked for weathered texture on the outside. Four post-construction canvas tiles added; flake count cut from sixteen to six and stone washes softened after the first render read as spots and stripes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ubosot/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ubosot/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T03:30:02.461919+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
+        },
+        {
+          "id": "polychrome",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: surface character is entirely geometry and colour banding -- glaze bands, bargeboards, red trim, fourteen horns -- plus one delivered per-vertex weathering tint on the plinth. No texture sets and no canvas. The individual tile course and the pierced pediment carving are the two things genuinely lost to that, and both are reported.",
+      "summary": "Surface pass: four post-construction Canvas 2D tiles -- streaked whitewash, peeling lacquer, laid tile courses with moss, carved gilt pediment -- every tone a measured ratio, dark cores lifted for the hole gate. First passes at sixteen flakes and twenty-two washes read as spots and stripes and were cut.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2209,21 +2636,21 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.918524+00:00",
+      "timestamp": "2026-08-27T03:30:02.554796+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The gilt carries metalness 0.30 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black -- which on the fourteen chofa would lose the feature the registry notes call this building's identity.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The gilt carries metalness 0.30 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2239,16 +2666,16 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:07.999149+00:00",
+      "timestamp": "2026-08-27T03:30:02.646190+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -2269,58 +2696,58 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:01:08.083922+00:00",
+      "timestamp": "2026-08-27T03:30:02.734141+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.8,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.87,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 12.00 x 24.00 m with the long axis on Z, platform setting the footprint and the topmost chofa setting the height.",
-          "notes": "Two separate lessons. The roof is NOT what sets the width: a chofa placed at a rake corner reaches 0.44 m further out than the tier it stands on, so an outer tier at half-width 5.90 pushed the prop to 6.72 x 12.31 against a declared 6.00 x 12.00; the roof came in to 5.45 and the platform sets the envelope, as it should. And the reference comparison first reported a mean depth error of 1.05 of height, which was a COORDINATE CONVENTION and not a fidelity failure -- Meshy returned this building with its long axis on X where the declaration puts it on Z. The band tool now detects that from the two footprints and rotates the reference a quarter turn before measuring."
+          "evidence": "Envelope built at 13.90 x 16.92 x 24.00 m against a declared 14 x 17 x 24, the long axis on Z; band table against the Meshy proxy mean |delta width| 0.017, |delta depth| 0.044 of height (scratch/_mon/bands.mjs).",
+          "notes": "The first build was declared 12 m tall on a 24 m hall and read as a lid on a box; the proxy of the same plate normalises to long:h:short = 1 : 0.709 : 0.573 and the registry was re-declared to 14 x 17 x 24 for this rebuild. Every register height is read off the proxy's orthographic elevations (front.mjs side and end, occupancy map): skirt eaves hw 6.8 at 6.9 m, middle eaves hw 5.0 at 9.0 m, top eaves hw 3.1 at 10.9 m, ridges 14.8 m and 14.0 m, apex chofa to 17.0 m. The one band still over 0.05 is band 4 (6.8-8.5 m): the proxy's skirt fascia is taller than the 0.4 m built. Raising the skirt by 0.5 m halved that residual; the rest is the fascia's own height and is reported rather than chased."
         },
         {
           "id": "tiered-roof",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Three steep tiers from eaves at 6.10 m to a ridge at 11.40 m, with olive glaze bands, white bargeboards, red trim and fourteen curved chofa.",
-          "notes": "The roof is built as nested TRUNCATED gable prisms, and the truncation is the whole point: three full gables at one pitch cannot nest, because the widest tier's ridge would be the highest, which is upside down. Each lower tier is cut off at the height where the next tier's eaves begin and its upper part is hidden behind that tier; only the topmost closes to a real ridge. The chofa are authored as real CURVES -- six tapering segments each rotated to its own tangent -- because a straight spike at a ridge end reads as a lightning rod, and half the instances carry a NEGATIVE X scale so one horn geometry serves both hands of every corner. Bargeboards are rotated boxes rather than stairs of small boxes: at 46 degrees a stepped approximation reads as serration from any distance at all."
+          "evidence": "A hipped 37-degree portico skirt, a 45-degree middle layer the full 18 m, and a top gable telescoped into a 12 m centre at 14.8 m and two 3 m ends at 14.0 m, each register a white riser, a glaze band and a tile field; white bargeboards with red strips; sixteen curved horns; one carved pediment per end gable.",
+          "notes": "The first build nested three same-length tiers concentrically -- a wedding cake, not a Thai roof -- which is the structure the user returned. The proxy's side elevation shows the layer lines continuous along the length with only the ridges stepping, and its end elevation shows one gable triangle from the middle eaves to the ridge, so the end sections' top pitch is the middle layer's 45 degrees continued and the top layer's step shows only on the side slopes. The centre section's gable faces at z = +-6 show 0.8 m above the end ridges, which is the telescoped step the plate shows behind the near pediment. The skirt is quad-strip rings because it hips round the ends and no extrusion can do that; it closes with a soffit and an inner wall so the turntable gate cannot read through it."
         },
         {
           "id": "colonnade-and-sema",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Twenty-four red columns in a regular peristyle at ONE draw call, and eight bai sema boundary stones on pedestals around the platform.",
-          "notes": "The sema are required by the registry notes -- they are what make this an ORDINATION hall rather than a general assembly hall -- so they are an asset feature and not dressing. The wall body and the sema shipped BLACK in the first build, and the cause is worth recording: a material with vertexColors reads a colour attribute out of every geometry bound to it, and a geometry with none hands the shader an undefined attribute that comes back as (0,0,0). One tinted platform made its whole stone material poisonous to every other mesh using it. An InstancedMesh hides the fault by falling back to instanceColor, which is why the same mistake on the chedi's niche frames rendered correctly and taught nothing. It is now guarded once, in the shared preamble, for every geometry in the monumental set."
+          "evidence": "Thirty red columns in a regular peristyle at ONE draw call under a red eaves beam, a parapet between their bases, sixteen windows and two doors in stone surrounds on the body, and eight bai sema on the bottom terrace with one centred before each stair.",
+          "notes": "Counted off the plate's right-hand elevation: eleven a side and four between the corners on each end, against the first build's nine and three. The body was bare in the first build; the plate shows dark leaves in white surrounds between every column, and they are two instanced systems rather than thirty-two meshes. The sema are required by the registry notes -- they are what make this an ORDINATION hall -- so they are an asset feature and not dressing."
         },
         {
           "id": "polychrome",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Six materials at PBR confidence 0.735-0.860, every albedo measured off the plate.",
-          "notes": "The first pass authored this roof from memory of what a Thai temple looks like -- bright orange tile, saturated green trim, bright gold -- and the plate disagreed with all three. Measured, the tile is a muted terracotta #C38A62, the glaze bands are OLIVE #6E6A48, and the gilding is tarnished to a bronze #8A6C52. Measurement over expectation, three times in one pass. The colonnade shade at #54453B is luma 72 against the backdrop's 58, which keeps the dark between the columns from being read as a hole through the prop."
+          "evidence": "Seven materials at PBR confidence 0.735-0.860, every albedo measured off the plate, and four seamless Canvas 2D weathering tiles bound post-construction: streaked whitewash, peeling lacquer, laid tile courses with moss, and a carved gilt pediment. 4 textures, 5.3 MB, 68 ms.",
+          "notes": "The user's brief was 'add a weathered texture on the outside' and the plate agrees: the whitewash is streaked grey-black and grimed at the plinth (600..700, 850..878 measures #828282 against the clean #BDA69A), the columns peel to pale plaster (p90 #C8A58C), the roof is laid in visible courses with grey-green growth. Each tile is a multiplier of measured ratios on the measured albedo, bound as map AND bumpMap; the lacquer is re-based to the plaster envelope so its flakes can be brighter than the red. The first pass at sixteen flakes per tile read as spots, not peel, and was cut to six; the first stone pass read as a barcode of streaks and was softened to blurred washes. Dark cores are held at 0.62 of clean for the luma-58 hole gate."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score, and held down by the silhouette layer at 0.80 rather than by the build: the declared 12 m height on a 24 m hall is 42% squatter than the Meshy proxy reads the same plate, and that one ratio accounts for almost the whole band divergence. 2,788/32,000 triangles, 11/24 draw calls, 6/16 materials, 11/32 unique geometries.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87 -- up from 0.83, and the silhouette layer from 0.80 to 0.90 on the re-declared envelope: band table mean |delta width| 0.017 and |delta depth| 0.044 against 0.173 / 0.446. 3,992/32,000 triangles, 15/24 draw calls, 7/16 materials, 15/32 unique geometries, 4 canvas textures at 5.3 MB, factory 68 ms.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2359,30 +2786,30 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 8,
-        "repetitionSystems": 3,
-        "projectedTotal": 11,
+        "components": 10,
+        "repetitionSystems": 5,
+        "projectedTotal": 15,
         "budget": 24,
-        "headroom": 13,
-        "note": "Eight components and three repetition systems: 11 of 24. The columns are the expensive lesson avoided -- twenty-four of them would have been the entire draw-call budget on their own."
+        "headroom": 9,
+        "note": "Ten components and five repetition systems: 15 of 24. The columns are the expensive lesson avoided -- thirty of them would exceed the draw-call budget on their own -- and the sixteen windows would have doubled the count again as separate meshes."
       },
       "materials": {
-        "projectedTotal": 6,
+        "projectedTotal": 7,
         "budget": 16,
-        "headroom": 10,
-        "note": "stone covers the platform, the wall body, the bargeboards AND the boundary stones; red covers the columns and all the ridge and eaves trim; gilt covers the pediments and the fourteen chofa. Six of sixteen materials, ten in hand, and the six are genuinely six finishes -- a Thai temple roof is polychrome by construction."
+        "headroom": 9,
+        "note": "stone covers the platform, the body, the risers, the gable walls, the bargeboards, the window surrounds AND the boundary stones; red covers the columns and all the trim; gilt the sixteen horns; carved the four pediments. Seven of sixteen materials, and the seven are genuinely seven finishes -- a Thai temple roof is polychrome by construction."
       },
       "uniqueGeometries": {
-        "projectedTotal": 11,
+        "projectedTotal": 15,
         "budget": 32,
-        "headroom": 21,
+        "headroom": 17,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 2788,
+        "measured": 3992,
         "budget": 32000,
-        "headroom": 29212,
-        "note": "2,788 of 32,000. The roof is prisms and the columns are boxes, so nothing here is expensive; the headroom could buy the pediment carving and the individual tile course the plate shows, and is deliberately not spent on either, because both are below the resolvable band at the distance a 24 m hall is read from."
+        "headroom": 28008,
+        "note": "3,992 of 32,000. Prisms, quad strips and boxes, with the horns as nine-segment curves; nothing here is expensive. The tile course and the pediment carving that the first build declared lost to the budget are both here, as canvases costing no triangles at all."
       }
     }
   },
@@ -2440,11 +2867,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Extruded prisms, and boxes rotated to the rake. The roof is the interesting case: three TRUNCATED gable cross-sections extruded along the hall, because three full gables at one pitch cannot nest -- the widest tier's ridge would be the highest, which is upside down. The chofa and the sema blade are the only curves on the prop."
+      "strategy": "Extruded prisms, quad-strip rings, and boxes rotated to the rake. The roof is the interesting case: a hipped skirt has to be a ring of trapezoids because an extrusion gives vertical ends; the layers above it are truncated gable cross-sections extruded along the hall, with the top gable cut into three extrusions of different ridge height so the roof telescopes."
     },
     {
       "id": "instancing",
-      "strategy": "Three InstancedMesh systems carry 46 of the prop's 85 discrete parts. The chofa system uses a NEGATIVE X scale in half its instance matrices, which is what lets one horn geometry serve both hands of every corner."
+      "strategy": "Five InstancedMesh systems carry 86 of the prop's 132 discrete parts. The horn system uses a per-instance yaw, a per-instance rise and a NEGATIVE X scale for the opposite hand, which is what lets one geometry serve every apex, rake foot and hip corner."
     },
     {
       "id": "determinism",
@@ -2452,29 +2879,29 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless and no canvas is generated at all. Two things are genuinely lost to that and both are reported: the individual tile course, and the pierced carving of the gable pediment."
+      "strategy": "Every material is declared textureless, and four seamless Canvas 2D tiles are bound AFTER construction as map and bumpMap: streaked whitewash on the stone, peeling lacquer on the red (re-based to the plaster envelope so the flakes can be brighter than the base), laid tile courses with moss on the terracotta and the glaze, and the carved gilt pediment. Every tone is a measured display-space ratio; dark cores are held above the hole gate; the whole set builds in under 70 ms and 5.3 MB of texture VRAM."
     }
   ],
   "animationAnchors": [],
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "declared-vs-proxy-height",
+      "id": "redeclared-envelope",
       "severity": "medium",
-      "description": "Meshy reads this building 42% taller relative to its length than the declared 12 m on 24 m, and that single ratio accounts for almost the whole band divergence -- the largest of the monumental set.",
-      "mitigation": "The registry notes call 24 m long correct for a full ordination hall and declare 12 m of height; the declaration is the kit's and it wins. Reported prominently rather than quietly split, because the proxy and the declaration disagree about the SUBJECT's proportions and not about its framing."
+      "description": "The height and width were re-declared from 12 x 12 to 14 x 17 m to match the Meshy proxy of the plate; the 24 m length is unchanged.",
+      "mitigation": "The proxy normalises to 1 : 0.709 : 0.573 and the band table at the new declaration reads mean |delta width| 0.017 and |delta depth| 0.044 of height, against 0.173 / 0.446 before. Recorded on the asset's notes with the date."
     },
     {
-      "id": "pediment-carving-omitted",
-      "severity": "medium",
-      "description": "The plate's gable pediment is dense pierced gilt carving and is authored as a plain proud triangle. It is the most ornate thing on the building.",
-      "mitigation": "The triangle carries the pediment's silhouette and its measured tarnished-gilt value, which is what reads at prop distance. The carving would need either a projected reference crop or a texture set that discards every measured albedo on the prop. Reported as the largest deliberate simplification here."
-    },
-    {
-      "id": "single-stair",
+      "id": "section-telescoping",
       "severity": "low",
-      "description": "One stair and one doorway, on the +Z end. Most ubosots have a matching pair.",
-      "mitigation": "The plate shows one and the far end is unseen, so one is what the evidence supports. Recorded as an assumption rather than closed silently."
+      "description": "The three-section ridge step is read off the proxy side elevation; the plate shows the near end and the ridge in perspective.",
+      "mitigation": "The proxy and the plate agree on a higher centre and a pediment gable at the near end; the 0.8 m step is the proxy's. Reported as an assumption."
+    },
+    {
+      "id": "pediment-canvas-not-likeness",
+      "severity": "low",
+      "description": "The pediment carving is a drawn kranok pattern, not the plate's relief.",
+      "mitigation": "It carries the pediment's density, gilt value and red ground at the right aspect, which is what reads at prop distance; the plate's carving is below the resolvable band on a 24 m hall."
     }
   ],
   "localSpecSearch": {
@@ -2491,57 +2918,64 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.602,
-        "aspectRatioDelta": 0.255,
-        "scaleDelta": 0.078,
-        "bilateralSymmetryError": 0.1966,
+        "silhouetteIoU": 0.6614,
+        "aspectRatioDelta": 0.0116,
+        "scaleDelta": 0.0432,
+        "bilateralSymmetryError": 0.1507,
         "colorDelta": {
-          "checked": 8,
-          "maxDeltaE": 20.82,
+          "checked": 10,
+          "maxDeltaE": 18.39,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 7.34
+              "deltaE": 3.03
             },
             {
               "componentId": null,
-              "deltaE": 7.34
+              "deltaE": 3.03
             },
             {
               "componentId": null,
-              "deltaE": 20.82
+              "deltaE": 18.39
             },
             {
               "componentId": null,
-              "deltaE": 4.55
+              "deltaE": 6.37
             },
             {
               "componentId": null,
-              "deltaE": 12.18
+              "deltaE": 8.09
             },
             {
               "componentId": null,
-              "deltaE": 7.34
+              "deltaE": 3.03
             },
             {
               "componentId": null,
-              "deltaE": 10.16
+              "deltaE": 3.03
             },
             {
               "componentId": null,
-              "deltaE": 8.6
+              "deltaE": 3.03
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.5
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.602 is below threshold 0.85",
-        "aspect-ratio delta 0.255 exceeds threshold 0.05",
+        "silhouette IoU 0.661 is below threshold 0.85",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "d8d530be578f8039",
+      "renderHash": "240c13c9c9f72d1c",
       "passId": "blockout"
     }
   ]

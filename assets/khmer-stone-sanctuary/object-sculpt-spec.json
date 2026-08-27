@@ -89,7 +89,7 @@
         "weathered-sandstone",
         "broken-stone-rubble"
       ],
-      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. An Isan ruin, and the registry notes are unusually specific about what that means: it is authored as partly collapsed with fallen blocks on the platform rather than as an intact building, because ruination is the state it is actually found in and is what distinguishes it. A red laterite platform with a low enclosure wall and one shallow stair; a squat redented sandstone tower with a rectangular door aedicule on each face; a stepped roof whose top tier has lost a corner; and twenty blocks lying where they fell. It is deliberately a separate asset from the Thai prang: squat, dark and rough where the prang is tall, slim, pale and encrusted."
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. An Isan ruin, and the registry notes are unusually specific about what that means: it is authored as partly collapsed with fallen blocks on the platform rather than as an intact building, because ruination is the state it is actually found in and is what distinguishes it. A red laterite platform with a low enclosure wall standing inside its edge and one shallow stair; a squat redented sandstone tower on a plinth course, with a colonnetted door aedicule on each face under a pointed pediment; a three-band entablature flaring wider than the body; two roof tiers each carrying a miniature aedicule per face and corner acroteria; a broken top ring; and thirty blocks lying where they fell. It is deliberately a separate asset from the Thai prang: squat, dark and rough where the prang is tall, slim, pale and encrusted."
     },
     "complexity": {
       "tier": "moderate",
@@ -98,8 +98,8 @@
         "componentCount": 2,
         "hierarchyDepth": 2,
         "repetitionDensity": 3,
-        "materialLayerCount": 1,
-        "localDetailDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 3,
         "occlusionRisk": 1,
         "actionReadinessNeed": 1
       },
@@ -111,9 +111,10 @@
         "repetitionSystems": 3
       },
       "reasoning": [
-        "The identity is RUINATION, and ruination has to be geometry: a partial top tier with one corner gone, and twenty blocks scattered across the roof and the platform.",
-        "The plan is redented, so it is one closed twenty-point polygon rather than crossed boxes -- correct shape, and no interior coincidence either.",
-        "Repetition is four-fold on the doors and twenty-fold on the debris, and all of it is instanced. The debris system is the whole difference between a building and a ruin and it costs one call.",
+        "The identity is RUINATION, and ruination has to be geometry: a partial top ring with one corner gone, the acroterion of that corner missing below it, and thirty blocks lying on the ring, the ledges and the platform.",
+        "The plan is redented, so every slab is one closed twenty-point polygon rather than crossed boxes -- correct shape, and no interior coincidence either.",
+        "The surface is the second half of the identity and it is where the first build failed: the plate's two stones are coursed, the laterite is pitted, and the sandstone is streaked black and crusted orange. All of it is three post-construction canvas tiles on the measured materials, not a texture set.",
+        "Repetition is four-fold on the doors and thirty-fold on the debris, and all of it is instanced. The debris system is the whole difference between a building and a ruin and it costs one call.",
         "Action readiness is minimal: static landmark geometry, box collider, and explicitly NOT breakable -- the collapse is modelled in, and the prop does not come apart further at runtime."
       ]
     },
@@ -128,7 +129,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "Three repetition systems against a ceiling of twelve draw calls and SIXTEEN unique geometries, the tightest geometry ceiling in the batch. Twenty fallen blocks as separate meshes would be twenty geometries on their own -- over the ceiling before the building exists."
+      "rationale": "Three repetition systems against a ceiling of sixteen draw calls and SIXTEEN unique geometries. Thirty fallen blocks as separate meshes would be thirty geometries on their own -- over the ceiling before the building exists -- so they are one InstancedMesh with authored transforms."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -141,7 +142,7 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "the top tier is a PARTIAL ring with one corner gone -- the collapse, as geometry",
+          "description": "the top ring is PARTIAL, two runs stopping short of the (+X, -Z) corner -- the collapse, as geometry",
           "mapsTo": {
             "ref": "broken-tier"
           },
@@ -152,7 +153,7 @@
           "zone": "platform",
           "kind": "chip",
           "identityDefining": true,
-          "description": "twenty blocks scattered across the roof and the platform, each with its own rotation, scale and measured tone",
+          "description": "thirty blocks: a heap on the truncated top, the slide of the fallen corner down the ledges, and the scatter across the platform, each authored with its own rotation, scale and measured tone",
           "mapsTo": {
             "ref": "platform"
           },
@@ -174,7 +175,7 @@
           "zone": "tower",
           "kind": "bevel",
           "identityDefining": true,
-          "description": "false doors on the other three faces -- a genuine Khmer feature, not an omission",
+          "description": "false doors on the other three faces, each a proud leaf with a central rib -- a genuine Khmer feature, not an omission",
           "mapsTo": {
             "ref": "tower"
           },
@@ -185,7 +186,7 @@
           "zone": "tower",
           "kind": "ridge",
           "identityDefining": true,
-          "description": "rectangular jamb-and-lintel surround on each face, NOT arched",
+          "description": "ringed colonnettes, jambs, a deep lintel, a pointed pediment and a threshold step on each face, NOT arched",
           "mapsTo": {
             "ref": "tower"
           },
@@ -206,11 +207,23 @@
           "id": "d7-cornice",
           "zone": "tower",
           "kind": "ridge",
-          "identityDefining": false,
-          "description": "two projecting cornice bands between the tower body and its roof tiers",
+          "identityDefining": true,
+          "description": "a three-band entablature flaring to 7.0 m over a 5.5 m body, then two tiers each with a miniature aedicule per face and corner acroteria",
           "mapsTo": {
             "ref": "tower"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-weathering-streaks",
+          "zone": "tower",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "black weathering running down the pilasters and under every ledge",
+          "mapsTo": {
+            "ref": "d8-weathering-streaks"
+          },
+          "onMaterial": "sandstone",
           "realization": "unreported"
         },
         {
@@ -218,9 +231,33 @@
           "zone": "platform",
           "kind": "stain",
           "identityDefining": false,
-          "description": "ground dirt darkening the lower laterite courses, fading out by 0.95 m",
+          "description": "ground dirt darkening the lower laterite courses, fading out by 1.20 m",
           "mapsTo": {
             "ref": "d9-course-dirt"
+          },
+          "onMaterial": "laterite",
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-lichen-crust",
+          "zone": "tower",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "orange lichen crusting the ledge tops and patching the faces",
+          "mapsTo": {
+            "ref": "d10-lichen-crust"
+          },
+          "onMaterial": "sandstone",
+          "realization": "unreported"
+        },
+        {
+          "id": "d11-laterite-coursing",
+          "zone": "platform",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "running-bond laterite blocks with wide dark joints and a pitted face",
+          "mapsTo": {
+            "ref": "d11-laterite-coursing"
           },
           "onMaterial": "laterite",
           "realization": "unreported"
@@ -254,11 +291,11 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
     "resolvedUnknowns": [
-      "The collapse pattern on the unseen side is authored, not observed. The plate shows one corner of the top tier gone and blocks on two sides; the model carries that pattern round.",
+      "The collapse pattern on the unseen side is authored, not observed. The plate shows the top ring broken at the right rear and blocks on two sides; the model puts the fallen corner at (+X, -Z) and carries a plausible scatter round.",
       "ONE open doorway, on the same face as the stair. A Khmer sanctuary has a single cell and false doors on the other three faces -- that is a genuine feature and not an omission -- and the plate shows exactly this, with the stair leading to the open face.",
-      "The carved lintel and colonnette relief the plate shows around the door are NOT authored. The aedicule carries the door's silhouette -- jambs, lintel and pediment slab -- and the carving is below the resolvable band at prop distance.",
+      "The door surround is authored as its SILHOUETTE PARTS -- ringed colonnettes, jambs, lintel, pointed pediment, threshold -- and not as carving. The lintel relief and the naga frame of the pediment are below the resolvable band at prop distance.",
       "The interior behind the open doorway is a single dark panel, not a room. This prop is an exterior shell: an interior would cost draw calls, geometries and VRAM for something nobody sees.",
-      "The lichen and orange mineral staining across the plate are wear, not material, and are not authored. Only the vertical dirt gradient on the lower courses is carried, as a vertex tint."
+      "The lichen crust, the black weathering and the coursing ARE authored, as three seamless Canvas 2D tiles bound post-construction on the measured materials; a repeating tile cannot put the lichen on ledges only, so the ledge tops carry a warm vertex tint and the orange patches recur at one density everywhere."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -266,7 +303,7 @@
     "qualityBar": "high",
     "definitionOfDone": [
       "Rendered model matches the reference silhouette, the 12.00 x 9.00 x 12.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=16 draw calls, <=16 materials, <=16 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
       "Every material declares textureless with named evidence."
@@ -288,14 +325,15 @@
         "qualityCriteria": [
           "Envelope 12.0 x 9.0 x 12.0 m",
           "Squat and heavy, NOT slim -- this is the anti-prang",
-          "The roof stays bulky rather than tapering away"
+          "The entablature flares WIDER than the body and the roof stays bulky rather than tapering"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "a slim tower on a tall platform, which is the prang and not this",
-          "the roof tapering to a point where the reference stays wide"
+          "the roof tapering to a point where the reference stays wide",
+          "a plain box body with no flare, which is what the first build shipped"
         ]
       },
       {
@@ -304,9 +342,9 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Top tier is a partial ring with a corner missing",
-          "Blocks lie scattered on BOTH the roof and the platform",
-          "Blocks vary in tone, rotation and size -- not twenty identical bricks"
+          "Top ring is partial with a corner missing",
+          "Blocks lie on the top, on the ledges below the fallen corner, AND on the platform",
+          "Blocks vary in tone, rotation and size -- not thirty identical bricks"
         ],
         "evidenceRefs": [
           "view-full",
@@ -314,7 +352,7 @@
         ],
         "failureModes": [
           "an intact tower with debris sprinkled around it, which reads as litter",
-          "twenty identical blocks in identical orientations"
+          "identical blocks in identical orientations"
         ]
       },
       {
@@ -323,24 +361,28 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Rectangular jamb-and-lintel aedicule on each face, not arched",
-          "ONE open doorway reading as a dark opening, three blind doors reading as recessed panels"
+          "Ringed colonnettes, lintel and pointed pediment on each face, not arched",
+          "ONE open doorway reading as a dark opening, three blind doors reading as proud leaves",
+          "Miniature aedicules on both roof tiers"
         ],
         "evidenceRefs": [
           "region-doorway"
         ],
         "failureModes": [
           "the doorway invisible because it was recessed into a solid mass",
-          "the blind doors invisible because they were flush and the same stone"
+          "the blind doors invisible because they were flush and the same stone",
+          "a jamb-and-lintel rectangle with nothing of the plate's door in it"
         ]
       },
       {
         "id": "stone-palette",
-        "name": "Stone palette",
+        "name": "Stone palette and surface",
         "required": false,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Red laterite platform against grey-brown sandstone tower",
+          "Red laterite platform against grey-tan sandstone tower",
+          "Coursing visible on both stones; pitting on the laterite",
+          "Black weathering streaks and orange lichen on the sandstone",
           "A dark prop overall -- the plate is a shadowed ruin, not a lit monument"
         ],
         "evidenceRefs": [
@@ -348,7 +390,8 @@
           "region-sandstone"
         ],
         "failureModes": [
-          "a bright orange platform, which is the measurement taken off a lit face and then brightened again by the harness"
+          "a bright orange platform, which is the measurement taken off a lit face and then brightened again by the harness",
+          "flat-shaded stone with no coursing, streaks or lichen -- the first build"
         ]
       }
     ],
@@ -374,7 +417,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 16 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -548,10 +591,11 @@
     },
     {
       "id": "stone-palette",
-      "name": "Stone palette",
+      "name": "Stone palette and surface",
       "tier": "important",
       "passIds": [
-        "material-pass"
+        "material-pass",
+        "surface-pass"
       ],
       "minimumScore": 0.75,
       "mustPass": false,
@@ -694,11 +738,11 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The collapse pattern on the unseen side is authored, not observed. The plate shows one corner of the top tier gone and blocks on two sides; the model carries that pattern round.",
+    "The collapse pattern on the unseen side is authored, not observed. The plate shows the top ring broken at the right rear and blocks on two sides; the model puts the fallen corner at (+X, -Z) and carries a plausible scatter round.",
     "ONE open doorway, on the same face as the stair. A Khmer sanctuary has a single cell and false doors on the other three faces -- that is a genuine feature and not an omission -- and the plate shows exactly this, with the stair leading to the open face.",
-    "The carved lintel and colonnette relief the plate shows around the door are NOT authored. The aedicule carries the door's silhouette -- jambs, lintel and pediment slab -- and the carving is below the resolvable band at prop distance.",
+    "The door surround is authored as its SILHOUETTE PARTS -- ringed colonnettes, jambs, lintel, pointed pediment, threshold -- and not as carving. The lintel relief and the naga frame of the pediment are below the resolvable band at prop distance.",
     "The interior behind the open doorway is a single dark panel, not a room. This prop is an exterior shell: an interior would cost draw calls, geometries and VRAM for something nobody sees.",
-    "The lichen and orange mineral staining across the plate are wear, not material, and are not authored. Only the vertical dirt gradient on the lower courses is carried, as a vertex tint."
+    "The lichen crust, the black weathering and the coursing ARE authored, as three seamless Canvas 2D tiles bound post-construction on the measured materials; a repeating tile cannot put the lichen on ledges only, so the ledge tops carry a warm vertex tint and the orange patches recur at one density everywhere."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -706,7 +750,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center as the asset declares, +Y up. The prop is four-fold symmetric except for the stair and the one open doorway, which are on the SAME elevation -- the +Z face. Everything is authored with the stair notch on +X and the merged platform geometry is then rotated a quarter turn, which is how the stair and the doorway end up on one side without two separate notch constructions."
+    "notes": "Origin base-center as the asset declares, +Y up. The prop is four-fold symmetric except for the stair, the one open doorway and the collapse, which are on fixed elevations: stair and doorway on +Z, the fallen corner at (+X, -Z). Everything on the platform is authored with the stair notch on +X and the merged geometry is then rotated a quarter turn, which is how the stair and the doorway end up on one side without two separate notch constructions."
   },
   "silhouette": {
     "envelope": {
@@ -714,9 +758,9 @@
       "h": 9.0,
       "d": 12.0
     },
-    "description": "A stepped laterite platform to 0.95 m with an enclosure wall to 2.20 m, a squat redented sandstone tower to 5.00 m, a projecting cornice, two roof tiers to 7.30 m, a partial top tier to 8.05 m, and scattered blocks reaching 9.00 m. The silhouette events are the enclosure, the cornice, and above all the BROKEN outline of the top -- an intact tier would read as a different building.",
-    "envelopeDerivation": "x and z both span -6.00..+6.00 = 12.00, set by the bottom laterite slab. y spans 0.00 to exactly 9.00, and what sets the top is a FALLEN BLOCK -- instance 5 of the scattered set, placed on purpose rather than left where a rotation happened to throw it. That is worth stating because it is the one prop in the batch whose declared height is set by rubble: three separate passes of nudging block positions were needed before the envelope closed on 9.0000 exactly, and the block that was actually setting it had to be found by measuring each instance rather than guessed at.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.850 : 1.130 against the declared 1 : 0.750 : 1.000. Area-weighted band comparison after rebuild gives mean |delta width| 0.053 and |delta depth| 0.071 of height, with one band past the 0.12 flag: band 2 depth at +0.208, which is the stair notch, asymmetric in both models and not on the same axis. The FIRST build was much worse -- bands 6 to 9 came out 0.18 to 0.21 NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. The residual is dominated by the 13% height-to-width difference: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here."
+    "description": "A stepped laterite platform to 1.20 m with an enclosure wall to 2.05 m standing inside its edge, a plinth course to 1.55, a squat redented sandstone tower 5.5 m across to 4.85 m, a three-band entablature flaring to 7.0 m across between 4.85 and 6.30, a first tier to 7.30 with a cap ledge to 7.55, a second tier to 8.30, a partial top ring to 8.70, and a heap of blocks reaching 9.00 m. The silhouette events are the enclosure, the flare of the entablature, and above all the BROKEN outline of the top -- an intact tier would read as a different building.",
+    "envelopeDerivation": "x and z both span -6.00..+6.00 = 12.00, set by the bottom laterite slab. y spans 0.00 to exactly 9.00, and what sets the top is a FALLEN BLOCK -- the first entry of the authored placement list, lying flat on the broken ring's top at 8.70 with a 0.30 m thickness, so its upper face is at 9.00 by construction rather than by nudging. The first build spent three passes finding which hashed block was setting the height; this build authors every block's position, rotation and scale explicitly so the height is a number written down, not found.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.850 : 1.130 against the declared 1 : 0.750 : 1.000. Area-weighted band comparison after this rebuild gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071), with one band past the 0.12 flag: band 2 at +0.137 / +0.316, which is the enclosure wall -- 10.8 m across here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE (a 6.0 m body plus deep aedicules against the proxy's 5.65 m) and bands 6-7 0.08 H too NARROW (two thin cornice bands where the proxy flares to 6.6 m). Body to 5.5 m, entablature to 7.0 m starting at 4.85, and the door surrounds pulled in, closed both."
   },
   "viewEvidence": [
     {
@@ -772,14 +816,14 @@
       "material": "laterite",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Two notched slabs to y=0.95, an enclosure wall to 2.20 standing inside the platform edge, and a six-tread stair rising in the notch.",
+        "topologyIntent": "Two notched slabs to y=1.20, an enclosure wall from 1.20 to 2.05 standing inside the platform edge on a 0.35 m ledge, and a six-tread stair rising in the notch.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
+        "uvStrategy": "box projection by dominant normal, world metres over a 3.2 m tile",
         "normalStrategy": "vertex normals from generated geometry",
         "zFightingNote": "The enclosure's side runs carry the full depth and its front and back runs stop between them -- run to full width, every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going, so neighbours meet as opposed faces. check-coplanar reports the prop clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry, then rotated a quarter turn about Y so the +X stair notch lands on the +Z doorway elevation."
@@ -794,16 +838,21 @@
           "id": "d2-fallen-blocks",
           "description": "blocks scattered on the platform",
           "delivery": "repetitionSystems.fallen-blocks"
+        },
+        {
+          "id": "d11-laterite-coursing",
+          "description": "coursing and pitting",
+          "delivery": "post-construction canvas tile on the laterite material"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "laterite",
-        "baseColor": "#735b4e",
-        "recipe": "Red laterite, roughness 0.95, no texture set.",
+        "baseColor": "#765440",
+        "recipe": "Red laterite, roughness 0.96, no generator texture set; coursing-and-pitting canvas tile bound post-construction as map and bumpMap.",
         "evidenceRef": "region-laterite",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(115, 91, 78, 1.0)",
-        "secondaryAlbedo": "rgba(115, 91, 78, 1.0)",
+        "dominantAlbedo": "rgba(118, 84, 64, 1.0)",
+        "secondaryAlbedo": "rgba(118, 84, 64, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -861,21 +910,21 @@
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Body, two cornice bands and two intact roof tiers are one stone and one component. The plan is redented, as a Khmer tower's is, and is one closed twenty-point polygon rather than crossed boxes -- the correct shape, and the construction with no interior coincidence.",
+      "topologyRationale": "Plinth, body, three entablature bands, two tiers with their miniature aedicules and the corner acroteria are one stone and one component. The plan is redented, as a Khmer tower's is, and every slab is one closed twenty-point polygon rather than crossed boxes -- the correct shape, and the construction with no interior coincidence.",
       "materialId": "sandstone",
       "material": "sandstone",
       "parent": "platform",
       "geometryDescriptor": {
-        "topologyIntent": "Redented square from y=0.95 to 5.00 at half-width 3.00, then two cornice bands and two roof tiers stepping in gently to 7.30.",
+        "topologyIntent": "Plinth 1.20-1.55 at half-width 2.95; redented body 1.55-4.85 at 2.75; entablature 4.85-6.30 stepping OUT to 3.05, 3.30, 3.50; tier 6.30-7.30 at 2.95 with a cap ledge to 7.55 at 3.05; tier 7.55-8.30 at 2.45. A proud panel on each face of each tier, and 0.45 m corner blocks on three corners of the cap ledge.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
+        "uvStrategy": "box projection by dominant normal, world metres over a 3.2 m tile",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Bands and tiers meet top-to-bottom, which is an opposed butt.",
+        "zFightingNote": "Bands and tiers meet top-to-bottom, which is an opposed butt. The tier panels stand 0.18-0.22 m proud and start above the ledge they sit over, and the corner blocks sit ON the cap ledge, an opposed pair.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -886,23 +935,33 @@
         },
         {
           "id": "d5-door-aedicules",
-          "description": "rectangular jamb-and-lintel surrounds",
+          "description": "colonnetted door surrounds",
           "delivery": "repetitionSystems.door-frames"
         },
         {
           "id": "d7-cornice",
-          "description": "two projecting cornice bands",
-          "delivery": "geometryDescriptor merged extrusions"
+          "description": "flaring entablature and tiered shrines",
+          "delivery": "geometryDescriptor merged extrusions and quad-rotated boxes"
+        },
+        {
+          "id": "d8-weathering-streaks",
+          "description": "black weathering",
+          "delivery": "post-construction canvas tile on the sandstone material"
+        },
+        {
+          "id": "d10-lichen-crust",
+          "description": "lichen crust on ledges",
+          "delivery": "canvas tile plus vertex tint by facing"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "sandstone",
-        "baseColor": "#73604b",
-        "recipe": "Weathered sandstone, roughness 0.93, no texture set.",
+        "baseColor": "#8b745a",
+        "recipe": "Weathered sandstone, roughness 0.94, no generator texture set; ashlar-streak-lichen canvas tile bound post-construction as map and bumpMap, with a per-vertex crust tint on the ledge tops.",
         "evidenceRef": "region-sandstone",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(115, 96, 75, 1.0)",
-        "secondaryAlbedo": "rgba(115, 96, 75, 1.0)",
+        "dominantAlbedo": "rgba(139, 116, 90, 1.0)",
+        "secondaryAlbedo": "rgba(139, 116, 90, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -932,38 +991,38 @@
       "confidence": 0.8,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Three straight runs, deliberately not four. This is the whole difference between the asset and an intact tower, and the registry notes ask for it explicitly. It is its own component rather than merged into the tower so that a level builder can see, in the runtime list, that the collapse is a named thing and not an accident of geometry.",
+      "topologyRationale": "Four runs, two of them stopping short of the (+X, -Z) corner. This is the whole difference between the asset and an intact tower, and the registry notes ask for it explicitly. It is its own component rather than merged into the tower so that a level builder can see, in the runtime list, that the collapse is a named thing and not an accident of geometry.",
       "materialId": "sandstone",
       "material": "sandstone",
       "parent": "tower",
       "geometryDescriptor": {
-        "topologyIntent": "A partial ring at y 7.30..8.05: two full runs, and a third that stops short where the fallen corner used to be.",
+        "topologyIntent": "A partial ring at y 8.30..8.70, half-width 2.40, 0.65 thick: -X and +Z runs full, the +X run stopping at z=-0.5 and the -Z run at x=+0.9, at 0.72 and 0.86 of the full height.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
+        "uvStrategy": "box projection by dominant normal, world metres over a 3.2 m tile",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The three runs meet end-to-side, and the short run is thinner in height as well as length so no two of them share a top plane.",
+        "zFightingNote": "The runs meet end-to-side as opposed faces, and the two short runs are lower than the full ones so no two of them share a top plane.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d1-broken-tier",
           "description": "partial ring with one corner gone",
-          "delivery": "geometryDescriptor three merged boxes"
+          "delivery": "geometryDescriptor four merged boxes"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "sandstone",
-        "baseColor": "#73604b",
+        "baseColor": "#8b745a",
         "recipe": "The SAME sandstone as the tower -- one material, two components, because this one is a deliberately INCOMPLETE ring and the other is not.",
         "evidenceRef": "region-sandstone",
         "confidence": 0.8,
-        "dominantAlbedo": "rgba(115, 96, 75, 1.0)",
-        "secondaryAlbedo": "rgba(115, 96, 75, 1.0)",
+        "dominantAlbedo": "rgba(139, 116, 90, 1.0)",
+        "secondaryAlbedo": "rgba(139, 116, 90, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.8
       },
@@ -1007,7 +1066,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "It stands 0.02 m PROUD of the tower face, not behind it. The tower is a SOLID mass, so a panel recessed into it is inside the solid and invisible -- which is exactly what the first build shipped. The opening reads as an opening because the aedicule's jambs and lintel stand 0.32 m in front of it, not because the panel is sunk.",
+        "zFightingNote": "It stands 0.02 m PROUD of the tower face, not behind it. The tower is a SOLID mass, so a panel recessed into it is inside the solid and invisible -- which is exactly what the first build shipped. The opening reads as an opening because the colonnettes, jambs and lintel stand in front of it, not because the panel is sunk.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -1020,7 +1079,7 @@
       "colorMaterialRecipe": {
         "materialId": "void",
         "baseColor": "#4e4740",
-        "recipe": "Cell interior, roughness 0.98. Lifted from a measured #040302 for the silhouette gate.",
+        "recipe": "Cell interior, roughness 0.98. Lifted from a measured #0C0904 for the silhouette gate.",
         "evidenceRef": "region-doorway",
         "confidence": 0.76,
         "dominantAlbedo": "rgba(78, 71, 64, 1.0)",
@@ -1052,17 +1111,17 @@
       "name": "Red laterite",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#735b4e",
-      "color": "#735b4e",
+      "baseColor": "#765440",
+      "color": "#765440",
       "roughness": {
-        "base": 0.95,
+        "base": 0.96,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/laterite_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#735b4e",
+        "dominant": "#765440",
         "secondary": [
           "#6C4D3C",
           "#543A2B",
@@ -1073,21 +1132,31 @@
       "localOverrides": [
         {
           "id": "d9-course-dirt",
-          "region": "platform below y=0.95",
-          "roughness": 0.95,
+          "region": "platform below y=1.20",
+          "roughness": 0.96,
           "palette": [
             "#503A2D",
-            "#735B4E"
+            "#765440"
           ],
-          "evidence": "The plate's bottom courses measure distinctly darker than the enclosure wall above them. Delivered as a per-vertex TINT on the merged platform geometry -- (0.78, 0.79, 0.80) at y=0 fading out by y=0.95 -- rather than as a second material, which would cost a draw call and a shader switch to say that the bottom of a plinth is dirtier than the top."
+          "evidence": "The plate's bottom courses measure distinctly darker than the enclosure wall above them. Delivered as a per-vertex TINT on the merged platform geometry -- (0.78, 0.79, 0.80) at y=0 fading out by y=1.20 -- rather than as a second material."
+        },
+        {
+          "id": "d11-laterite-coursing",
+          "region": "every laterite face",
+          "roughness": 0.96,
+          "palette": [
+            "#5A3D2D",
+            "#765440"
+          ],
+          "evidence": "Running-bond coursing at 0.80 x 0.32 m blocks with 5 cm joints at 0.55 of the block, plus ~1,100 pits at 0.52: a 512 px Canvas 2D tile over 3.2 m, box-projected in world metres, bound as map and bumpMap at 0.05. Joints and pits are the plate's (540..700, 860..868) joint against the lit block."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-laterite (PBR confidence 0.860) on the plate's LIT plinth face at #735B4E; the same laterite in shade measures #3D2F26. This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are, so which face a crop sits on is a decision and it is recorded.",
-          "Textureless: the laterite's vesicular pitting and its block coursing are at frequencies no prop-distance viewer resolves, and a texture set would discard this measurement outright by forcing color to white."
+          "Measured on viewEvidence region-laterite (PBR confidence 0.860): the MEDIAN of the plate's lit plinth face at (250..330, 845..880) is #6B5342; the same laterite in shade measures #4E372B and its joints #5A3D2D. Shipped as the block-tone CEILING #765440, with every block in the coursing tile at 0.80..1.0 of it, so the field averages back to the measurement.",
+          "Textureless as far as the GENERATOR is concerned: no five-canvas procedural set, which would force color to white and discard this measurement. The coursing and vesicular pitting are delivered instead as a post-construction Canvas 2D tile bound as map and bumpMap, a multiplier on this colour, see localOverrides d9-course-dirt and d11-laterite-coursing."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1103,17 +1172,17 @@
       "name": "Weathered sandstone",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#73604b",
-      "color": "#73604b",
+      "baseColor": "#8b745a",
+      "color": "#8b745a",
       "roughness": {
-        "base": 0.93,
+        "base": 0.94,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/sandstone_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#73604b",
+        "dominant": "#8b745a",
         "secondary": [
           "#947C62",
           "#504131",
@@ -1121,13 +1190,35 @@
         ],
         "samplingNotes": "Measured as the mean of crops/sandstone.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
-      "localOverrides": [],
+      "localOverrides": [
+        {
+          "id": "d8-weathering-streaks",
+          "region": "sandstone faces, densest on pilasters",
+          "roughness": 0.94,
+          "palette": [
+            "#3A3127",
+            "#8B745A"
+          ],
+          "evidence": "Black weathering at (596..612, 490..560) measures 0.42 of the clean stone. Shipped at 0.58 x clean: the silhouette gate classes any enclosed surface near the backdrop luma of 58 as a hole, and a shaded face at ~70 times 0.42 lands under it. Drawn as 26 vertical gradient streaks fading downward plus 14 vertically-biased random-walk patches per 3.2 m tile."
+        },
+        {
+          "id": "d10-lichen-crust",
+          "region": "ledge tops and scattered on the faces",
+          "roughness": 0.94,
+          "palette": [
+            "#B07A48",
+            "#725F51"
+          ],
+          "evidence": "Orange lichen at (330..345, 330..345) #907054 and brighter on the lintel, BRIGHTER in red than the stone it sits on -- hence the envelope re-basing. Twelve random-walk patches at (1.0, 1.0, 0.70) of the envelope per tile; the ledge tops additionally carry a (0.95, 0.90, 0.82) vertex tint from their normals, because the plate's crust sits on the horizontals."
+        }
+      ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-sandstone (PBR confidence 0.829) on the lit tower face at #73604B; the shaded return of the same stone measures #4F4336.",
-          "Close in value to the laterite, and that is what the plate shows rather than a shortcut: the difference between them here is hue, not brightness. Two materials because they are two stones, not because they are two colours."
+          "Measured on viewEvidence region-sandstone (PBR confidence 0.829): the MEDIAN of the lit door face at (290..320, 520..600) is #8B745A, luma 119; the shaded return of the same stone measures #4D3F30 and the black weathering on it #3A3127.",
+          "At runtime the material colour is re-based to the LICHEN ENVELOPE #B07A5A -- per-channel max of this clean stone and the lichen (176,122,72) -- and the clean stone is painted into the tile as (0.79, 0.95, 1.00) of it, so the orange crust can be a ratio <= 1. The renderer therefore shows #8B745A where the stone is clean. Under Node, with no canvas, the material keeps #8B745A flat.",
+          "Textureless as far as the GENERATOR is concerned. Ashlar coursing, black streaks and lichen are one post-construction Canvas 2D tile bound as map and bumpMap, see localOverrides d8-weathering-streaks and d10-lichen-crust."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1146,7 +1237,7 @@
       "baseColor": "#ffffff",
       "color": "#ffffff",
       "roughness": {
-        "base": 0.92,
+        "base": 0.93,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/pale_roughness.png"
@@ -1166,8 +1257,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "This material ships WHITE, and that is deliberate rather than unmeasured. It is used only by the fallen-block InstancedMesh, whose twenty instances carry their own measured tones through setColorAt -- and setColorAt MULTIPLIES with material.color, so a coloured base would darken every tone by itself. The four tones are all measured off blocks in the plate: pale sandstone #9D8D7B (viewEvidence region-rubble, PBR confidence 0.860), weathered grey #6B5D4E, ochre #B28665 and dark brown #6C5843.",
-          "One material, one geometry, four stones. Textureless: broken rock at 0.6 m across, seen from across a level."
+          "This material ships WHITE, and that is deliberate rather than unmeasured. It is used only by the fallen-block InstancedMesh, whose thirty instances carry their own measured tones through setColorAt -- and setColorAt MULTIPLIES with material.color, so a coloured base would darken every tone by itself. The four tones are measured off blocks in the plate: the peach of a freshly broken face (215..250, 640..660) #DBA580 shipped #CF9B78, a cream weathered face (640..660, 690..740) #CBBCA8 shipped #B8AB97, the tower's own stone #8B745A, and a dark one (700..740, 700..720) #584B42 shipped #6A5A48.",
+          "One material, one geometry, four stones. Textureless to the generator; a 1.2 m mottle-and-pit Canvas 2D tile rides it as map and bumpMap so a block is not a flat box."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1206,7 +1297,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured INSIDE the plate's own doorway (viewEvidence region-doorway, PBR confidence 0.765) at #040302 -- the plate's doorway is genuinely, almost perfectly black -- and LIFTED to #4E4740, luma 72 against the harness backdrop's 58.",
+          "Measured INSIDE the plate's own doorway (viewEvidence region-doorway, PBR confidence 0.765) at #0C0904 -- the plate's doorway is genuinely, almost perfectly black -- and LIFTED to #4E4740, luma 72 against the harness backdrop's 58.",
           "Forced by the silhouette gate, which classifies background by mean luma alone. This opening is ENCLOSED by the tower's own outline, so at the measured value it is read as a hole punched through the prop rather than as a doorway into it. A deliberate deviation from the measurement, recorded with its reason and its margin."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1238,12 +1329,12 @@
         "stepDegrees": 90
       },
       "instanceDimensions": {
-        "width": 2.58,
-        "height": 3.51,
-        "depth": 0.46
+        "width": 2.86,
+        "height": 3.78,
+        "depth": 1.0
       },
-      "rationale": "Two jambs, a lintel and a pediment slab merged into one unit, four rotations. Sixteen parts at one geometry and one draw call, against a ceiling of SIXTEEN unique geometries -- the tightest in the batch.",
-      "zFightingNote": "The whole set is SUNK to y=0.75, below the platform top at 0.95. Started level with it, all seven door instances put their underside in the y=1.150 plane facing down together with the tower's own base -- ten coplanar co-facing pairs in one go, and the only ten this batch produced. The three door parts are sunk to three DIFFERENT depths for the same reason."
+      "rationale": "Two ringed colonnettes (ten-segment cylinders with three collars each), two jambs, a deep lintel, a pointed pediment and a threshold step merged into one unit, four rotations. The plate's door is the most recognisable thing on the tower after its outline, and the first build's jamb-and-lintel rectangle read as a garage.",
+      "zFightingNote": "The whole set is SUNK to y=1.02, below the platform top at 1.20. Level with it, all seven door instances put their underside in one plane facing down together with the tower's own base. The jamb fronts stand 0.05 m proud of the plinth course, the pediment's back is buried 0.05 m in the wall, and the threshold runs back into the plinth rather than butting it."
     },
     {
       "id": "blind-doors",
@@ -1264,31 +1355,31 @@
       },
       "instanceDimensions": {
         "width": 1.9,
-        "height": 2.88,
-        "depth": 0.1
+        "height": 2.43,
+        "depth": 0.16
       },
       "rationale": "THREE, not four. A Khmer sanctuary has one cell and false doors on the other three faces, so the set is deliberately not a full quad: the first of the four rotations is the identity and that face is left for the real doorway.",
-      "zFightingNote": "Each panel stands 0.08 m PROUD of the wall between the jambs rather than sitting flush in it. Flush, they were the same stone at the same depth as the wall behind them and were simply invisible -- a false door has to read as a door, and with no colour difference to spend, depth is the only thing left to say it with."
+      "zFightingNote": "Each leaf stands 0.10 m PROUD of the wall between the jambs with a central rib 0.06 m prouder again. Flush, they were the same stone at the same depth as the wall behind them and were simply invisible -- a false door has to read as a door, and with no colour difference to spend, depth is the only thing left to say it with. Sunk to y=1.09, distinct from the frames and the doorway."
     },
     {
       "id": "fallen-blocks",
       "name": "Fallen blocks",
-      "instanceCount": 20,
+      "instanceCount": 30,
       "sourceComponent": "platform",
       "material": "pale",
       "renderAs": "InstancedMesh",
       "sharedGeometry": "stone-block",
       "placement": {
         "mode": "explicit",
-        "note": "Eight tumbled across the roof tiers, twelve on the platform and its enclosure; positions authored, not scattered."
+        "note": "Ten on the truncated top (six on the broken ring, four heaped inside it), three slid down the ledges under the fallen corner, fifteen on the platform floor including one leaning on the enclosure and one stacked on another, two up on the enclosure wall; every transform authored."
       },
       "instanceDimensions": {
-        "width": 0.92,
-        "height": 0.34,
-        "depth": 0.56
+        "width": 1.0,
+        "height": 0.4,
+        "depth": 0.6
       },
-      "rationale": "This is the component that makes the prop a ruin rather than a building, and it costs ONE draw call and ONE geometry. As twenty meshes it would exceed the sixteen-geometry ceiling on its own, before the building existed.",
-      "zFightingNote": "Every instance carries its own rotation and its own NON-UNIFORM scale, both derived from its index through a small integer hash -- never from a random source, so the model is byte-identical on every build. No two blocks share a plane because no two share an orientation. Per-instance tones come through setColorAt, which is why the material is white."
+      "rationale": "This is the component that makes the prop a ruin rather than a building, and it costs ONE draw call and ONE geometry. As thirty meshes it would exceed the sixteen-geometry ceiling on its own, before the building existed.",
+      "zFightingNote": "Every instance carries its own yaw, tilt and NON-UNIFORM scale, authored per block. Each is additionally sunk a few DISTINCT millimetres (0.004 m times an index-derived 1..9) into whatever it lies on: level, eleven undersides shared the platform-top and tier-top planes with the tower's base and with each other in the first render of this build. Per-instance tones come through setColorAt, which is why the material is white."
     }
   ],
   "buildPasses": [
@@ -1399,27 +1490,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T16:48:23.012126+00:00",
+      "timestamp": "2026-08-27T00:31:29.826940+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
@@ -1430,36 +1521,36 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.091321+00:00",
+      "timestamp": "2026-08-27T00:31:29.907840+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
@@ -1470,27 +1561,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.170608+00:00",
+      "timestamp": "2026-08-27T00:31:29.990945+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.070334+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "ruination",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
@@ -1501,38 +1607,13 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.250636+00:00",
+      "timestamp": "2026-08-27T00:31:30.150819+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "tower-face",
-          "tier": "critical",
-          "score": 0.83,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
-        },
-        {
-          "id": "stone-palette",
-          "tier": "important",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
-          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
-        }
-      ],
+      "layerScores": {},
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
@@ -1541,27 +1622,36 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.330771+00:00",
-      "passId": "surface-pass",
+      "timestamp": "2026-08-27T00:31:30.234025+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.85,
       "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
-          "id": "ruination",
+          "id": "tower-face",
           "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.85,
+          "score": 0.86,
+          "threshold": 0.8,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
@@ -1572,16 +1662,71 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.412377+00:00",
+      "timestamp": "2026-08-27T00:31:30.317503+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.403337+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.485591+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1593,16 +1738,16 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.494745+00:00",
+      "timestamp": "2026-08-27T00:31:30.570257+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1614,54 +1759,69 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:48:23.575180+00:00",
+      "timestamp": "2026-08-27T00:31:30.658318+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.746340+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         },
         {
           "id": "ruination",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
         },
         {
           "id": "stone-palette",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.85,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
-          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
@@ -1674,31 +1834,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T16:48:23.012126+00:00",
+      "timestamp": "2026-08-27T00:31:29.826940+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: four components and 3 InstancedMesh systems at 7 draw calls, and 7 of a SIXTEEN-geometry ceiling -- the tightest geometry budget in the batch, which is why twenty fallen blocks had to be one instanced geometry from the start.",
+      "summary": "Blockout: four components and 3 InstancedMesh systems at 7 draw calls, and 7 of a SIXTEEN-geometry ceiling, which is why thirty fallen blocks are one instanced geometry from the start.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1715,40 +1875,40 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.091321+00:00",
+      "timestamp": "2026-08-27T00:31:29.907840+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: the platform folds thirteen parts into one submission by grouping on MATERIAL, and the whole merged geometry is rotated a quarter turn so the +X stair notch lands on the +Z doorway elevation -- one notch construction, not two.",
+      "summary": "Structural pass: the platform folds thirteen parts into one submission by grouping on MATERIAL, the tower folds plinth, body, three entablature bands, two tiers, eight tier panels and three corner blocks into another, and the whole platform is rotated a quarter turn so the +X stair notch lands on the +Z doorway elevation.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1764,31 +1924,55 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.170608+00:00",
+      "timestamp": "2026-08-27T00:31:29.990945+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild on the band table: the first build had bands 3-4 +0.08 H too wide and 6-7 -0.08 H too narrow. Body 6.0 -> 5.5 m, entablature 5.65 -> 7.0 m wide starting at 4.85, tiers with miniature aedicules, door surrounds rebuilt with colonnettes and a pointed pediment, thirty authored blocks. First render of the rebuild put eleven block undersides coplanar with the tower base and each other; every block now sinks a distinct few millimetres.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.070334+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "ruination",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: platform lowered and tower widened on the band table rather than on the plate; doorway moved from recessed to proud after it turned out to be buried inside a solid mass; blind panels raised 0.08 m proud so a false door reads as a door.",
+      "summary": "Form refinement: body narrowed to 5.5 m and entablature flared to 7.0 m from 4.85 on the band table (bands 3-9 now within 0.065 H); door surrounds rebuilt with ringed colonnettes, lintel, pointed pediment and threshold; tiers given miniature aedicules and corner acroteria; thirty blocks authored one by one, each sunk a distinct few millimetres so no two undersides share a plane.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1804,40 +1988,15 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.250636+00:00",
+      "timestamp": "2026-08-27T00:31:30.150819+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "tower-face",
-          "tier": "critical",
-          "score": 0.83,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
-        },
-        {
-          "id": "stone-palette",
-          "tier": "important",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
-          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 4 materials at PBR confidence 0.765-0.860, every albedo measured on the plate LIT face. The rubble material ships white on purpose so its twenty instances can carry four measured tones through setColorAt.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Surface put back: three Canvas 2D tiles (laterite coursing and pitting; sandstone ashlar, black weathering, lichen; rubble mottle) bound post-construction as map and bumpMap. First tile covered every face in orange random-walk lichen worms and read as camouflage; lichen reduced and moved toward the ledge tops by a vertex tint, and the black redrawn as vertical streaks fading downward.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1853,31 +2012,40 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.330771+00:00",
-      "passId": "surface-pass",
+      "timestamp": "2026-08-27T00:31:30.234025+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.85,
       "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
-          "id": "ruination",
+          "id": "tower-face",
           "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.85,
+          "score": 0.86,
+          "threshold": 0.8,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: surface character is entirely geometry -- the broken tier, the scattered blocks, the proud aedicules -- plus one delivered per-vertex dirt tint on the lower laterite courses. No texture sets and no canvas.",
+      "summary": "Material pass: 4 materials at PBR confidence 0.765-0.860, every albedo the median of a lit crop. Sandstone re-based at runtime to its lichen envelope #B07A5A so the crust can be brighter than the stone; rubble ships white so its thirty instances carry four measured tones through setColorAt.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1893,21 +2061,94 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.412377+00:00",
+      "timestamp": "2026-08-27T00:31:30.317503+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Lichen rendered OLIVE, not orange: the side faces' clean-ratio vertex tint (0.79 in red) was multiplying the lichen too. Clean ratio moved into the tile as one multiply fill, side vertices white, ledge tops a mild warm tint, lichen painted after the multiply as a ratio of the envelope. Turntable gate re-run at the darker streaks: zero hole pixels at four azimuths.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.403337+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "ruination",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
+        },
+        {
+          "id": "stone-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: three seamless Canvas 2D tiles bound post-construction as map and bumpMap -- laterite coursing and pitting, sandstone ashlar with blurred cloudy drift, grain, soft downward weathering washes and lichen speck clusters, rubble mottle -- at ~20 ms inside an ~80 ms factory; ledge tops carry a crust tint on their vertex colour by normal. Black at 0.53 of clean, translucent, for the hole gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.485591+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Nothing on this prop is metal, so the harness's missing environment map costs nothing here.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Nothing on this prop is metal, so the harness's missing environment map costs nothing here. Bump at 0.04-0.05 is what makes the joints read under the three directionals.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1923,16 +2164,16 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.494745+00:00",
+      "timestamp": "2026-08-27T00:31:30.570257+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1953,58 +2194,82 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:48:23.575180+00:00",
+      "timestamp": "2026-08-27T00:31:30.658318+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned after promotion: the stone still read as CAMOUFLAGE PAINT (hard-edged blotches) and the top debris as floating. Sandstone tile rebuilt from soft layers -- blurred cloudy tonal drift, fine grain, blurred downward washes for the weathering, lichen as clusters of 1-2 cm specks -- nothing hard-edged but the pits. A raycast support check (scratch/_mon/support.mjs) drops a ray from every block's four bottom corners: eleven blocks were unsupported at a corner -- run-top blocks lying ACROSS a 0.65 m run, ledge blocks over the redented corner cut-backs, two stacked blocks tilted with an edge in the air, and the short +X ring run's top at 8.59 not 8.70. All thirty now report every corner within 5 cm of support. The last floater was not debris at all: the tier-cap corner ACROTERIA sat at the geometric corner of a redented plan, over the cut-back, and now sit on the ledge square inside it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/khmer-stone-sanctuary/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T00:31:30.746340+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
+        "silhouetteProportion": 0.88,
         "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "materialSurface": 0.8,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.88,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.053 and |delta depth| 0.071 of height.",
-          "notes": "The first build was much worse: bands 6 to 9 came out 0.18 to 0.21 of height NARROWER than the reference, because the platform was too tall a fraction and the roof tapered away where the reference stays bulky. The platform came down, the tower went from 5.2 m to 6.0 m across and the roof tiers now step in gently. One band is still past the 0.12 flag -- band 2 depth at +0.208 -- and that is the stair notch, asymmetric in both models and not on the same axis. The residual is dominated by a 13% height-to-width difference between the proxy and the declaration: expressed as a fraction of WIDTH rather than height, band 0 is 0.966 in the reference and 0.96 here. The declared 12 x 9 x 12 wins. Closing the envelope on 9.0000 took three passes of nudging fallen blocks, and the block actually setting the height had to be found by measuring every instance rather than guessed at."
+          "evidence": "Envelope built at exactly 12.00 x 9.00 x 12.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.041 and |delta depth| 0.057 of height (first build 0.053 / 0.071).",
+          "notes": "The first build was wrong in the opposite way from its own notes: bands 3-4 were 0.08 H too WIDE -- a 6.0 m body plus deep aedicules against the proxy's 5.65 m -- and bands 6-7 were 0.08 H too NARROW, two thin cornice bands where the proxy flares to 6.6 m. This build reads the body at 5.5 m to 4.85, a three-band entablature stepping out to 7.0 m between 4.85 and 6.30, tiers at 5.9 and 4.9 m, a 4.8 m broken ring: bands 3-9 are now all within 0.065 H and six of them within 0.03. Band 2 remains past the 0.12 flag at +0.137 / +0.316 and is the enclosure wall: 10.8 m here against the proxy's 9.2 m on a 10.2 m platform, i.e. the same 13% declared-aspect residual as band 0 (9.2 x 12/10.2 = 10.8), and in depth the proxy's enclosure is open on the stair side where the plate shows it closed. The declared 12 x 9 x 12 wins."
         },
         {
           "id": "ruination",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Top tier authored as a PARTIAL ring with one corner gone, and twenty blocks scattered across the roof and the platform, each with its own rotation, non-uniform scale and measured tone.",
-          "notes": "The registry notes ask for ruination explicitly and it has to be geometry -- an intact tower with debris sprinkled round it reads as litter, not as collapse. The block variety comes from setColorAt with four tones measured off blocks in the plate, which is why the rubble material ships WHITE: setColorAt multiplies with material.color rather than replacing it, so a coloured base would darken every tone by itself. Rotations and scales are derived from each instance's INDEX through an integer hash, never from a random source, so the model is byte-identical on every build."
+          "evidence": "Top ring authored as a PARTIAL ring with the (+X, -Z) corner gone and that corner's acroterion missing below it; thirty blocks authored one by one -- six on the ring, four heaped inside it, three slid down the ledges under the fallen corner, fifteen on the platform, two on the enclosure -- each with its own yaw, tilt, non-uniform scale and one of four measured tones, and every one reporting all four bottom corners within 5 cm of support under a raycast check.",
+          "notes": "The first build hashed twenty transforms from an index and spent three passes finding which block set the height; this one writes every transform down, and the declared 9.00 m is the first entry's top face by construction. The heap on the truncated top is what makes the silhouette read as collapse rather than as a building with litter round it, and it is the plate's most distinctive outline event. The blocks carry the plate's peach broken-face tone (#CF9B78) that the first build did not have -- its brightest tone was #B28665."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.86,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rectangular jamb-and-lintel aedicule on each of four faces, ONE open doorway reading as a dark opening and THREE blind panels reading as recessed false doors.",
-          "notes": "Two invisibility bugs had to be fixed, and both came from the same wrong instinct. The doorway was first RECESSED into the tower -- but the tower is a solid mass, so a panel sunk into it is inside the solid and cannot be seen; it now stands 0.02 m proud, and the opening reads as an opening because the aedicule stands 0.32 m in front of it. The blind doors were flush and the same stone as the wall behind them, which made them nothing at all; they now stand 0.08 m proud, because with no colour difference to spend, depth is the only thing left to say 'door' with. Three panels and not four: a Khmer sanctuary has one cell and false doors on the other three faces, which is a genuine feature and not an omission."
+          "evidence": "Each face carries two ringed colonnettes, jambs, a 0.40 m lintel, a pointed pediment to 4.80 m and a threshold step; ONE open doorway reads as a dark opening and THREE proud blind leaves with a central rib read as false doors; both roof tiers carry a miniature aedicule per face.",
+          "notes": "The first build's door was a jamb-and-lintel rectangle and rendered as a garage. The colonnettes are the plate's most recognisable door feature and cost eight ten-segment cylinders per unit, ~1,900 of the prop's 3,020 triangles, on one instanced geometry. Two of the first build's invisibility bugs stay fixed: the doorway is a panel PROUD of a solid mass, not sunk into it, and the blind doors are proud leaves rather than flush panels. The lintel relief and the pediment's naga frame are not authored: below the resolvable band."
         },
         {
           "id": "stone-palette",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.85,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Red laterite #735B4E against grey-brown sandstone #73604B, both measured on the plate's LIT faces, at PBR confidence 0.860 and 0.829.",
-          "notes": "This plate is a genuinely dark photograph of a weathered ruin, not the shadowless lightbox the retail plates are: the same laterite measures #735B4E lit and #3D2F26 shaded, so which face a crop sits on is a decision and it is recorded. The two stones are close in value and that is what the plate shows -- the difference between them is hue, not brightness, and they are two materials because they are two stones rather than two colours. The cell interior measured #040302 and ships at #4E4740: forced by a luma-only background test on an opening enclosed by the prop's own outline."
+          "evidence": "Laterite #765440 ceiling (median of the lit plinth face #6B5342) against sandstone #8B745A (median of the lit door face), each carrying a seamless Canvas 2D tile as map and bumpMap: 0.80 x 0.32 m laterite coursing with 5 cm joints and ~1,100 pits; 0.80 x 0.40 m sandstone ashlar with black streaks at 0.58 of clean and orange lichen at the (1.0, 1.0, 0.70) envelope ratio; a mottle tile on the rubble.",
+          "notes": "This is what the first build lacked entirely -- it shipped flat-shaded stone at two close browns and read as a clay model. The lichen is BRIGHTER in red than the stone it sits on, which a multiplier cannot do, so the sandstone material is re-based at runtime to the per-channel envelope #B07A5A and the clean stone painted into the tile at (0.79, 0.95, 1.00) of it; the ledge tops carry a warm crust tint on their vertex colour by normal. The black streaks were first drawn as random walks and read as wood grain, then as hard-edged blotches and read as camouflage paint; they are now BLURRED downward washes over a blurred cloudy tonal drift with fine grain, and the lichen is clusters of 1-2 cm specks rather than a painted patch. Black ships at 0.53 of clean, mostly translucent, against a measured 0.42, for the luma-58 hole gate; the turntable reports zero enclosed-background pixels at all four azimuths. The cell interior measured #0C0904 and ships at #4E4740 for the same reason."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84 -- not a pass self-score. 1,084/16,000 triangles, 7/12 draw calls, 4/8 materials, 7/16 unique geometries.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87 -- not a pass self-score. 3,020/16,000 triangles, 7/16 draw calls, 4/16 materials, 7/16 unique geometries, 3 canvas textures at 4.0 MB, factory ~80 ms. Every fallen block passes the four-corner raycast support check.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2035,8 +2300,8 @@
   "performanceBudget": {
     "qualityPriority": "real-time",
     "targetTriangles": 16000,
-    "maxDrawCalls": 12,
-    "maxMaterials": 8,
+    "maxDrawCalls": 16,
+    "maxMaterials": 16,
     "maxUniqueGeometries": 16,
     "textureSize": 1024,
     "fpsTarget": 60,
@@ -2046,15 +2311,15 @@
         "components": 4,
         "repetitionSystems": 3,
         "projectedTotal": 7,
-        "budget": 12,
-        "headroom": 5,
-        "note": "Four components and three repetition systems: 7 of 12. The platform alone folds thirteen parts into one submission, and the fallen-block system folds twenty into another."
+        "budget": 16,
+        "headroom": 9,
+        "note": "Four components and three repetition systems: 7 of 16. The platform alone folds thirteen parts into one submission, the tower folds fourteen, and the fallen-block system folds thirty into another."
       },
       "materials": {
         "projectedTotal": 4,
-        "budget": 8,
-        "headroom": 4,
-        "note": "sandstone covers the tower, the broken tier, the door aedicules AND the blind panels -- four consumers, one material. Four of eight materials, four in hand."
+        "budget": 16,
+        "headroom": 12,
+        "note": "sandstone covers the tower, the broken tier, the door aedicules AND the blind panels -- four consumers, one material. Four of sixteen materials, twelve in hand."
       },
       "uniqueGeometries": {
         "projectedTotal": 7,
@@ -2063,10 +2328,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1084,
+        "measured": 3020,
         "budget": 16000,
-        "headroom": 14916,
-        "note": "1,084 of 16,000 -- the lightest prop in the batch by a wide margin, because a ruin is boxes and extruded plans and nothing here is curved at all. The scarce axis is UNIQUE GEOMETRIES at 7 of 16, which is why the twenty fallen blocks had to be one instanced geometry rather than twenty meshes."
+        "headroom": 12980,
+        "note": "3,020 of 16,000. The colonnettes are the only curved thing on the prop -- eight ten-segment cylinders per door unit -- and the rest is boxes and extruded plans. The scarce axis is UNIQUE GEOMETRIES at 7 of 16, which is why the thirty fallen blocks are one instanced geometry."
       }
     }
   },
@@ -2124,11 +2389,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Extrusions of closed plans and boxes. The redented plan is a twenty-point polygon and the notched platform plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence. Nothing on this prop is a surface of revolution -- there is not one curve on it, which is itself part of what separates it from the prang."
+      "strategy": "Extrusions of closed plans and boxes, plus one pediment profile extruded along Z and the colonnette cylinders. The redented plan is a twenty-point polygon and the notched platform plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence."
     },
     {
       "id": "instancing",
-      "strategy": "Three InstancedMesh systems carry 39 of the prop's 56 discrete parts. The fallen-block system is the important one: twenty instances, each with its own hash-derived rotation, non-uniform scale and measured tone, at one geometry and one draw call."
+      "strategy": "Three InstancedMesh systems carry 37 of the prop's discrete parts. The fallen-block system is the important one: thirty instances, each with its own authored rotation, non-uniform scale and measured tone, at one geometry and one draw call."
     },
     {
       "id": "determinism",
@@ -2136,7 +2401,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless and no canvas is generated at all. The variety that would otherwise need a texture is delivered by INSTANCE COLOUR instead: the four measured block tones ride setColorAt, which is why the rubble material ships white -- setColorAt multiplies with material.color rather than replacing it."
+      "strategy": "Every material is declared textureless to the GENERATOR -- no five-canvas procedural set. Three Canvas 2D tiles (laterite coursing and pitting; sandstone ashlar, black streaks and lichen; rubble mottle) are drawn post-construction as a few hundred Path2D fills at 512 px each and bound as map and bumpMap, ~20 ms in total inside a factory that builds in ~80 ms. Every tone on them is a display-space ratio of the material's measured colour. The sandstone is re-based to its lichen envelope so the crust can be BRIGHTER than the stone, and the ledge tops carry the crust tint on their vertex colour by normal."
     }
   ],
   "animationAnchors": [],
@@ -2151,13 +2416,25 @@
     {
       "id": "carving-not-authored",
       "severity": "low",
-      "description": "The carved lintel and colonnette relief around the plate's doorway are absent; the aedicule carries only the door's silhouette.",
-      "mitigation": "Below the resolvable band at prop distance, and the only route to it is the texture set that would discard every measured albedo on the prop."
+      "description": "The lintel relief and the pediment's naga frame are absent; the door surround carries its silhouette parts (colonnettes, jambs, lintel, pediment) only.",
+      "mitigation": "Below the resolvable band at prop distance. The colonnettes and the pointed pediment are what the eye reads at the distance a level is played from."
+    },
+    {
+      "id": "lichen-density-uniform",
+      "severity": "low",
+      "description": "A repeating tile puts lichen patches at one density on every face, where the plate concentrates the crust on the ledges.",
+      "mitigation": "The ledge tops carry a warm crust tint by vertex normal, and the tile density is set from the faces rather than the ledges so the sides are not over-crusted."
+    },
+    {
+      "id": "black-lifted",
+      "severity": "low",
+      "description": "The black weathering ships at 0.58 of the clean stone against a measured 0.42.",
+      "mitigation": "Forced by the luma-only silhouette gate: a shaded face at ~70 times 0.42 lands under the backdrop's 58 and reads as a hole. Turntable gate at four azimuths reports zero enclosed-background pixels at the shipped value."
     },
     {
       "id": "doorway-lifted",
       "severity": "low",
-      "description": "The cell interior ships at #4E4740 rather than its measured #040302.",
+      "description": "The cell interior ships at #4E4740 rather than its measured #0C0904.",
       "mitigation": "Forced by a luma-only background test on an opening ENCLOSED by the prop's own outline. Recorded with the measurement it departs from and with its margin: luma 72 against a backdrop of 58."
     }
   ],
@@ -2175,42 +2452,42 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.6478,
+        "silhouetteIoU": 0.6868,
         "aspectRatioDelta": 0.0513,
         "scaleDelta": 0.1792,
-        "bilateralSymmetryError": 0.0179,
+        "bilateralSymmetryError": 0.0087,
         "colorDelta": {
           "checked": 4,
-          "maxDeltaE": 9.59,
+          "maxDeltaE": 11.41,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 4.01
+              "deltaE": 4.61
             },
             {
               "componentId": null,
-              "deltaE": 3.65
+              "deltaE": 8.77
             },
             {
               "componentId": null,
-              "deltaE": 3.65
+              "deltaE": 8.77
             },
             {
               "componentId": null,
-              "deltaE": 9.59
+              "deltaE": 11.41
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.648 is below threshold 0.85",
+        "silhouette IoU 0.687 is below threshold 0.85",
         "aspect-ratio delta 0.051 exceeds threshold 0.05",
         "scale delta 0.179 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "07ff741e97b04162",
+      "renderHash": "b6868d83d8ecedbf",
       "passId": "blockout"
     }
   ]

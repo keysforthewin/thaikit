@@ -89,7 +89,13 @@ const CONFIG = {
         "h": 2.3,
         "gateHalf": 1.55,
         "pylon": 0.75,
-        "gateH": 3.3
+        "gateH": 3.3,
+        "gate": {
+          "w": 1.7,
+          "spring": 1.6,
+          "rise": 1.35,
+          "shoulder": 0.1
+        }
       },
       "hall": {
         "hx": 4.6,
@@ -109,10 +115,17 @@ const CONFIG = {
       },
       "arch": {
         "count": 5,
-        "w": 1.62,
-        "spring": 2.3,
-        "rise": 1.35,
-        "sill": 0.35,
+        "open": [
+          1,
+          2,
+          3
+        ],
+        "w": 1.22,
+        "spring": 4.65,
+        "rise": 1.15,
+        "shoulder": 0.09,
+        "band": 0.2,
+        "sill": 0,
         "depth": 0.42,
         "pitch": 1.86
       },
@@ -203,49 +216,48 @@ const CONFIG = {
       },
       "finials": [
         [
+          -3.4,
+          9.25,
+          -2.9,
+          0.48
+        ],
+        [
+          3.4,
+          9.25,
+          -2.9,
+          0.48
+        ],
+        [
+          -3.4,
+          9.25,
+          2.9,
+          0.48
+        ],
+        [
+          3.4,
+          9.25,
+          2.9,
+          0.48
+        ]
+      ],
+      "ornaments": [
+        [
           0,
           13.15,
           0,
-          1.55
-        ],
-        [
-          -3.4,
-          9.25,
-          -2.9,
-          0.48
-        ],
-        [
-          3.4,
-          9.25,
-          -2.9,
-          0.48
-        ],
-        [
-          -3.4,
-          9.25,
-          2.9,
-          0.48
-        ],
-        [
-          3.4,
-          9.25,
-          2.9,
-          0.48
+          1,
+          2.12,
+          0.3
         ],
         [
           -5.75,
           17.4849,
           -6.6,
-          0.66
+          0.25,
+          0.5151,
+          0.11
         ]
-      ],
-      "crescent": {
-        "x": 0,
-        "y": 14.86,
-        "z": 0,
-        "r": 0.46,
-        "t": 0.12
-      }
+      ]
     }
   } as any;
 
@@ -807,6 +819,60 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   const G = CONFIG.geometry as any;
 
 
+  /* ---------------------------------------------------------------- the Moorish arch
+   * The arch the plate and the Meshy proxy's front elevation both show on the doorways, the blind
+   * niches and the gate: vertical jambs, a shoulder that steps OUT at the spring (the horseshoe
+   * overhang), a round lobe, and an ogee point. The two-centred lancet in the shared preamble has
+   * none of that and read as a chapel window. The lobe is a circle centred a little above the spring
+   * whose widest point is the shoulder; the point is a quadratic from the lobe's tangent to the apex,
+   * so the outline is tangent-continuous at the inflection. */
+  const moorishArchPath = (target: THREE.Path, w: number, spring: number, rise: number, sill: number,
+                           shoulder: number) => {
+    const hw = w / 2, sw = hw + shoulder;
+    const a = 0.22 * sw, R = Math.hypot(sw, a), cy = spring + a;
+    const th = Math.asin(Math.min(0.985, Math.max(0.5, (0.72 * rise - a) / R)));
+    const px = R * Math.cos(th), py = cy + R * Math.sin(th);
+    const tx = -Math.sin(th), ty = Math.cos(th);
+    const dx = Math.cos(1.2566), dy = -Math.sin(1.2566);
+    const ax = 0, ay = spring + rise;
+    const det = tx * (-dy) - (-dx) * ty;
+    let s = ((ax - px) * (-dy) - (-dx) * (ay - py)) / det;
+    if (!(s > 0) || !isFinite(s)) s = 0.1 * R;
+    const cxp = px + s * tx, cyp = py + s * ty;
+    const th0 = -Math.asin(a / R);
+    const n = 8;
+    target.moveTo(hw, sill);
+    target.lineTo(hw, spring);
+    if (shoulder > 0) target.lineTo(sw, spring);
+    for (let i = 1; i <= n; i++) { const t = th0 + (th - th0) * (i / n); target.lineTo(R * Math.cos(t), cy + R * Math.sin(t)); }
+    target.quadraticCurveTo(cxp, cyp, ax, ay);
+    target.quadraticCurveTo(-cxp, cyp, -px, py);
+    for (let i = n - 1; i >= 0; i--) { const t = th0 + (th - th0) * (i / n); target.lineTo(-R * Math.cos(t), cy + R * Math.sin(t)); }
+    target.lineTo(-hw, spring);
+    target.lineTo(-hw, sill);
+    target.closePath();
+  };
+  const moorishArchShape = (w: number, spring: number, rise: number, sill: number, shoulder: number,
+                            hole?: { w: number, spring: number, rise: number, sill: number, shoulder: number }) => {
+    const shape = new THREE.Shape();
+    moorishArchPath(shape, w, spring, rise, sill, shoulder);
+    if (hole) { const p = new THREE.Path(); moorishArchPath(p, hole.w, hole.spring, hole.rise, hole.sill, hole.shoulder); shape.holes.push(p); }
+    return shape;
+  };
+  /** A flat crescent: outer circle R at the origin, inner circle ri offset by off towards +x, the
+   *  body on -x and the horns at +x. Sampled as a polygon so it can be extruded as one plate. */
+  const crescentShape = (R: number, ri: number, off: number, n: number) => {
+    const xi = (R * R - ri * ri + off * off) / (2 * off);
+    const yi = Math.sqrt(Math.max(0, R * R - xi * xi));
+    const a0 = Math.atan2(yi, xi), b0 = Math.atan2(yi, xi - off);
+    const sh = new THREE.Shape();
+    sh.moveTo(xi, yi);
+    for (let i = 1; i <= n; i++) { const t = a0 + (2 * Math.PI - 2 * a0) * (i / n); sh.lineTo(R * Math.cos(t), R * Math.sin(t)); }
+    for (let i = 1; i < n; i++) { const t = -b0 - (2 * Math.PI - 2 * b0) * (i / n); sh.lineTo(off + ri * Math.cos(t), ri * Math.sin(t)); }
+    sh.closePath();
+    return sh;
+  };
+
   /* ---------------------------------------------------------------- courtyard wall
    * Four runs and a gate, all the same render and therefore ONE component and ONE draw call. The
    * side runs carry the full depth and the front and back runs stop between them: run to full
@@ -819,23 +885,27 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       boxAt(cc, C.h / 2, 0, C.t, C.h, C.hz * 2),
       boxAt(0, C.h / 2, -dd, ci * 2, C.h, C.t),
     ];
-    // The +Z run is broken by the gate: two segments flanking it, two pylons and a pointed arch
-    // head spanning between them.
+    // The +Z run is broken by the gate: two segments flanking it and ONE gate block spanning the
+    // pylons and the head together, with the doorway cut through it as a hole. The first build stood
+    // two pylon boxes inside a pointed-arch plate of the same depth, which put the plate's point
+    // above the block and the pylons' faces in the plate's plane; the plate's gate is a flat-topped
+    // block with a Moorish arch through it, and one extrusion says exactly that.
     const segLen = ci - C.gateHalf - C.pylon;
     parts.push(boxAt(-(C.gateHalf + C.pylon + segLen / 2), C.h / 2, dd, segLen, C.h, C.t));
     parts.push(boxAt(C.gateHalf + C.pylon + segLen / 2, C.h / 2, dd, segLen, C.h, C.t));
-    for (const xs of [-1, 1]) {
-      // Pylon and arch head are the same depth as the wall, not 1.5x it: deeper, they reached
-      // z=8.11 against a declared 8.00 and the gate alone put the prop over its envelope.
-      parts.push(boxAt(xs * (C.gateHalf + C.pylon / 2), C.gateH / 2, dd, C.pylon, C.gateH, C.t));
+    {
+      const GW = (C.gateHalf + C.pylon) * 2, GA = C.gate;
+      const block = new THREE.Shape();
+      block.moveTo(-GW / 2, 0); block.lineTo(GW / 2, 0); block.lineTo(GW / 2, C.gateH);
+      block.lineTo(-GW / 2, C.gateH); block.closePath();
+      const hole = new THREE.Path();
+      moorishArchPath(hole, GA.w, GA.spring, GA.rise, 0, GA.shoulder);
+      block.holes.push(hole);
+      const gate = new THREE.ExtrudeGeometry(block, { depth: C.t, bevelEnabled: false, curveSegments: 8 });
+      gate.translate(0, 0, dd - C.t / 2);
+      gate.computeVertexNormals();
+      parts.push(gate);
     }
-    const head = new THREE.ExtrudeGeometry(
-      pointedArchShape(C.gateHalf * 2 + C.pylon * 2, 1.70, 1.00, 0,
-        { w: C.gateHalf * 2, spring: 1.70, apexRise: 0.86, sill: 0 }),
-      { depth: C.t, bevelEnabled: false, curveSegments: 8 });
-    head.translate(0, 0, dd - C.t / 2);
-    head.computeVertexNormals();
-    parts.push(head);
 
     const geo = mergeGeos(parts);
     // The plate's walls are streaked black with rain wash from the top down -- the reverse of every
@@ -984,42 +1054,65 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   }
 
   /* ---------------------------------------------------------------- arcade
-   * Five pointed arches across the hall's front elevation, as TWO instanced systems: a white
-   * surround with a real aperture, and a dark panel behind it.
+   * Five Moorish arches across the hall's front elevation -- three doorways and two blind niches --
+   * as instanced systems: a white surround with a real aperture on every bay, a dark panel behind
+   * each open bay, and a green field with a raised white panel in each blind one.
    *
-   * The arch is POINTED, not half-round. A semicircular sweep here reads as a railway viaduct, and
-   * the two-centred arch is one of the few things on a whitewashed box that says mosque at all. */
+   * The arch is the MOORISH one the plate and the proxy's front elevation both show -- shoulder,
+   * lobe and ogee point -- not the two-centred lancet of the first build, which read as a chapel
+   * window and stopped 2.4 m short of the parapet where the plate's surrounds all but touch it. */
   {
     const H = G.hall, A = G.arch;
     const face = H.zFront;
-    const shape = pointedArchShape(A.pitch, A.spring + 0.30, A.rise + 0.30, 0,
-      { w: A.w, spring: A.spring, apexRise: A.rise, sill: A.sill });
+    const b = A.band;
+    const shape = moorishArchShape(A.w + 2 * b, A.spring - 0.4 * b, A.rise + 1.25 * b, 0, A.shoulder,
+      { w: A.w, spring: A.spring, rise: A.rise, sill: 0, shoulder: A.shoulder });
     const frame = new THREE.ExtrudeGeometry(shape, { depth: A.depth, bevelEnabled: false, curveSegments: 10 });
-    frame.translate(0, 0.55, face - A.depth + 0.20);
+    frame.translate(0, 0, face - A.depth + 0.20);
     frame.computeVertexNormals();
     const xs: number[] = [];
     for (let i = 0; i < A.count; i++) xs.push((i - (A.count - 1) / 2) * A.pitch);
-    addInst('arch-frames', 'Arcade surrounds', frame, 'white',
-      xs.map((x) => new THREE.Matrix4().setPosition(x, 0, 0)));
+    const at = (idx: number[]) => idx.map((i) => new THREE.Matrix4().setPosition(xs[i], 0, 0));
+    const open = A.open as number[];
+    const all = xs.map((_, i) => i);
+    const blind = all.filter((i) => !open.includes(i));
+    addInst('arch-frames', 'Arcade surrounds', frame, 'white', at(all));
 
-    // The dark behind each opening: 0.02 m PROUD of the wall, not recessed into it. The hall is a
-    // solid mass, so a panel sunk into it is inside the solid and invisible.
-    const voidShape = pointedArchShape(A.w, A.spring, A.rise, A.sill);
-    // Depth 0.05 at face+0.02 keeps the void's front at z=4.27, clear of the parapet's own +Z face
-    // at 4.28. At 0.06 the two shared that plane over 5.35 m2, five times over.
+    // The dark behind each open bay: 0.02 m PROUD of the wall, not recessed into it. The hall is a
+    // solid mass, so a panel sunk into it is inside the solid and invisible. Depth 0.05 at face+0.02
+    // keeps the void's front at z=4.27, clear of the parapet's own +Z face at 4.28. At 0.06 the two
+    // shared that plane over 5.35 m2, five times over.
+    const voidShape = moorishArchShape(A.w, A.spring, A.rise, A.sill, A.shoulder);
     const vg = new THREE.ExtrudeGeometry(voidShape, { depth: 0.05, bevelEnabled: false, curveSegments: 10 });
-    vg.translate(0, 0.55, face + 0.02);
+    vg.translate(0, 0, face + 0.02);
     vg.computeVertexNormals();
-    addInst('arch-voids', 'Arcade openings', vg, 'dark',
-      xs.map((x) => new THREE.Matrix4().setPosition(x, 0, 0)));
+    addInst('arch-voids', 'Arcade openings', vg, 'dark', at(open));
+
+    // The blind bays: the plate fills the outer two surrounds with the parapet's green and sets a
+    // smaller white arch panel inside each, the same outline again. Field front at 4.245 and panel
+    // front at 4.26, both under the voids' 4.27 and the parapet's 4.28; the panel's back sits
+    // inside the field's slab.
+    const fg = new THREE.ExtrudeGeometry(voidShape, { depth: 0.025, bevelEnabled: false, curveSegments: 10 });
+    fg.translate(0, 0, face + 0.02);
+    fg.computeVertexNormals();
+    addInst('blind-fields', 'Blind niche fields', fg, 'green', at(blind));
+    const inset = 0.30;
+    const pw = A.w - 2 * inset;
+    const panel = moorishArchShape(pw, A.spring - 0.4 * inset, 0.95 * (pw + 1.4 * A.shoulder), 0.45, A.shoulder * 0.7);
+    const pg = new THREE.ExtrudeGeometry(panel, { depth: 0.02, bevelEnabled: false, curveSegments: 8 });
+    pg.translate(0, 0, face + 0.04);
+    pg.computeVertexNormals();
+    addInst('blind-panels', 'Blind niche panels', pg, 'white', at(blind));
   }
 
-  /* ---------------------------------------------------------------- finials and crescent
-   * Six gilt finials and the crescent over the great dome, MERGED into one component. Instancing
-   * would have been the other route, but the crescent is a one-off and would have needed its own
-   * submission anyway; merging costs one draw call for all seven. */
+  /* ---------------------------------------------------------------- finials and crescents
+   * Four gilt spikes on the corner domes, and the crescent ornament over the great dome and the
+   * minaret, MERGED into one component and one draw call. The ornament is the plate's at 4x zoom:
+   * a shallow gilt cap on the crown, a ball, a neck, a small bulb, a spike and a FLAT crescent plate
+   * with its horns to the upper right. The first build's crescent was a square-section horseshoe
+   * of eleven boxes opening downward over a bloated teardrop, and read as a hook on a bulb. */
   {
-    const F = G.finials as number[][], C = G.crescent;
+    const F = G.finials as number[][];
     const parts: THREE.BufferGeometry[] = [];
     for (const [x, y, z, s] of F) {
       const g = lathe([[0, 0], [0.16, 0.03], [0.20, 0.16], [0.10, 0.30],
@@ -1028,25 +1121,28 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       g.translate(x, y, z);
       parts.push(g);
     }
-    // A short stem from the finial's tip up to the crescent. Without it the crescent floats: it
-    // sits on the axis at x=z=0 and every review viewpoint is off-axis, so the gap reads as a
-    // detached ornament rather than as the top of the finial.
-    parts.push(cylAt(C.x, C.y - C.r - 0.26, C.z, 0.05, 0.07, 0.52, 10));
-    // The crescent: a ring with a bite taken out of it, built as an arc of short segments rather
-    // than as a torus, because a torus cannot be opened.
-    const n = 11;
-    for (let i = 0; i < n; i++) {
-      const a0 = -Math.PI * 0.62 + (i / n) * Math.PI * 1.24;
-      const a1 = -Math.PI * 0.62 + ((i + 1) / n) * Math.PI * 1.24;
-      const p0 = [Math.sin(a0) * C.r, Math.cos(a0) * C.r];
-      const p1 = [Math.sin(a1) * C.r, Math.cos(a1) * C.r];
-      const dx = p1[0] - p0[0], dy = p1[1] - p0[1];
-      const g = new THREE.BoxGeometry(C.t, Math.hypot(dx, dy) + 0.02, C.t);
-      g.rotateZ(Math.atan2(-dx, dy));
-      g.translate(C.x + (p0[0] + p1[0]) / 2, C.y + (p0[1] + p1[1]) / 2, C.z);
-      parts.push(g);
+    for (const [x, y0, z, s, totalH, R] of G.ornaments as number[][]) {
+      // The cap's rim sits 0.05 m into the dome crown, so the ribs run under it and it never floats.
+      const cap = lathe([[0, 0], [0.46, 0], [0.46, 0.05], [0.32, 0.20], [0.13, 0.33], [0.06, 0.38], [0.06, 0.46]], 16);
+      cap.scale(s, s, s); cap.translate(x, y0, z); parts.push(cap);
+      const ball = new THREE.SphereGeometry(0.17 * s, 14, 10);
+      ball.translate(x, y0 + 0.60 * s, z); parts.push(ball);
+      parts.push(cylAt(x, y0 + 0.84 * s, z, 0.045 * s, 0.055 * s, 0.22 * s, 10));
+      const bulb = lathe([[0, 0], [0.10, 0.03], [0.12, 0.10], [0.085, 0.19], [0.04, 0.27], [0.03, 0.31]], 12);
+      bulb.scale(s, s, s); bulb.translate(x, y0 + 0.92 * s, z); parts.push(bulb);
+      // The spike runs from the bulb to the crescent's underside, however tall the stack is; the
+      // crescent's centre is set so its top is exactly totalH above the base.
+      const spikeBase = y0 + 1.20 * s, cBottom = y0 + totalH - 2 * R + 0.03;
+      if (cBottom > spikeBase + 0.02) parts.push(cylAt(x, (spikeBase + cBottom) / 2, z, 0.025 * s, 0.032 * s, cBottom - spikeBase, 8));
+      const t = Math.max(0.035, 0.16 * R);
+      const cg = new THREE.ExtrudeGeometry(crescentShape(R, 0.85 * R, 0.28 * R, 14), { depth: t, bevelEnabled: false });
+      cg.translate(0, 0, -t / 2);
+      cg.rotateZ(Math.PI * 0.28);
+      cg.translate(x, y0 + totalH - R, z);
+      cg.computeVertexNormals();
+      parts.push(cg);
     }
-    add('finials', 'Gilt finials and crescent', mergeGeos(parts), 'gold');
+    add('finials', 'Gilt finials and crescents', mergeGeos(parts), 'gold');
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;

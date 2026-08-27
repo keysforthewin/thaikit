@@ -157,7 +157,10 @@ const CONFIG = {
         "x": -1.8,
         "rest": 2.62,
         "seg": 18,
-        "prop": 1.1
+        "head": 1.12,
+        "headLift": 2.3,
+        "headTilt": 0.45,
+        "headZ": 9.5
       }
     }
   } as any;
@@ -552,23 +555,27 @@ function pointedArchShape(w: number, spring: number, apexRise: number, sill: num
  * station list itself rather than by a separate fan.
  */
 function tubeAlong(stations: number[][], seg: number): THREE.BufferGeometry {
-  const tri: number[] = [];
-  const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
-  const at = (i: number, j: number) => {
+  // INDEXED, with shared ring vertices, so computeVertexNormals averages across the quads and the
+  // surface shades smooth. The first build emitted loose triangles, and a flat-shaded soft body
+  // shows every station as a crease -- a reclining figure that looked crumpled rather than draped.
+  const pos: number[] = [], idx: number[] = [];
+  for (let i = 0; i < stations.length; i++) {
     const [z, cx, cy, rx, ry] = stations[i];
-    const th = (j % seg) * Math.PI * 2 / seg;
-    return [cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z];
-  };
+    for (let j = 0; j < seg; j++) {
+      const th = j * Math.PI * 2 / seg;
+      pos.push(cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z);
+    }
+  }
   for (let i = 0; i < stations.length - 1; i++) {
     for (let j = 0; j < seg; j++) {
-      const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
-      push(a, b, c);
-      push(a, c, d);
+      const a = i * seg + j, b = (i + 1) * seg + j, c = (i + 1) * seg + (j + 1) % seg, d = i * seg + (j + 1) % seg;
+      idx.push(a, b, c, a, c, d);
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tri), 3));
-  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((pos.length / 3) * 2), 2));
+  g.setIndex(idx);
   g.computeVertexNormals();
   return g;
 }
@@ -858,69 +865,169 @@ export function createRecliningBuddhaHallModel(options: ProceduralModelOptions =
   }
 
   /* ---------------------------------------------------------------- the reclining figure
-   * The identity of the whole asset, and the only ORGANIC form in the kit. It is one tapering tube
-   * of eighteen stations -- head, neck, shoulder, chest, waist, hip, thigh, calf, ankle -- because
-   * a reclining body is a long soft mass whose section changes at every point along it, and a box
-   * decomposition of that is not a low-poly body but a pile of luggage.
+   * The identity of the whole asset, and the only ORGANIC form in the kit. The plate shows the
+   * canonical parinirvana pose: the figure lies on its RIGHT side facing the open colonnade (+X),
+   * the head propped on the right hand with the elbow down on a cushion, the left arm draped down
+   * the front of the body to rest on the thigh, the legs stacked one on the other, and the two
+   * feet squared off with their soles facing down the hall.
    *
-   * Every station's centre height is derived from its own radius so the body RESTS on the plinth
-   * rather than intersecting it or floating over it: cy = plinth top + ry, computed rather than
-   * authored, which is the only way a varying section can sit on a flat surface at every point. */
+   * Lying on the right side and facing +X puts the head at +Z: body up = right x forward =
+   * (-Y) x (+X) = +Z. From the front the head is therefore at the viewer's LEFT, which is where
+   * the plate has it. The first build put the head at -Z, which for a right-side figure is a
+   * figure facing the back wall.
+   *
+   * The first build was also one symmetric tube from head to feet, and a symmetric tube has no
+   * side: it read as a figure lying on its back. What says "on its side" at prop distance is
+   * asymmetry -- two stacked legs with a groove between them, a bent arm standing on its elbow,
+   * an upright head, and a torso taller than it is deep because the shoulders are now the
+   * vertical axis. Every resting part still derives its height from its own radius
+   * (cy = plinth top + r), so it sits ON the plinth rather than in it or over it. */
   {
     const F = G.figure, PL = G.plinth;
     const rest = PL.y1;
-    // [z, radiusX, radiusY, lift] -- lift raises the head and neck, which are propped on the arm.
-    const spine: number[][] = [
-      [-11.20, 0.08, 0.08, F.prop],
-      [-10.80, 0.64, 0.74, F.prop],
-      [-10.10, 0.94, 1.08, F.prop],
-      [-9.30, 0.98, 1.12, F.prop],
-      [-8.60, 0.76, 0.90, F.prop * 0.80],
-      [-8.05, 0.68, 0.80, F.prop * 0.55],
-      [-7.30, 1.08, 1.24, F.prop * 0.22],
-      [-6.20, 1.24, 1.42, 0.04],
-      [-3.60, 1.30, 1.46, 0.0],
-      [-0.80, 1.24, 1.36, 0.0],
-      [2.00, 1.28, 1.38, 0.0],
-      [4.40, 1.20, 1.28, 0.0],
-      [6.60, 1.04, 1.12, 0.0],
-      [8.60, 0.90, 0.98, 0.0],
-      [10.00, 0.82, 0.90, 0.0],
-      [10.90, 0.80, 0.88, 0.0],
-      [11.30, 0.78, 0.86, 0.0],
-      [11.36, 0.06, 0.06, 0.0],
+    const X = F.x;
+    const parts: THREE.BufferGeometry[] = [];
+
+    // A limb segment between two points: a tapered cylinder aimed from a to b. Used where a limb
+    // runs mostly UP rather than along the hall, which tubeAlong (rings stacked along Z) cannot do.
+    const limb = (a: number[], b: number[], r0: number, r1: number, seg = 10) => {
+      const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+      const len = d.length();
+      const g = new THREE.CylinderGeometry(r1, r0, len, seg);
+      g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()));
+      g.translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+      return g;
+    };
+
+    /* Body: ONE continuous tube from the neck to the ankles, so there is no hip-to-thigh junction
+     * to show a step or a crease. [z, rx, ry, lean, cy] -- ry > rx throughout because a body on
+     * its side stands on its shoulder width, and the legs are a tall ellipse (two legs stacked)
+     * rather than a pair of pipes: the plate shows them as one soft mass with a shallow crease.
+     * lean rolls the chest a little toward the colonnade. The neck stations carry their own
+     * centre height and end INSIDE the head. */
+    const torso: number[][] = [
+      [9.30, 0.36, 0.40, 0.00, 1.95], // closes inside the head
+      [8.60, 0.60, 0.66, 0.00, 1.75], // neck
+      [7.90, 0.92, 1.16, 0.05, 0],
+      [6.90, 1.08, 1.38, 0.10, 0], // shoulder
+      [5.60, 1.12, 1.34, 0.14, 0], // chest
+      [3.60, 1.00, 1.18, 0.10, 0], // waist
+      [1.60, 1.10, 1.32, 0.06, 0],
+      [0.00, 1.16, 1.40, 0.04, 0], // hip
+      [-1.60, 1.02, 1.34, 0.02, 0],
+      [-3.40, 0.90, 1.26, 0.02, 0], // thigh
+      [-5.60, 0.76, 1.06, 0.04, 0], // knee
+      [-7.60, 0.70, 0.98, 0.02, 0], // calf
+      [-9.60, 0.56, 0.82, 0.00, 0],
+      [-10.60, 0.54, 0.80, 0.00, 0], // ankle, inside the feet
     ];
-    const stations = spine.map(([z, rx, ry, lift]) => [z, F.x, rest + ry + lift, rx, ry]);
-    const parts: THREE.BufferGeometry[] = [tubeAlong(stations, F.seg)];
+    const torsoSt = torso.map(([z, rx, ry, lean, cy]) => [z, X + lean, rest + (cy || ry), rx, ry]);
+    parts.push(tubeAlong(torsoSt, F.seg));
 
-    // The ushnisha -- the flame-topped cranial bump that is the single most identifying feature of
-    // a Buddha figure at any distance. Without it the head is a head.
-    // Sized and sited so its tip clears the soffit at 6.51 m: the head's own crown is already at
-    // 5.86, so the bump gets 0.50 m and not the 0.70 it wants.
-    parts.push(lathe([[0, 0], [0.30, 0.05], [0.33, 0.16], [0.21, 0.30], [0.10, 0.40], [0, 0.50]], 12)
-      .translate(F.x, rest + 1.12 + F.prop, -9.60));
+    /* A point just proud of the body surface at station z, at an angle phi from the crown of the
+     * body toward the colonnade. Everything that lies ON the body -- the upper leg's ridge, the
+     * left arm, the hand on the thigh -- is placed with this, so it follows the section wherever
+     * the section changes. */
+    const onBody = (z: number, phi: number, r: number, proud = 0.30): number[] => {
+      const i = torso.findIndex((s) => s[0] <= z);
+      const a = torso[Math.max(i - 1, 0)], b = torso[Math.max(i, 0)];
+      const t = a[0] === b[0] ? 0 : (a[0] - z) / (a[0] - b[0]);
+      const lr = (k: number) => a[k] + (b[k] - a[k]) * t;
+      const rx = lr(1), ry = lr(2), cx = X + lr(3), cy = rest + ry;
+      const s = Math.sin(phi), c = Math.cos(phi);
+      return [z, cx + (rx + r * proud) * s, cy + (ry + r * proud) * c, r, r];
+    };
 
-    // The supporting arm: a tube running along the front of the body from the shoulder to the head,
-    // with the hand under the cheek. Two stations short of a full limb, which is what reads at
-    // prop distance through a colonnade.
-    const armY = rest + 0.62;
+    /* The upper (left) leg: a ridge riding the front-top of the leg mass from the hip to the
+     * ankle, mostly buried, so the pair reads as two legs stacked with a soft crease between and
+     * the knee of the top leg breaks the outline a little ahead of the lower. */
     parts.push(tubeAlong([
-      [-6.30, F.x + 1.10, armY, 0.10, 0.10],
-      [-6.10, F.x + 1.14, armY, 0.40, 0.42],
-      [-8.40, F.x + 1.26, armY + 0.08, 0.42, 0.44],
-      [-9.30, F.x + 1.14, armY + 0.44, 0.44, 0.46],
-      [-9.80, F.x + 0.96, armY + 0.76, 0.40, 0.42],
-      [-10.00, F.x + 0.90, armY + 0.92, 0.10, 0.10],
+      onBody(-1.00, 0.95, 0.10, -3.0),
+      onBody(-1.80, 0.95, 0.52, -0.30),
+      onBody(-3.60, 0.98, 0.54, -0.20),
+      onBody(-5.60, 1.02, 0.48, -0.10), // knee
+      onBody(-7.60, 1.00, 0.44, -0.20),
+      onBody(-9.60, 0.98, 0.36, -0.30),
+      onBody(-10.40, 0.98, 0.34, -0.40),
     ], 12));
 
-    // The feet: stacked and squared off, with the soles turned to face down the length of the hall.
-    // On a reclining Buddha the soles are a feature in their own right -- they carry the 108
-    // auspicious marks -- so they are a flat plate rather than a rounded end, and the toe line is
-    // real geometry.
-    parts.push(boxAt(F.x, rest + 0.90, 11.55, 1.62, 1.80, 0.44));
-    for (let i = 0; i < 5; i++) {
-      parts.push(boxAt(F.x - 0.62 + i * 0.31, rest + 1.62, 11.62, 0.20, 0.14, 0.36));
+    /* Feet: stacked directly one on the other as the plate has them, toes toward the colonnade,
+     * soles as flat plates facing -Z. The soles are a feature in their own right on a reclining
+     * Buddha -- they carry the 108 auspicious marks -- so they stay a plate and the toe comb is
+     * real geometry standing proud of the instep. The toes are inset in Z so their faces never
+     * share the sole's plane, and the upper foot sinks a hair into the lower so no face is shared. */
+    for (const [fx, fy] of [[X + 0.45, rest + 0.41], [X + 0.45, rest + 0.41 + 0.80]]) {
+      parts.push(boxAt(fx, fy, -10.95, 2.10, 0.82, 0.90));
+      for (let i = 0; i < 5; i++) parts.push(boxAt(fx + 1.20, fy - 0.30 + i * 0.15, -10.96, 0.36, 0.12, 0.82));
     }
+
+    /* Head: an ellipsoid built upright in its own frame -- ushnisha on the crown, long ear lobes
+     * on the sides, a nose on the face -- then tilted so the crown leans back toward the head end
+     * of the hall, the way a propped head does. The face stays toward +X. The ushnisha is the
+     * single most identifying feature of a Buddha figure at any distance; without it the head is
+     * a head. Its tip lands at 6.32 m, under the soffit at 6.44 -- the head is sized to the plate,
+     * where it stands nearly as tall as the shoulder, and its lift is what the soffit sets. */
+    {
+      const R = F.head;
+      const head = new THREE.SphereGeometry(1, 16, 12);
+      head.scale(R * 0.92, R * 1.02, R * 0.95);
+      const hp: THREE.BufferGeometry[] = [head];
+      hp.push(lathe([[0, 0], [0.30, 0.05], [0.33, 0.16], [0.21, 0.30], [0.10, 0.40], [0, 0.48]], 12)
+        .translate(0, R * 0.96, 0));
+      for (const s of [-1, 1]) hp.push(boxAt(0.04, -0.10, s * R * 0.93, 0.28, 0.70, 0.16));
+      hp.push(boxAt(R * 0.90, -0.04, 0, 0.30, 0.40, 0.24));
+      const g = mergeGeos(hp);
+      g.rotateX(F.headTilt);
+      g.translate(X + 0.25, rest + F.headLift, F.headZ);
+      parts.push(g);
+    }
+
+    /* Right arm, as the plate has it: the body lies on this shoulder, so a SHORT upper arm runs
+     * along the plinth from the bottom of the shoulder to an elbow resting on the plinth in front
+     * of the neck, and the forearm rises almost VERTICALLY from there to a hand cupped against the
+     * jaw, fingers up. That upright forearm under the head is the strongest single cue of the
+     * pose from the colonnade side, so it is a tapered cylinder aimed point to point rather than a
+     * Z-stacked tube, which cannot stand up. No cushion: the plate's elbow is on the stone. */
+    const elbow = [X + 1.40, rest + 0.36, 9.25];
+    const wrist = [X + 1.02, rest + F.headLift - F.head * 0.50, F.headZ + 0.10];
+    parts.push(limb([X + 0.30, rest + 0.34, 8.35], elbow, 0.36, 0.34));
+    parts.push(new THREE.SphereGeometry(0.38, 10, 8).translate(elbow[0], elbow[1], elbow[2]));
+    parts.push(limb(elbow, wrist, 0.34, 0.27));
+    {
+      // The hand: a tall slab against the lower side of the head, thumb side forward, sunk into the
+      // ellipsoid so it reads as cupping the cheek rather than hovering beside it.
+      const hand = new THREE.BoxGeometry(0.50, 0.95, 0.72);
+      hand.rotateX(F.headTilt * 0.6);
+      hand.translate(wrist[0] + 0.10, wrist[1] + 0.32, wrist[2] + 0.02);
+      parts.push(hand);
+    }
+
+    /* Left arm: lies along the TOP of the body -- the upper flank -- from the shoulder to the hip,
+     * with the hand resting on the top of the thigh, which is where the plate shows a soft roll
+     * riding the crest of the hip. Each station sits proud of the torso surface at an angle phi
+     * from the crown of the body toward the colonnade, so the arm lies ON the body rather than
+     * through it. */
+    parts.push(tubeAlong([
+      onBody(7.30, 0.30, 0.10, -3.5), // starts buried in the shoulder, so no cone shows
+      onBody(6.90, 0.36, 0.40, -0.2),
+      onBody(5.40, 0.48, 0.38),
+      onBody(3.60, 0.56, 0.36),
+      onBody(1.60, 0.60, 0.34),
+      onBody(0.00, 0.62, 0.33),
+      onBody(-1.40, 0.66, 0.31),
+      onBody(-2.60, 0.70, 0.28),
+      onBody(-3.40, 0.72, 0.22),
+      onBody(-3.90, 0.72, 0.08),
+    ], 12));
+    {
+      // The hand lies flat on the crest of the thigh, rotated to its tangent there.
+      const hand = new THREE.BoxGeometry(0.50, 0.20, 1.00);
+      hand.rotateZ(-0.62);
+      const at = onBody(-3.60, 0.72, 0.10, -1.2);
+      hand.translate(at[1], at[2], at[0]);
+      parts.push(hand);
+    }
+
     add('figure', 'Reclining Buddha figure', mergeGeos(parts), 'gold');
   }
 

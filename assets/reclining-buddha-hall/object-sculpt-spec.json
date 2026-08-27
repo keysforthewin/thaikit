@@ -90,7 +90,7 @@
         "gilded-plaster",
         "shadowed-render"
       ],
-      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A long low hall whose front is an open colonnade and whose back is a solid wall, sheltering a 22 m gilded Buddha lying on its right side with its head propped on its arm. A stepped stone platform steps down and out on one side as a forward apron; twelve square columns carry a shallow two-tier roof in terracotta tile with a gold border band and white bargeboards; the figure lies on its own low plinth with its soles turned down the length of the hall."
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. A long low hall whose front is an open colonnade and whose back is a solid wall, sheltering a 22 m gilded Buddha lying on its right side facing the colonnade, head propped on its right hand, left arm draped to the thigh and the legs stacked. A stepped stone platform steps down and out on one side as a forward apron; twelve square columns carry a shallow two-tier roof in terracotta tile with a gold border band and white bargeboards; the figure lies on its own low plinth with its soles turned down the length of the hall."
     },
     "complexity": {
       "tier": "complex",
@@ -142,7 +142,7 @@
           "zone": "interior",
           "kind": "contour",
           "identityDefining": true,
-          "description": "a 22.5 m gilded figure lying on its right side, section varying at every station from shoulder to calf",
+          "description": "a 22.5 m gilded figure lying on its RIGHT side facing the colonnade: torso taller than deep, legs one tall mass with a soft crease, left arm along the flank to the thigh",
           "mapsTo": {
             "ref": "figure"
           },
@@ -153,7 +153,7 @@
           "zone": "interior",
           "kind": "contour",
           "identityDefining": true,
-          "description": "the head raised 1.10 m and propped on the supporting arm",
+          "description": "the head upright and tilted back, propped on the right hand with the elbow down on the plinth",
           "mapsTo": {
             "ref": "figure"
           },
@@ -299,7 +299,8 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "A continuous soft mass whose section varies along its length",
-          "Head raised and propped on the arm, ushnisha on the crown",
+          "Lying on its SIDE, not its back: a soft crease between the legs, a bent arm standing on its elbow, a torso taller than deep",
+          "Head upright and propped on the right hand, ushnisha on the crown",
           "Feet squared off with a toe comb, soles turned down the hall",
           "Reads as gilded, not as tan or brown"
         ],
@@ -308,6 +309,7 @@
         ],
         "failureModes": [
           "a box decomposition, which is a pile of luggage and not a body",
+          "one symmetric tube from head to feet, which has no side and reads as a figure on its back",
           "the arm covering the head, which loses the pose",
           "a measured-in-shade albedo, which renders the identity of the prop brown"
         ]
@@ -725,7 +727,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center as the asset declares, +Y up, long axis on Z, colonnade facing +X. The figure's head is at -Z and its feet at +Z. The hall is NOT centred in x: it occupies the -X side of the platform and the forward apron takes the rest, which is why the roof is centred at x=-1.72 rather than on the origin -- a roof centred on the prop would overhang the wrong side and miss the colonnade entirely."
+    "notes": "Origin base-center as the asset declares, +Y up, long axis on Z, colonnade facing +X. The figure lies on its RIGHT side facing the colonnade, which puts its head at +Z and its feet at -Z (body up = right x forward = (-Y) x (+X) = +Z), so from the front the head is at the viewer's left as it is on the plate. The hall is NOT centred in x: it occupies the -X side of the platform and the forward apron takes the rest, which is why the roof is centred at x=-1.72 rather than on the origin -- a roof centred on the prop would overhang the wrong side and miss the colonnade entirely."
   },
   "silhouette": {
     "envelope": {
@@ -1174,12 +1176,12 @@
       "confidence": 0.86,
       "primitive": "tapered-sweep",
       "topologyClass": "continuous-sculpt",
-      "topologyRationale": "One tapering tube of eighteen stations -- head, neck, shoulder, chest, waist, hip, thigh, calf, ankle -- because a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. The only organic form in the kit.",
+      "topologyRationale": "Smooth-shaded station tubes -- ONE body from neck to ankle with no hip joint to show a seam, a ridge riding it for the upper leg, a left arm along the flank -- plus an ellipsoid head, tapered cylinders for the right arm and boxed hands, feet and toes, all merged into ONE geometry on the gold material. A reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage; and a single symmetric tube has no side, which is why the first build read as lying on its back. The only organic form in the kit.",
       "materialId": "gold",
       "material": "gold",
       "parent": "platform",
       "geometryDescriptor": {
-        "topologyIntent": "A 22.5 m figure lying on its right side from z=-11.2 to z=+11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a toe comb.",
+        "topologyIntent": "A 22.5 m figure lying on its RIGHT side facing +X, head at z=+10.6 and soles at z=-11.3: torso taller than deep, the legs one tall mass with the upper leg a ridge on it, stacked feet, the head upright on the right hand with the elbow on the plinth, the left arm lying along the top of the flank to the thigh, an ushnisha, long ear lobes and a toe comb.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1195,12 +1197,12 @@
         {
           "id": "d1-reclining-figure",
           "description": "the figure itself",
-          "delivery": "tubeAlong() over eighteen stations"
+          "delivery": "one smooth tubeAlong() body from neck to ankle with an upper-leg ridge"
         },
         {
           "id": "d2-propped-head",
           "description": "head raised on the arm",
-          "delivery": "per-station lift plus a second tube for the arm"
+          "delivery": "tilted ellipsoid on a neck, hand slab against the cheek, near-vertical forearm cylinder to an elbow sphere on the plinth"
         },
         {
           "id": "d3-ushnisha",
@@ -1588,7 +1590,7 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T17:51:46.791299+00:00",
+      "timestamp": "2026-08-27T02:35:05.732048+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.78,
       "aiVisionScore": 0.78,
@@ -1607,8 +1609,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
@@ -1619,7 +1621,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:46.874684+00:00",
+      "timestamp": "2026-08-27T02:35:05.811384+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.83,
       "aiVisionScore": 0.83,
@@ -1650,7 +1652,22 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:46.957559+00:00",
+      "timestamp": "2026-08-27T02:35:05.889981+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T02:35:05.971757+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.84,
       "aiVisionScore": 0.84,
@@ -1669,8 +1686,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         },
         {
           "id": "shallow-roof",
@@ -1690,7 +1707,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:47.042009+00:00",
+      "timestamp": "2026-08-27T02:35:06.054555+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.76,
       "aiVisionScore": 0.76,
@@ -1721,7 +1738,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:47.125610+00:00",
+      "timestamp": "2026-08-27T02:35:06.135965+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.83,
       "aiVisionScore": 0.83,
@@ -1752,7 +1769,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:47.207323+00:00",
+      "timestamp": "2026-08-27T02:35:06.216111+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
@@ -1773,7 +1790,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:47.295439+00:00",
+      "timestamp": "2026-08-27T02:35:06.297464+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
@@ -1794,7 +1811,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T17:51:47.383490+00:00",
+      "timestamp": "2026-08-27T02:35:06.382307+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.79,
       "aiVisionScore": 0.79,
@@ -1813,8 +1830,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         },
         {
           "id": "open-colonnade",
@@ -1854,7 +1871,7 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T17:51:46.791299+00:00",
+      "timestamp": "2026-08-27T02:35:05.732048+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.78,
       "aiVisionScore": 0.78,
@@ -1873,8 +1890,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         }
       ],
       "action": "continue",
@@ -1895,7 +1912,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:46.874684+00:00",
+      "timestamp": "2026-08-27T02:35:05.811384+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.83,
       "aiVisionScore": 0.83,
@@ -1935,7 +1952,31 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:46.957559+00:00",
+      "timestamp": "2026-08-27T02:35:05.889981+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Pose rebuild against the plate: the promoted figure was one symmetric tube with the head at -Z and read as lying on its back. Rebuilt on its RIGHT side facing the colonnade (head at +Z, up = right x forward): ONE body tube from neck to ankle, taller than deep, with the upper leg a ridge riding it -- a second full leg tube showed a step and a crease wherever it emerged from the hip; right arm a short upper arm to an elbow on the plinth and a near-vertical forearm to a hand cupped at the cheek, as the plate has it; left arm along the top of the flank to a hand on the thigh; head an ellipsoid tilted back with ushnisha, ear lobes and nose. tubeAlong made INDEXED so the body shades smooth instead of showing every station as a crease. One geometry, one draw call, 1,508 -> 2,308 triangles.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/reclining-buddha-hall/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T02:35:05.971757+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.84,
       "aiVisionScore": 0.84,
@@ -1954,8 +1995,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         },
         {
           "id": "shallow-roof",
@@ -1968,7 +2009,7 @@
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: the arm lowered and shortened after it covered the head from the only side anyone sees this prop from; the head raised and enlarged; the ushnisha cut to 0.50 m to clear the soffit; the bargeboard rake angle corrected from the pitch to its complement.",
+      "summary": "Form refinement: the figure rebuilt from one symmetric tube into a side-lying pose -- one body tube with a leg ridge, right arm bent elbow-down with a near-vertical forearm to the cheek, left arm along the flank to the thigh, upright head -- with the head moved from -Z to +Z; earlier, the arm lowered and shortened after it covered the head from the only side anyone sees this prop from; the head raised and enlarged; the ushnisha cut to 0.50 m to clear the soffit; the bargeboard rake angle corrected from the pitch to its complement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1984,7 +2025,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:47.042009+00:00",
+      "timestamp": "2026-08-27T02:35:06.054555+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.76,
       "aiVisionScore": 0.76,
@@ -2024,7 +2065,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:47.125610+00:00",
+      "timestamp": "2026-08-27T02:35:06.135965+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.83,
       "aiVisionScore": 0.83,
@@ -2064,7 +2105,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:47.207323+00:00",
+      "timestamp": "2026-08-27T02:35:06.216111+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
@@ -2094,7 +2135,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:47.295439+00:00",
+      "timestamp": "2026-08-27T02:35:06.297464+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
@@ -2124,7 +2165,7 @@
       }
     },
     {
-      "timestamp": "2026-08-26T17:51:47.383490+00:00",
+      "timestamp": "2026-08-27T02:35:06.382307+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.79,
       "aiVisionScore": 0.79,
@@ -2143,8 +2184,8 @@
           "score": 0.85,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "A 22.5 m figure as one tapering tube of eighteen stations from z=-11.2 to +11.4, with a propped head, a supporting arm, an ushnisha and squared feet with a real toe comb.",
-          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. Two pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
+          "evidence": "A 22.5 m figure on its RIGHT side facing the colonnade, head at +Z: one smooth body from neck to ankle, taller than deep, the upper leg a soft ridge on it, stacked feet with a toe comb, an upright tilted head with ushnisha and ear lobes cupped in the right hand, the forearm near-vertical from an elbow on the plinth, the left arm along the flank to a hand on the thigh.",
+          "notes": "The only organic form in the kit, and it needed a shape helper written for it alone: a reclining body is a long soft mass whose section changes at every point along it, and a box decomposition of that is not a low-poly body but a pile of luggage. Every station's centre height is DERIVED from its own radius -- cy = plinth top + ry, computed rather than authored -- which is the only way a varying section can rest on a flat plinth at every point. The first promoted build was ONE symmetric tube from head to feet with the head at -Z, and it read as a figure on its back facing the wall; the rebuild carries the asymmetry that says on-its-side. Two earlier pose faults were found by review rather than by a gate: the arm ran too high and too far and covered the head entirely from the +X side, which is the only side anyone sees this prop from, and the ushnisha wanted 0.70 m of height where the soffit leaves 0.50."
         },
         {
           "id": "open-colonnade",
@@ -2175,7 +2216,7 @@
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.79, the lowest of the fifteen and honestly so -- held down by the silhouette layer at 0.72, which has NO reference mesh behind it. Meshy refused this plate with content_policy_violation, so this is the only prop in the batch whose proportions were never checked band by band, and that check caught the largest errors on three of the other props. 1,508/32,000 triangles, 8/24 draw calls, 5/16 materials, 8/32 unique geometries.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.79, the lowest of the fifteen and honestly so -- held down by the silhouette layer at 0.72, which has NO reference mesh behind it. Meshy refused this plate with content_policy_violation, so this is the only prop in the batch whose proportions were never checked band by band, and that check caught the largest errors on three of the other props. 2,308/32,000 triangles, 8/24 draw calls, 5/16 materials, 8/32 unique geometries.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2234,10 +2275,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1508,
+        "measured": 2308,
         "budget": 32000,
-        "headroom": 30492,
-        "note": "1,508 of 32,000 -- the lightest prop in the batch. The figure is 18 stations at 18 segments, about 630 triangles, and it is the whole identity of the asset. There is real headroom to refine it further; what stops that is evidence rather than budget, since the single plate shows the figure only through columns and in deep shade."
+        "headroom": 29692,
+        "note": "2,308 of 32,000 -- the lightest prop in the batch. The figure is about 1,500 triangles across its tubes, head and boxes, and it is the whole identity of the asset. There is real headroom to refine it further; what stops that is evidence rather than budget, since the single plate shows the figure only through columns and in deep shade."
       }
     }
   },
@@ -2352,15 +2393,15 @@
         "bilateralSymmetryError": 0.2184,
         "colorDelta": {
           "checked": 7,
-          "maxDeltaE": 22.3,
+          "maxDeltaE": 22.99,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 0.81
+              "deltaE": 6.57
             },
             {
               "componentId": null,
-              "deltaE": 0.81
+              "deltaE": 6.57
             },
             {
               "componentId": null,
@@ -2368,19 +2409,19 @@
             },
             {
               "componentId": null,
-              "deltaE": 8.58
+              "deltaE": 8.74
             },
             {
               "componentId": null,
-              "deltaE": 20.34
+              "deltaE": 10.04
             },
             {
               "componentId": null,
-              "deltaE": 0.81
+              "deltaE": 6.57
             },
             {
               "componentId": null,
-              "deltaE": 22.3
+              "deltaE": 22.99
             }
           ],
           "gated": false
@@ -2392,7 +2433,7 @@
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "d3a455e09061b49b",
+      "renderHash": "dd8f0c823672fac0",
       "passId": "blockout"
     }
   ]

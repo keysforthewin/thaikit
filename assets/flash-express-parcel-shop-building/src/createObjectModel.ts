@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing are hand-rolled below -- anything under three/examples/jsm is a second import.
  *
  * Envelope 8.00 x 4.60 x 7.00 m, origin base-center, +Y up, shopfront facing +Z.
- * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.
+ * Budget (hero2x): <=16000 triangles, <=16 draw calls, <=8 materials, <=32 unique geometries.
  *
  * One of thaikit's shared retail-module buildings. The shell front face sits at z=+2.50 rather
  * than the envelope edge so the entrance canopy can cantilever forward and still land exactly on
@@ -109,78 +109,36 @@ const CONFIG = {
         "cy": 3.86,
         "cz": 3.42
       },
+      // Shopfront CENTRED on the facade (x -2.79..2.79 across the 8.0 m front). The pane is one
+      // merged component: a fixed run on the left, a transom over the door bay on the right, and a
+      // gap cut where the delivery hatch opens. The door leaf itself is a separate hinged part.
       "glazing": {
-        "cx": -1.05,
-        "w": 4.4,
-        "h": 2.55,
         "cy": 1.52,
-        "cz": 3.26
+        "cz": 3.26,
+        "boxes": [
+          [-1.975, 1.52, 3.26, 1.15, 2.55, 0.10],
+          [0.575, 1.52, 3.26, 1.55, 2.55, 0.10],
+          [-0.8, 2.2275, 3.26, 1.2, 1.135, 0.10],
+          [-0.8, 0.6525, 3.26, 1.2, 0.815, 0.10],
+          [1.95, 2.6175, 3.26, 1.2, 0.355, 0.10]
+        ]
       },
       "frame": [
-        [
-          0,
-          4.36,
-          3.4,
-          6.46,
-          0.1,
-          0.14
-        ],
-        [
-          0,
-          3.36,
-          3.4,
-          6.46,
-          0.1,
-          0.14
-        ],
-        [
-          -3.18,
-          3.86,
-          3.4,
-          0.1,
-          1.1,
-          0.14
-        ],
-        [
-          3.18,
-          3.86,
-          3.4,
-          0.1,
-          1.1,
-          0.14
-        ],
-        [
-          -3.25,
-          1.52,
-          3.32,
-          0.08,
-          2.66,
-          0.16
-        ],
-        [
-          1.15,
-          1.52,
-          3.32,
-          0.08,
-          2.66,
-          0.16
-        ],
-        [
-          -1.05,
-          2.83,
-          3.32,
-          4.48,
-          0.08,
-          0.16
-        ],
-        [
-          -1.05,
-          0.22,
-          3.32,
-          4.48,
-          0.08,
-          0.16
-        ]
+        [0, 4.36, 3.4, 6.46, 0.1, 0.14],
+        [0, 3.36, 3.4, 6.46, 0.1, 0.14],
+        [-3.18, 3.86, 3.4, 0.1, 1.1, 0.14],
+        [3.18, 3.86, 3.4, 0.1, 1.1, 0.14],
+        [-2.55, 1.52, 3.32, 0.08, 2.66, 0.16],
+        [2.55, 1.52, 3.32, 0.08, 2.66, 0.16],
+        [0, 2.83, 3.32, 5.18, 0.08, 0.16],
+        [-0.6, 0.22, 3.32, 3.98, 0.08, 0.16],
+        [1.35, 1.52, 3.32, 0.08, 2.66, 0.16],
+        [1.95, 2.42, 3.32, 1.28, 0.08, 0.16],
+        [-1.4, 1.52, 3.32, 0.08, 2.66, 0.16],
+        [-0.2, 1.52, 3.32, 0.08, 2.66, 0.16],
+        [-0.8, 1.06, 3.32, 1.28, 0.08, 0.16],
+        [-0.8, 1.70, 3.32, 1.28, 0.08, 0.16],
+        [-0.8, 1.36, 3.05, 1.2, 0.6, 0.30]
       ],
       "mullions": {
         "w": 0.06,
@@ -188,40 +146,25 @@ const CONFIG = {
         "cy": 1.52,
         "cz": 3.32,
         "x": [
-          -2.3,
-          -1.35,
-          -0.4,
-          0.45
+          -1.975,
+          0.575
         ]
       },
+      "door": {
+        "hinge": [1.40, 0, 3.32],
+        "w": 1.10,
+        "h": 2.26,
+        "y0": 0.10
+      },
       "frontFeature": {
-        "name": "Yellow shopfront surround and lintel",
+        "name": "Yellow shopfront surround, lintel and delivery counter",
         "material": "yellow",
         "boxes": [
-          [
-            -3.38,
-            1.55,
-            3.24,
-            0.22,
-            2.9,
-            0.2
-          ],
-          [
-            1.28,
-            1.55,
-            3.24,
-            0.22,
-            2.9,
-            0.2
-          ],
-          [
-            -1.05,
-            3.1,
-            3.3,
-            4.9,
-            0.36,
-            0.4
-          ]
+          [-2.68, 1.55, 3.24, 0.22, 2.9, 0.2],
+          [2.68, 1.55, 3.24, 0.22, 2.9, 0.2],
+          [0, 3.1, 3.3, 5.58, 0.36, 0.4],
+          [-0.8, 0.99, 3.26, 1.7, 0.14, 0.4],
+          [-0.8, 0.585, 3.37, 1.5, 0.67, 0.1]
         ]
       },
       "sideFeature": {
@@ -480,43 +423,16 @@ const CONFIG = {
         },
         {
           "type": "poly",
-          "fill": "#1A1A1A",
-          "points": [
-            [
-              0.52,
-              0.14
-            ],
-            [
-              0.56,
-              0.14
-            ],
-            [
-              0.534,
-              0.4
-            ],
-            [
-              0.566,
-              0.4
-            ],
-            [
-              0.505,
-              0.78
-            ],
-            [
-              0.522,
-              0.47
-            ],
-            [
-              0.492,
-              0.47
-            ]
-          ]
+          "fill": "#FFFFFF",
+          "stroke": "#1A1A1A",
+          "strokeW": 0.05,
+          "points": [[0.513, 0.10], [0.568, 0.10], [0.538, 0.40], [0.578, 0.40], [0.500, 0.76], [0.522, 0.50], [0.486, 0.50]]
         },
         {
           "type": "text",
           "text": "H",
-          "x0": 0.575,
-          "x1": 0.7,
+          "x0": 0.595,
+          "x1": 0.72,
           "cy": 0.44,
           "size": 0.5,
           "fill": "#1A1A1A",
@@ -525,8 +441,8 @@ const CONFIG = {
         {
           "type": "text",
           "text": "EXPRESS",
-          "x0": 0.47,
-          "x1": 0.72,
+          "x0": 0.535,
+          "x1": 0.745,
           "cy": 0.8,
           "size": 0.22,
           "fill": "#1A1A1A",
@@ -755,14 +671,59 @@ export function createFlashExpressParcelShopBuildingModel(options: ProceduralMod
    * design -- there is no interior behind it, so a transparent pane would read as a hole. */
   // The pane is not always centred: a branch plan can put its glazing to one side of the entrance.
   // Authored centred while its framing sat off to the left, the two read as unrelated parts.
+  // `boxes` lets the pane be several panels in ONE component -- a fixed run, a transom over a
+  // door bay, and a gap where a hatch opens -- without costing a draw call per panel.
   add('shopfront-glazing', 'Shopfront glazing',
-      boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, 0.10), 'glass');
+      G.glazing.boxes ? boxes(G.glazing.boxes)
+        : boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, 0.10), 'glass');
 
   /* Framing, transom, kick rail, door jambs and header MERGED into one component. Every part is
    * the same metal; folding them together is the draw-call lever chosen in the blockout, not an
    * optimisation deferred to the end -- a part split for authoring convenience cannot be merged
    * afterwards once a pivot hangs off it. Front face stands proud of glazing and mullions. */
-  add('shopfront-frame', 'Shopfront framing and door bay', boxes(G.frame), G.frameMaterial);
+  add('shopfront-frame', 'Shopfront framing, door bay and delivery hatch', boxes(G.frame), G.frameMaterial);
+
+  /* Entrance door: a real LEAF hung on a real HINGE, not a rectangle painted into the glazing.
+   * The leaf is built in hinge-local coordinates (x runs from the hinge stile outward) under a
+   * pivot node at the jamb, so rotating the node about +Y swings the door open. Two meshes, two
+   * draw calls -- stiles and rails in the frame metal, a pane in the glass -- and this is the
+   * one part of the prop that earns a named pivot. The leaf sits in its own depth band (frame
+   * 3.26..3.38, pane 3.30..3.34) between the glazing (3.21..3.31) and the fixed frame
+   * (3.24..3.40) so nothing on it is coplanar with a fixed face at any swing angle. */
+  const pivotNodes: THREE.Object3D[] = [];
+  if (G.door) {
+    const d = G.door;
+    const hinge = new THREE.Group();
+    hinge.name = 'door-hinge';
+    hinge.position.set(d.hinge[0], d.hinge[1], d.hinge[2]);
+    hinge.userData.actionProfile = {
+      animationRole: 'articulated',
+      pivot: { mode: 'custom', localPosition: [0, 0, 0], axis: [0, 1, 0], name: 'door-hinge',
+               note: 'Entrance door swings about the jamb stile. Closed at 0, opens outward toward +Z with negative yaw.' },
+    };
+    root.add(hinge);
+    pivotNodes.push(hinge);
+    const w = d.w as number, h = d.h as number, y0 = d.y0 as number, y1 = y0 + h, ym = (y0 + y1) / 2;
+    const st = 0.08, D = 0.12;
+    const leafFrame = boxes([
+      [st / 2, ym, 0, st, h, D],
+      [w - st / 2, ym, 0, st, h, D],
+      [w / 2, y1 - 0.04, 0, w, 0.08, D],
+      [w / 2, y0 + 0.16, 0, w, 0.32, D],
+      [w / 2, 1.05, 0, w, 0.07, D],
+    ]);
+    const leafPane = boxAt(w / 2, (y0 + 0.32 + y1 - 0.08) / 2, 0, w - 2 * st, y1 - 0.08 - (y0 + 0.32), 0.04);
+    for (const [id, name, geo, mat] of [
+      ['door-leaf-frame', 'Entrance door leaf frame', leafFrame, G.frameMaterial],
+      ['door-leaf-glass', 'Entrance door leaf glass', leafPane, 'glass'],
+    ] as [string, string, THREE.BufferGeometry, string][]) {
+      const node = new THREE.Group(); node.name = name + '__node';
+      const mesh = new THREE.Mesh(geo, materials[mat]);
+      mesh.name = name; mesh.castShadow = castShadow; mesh.receiveShadow = receiveShadow;
+      node.add(mesh); hinge.add(node);
+      nodes[id] = node; meshes[id] = mesh; colliders[id] = null;
+    }
+  }
 
   /* Side feature: shutter, service door or louvre, per plate. Stands proud of the wall face but
    * deliberately NOT out to the parapet plane at +-4.00 -- a face at exactly +-4.00 would be
@@ -823,7 +784,7 @@ export function createFlashExpressParcelShopBuildingModel(options: ProceduralMod
     addInst(e.id, e.name, unit, e.material, mats, e.tones ? mats.map((_, i) => e.tones[i % e.tones.length]) : undefined);
   }
 
-  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
+  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups, pivotNodes } satisfies ProceduralModelRuntime & { pivotNodes: THREE.Object3D[] };
   return root;
 }
 
@@ -894,12 +855,19 @@ function applyFasciaGraphic(root: THREE.Group): void {
       // An arbitrary polygon in normalised canvas coords, for a mark a font cannot set -- a
       // lightning bolt, a chevron, a leaf. Points are [x, y] with x a fraction of the canvas width
       // and y a fraction of the band height.
-      ctx.fillStyle = op.fill;
+      // An optional outline: stroked at DOUBLE the wanted width before the fill, so the fill
+      // covers the inner half and what remains is a clean outer border of exactly `strokeW`.
       ctx.beginPath();
       const pts = op.points as number[][];
       ctx.moveTo(pts[0][0] * W, pts[0][1] * band);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0] * W, pts[i][1] * band);
       ctx.closePath();
+      if (op.stroke) {
+        ctx.lineJoin = 'miter'; ctx.miterLimit = 6;
+        ctx.strokeStyle = op.stroke; ctx.lineWidth = 2 * (op.strokeW ?? 0.04) * band;
+        ctx.stroke();
+      }
+      ctx.fillStyle = op.fill;
       ctx.fill();
     } else if (op.type === 'text') {
       fit(op.text, `${op.style ?? 'bold'} ${Math.round(op.size * band)}px ${op.family ?? 'Arial, Helvetica, sans-serif'}`,
@@ -935,11 +903,11 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   if (rt) {
     const nodes = (rt.nodes ?? {}) as Record<string, THREE.Object3D>;
 
-    // Pivots: ONE. A static exterior shell -- nothing opens, turns or swings. The doors and any
-    // shutter are authored as fixed geometry, so they get no axis: a named pivot is a promise
-    // that a part turns on it, and a prop that declares pivots it has no mechanisms for has
-    // described a machine that does not exist.
-    const pivots: THREE.Object3D[] = [];
+    // Pivots: the root, plus `door-hinge` for the entrance leaf -- the one part of this shell
+    // that actually swings. The roller shutter stays fixed geometry and gets no axis: a named
+    // pivot is a promise that a part turns on it, and a prop that declares pivots it has no
+    // mechanisms for has described a machine that does not exist.
+    const pivots: THREE.Object3D[] = [...((rt.pivotNodes ?? []) as THREE.Object3D[])];
     const rootPivot = new THREE.Object3D();
     rootPivot.name = 'root';
     rootPivot.position.set(0, 0, 0);

@@ -93,42 +93,48 @@ const CONFIG = {
         "cy": 4.075,
         "cz": 0.16,
         "h": 1.05,
-        "d": 0.36
+        "d": 0.36,
+        "w": 7.96
       },
+      "parapetExtra": [
+        [0, 3.86, 3.42, 7.98, 0.1, 0.16],
+        [-3.91, 3.86, -0.075, 0.16, 0.1, 6.81],
+        [3.91, 3.86, -0.075, 0.16, 0.1, 6.81]
+      ],
       "fasciaWallMaterial": "wall",
       "frameMaterial": "frame",
       "fascia": {
         "boards": [
           {
-            "w": 7.96,
-            "h": 0.52,
+            "w": 8.0,
+            "h": 0.68,
             "d": 0.16,
             "at": [
               0,
-              3.38,
-              3.42
+              3.47,
+              3.41
             ],
             "face": "+Z"
           },
           {
             "w": 0.16,
-            "h": 0.52,
-            "d": 3.08,
+            "h": 0.68,
+            "d": 6.84,
             "at": [
-              -3.9,
-              3.38,
-              1.76
+              -3.92,
+              3.47,
+              -0.08
             ],
             "plain": true
           },
           {
             "w": 0.16,
-            "h": 0.52,
-            "d": 3.08,
+            "h": 0.68,
+            "d": 6.84,
             "at": [
-              3.9,
-              3.38,
-              1.76
+              3.92,
+              3.47,
+              -0.08
             ],
             "plain": true
           }
@@ -214,19 +220,19 @@ const CONFIG = {
         "material": "frame",
         "boxes": [
           [
-            -2.85,
-            1.65,
+            -2.6,
+            1.7,
             3.05,
             0.34,
-            3.3,
+            3.4,
             0.34
           ],
           [
-            0.55,
-            1.65,
+            2.6,
+            1.7,
             3.05,
             0.34,
-            3.3,
+            3.4,
             0.34
           ]
         ]
@@ -239,25 +245,25 @@ const CONFIG = {
             0,
             3.06,
             3.43,
-            7.94,
+            7.96,
             0.14,
             0.14
           ],
           [
-            -3.91,
+            -3.925,
             3.06,
-            1.75,
+            -0.075,
             0.14,
             0.14,
-            3.1
+            6.85
           ],
           [
-            3.91,
+            3.925,
             3.06,
-            1.75,
+            -0.075,
             0.14,
             0.14,
-            3.1
+            6.85
           ]
         ]
       },
@@ -280,28 +286,7 @@ const CONFIG = {
       ]
     },
     "graphic": {
-      "background": "#343852",
-      "ops": [
-        {
-          "type": "text",
-          "text": "◗",
-          "x0": 0.415,
-          "x1": 0.455,
-          "cy": 0.5,
-          "size": 0.44,
-          "fill": "#FFFFFF"
-        },
-        {
-          "type": "text",
-          "text": "ptt",
-          "x0": 0.47,
-          "x1": 0.6,
-          "cy": 0.56,
-          "size": 0.6,
-          "fill": "#FFFFFF",
-          "style": "italic bold"
-        }
-      ]
+      "background": "#343852"
     }
   } as any;
 
@@ -449,10 +434,13 @@ export function createPTTStationBuildingModel(options: ProceduralModelOptions = 
    * The front is taller than the sides, which a plan extrusion cannot express. Outer faces stand
    * 0.06 m proud of the walls -- a coping drip edge, and what keeps them off the wall planes. */
   add('parapet', 'Parapet ring and fascia wall', boxes([
-    [0, G.fasciaWall.cy, G.fasciaWall.cz, 8.0, G.fasciaWall.h, G.fasciaWall.d],
-    [-3.88, 3.75, (SF - 0.30 - 3.5) / 2, 0.24, 0.4, SF + 3.20],
-    [3.88, 3.75, (SF - 0.30 - 3.5) / 2, 0.24, 0.4, SF + 3.20],
-    [0, 3.75, -3.38, 8.0, 0.4, 0.24],
+    [0, G.fasciaWall.cy, G.fasciaWall.cz, G.fasciaWall.w ?? 8.0, G.fasciaWall.h, G.fasciaWall.d],
+    // Upstands sit INBOARD of the navy band plane (+-4.00) and the coping plane (+-3.99): at
+    // +-4.00 their outer faces were coplanar and co-facing with the band's side runs.
+    // Rear ends at -3.48, not -3.50: at -3.50 they shared the band's rear-end plane.
+    [-3.86, 3.72, (SF - 0.30 - 3.48) / 2, 0.24, 0.34, SF + 3.18],
+    [3.86, 3.72, (SF - 0.30 - 3.48) / 2, 0.24, 0.34, SF + 3.18],
+    [0, 3.72, -3.36, 7.96, 0.34, 0.24],
     // Anything else in the SAME material folds in here rather than costing its own draw call --
     // full-height facade cladding, corner pilasters, a plinth. This is the merge lever: two
     // parts that share a material should never be two submissions.
@@ -598,13 +586,66 @@ export function createPTTStationBuildingModel(options: ProceduralModelOptions = 
 
 /* ------------------------------------------------------------------ brand fascia canvas */
 
-/** Draw the brand wordmark onto a canvas and assign it AFTER material construction. This is the
- *  documented route for a printed brand fascia and is unaffected by the material's `textureless`
- *  declaration -- what that skips is the five-canvas PROCEDURAL set, a different thing entirely.
- *
- *  Text is fitted to its field by MEASUREMENT rather than by a font-size ratio: headless Chrome's
- *  font fallback decides the real advance widths, so the only reliable way to fill a known box is
- *  to measure the string and scale it horizontally. */
+/**
+ * The fascia face, BAKED: a 2048 x 512 WebP (~10 KB) composed once in Pillow from
+ * scratch/ptt-station-building/sign/compose.py and embedded here as a data URI. The top 448 rows
+ * are the 8.00 x 0.68 m band the +Z run samples (v 0.125..1); the bottom 64 rows are plain navy,
+ * which is the corner every other face samples. Emblem: a fal-ai/flux/dev droplet-flame (seed 21,
+ * ~$0.03) thresholded to a white mask -- a stylised approximation of the trademark, recorded as
+ * such. Wordmark: 'ptt' in Nimbus Sans Bold Italic. Baked rather than drawn at runtime because
+ * fillText depends on whatever fonts the host has: the first ship's flame glyph fell back to a
+ * stray dot and its wordmark changed shape per machine. drawFallbackSign() (stroked vector paths)
+ * remains as the decode-failure fallback only.
+ */
+const SIGN_IMAGE_DATA_URL =
+  'data:image/webp;base64,UklGRtYmAABXRUJQVlA4IMomAABQWAGdASoACAACPj0eikUiIYiEZBAB4lpbvwtD+mfHg/2AV8U9v2GtK/N5z5//jFU89i2c/08f2z1Bf8D6efR//0vQP5renN/1D1S7KH8Q/3P+weIz8q/m/9s/ZT+re8/4d7Ifrvy2vM/An+HfWX7n/b/3F/tf7ofH36neOfrD/T73Avxb+Lf7z+h/0f/e/lb8yjzdwF3r/6fgyfuPof+e/3z/Mfbd9gH8i/mH+J+3b5k/zfgN/bf81+yPwAfyT+lf8L+8/5r9wvpr/ef+Z/j/8R6Vvyr/Bf93/N/6L5Ef5h/Vf+5/gv8r70H//91/7Q+x3+pf//BU+mm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoelCA/yUUwq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wUF6vzPve6HppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppjqvV0k+YA0a1k+Rd5qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hSGscLs/GmlOyum+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+BJk27kpddUMKrOZySimFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mWNNTBkHnOmbnxOFd8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN0CPY0CUQvoGXy6A5GeD0PTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvggkT3PkIaERj1rUkwi3UqrOZySimFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFXwKKurBdcTvHGWxgz5igTweh6ab5hVodnzVRZFBnybduDJomqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqG5g4oOaM9DnIkZSD9qybcV97pvmFX3mqG3B3A+JSi+fh3PtrUlQs0Dj+TEj3WCoqs5nJKKYVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeZYVda6jxSnyj20sgp8qoiG1lRSilnSnS+yYhRKMRj9buKcxZRykSK9HQ46Vk8Lk+GKQdEoh7YZyLvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvgTOn4Bas8GYWgqqEZyDAIGLLfsBS25OkoNQ6SVScuVwXCpLdtk8GrsaQ5oNuaFqNgm8BtZp/M+uDxXgKXI3fsLCI6zJMAm9SCgeYWx8IPQXw9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9KKFaYUKiSzZOL6/wBZJzxMy4AfNB3Ym148GdpkOZv2F7DLHq9vz+IPf/60XuO9hmWaluDeQupFYsjzwMDoiKQ/hKhRRhcmdRwUPoFsIrbjs2fIu81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8wq+81Q9NN8sioUCOcDPwwFSWT4/dJK6hju4GYWb4AcQFZGSV8F8vfD0Xvmlt1cGou+5MlXa+JEvTFHz4KzJ+dv7QsIEoZGwDuPaab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6UNqHKU67DoQByDjauPcOT5L9XLuo9bFJqz6UWB1IiqZYUhxNUj0UfnXlsGVHgMSalwLFKpbRzcM63ElQCoqs5nJKKYVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeMuh9xqthG/6YHYQy0OEAURITFcgFumItekISnRWjujtM7cwNlO6OYSBKg81t71hBYJR1QHs0a+N+mm0ruN9hF3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFXwSRxmkumyA7U5qKCg0lzYs1WVTZDiWeVdtL7zfSaChZyjbniMjttBIAtV1DI5KyAXHMsospDnTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTG5ODhXp3Mg9EbnMfgiumENU2zNnifQh0Np9WTAw/Jspsq7w2+ly3xdzgCQQC0wmMKQ+28MkoS/OHZOpNViVbo3VytpD0lFMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTfMKvvNUPTTdGxn8KMvBGPHVYtJnAMuBuk05zJG8nIqqZ2XSx+k1vDBgglFgiezbWczkbiZBP6TNCHxbje0yM7ECnO5XqFmHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHnzfeSwmNrhA4tRKmfGynRJS5d0Ydf+UxBbYdxlZ6Ugs0ZtSl1h/UGRtqwduCpo6XhU63292TIbUAVJ0gq0EcVdw0O/0qajpb+h3iCKIr6uIuCGYre003zCr7zVD003zCr7zVD003zCr7zVD003zCr7zVD003zCr7zVD00xrVqURT9eBxUKg7ie6PfHoNI34ySUZ2/LDjbI6z3lZoMs0dOZFrPlB2yeH4IovZHHeT5F3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFX3mqHppvmFI9HXw2lWwTybApU3fjtxxZbItUYSog7ds1hkBpcykOjGWqJDIC43eq6mmm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+BDMlTbOoh/VBOlm9JhAlhp65ZR35j9aY3N+akob7DaVrtx9qKYVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfeaoemm+YVfcAS4KeNwaQn77B8gf+HNfo7HlkzmckophV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qh6ab5hV95qfgAA/v031/S+Dtb91SB3AAAAAAAAAAAAAAAABi0N1cFep6hYjYr73JL8dI2iGawgAAAABOtB23k7Hlp9bR+fYkmOQmnJmU4gyAAjlFpCxJknBtyZNF09CCc0dvVZSngVxIZYO/fNex5wwCJJl8OhUGbYVZxd5ZqjGZsYAAAAACBFU/pch5L/Ip3RJrFCDvgNmvHOCx5NikGqY1/ibF1scJJTYKf3j34+EEBeYZHNUMeKDaQfff7p4DDz4qfc7ejMNPY8V6SWK8dnWcmXiJeYCojx66o0AAAAAF0W9u+V/BYE7DIQM5EWJadVArZ9x6H3cn4EhimJWD/lhlFpXkVByzDdJ9NliVnD3h3ooNheJ4E/VLQdqtfRBLnHsCDRV+kH4J3ht17VUbfN4ZFwyLNPQAAAAAAa4aIIAATiFjIYo6nEN3JNItxm7tNEYJ4oONOKbFFQ12qyKgOAYo3LqAVDAnV/VPie1Rn/Qblmv9+j4ZVGsiUGWphI2HTjcYi4feo7zKzh+Jf8A37ZJx/heqYAAAAAAwtEpxPuq5RzUJhUyyWTaggimSg4aT71mcRVC2OcVyywO4KEqEpA5LIgUduPJLoAT434Z18efYeDB2smvGZ0DTWxqXR+d8KC0Ztsvi0xzx4JHzrhIIDfMxLAyAAAAAMNAvI4uEr2ifh0wPcuEJSMVzATKiHzyuplWmiKGy59s+zvD38fKZEyHaHG14Od2YP0DwO8Rt6XNTKGV9bJCG9+8VHi0in3WrqFl4pBVfv244B+gVgwU8eOLgAAAAAj/GlySGpx+C3GVZub2hLYCIJptw/Q0UlNr/RGGGoa1+c1YCO+3TWnK0vO906ZRhFW3iTMxQBQaCRVcvdHVWq5AxCaua+4L00uMhMO6MNwsuRgyTTtaKuqoabGReWs2s/HmYlZiAAAAAFpNSUM7/EdZGZmz1vUh2nq1KXo9qDN/zLpCS0Ssgd8gY3VPqIfknsp0jozIJLOYDZkLzVcDcdOURePiIpug6i3cSCbG+g+kI5hxac/5huw60YxS2nWGP+SwSsO3w1VFr0ZChkVx5WA/+zgGGaKrpk4RW/v9DrhvqNkN2TjEEuJ090+Yj4XPhPu1el4Xh28Xcx0W3v8EeAOdPbG64GJCOo2f6dqTosgAAAJQdZLTUXhyjSWerlM8StIPc4Oj2/+XBx6V8saubZ7ALAcPP0ybpxEJKKc4uz/xr/nexptaeXypwAFwNg/uHcK3cOh4K6jeEAal+LmTE1P5tJaBRRIbIF36LNvfdHT4UvMtzl5tIhSNJ8R7y93KYsllxZdAPB3ZP/ARDehVwExL2UrXrBsHldmdvRmQxjdcCIFz0lkJ7MWo+DNpf/Csz7IjLCr/t2hMoiDZu8+l8KzrX7v0i8l6+gDZ22QAu9vMI1s0InXUc/c3/8z30+Re8w93Sxqu/0RMRAbSfdn8PK8HwSZZzjlzVlVQ7Wpbtfyjy7XGn5UE4AAACZSAm88YroOBv9PUDXCOGaHn+Zj/btLjCs2UKlWE9s1KrqrhX+L5nz3sV4+MdadAp0MCPjGFnXVs2VDcl+Sbj3za+C5jPyDQbOcE5uDfa37kpYAf7F1WhmXUXA3OTW1afuRNwjsMA2G+hKWY9bmLTG8O7IYcQ3hAw9FmDjCqozMG2YKVX3cbSDaCyT/woBzP2Hkc0kk94fTORVPZdSgoq1E9GN8D6eBo1irPIaR+qZ+368ppuBwLKaarB1Dcf7YW/CqlBVJ4MR2da9p5ySHeK92+/7Pj5H1A3359Zbr2rBnxrhe8wZQ7qAOzxmxHegZ13cFNHmNGhMuc+CDaFW8gnAT19t53RiTpA15T9fR2UVCtItCEUDzKmHFDkyINs9KL/D29UxMY//kFnAbdQPIdRhxoyz+x3kWvwN+9bs4fuc3EiV2ItAr+peeol9tbmkJHPl1HTt4xxsfmmWxYXaMV0u6dm46JkcOBg9BwAAAFPQPtsT13FGYTSjWQC3/PRR74ysjEOLkjUS5P1rQxQ8xY8I5J/di3e+Rj2rLwGRuZ62YMP3PVNB88kGqQSJnMLBTtY0BtWmWDLdDY1guxJEYG3vwkhYnQL57YzQGxMzspqablGKdtnnHCWVRbifBgg6wq0Sq7hXfbhahRKyHebbh5K9DNOMR6wNRCF3XCElgwyU/pZbkaCdcR/BocwNxu7yOpdDoaWitjV57gkr5DGF7dI+eiwdF6dRR+3BGV7O8eE7eP2UUdhaUb3+hExseK5xFqwEU0fm9W1xc9iecgpQrHU+4PHH58AiSvv3DW8NGkw5TvNsz+BnzfQ1ksfNnC5KAoYcPhpeXUc4yVtTmdUDC9nW5IuxdDJvYWyjY2fmC/5AN5W2eRpKwrWYxf6B8bnuS+nQrSk0rX1F+QbJfXOpW/oYqveHr0pHrVGbf1OuzCULvUnV+e1pfKzB5fE3hVf8K1CKO8u+SRB9wsj3EZfCdr/T7hqQXSrbKg1zLF3ZiVX2JXcXLvt6aKBlLVbW9z9mjN9F/nowCrhJx6ueOhIk0xxNWkLgf/22+3pjIw217tNd7GwnBOFoSFvcpmAHpkyXb7z3SGwazuCAZRbNupSvlWqQOtQOYmh66KDTH08Sb/9X/4PaX9jPoOxc6IZZDVck+TVz28ldKldGwBhYRrG766+e7+ba7tVRDMikhv3idrvUXbEVwTM2xj161eZEEeh8E+ZVYDgWjNu1mJ+7nG0G2j6rwRnKNY/10kpI/GNh+4QWd7CTzJSM0yPal/UqeR3uCg7TbV4U64YCorL4ZOCi8AZjwpbysU1ZZbo2t/CKhr2cQRLVzPjb5voAAAAou6FE2gEVhJ3GLHLoGp5jZ2XXAYQwqfpXT1leSi7MDbXJgu0jlokXkJyDRrhwF6idjivT5fEIeihjF3fwtJONM/aNY6Uhe3IEk0vO2VzopbU0JEiFB8I8GY3rIMweshPWc0LFldmLqzQ/azbEzo2QopjMRgdCiYmpq10caFmYjBgX8m1QacrRYO46XL9LKbDzei2vzQLBIjfT1AhlMTS8fk8iUtoU/SwX8sp3GPxKCCYyCuhiZvLCq6GlMnU8ygFK3LnMaGtI8yN1jQP9lvctmqnXZf0u9KCA1A2OfE5tfTL48zxFWBZ/1Kq70RE68FYi5XaZujwk/7EHY8MUL3HPFHuOl66vJfi8FoilT4G64zf+LNA/s4n50zRQpoW2Abzy+urmOEzKcbLQiJ8ieCvssDjUWeEeDE93HvBNJKVm9haU1gWcFtsoMZYgFYJYzgQJueeSbO2Ozk5yYgfZug2unKQAT8wCLnelpBYkWLbbmV7xQlddjw/9niYXDXckaRwYdX+bNyaMWARplW4z1F1Pjcu3jqXLcfF57ygEC0OcNa9wBz0JB1G9yF6NpCdJy2a4a98SmYpylPxnG2onVufxoQfLJJb3IW4xOhjKpXaWyGHkiuhNyvXYeLf470xTSivnysLzL//u2WOj6pzvwQRUl0CncuhG2tXURY1CwZ+KDtdYY2kFuQdz82c7tzIkj372N32sb/UGHiaDHN9fV5iI3ZRTUtkHNsTIPuxPsjQtnO14ftXpGWWJZAt0nYC9ggqdY2nKUUCmgAAAPBjnXn58SxO/CYrNbRUNhIsfnpDRca+LnZcE8LAr6f8+fXHxM0KopinCbuPPMjQfdftsZYNZZF6vjG6AEOT1DcSRbZeb6lecQl5Zyv4j9fWinYEbjRNjnbVvd9h67gQZuSV82nOmnlOGdWrXVqNZFrNKVZGPLclaYJP5Ub22bxU1KrqPdbPlT2aVqYof1Dbl5NWHJxZGiIGs6N6mPnW403u96zWqWZD7bV4h0OzKYZvcEmnRcL0nCQ/q00OX8wf4v9eK3VJM2jA33FtYWVKngSpf53iIFs3uDRec7cYhg1h1DKlY4rMn3WVUu3a+3QYeLlDJP6+GZadX0a3+9beRaYVdsbxDQBOf3kNDnuLXam1tP1qKAlRZfAgmkODh7xVR+B2M2a1hAckMT4eY/GFBvjrJo01x7iLzhUS6yHQU3gpJSGvSNos32jaiYcwajs8Nre4/ja0XypC2FQisiGtEgINH1s6cwBm0ATc0iAmFVtxEA4Ztnlm3A/cW/m7FaEya4Xc7NUNmgWsxdnGy9izO+uBMsrgW0bXByOutnHDQpOdU0oV/nKBqcI0jhf77grXmK1u97qDkm694sSYL/u8jWrV4rc1jk4ssZjUbDPsBdvNRha1rDTe1SJm3lMTgEwzuwkbNC5/bVgU4INYKp8AuoAAAAMmsTHwsDR6GS4c8xZmzpksVN4foqYT5yA3Z7NQ8SYOIG0LIwMNGDEsCmbI7F0NuIRivy0fM0ud2Y7YJZJEShbGz5pfmyqIJJaL7az78sMjISo64xuSB5tyJh5ueo6GIUdfrKI0SdWqeadRlBDw0Fk2jusXnrfHvoyq59Q7Upd+2OXhrSnFmzuGdrDftrEQExmiUNbl31eoT9WCgxc267C2Py2rxDomlsDwfqCfr6MewxNWWqxRpnJPQV3KUkpyU2MN3sKi2xaLnf7aWbDP2iwmry7E+pXVw8rVe5+oKQ0jmGOJ8A12WtZEbVNLHEdVydtxlW/OonrsfQx/z1ztzSuNTyRBnBy+K8vbq3p5dRYRy0lCFQPpUfUIYOQC7SYNqc4DVf9U76tKvit0Nm8Nh9FCbWKRgd/w98p+SuHBybvGdxI/dcpt8QnjEpZxw2qchve0lgQMJvtazFKX+Ho1gJiQgtZKr6TXyRJ9C2P55r0KztKHykD36nVqgUvsbcT2c2KF0sjXIqczVRfioyzudBb/cZI/IoSiMn3WVeks5HA+qKaJvOG2WB7MfZrDWuDePIY8P6tcmUMlKAskwAAAIgXhlCZ5BxPx80uAegjXYKM3fJ0VXAFJCYEHBZ0Bo3z5JGeM2RSpLeNEgbcGNgJVq0BOOJXYXoB+VdQbVwu4UkdKEhw4IBIRRB/vMvrvAz+3a49dDr3shVUup3xOyl5ym81KTH0unIKSRLx05yyBitwIw1NtZhy7t7S+QLXravNz542A4sCKcgJnMIvHUGzQcBLRUTvE95iwGOTPD5ZVCzea3J4n1FUrtsj64kiCK8y6it00tvNE+STb9JjkiLFzW+pXemTNZNJ5qBsqkHkJ+LT7kRn1DS8NN3/r/ENpPPEblxnvy8DpQlz2NbJRWAscX0HRnEpakBK/dCjAPGJXOuqswlwzfIq4jrn4qg+AreBPUFY0/P9KqRIzmh2PkA12xd2BQZUMY6r1k5hOtIqpVQ4cmor85137uvzk+P7rZs06gfF4/56KjRKYu8od8sEjitgwFrMdSfYpRj2giryazxcpwERPmf0i9h5O7LN6eCtEcXib5m0Ro3qjIlW20JnUrKpu2ZczAPnwpL5yux3GtvIv+nX46lMqd6I5pBSs1asAAAFPRFD9ZBqVsqfrVyGeR70DjMvqxdRd9SU1rig6kDIUV1SL7lmCDhgbiY0xz4CvLVrkUiwgCD8MmDKdmSEidpf3Z1HVpb1XD/OmTye+UKWQX/it2UdGiKjz7eNPifXnfCAPIfULTaJ082s7zQKMSUVN3xuO6hhtmbiMqQrXCFljnCZWxxz86+BUBxoP6ZoyIpmArWCIhuVS9cDQp2ESVPbBDUruMqCyu3G5hA2P0MaQ38lKzSSkSaCuiYr6ncJFuqLxWvowurpzU9C90JsBFi1zrW+RPvC2rZ3XNX20ooIPj4xrLA/VwJHbfkZ4y+93/oV+ChJ2sBFokP+EZ0s1HXBp0zYqUOLvTX74PHfr1CmmHDIgRTkB4QS+2DTkObx5+jZPu4Jp79qw7lbzzB0Vfkm0mBt9CmjL7qWk3URFlYHrf4mtaPSxFLxw13Xt2t9KLxsVVxvd29hIS8gNraTiZpnCcZ0BDl1dwVzzL+bITLRLWe0HtW2uoSYMaN7diUMoFFrUFr6afRo1qPu7h90LDSFZR95Uo7oGSV4AAAFi5/gvr3mrGj5k9RKckdZ6XZ4aAesZyhSakICGg3OUhR7jHy3BPpzsPmjr5gsdZDZMx3Wj2n9iRzFcY7eqKU6VkFTBYc19EeSS9G91bG6rhX8GVhBLHAQbwGIUZQvJqRd4y4RCp9ChtTfvLnzbH8gqHdQ5SdJesWzIY6vOR1VMhlt2ocq4xe+t036hPDuDnOf5qOwXtH6Wn5JinuKFq6NgOamrKIp0ftEG3DczbzQT6/0+R2cKkH1Cii41ojPyfc8WJ4HJV52OnZ+KvvrLBFq82LAZuDvaAx+E+w8LgbO7eE/pYAeCT30cduB9GNAmYT2nd7mqWFiN/aekagtekN4sYk/5ZA6xH1wnNbTydUB/ix2blz4YV3g3P3RbVmvKuQeL5Ygto3CC9MeV3LyqEU45W9CqFT+48/dtklPSgqYoP0X+lPKaPKpm39+IxPjZTVZ/Ur8PNPdMsQB3GUNURScFSsPzfZ707+7OlflCUDmUp6UVo0yHCkrnaUBd/CW2ra6wwkbBYvSrgO/ymZ/X3wllmJyO3fI5zWe8LQroo7kE4Ztq097dr8J5rR8T6lJgK4K+TmjVTobVtR5qF8McnNBIIS6bOgk421ljVw5vzWIVgFEh94z6dAAAAIySsKw9+31XJUwQ/s8/z8nO2lk8wAfv4u1BWnQjiCnIZVSothLjhn4BS0hT0BR1bfx4QEmhYh3FjS4o2xaOQv1Ob7fCKEOrNa9/qcj8PZ+keOkCYtLbZboJ1KcLvx4pzKDYPDtuq+UyZQms1EypHl3dAy3hb/x5dywB8J7QKbUPyxH/HF+VT1jwDrp3GQkNs2aKjdnbDs5NL7RB0mo3/4LF9kVnv2WJProwV2zf3m48CuBHRjAtndgI/4V7ePOBPpH5hhwzVMDlY5F4OiNcS9DX11bNXeGvi0vv5umb3i74CsBsy32y/2iSSf5Sy7O3FkmmMDEnx++XROu8c0fvwq/wxt03ZAaxFbkNyAJ0k0RQNnlf+yAnI4lm/Jno55q/xSu98u3nNl87PdG4/a2f4PBB4+m8oj/6EzmITjVGsqROssEBfIShJ0EzzLSBqZdLKt8Dv/7HH9ZWAOuzfcamQ9lD2wPi33Bd/ZPUR7mIN54ZaKBjq2FhBz9StFFrc//Y9cidRr5qYxwbKfYZACsyFQVl6DFzlF3cxF3zeXqR7gsOxmu61aCPyw5+GMTGQAx8oJD2ZzDDdJTDyyPccjjih6cXh8GvaFP86SlDmytGZ04/3Lx4fR8f6ZkxXHCqCwAAAAReIAoOQSD2XZqp86CIa21QL+TpAZtdtFZqhtqCB60XXGJQmTCB0mBNurUk6XTY6th5L/ApNeSfRS0Ilv8+FDE68lRt4mmjU6AqIi94ebXo/GyQ6lnXpxjDWdD5C2Qi0w9lx3mR0bPEZZnFac4PaQZm8E/4ixwCmgJwA9d8ZC6MZEaChKnc/jUXNqtkStGzqR/r499XcVWRwR9sZ6u2fziruOP18Ld3PTRojRBWJ7DbKpzaqFZoQne5ZPvOPC6uF15IehBHOaz3jIqr8Dh9ruybn5NzWR8EEvy/gqWojH/zR2aXsg7AyjlTTaudXUX/yThfDxdGzr25ulWHjcqFO9I770YIFfXsP3BNP9lqpBXpnNi8JsEVhoYIqgStGX0gsZWKqUgQ3WH9/DUh4mZNxmpgnO8P3/Nvl//O8V7UnT//4PBK1AbFiQ/eehXAPMPsR5heNNwHZJQAm6BctjBH7h7Dm61eI41Xjaqx0obLUYrqEW7TXDm7+NwopybVw8B49mIRDKaQNsqImu/sGjtghFo8Bp+9ORGXV20gGD/GUw97dYgYKjnQ4LDEbO1FRfiZgy39AntTrxfPX1C7D70f5Q1mXcSXe9VES0R+oGPVZRTGxP6ozgfCtBly8mi2i/19WGQWsWZCmk4sReu8yfNYl1tsK+inUi1kLWesUJ1gRGFQtvmg/OB3j/hwjq97lY6iG8AHZ9T9PUGNcpxP7wy035Ii3TdPPICPkwoRZohSa54C49w6z+eW6oO1/EyQ21cksOxc3yhqDnWWBy2wpkAqLUFisqTMDnaXIc18A5WuiEFrLRxZMWf91OAEhbAmgIEcVvkuM8NRkKnxb8kkREy3LDc2ZeMQ4UAAAAMSdJWMeIDqHDZtr+fz75MlJkHgnEzq3oMCQ6M2E/tqzr1YwsnIJnIxqCXGNldGHgirWT4fpLA+HvOD82sQzs5kqIomyQ/y5SA0gYDw7GGxFTFc0m/nHNdHH3rmBUa3Wrvhcfdt8f/iNxycS+WbSScSrlKVUl+AU87HPmYViRBCRrKyRSrZr2K4oe6lOE0/yGs4d4aLjxi/brcTPfjxoTzz7tepQW+VyZZMFEGhHGEdRheYyj1pk+Lsf+/8e50to2Zze7YqecCKkX9mx6tDCRpCes3/IBSZeuLDtcakuQo+vk4z1Cg+pep2IohgzyUmiKE7Xn6vkQ6QQR952MrdTd4RHrT5Y4JrK4NtsWExqdHh6YI9zirhIbvil0k+bl1UQpLmbaEU5A047INkhBHbzT22K1w6RVL4tZOzqAAAAAAADvA+ayc2IE9yVFxTgOvsDxcr3DmsXorTK1ABw7MLQFzf6nliSGWFr9UQmLjWq8aL1ffPYmKPuv4cxTxoGWNFaC30P6s2zqZL3bbQLN7VY6jx+qWL0i0Y4PJGfki//kX/Oybp8dN0uX+0PewQOv0Ty7VwLE8XGPpGiob9E8+N/T8U4UxbeTMGMmKWrJTJnK0/z1+sHE5I7jiODtGeWK4RjlHkxJEGPQHaRijxtn3tGE4xUJmmfnvX609Ho1c8rHzg1Ih2uoUZ0nskV9B8QpUSfSIuaTjZI1ZO14prTfJi5QG9x3HoGhi1pQ8vVM0Xch2JfWRUzGWHLAGlJzwjrvM/2W00aNUwkHNAQw0V+TwU0aCykkvmtW2qMGYgmFJfVYJJzeFoZ2bSTwavLES+77pTb40W9u7y56Rb9WcS+vENnxfZhGGq78AAAAALkoZeg/GsYBJHw5ThP67gw2SNHex7zPnoK1LlS0++VgRY3MzDgwYbJG0B7xPEGRW5TAExxMc1CgdqN25i7YSP0YwZvDy7qpqhe0ZDDd6wL4Nh2xqoEacZXW09/TEPsVkXDUFLYlH4kZnux9BnvhNxUc5tecucOf9ZfBl/B/uBtDxZnDw41zj8NxRjR94pKTRZXlpqmaf//o7CTuGiw3YUfuFxL/NpqWrdr8C48qnM+BqrJJ5NJdQAhkhkTnTzn7K6tmyobtLcdlbNjY2iEWB24o+umTu8dQsw+OA8+JixXznGmdANFbWflgPc5YMtHTVhbapq1BbAniZuXCu7laNiuxcBplklDd9dfPd/MDmfdwsmeHRgU93vMtOKPJnmZmFDkLAD6zeeBFon7L3FvLRM8dJqrsv+3wAAAAAYFlCFl7KVgqJsjO7Jl2bu5MT12yFnM/MKOQ+ODcd+EIbLoASwufhFLeqZWVJwuJ2Icb+co4AXmmDiBLlkMbRcwzwBgQa7HxQhMVLtZhUQXMCX88EENoOvvqPpc0sdQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+
+/** Decode-failure fallback: the mark as vector paths, so it is at least the same shape on every
+ *  host. A teardrop flame with an inner drop, and 'ptt' set as three stroked glyph paths. */
+function drawFallbackSign(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
+  const W = 2048, H = 512, BAND = 448;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.fillStyle = CONFIG.graphic.background;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#FFFFFF';
+  // Flame: outer teardrop minus inner drop (even-odd), height 80 percent of the band.
+  const fh = BAND * 0.8, fw = fh * 0.56, fx = W * 0.52, fy = (BAND - fh) / 2;
+  const drop = (cx: number, top: number, w: number, h: number) => {
+    ctx.moveTo(cx, top);
+    ctx.bezierCurveTo(cx + w * 0.05, top + h * 0.35, cx + w * 0.5, top + h * 0.5, cx + w * 0.5, top + h * 0.75);
+    ctx.bezierCurveTo(cx + w * 0.5, top + h * 1.08, cx - w * 0.5, top + h * 1.08, cx - w * 0.5, top + h * 0.75);
+    ctx.bezierCurveTo(cx - w * 0.5, top + h * 0.5, cx - w * 0.05, top + h * 0.35, cx, top);
+  };
+  ctx.beginPath();
+  drop(fx + fw / 2, fy, fw, fh * 0.92);
+  drop(fx + fw / 2, fy + fh * 0.36, fw * 0.5, fh * 0.5);
+  ctx.fill('evenodd');
+  // Wordmark: stroked bold-italic strokes for p, t, t at ~62 percent of the flame height.
+  const lh = fh * 0.62, x0 = fx + fw + fh * 0.1, base = fy + fh * 0.8, sw = lh * 0.19, sl = 0.18;
+  ctx.lineWidth = sw; ctx.lineCap = 'butt'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#FFFFFF';
+  ctx.save(); ctx.transform(1, 0, -sl, 1, sl * base, 0);
+  const xh = lh * 0.62;
+  ctx.beginPath(); ctx.moveTo(x0 + sw / 2, base - xh); ctx.lineTo(x0 + sw / 2, base + lh * 0.3); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x0 + sw / 2 + xh * 0.42, base - xh / 2, xh * 0.42, xh / 2 - sw / 2, 0, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+  let tx = x0 + sw + xh * 0.95 + sw * 0.6;
+  for (let i = 0; i < 2; i++) {
+    ctx.beginPath(); ctx.moveTo(tx + sw / 2, base - lh * 0.85); ctx.lineTo(tx + sw / 2, base - sw / 2);
+    ctx.lineTo(tx + sw * 1.5, base - sw / 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(tx - sw * 0.4, base - xh); ctx.lineTo(tx + sw * 1.7, base - xh); ctx.stroke();
+    tx += sw * 2.4;
+  }
+  ctx.restore();
+  return canvas;
+}
+
+/** Assign the baked fascia image to the fascia material AFTER construction. This is the documented
+ *  route for a printed brand fascia and is unaffected by the material's `textureless` declaration
+ *  -- what that skips is the five-canvas PROCEDURAL set, a different thing entirely. The texture
+ *  is assigned synchronously so the harness waits on its decode. */
 function applyFasciaGraphic(root: THREE.Group): void {
   const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
   const mesh = rt?.meshes?.['fascia-panel'];
@@ -612,77 +653,23 @@ function applyFasciaGraphic(root: THREE.Group): void {
   const material = mesh.material as THREE.MeshStandardMaterial;
   if (!material) return;
 
-  const g = CONFIG.graphic as any;
-  // A round sign needs a SQUARE canvas: the cylinder cap maps the circle into the unit square,
-  // so a 2048x320 strip would squash the mark flat. A rectangular fascia keeps the wide strip,
-  // where the bottom 12.5% is the plain corner every non-front face samples.
-  const square = !!g.square;
-  const W = square ? 512 : 2048, H = square ? 512 : 320;
-  const canvas = document.createElement('canvas');
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  const srgb = (THREE as any).SRGBColorSpace;
+  const baked = new THREE.TextureLoader().load(SIGN_IMAGE_DATA_URL, undefined, undefined, () => {
+    const canvas = drawFallbackSign();
+    if (!canvas) return;
+    const tex = new THREE.CanvasTexture(canvas);
+    if (srgb) tex.colorSpace = srgb;
+    tex.anisotropy = 4;
+    material.map = tex;
+    material.needsUpdate = true;
+  });
+  if (srgb) baked.colorSpace = srgb;
+  baked.anisotropy = 4;
+  baked.needsUpdate = true;
 
-  ctx.fillStyle = g.background;
-  ctx.fillRect(0, 0, W, H);
-  const band = square ? H : H * 0.875;
-
-  const fit = (text: string, font: string, x0: number, x1: number, cy: number, fill: string, strokeCol?: string, strokeW?: number) => {
-    ctx.font = font;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    const w = ctx.measureText(text).width;
-    const s = (x1 - x0) / w;
-    ctx.save();
-    ctx.translate(x0, 0);
-    ctx.scale(s, 1);
-    if (strokeCol) { ctx.lineJoin = 'round'; ctx.strokeStyle = strokeCol; ctx.lineWidth = (strokeW ?? 6) / s; ctx.strokeText(text, 0, cy); }
-    ctx.fillStyle = fill;
-    ctx.fillText(text, 0, cy);
-    ctx.restore();
-  };
-
-  for (const op of g.ops as any[]) {
-    if (op.type === 'rect') {
-      ctx.fillStyle = op.fill;
-      const x = op.x * W, y = op.y * band, w = op.w * W, h = op.h * band, r = (op.r ?? 0) * band;
-      ctx.beginPath();
-      if (r > 0) {
-        ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
-      } else ctx.rect(x, y, w, h);
-      ctx.closePath(); ctx.fill();
-    } else if (op.type === 'circle') {
-      ctx.fillStyle = op.fill;
-      ctx.beginPath();
-      ctx.arc(op.cx * W, op.cy * band, op.r * band, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (op.type === 'poly') {
-      // An arbitrary polygon in normalised canvas coords, for a mark a font cannot set -- a
-      // lightning bolt, a chevron, a leaf. Points are [x, y] with x a fraction of the canvas width
-      // and y a fraction of the band height.
-      ctx.fillStyle = op.fill;
-      ctx.beginPath();
-      const pts = op.points as number[][];
-      ctx.moveTo(pts[0][0] * W, pts[0][1] * band);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0] * W, pts[i][1] * band);
-      ctx.closePath();
-      ctx.fill();
-    } else if (op.type === 'text') {
-      fit(op.text, `${op.style ?? 'bold'} ${Math.round(op.size * band)}px ${op.family ?? 'Arial, Helvetica, sans-serif'}`,
-        op.x0 * W, op.x1 * W, op.cy * band, op.fill, op.stroke, op.strokeW ? op.strokeW * band : undefined);
-    }
-  }
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = (THREE as any).SRGBColorSpace ?? tex.colorSpace;
-  tex.anisotropy = 4;
-  tex.needsUpdate = true;
-  material.map = tex;
-  // White base so the canvas shows as drawn rather than tinted -- the measured fascia colour is
-  // already painted into the canvas background.
+  material.map = baked;
+  // A `map` MULTIPLIES `color`: the measured navy is already painted into the image, so the
+  // colour slot must be white or the albedo is applied twice.
   material.color.setHex(0xffffff);
   material.needsUpdate = true;
 }

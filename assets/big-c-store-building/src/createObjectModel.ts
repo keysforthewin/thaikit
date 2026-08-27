@@ -266,12 +266,17 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
   /* -- 3. parapet ring + front sign wall --------------------------------------------------
    * FOUR boxes merged into ONE component and ONE draw call. The front is taller than the
    * sides, which a plan extrusion cannot express, so merged boxes are the right primitive.
-   * The front box OVERLAPS into the shell top rather than butting it. */
+   * The front sign wall is the WHOLE elevation above the canopy (y 2.70..4.50), not a parapet
+   * strip: in the plate the block piers and the lightbox both sit on one proud plane that runs
+   * from the canopy to the cap course, and everything above the canopy is 48 % of the front
+   * height (block course 0.6 m, lightbox 1.1 m, at 109 px/m on the near-left column). Its top
+   * stops at 4.50 so the cap blocks (4.02..4.60) cap it rather than sit beside it. It overlaps
+   * into the shell and into the canopy plates rather than butting either. */
   addComponent(
     'parapet',
     'Parapet ring and sign wall',
     mergeGeos([
-      boxAt(0, 3.935, 2.47, 8.0, 0.77, 0.54), // front sign wall, 0.24 m proud of the facade
+      boxAt(0, 3.6, 2.47, 8.0, 1.8, 0.54), // front sign wall, y 2.70..4.50, 0.24 m proud of the facade
       boxAt(-3.88, 3.75, -0.65, 0.24, 0.4, 5.7), // left upstand
       boxAt(3.88, 3.75, -0.65, 0.24, 0.4, 5.7), // right upstand
       boxAt(0, 3.75, -3.38, 8.0, 0.4, 0.24), // rear upstand
@@ -280,29 +285,24 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
   );
 
   /* -- 4. Big C fascia lightbox ------------------------------------------------------------
-   * Sunk 0.04 m INTO the parapet front face (2.74) and standing 0.08 m proud of it, so the
-   * panel overlaps its surround instead of meeting it. UVs are AUTHORED, not generated: the
-   * +Z face samples the wordmark band of the canvas and the other five faces sample a plain
-   * white corner of the same canvas, which keeps the brand graphic at one material and one
-   * draw call instead of adding a separate graphic plane. */
-  const signGeo = new THREE.BoxGeometry(6.6, 0.58, 0.12);
+   * 6.2 x 1.10 m, measured off the plate: the white box spans x 395..892 of the 325..935 px
+   * front (6.2 of 8 m) and 121 of the 502 px front height on the near-left column (1.11 of
+   * 4.6 m), and sits 0.08 m above the canopy. The first build had it at 0.58 m tall, which
+   * squashed the badge to a 5:1 strip against the plate's 2.5:1 field. Sunk 0.04 m INTO the
+   * sign wall face (2.74) and standing 0.12 m proud of it, so the panel overlaps its surround
+   * instead of meeting it. UVs are AUTHORED: the +Z face samples the whole baked image and the
+   * other five faces sample a 2 % strip at its left edge, which is plain lightbox white --
+   * one material and one draw call, no separate graphic plane. */
+  const signGeo = new THREE.BoxGeometry(6.2, 1.1, 0.16);
   {
     // BoxGeometry vertex order is px, nx, py, ny, pz, nz -- four vertices per face.
-    // Face 4 (+Z) is vertices 16..19.
+    // Face 4 (+Z) is vertices 16..19 and keeps its full 0..1 UVs.
     const uv = signGeo.getAttribute('uv') as THREE.BufferAttribute;
     for (let i = 0; i < uv.count; i++) {
-      if (i >= 16 && i < 20) {
-        // +Z -> the wordmark band, canvas v 0.125..1.0
-        const u = uv.getX(i);
-        const vv = uv.getY(i);
-        uv.setXY(i, u, 0.125 + vv * 0.875);
-      } else {
-        // every other face -> a 3% white corner of the same canvas
-        uv.setXY(i, uv.getX(i) * 0.03, uv.getY(i) * 0.03);
-      }
+      if (i < 16 || i >= 20) uv.setX(i, uv.getX(i) * 0.02);
     }
     uv.needsUpdate = true;
-    signGeo.translate(0, 3.97, 2.76);
+    signGeo.translate(0, 3.37, 2.78);
   }
   addComponent('sign-lightbox', 'Big C fascia lightbox', signGeo, 'sign-face');
 
@@ -310,25 +310,28 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * One pane, not one per bay: the mullion grid in front does the dividing. Overlaps INTO the
    * facade at the back (2.46 vs the wall face at 2.50) and sits RECESSED behind the framing at
    * the front (2.56 vs 2.64), which is what makes it read as glass set into a frame. */
-  addComponent('shopfront-glazing', 'Shopfront glazing', boxAt(0, 1.665, 2.51, 6.5, 2.97, 0.1), 'glass-tinted');
+  addComponent('shopfront-glazing', 'Shopfront glazing', boxAt(0, 1.38, 2.51, 6.5, 2.56, 0.1), 'glass-tinted');
 
   /* -- 6. shopfront framing + door bay ----------------------------------------------------
    * Eight boxes merged into one component. Every part is the same anodised aluminium; folding
    * them together is the draw-call lever chosen in the blockout, not an optimisation deferred
    * to the end -- a part split for authoring convenience cannot be merged afterwards once a
-   * pivot hangs off it. Front face 2.64 stands proud of both the glazing and the mullions. */
+   * pivot hangs off it. Front face 2.64 stands proud of both the glazing and the mullions.
+   * Members BUTT one another (stiles and jambs stop at the rails they meet) rather than
+   * overlapping: an overlap of two co-facing fronts inside one merged geometry z-fights just
+   * as two components would, and check-coplanar cannot see inside a component. */
   addComponent(
     'shopfront-frame',
     'Shopfront framing and door bay',
     mergeGeos([
-      boxAt(-3.285, 1.66, 2.58, 0.07, 3.12, 0.12), // left stile
-      boxAt(3.285, 1.66, 2.58, 0.07, 3.12, 0.12), // right stile
-      boxAt(0, 3.185, 2.58, 6.64, 0.07, 0.12), // head
+      boxAt(-3.285, 1.3525, 2.58, 0.07, 2.345, 0.12), // left stile, sill top 0.18 to head 2.525
+      boxAt(3.285, 1.3525, 2.58, 0.07, 2.345, 0.12), // right stile
+      boxAt(0, 2.56, 2.58, 6.64, 0.07, 0.12), // head, just under the canopy soffit at 2.60
       boxAt(0, 0.14, 2.58, 6.64, 0.08, 0.12), // sill / kick rail
-      boxAt(0, 2.46, 2.58, 6.5, 0.08, 0.12), // transom
-      boxAt(-1.185, 1.3, 2.58, 0.07, 2.4, 0.12), // door jamb L
-      boxAt(1.185, 1.3, 2.58, 0.07, 2.4, 0.12), // door jamb R
-      boxAt(0, 2.61, 2.58, 2.3, 0.22, 0.12), // door header box
+      boxAt(0, 1.85, 2.58, 6.5, 0.08, 0.12), // transom, 0.75 m below the head as in the plate
+      boxAt(-1.185, 0.995, 2.58, 0.07, 1.63, 0.12), // door jamb L, sill top to transom
+      boxAt(1.185, 0.995, 2.58, 0.07, 1.63, 0.12), // door jamb R
+      boxAt(0, 2.0, 2.58, 2.3, 0.22, 0.12), // door header box, 1.89..2.11 on the transom
     ]),
     'aluminium',
   );
@@ -365,7 +368,8 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * tonal variation measured at standard deviation 25 is carried by instanceColor, which costs
    * nothing, rather than by a texture set -- a colour difference is not a material difference.
    * Blocks stop 0.02 m short of the parapet outer face so the two are never coplanar, and
-   * overhang the parapet front to z=2.80, which is what a coping does. */
+   * overhang the sign wall front to z=2.80, which is what a coping does. Depth 2.18..2.80
+   * covers the wall's whole 2.20..2.74 so no wall top shows behind the course. */
   {
     const mats: THREE.Matrix4[] = [];
     const cols: number[] = [];
@@ -377,12 +381,22 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
       ));
       cols.push(CAP_BLOCK_TONES[mats.length % CAP_BLOCK_TONES.length]);
     };
-    const N = 12;
-    const SPAN = 7.96;
-    const W = SPAN / N;
-    for (let i = 0; i < N; i++) push(-3.98 + W * (i + 0.5), 4.46, 2.55, W - 0.02, 0.28, 0.5);
-    for (const sx of [-3.74, 3.74]) {
-      for (let i = 0; i < 3; i++) push(sx, 3.55 + 0.2567 * (i + 0.5), 2.55, 0.48, 0.2567 - 0.02, 0.5);
+    // Course between the piers: FIVE blocks at the plate's varied widths (0.9, 1.35, 1.35,
+    // 1.4, 1.4 m, read at 76 px/m along the front) and 0.58 m tall, capping the sign wall from
+    // 4.02 to 4.60. The first build ran twelve uniform 0.64 x 0.28 m bricks, which read as a
+    // brick soldier course; the plate's blocks are near-square slabs ~0.6 m tall.
+    const widths = [0.9, 1.35, 1.35, 1.4, 1.4];
+    let x = -3.2;
+    for (const w of widths) {
+      push(x + w / 2, 4.31, 2.49, w - 0.02, 0.58, 0.62);
+      x += w;
+    }
+    // Piers: 0.8 m wide, THREE courses each -- cap, then two ~0.6 m blocks -- running from the
+    // cap course down to the canopy plates, which is where the plate's corner stacks end.
+    for (const sx of [-3.6, 3.6]) {
+      push(sx, 4.31, 2.49, 0.76, 0.58, 0.62);
+      push(sx, 3.67, 2.49, 0.76, 0.62, 0.62);
+      push(sx, 3.02, 2.49, 0.76, 0.6, 0.62);
     }
     addInstanced('parapet-cap-blocks', 'Parapet cap blocks and quoins', new THREE.BoxGeometry(1, 1, 1), 'parapet-block', mats, cols);
   }
@@ -391,17 +405,21 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * ONE downlight is merged into the plate geometry itself, so six plates give six downlights
    * for ZERO extra draw calls; as its own repetition system it would have cost one. Count and
    * spacing are INFERRED at 0.50 confidence -- the soffit is seen only at a grazing angle.
+   * Plate top at 2.74: the plate puts the canopy at 50..59 % of the front height and the
+   * reference proxy's depth peak sits in the same band (bands.mjs: 1.375..1.411 at bands 5-6),
+   * so the first build's 3.44 was a metre too high and left no room for the lightbox.
+   * Six 1.04 m plates at 1.06 m pitch span -3.18..3.18, clear of the piers at |x| >= 3.22.
    * The canopy nose at z=3.50 IS the declared front of the envelope: the shell front face was
    * set back to z=2.50 precisely so this 1.00 m cantilever lands on the declared 7.0 m depth
    * instead of overrunning it. */
   {
     const plate = mergeGeos([
-      boxAt(0, 0, 0, 1.08, 0.14, 1.1),
+      boxAt(0, 0, 0, 1.04, 0.14, 1.1),
       cylAt(0, -0.085, 0.0, 0.085, 0.03, 12),
     ]);
     const mats: THREE.Matrix4[] = [];
     for (let i = 0; i < 6; i++) {
-      mats.push(new THREE.Matrix4().setPosition(-3.3 + 1.1 * (i + 0.5), 3.37, 2.95));
+      mats.push(new THREE.Matrix4().setPosition(-3.18 + 1.06 * (i + 0.5), 2.67, 2.95));
     }
     addInstanced('canopy-plates', 'Entrance canopy plates', plate, 'aluminium', mats);
   }
@@ -419,9 +437,9 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
       xs.push(-3.25 + 0.3383 * k, 3.25 - 0.3383 * k);
     }
     for (const x of xs.sort((a, b) => a - b)) {
-      mats.push(new THREE.Matrix4().setPosition(x, 1.645, 2.58));
+      mats.push(new THREE.Matrix4().setPosition(x, 1.32, 2.58));
     }
-    addInstanced('shopfront-mullions', 'Shopfront mullions', new THREE.BoxGeometry(0.07, 3.05, 0.08), 'aluminium', mats);
+    addInstanced('shopfront-mullions', 'Shopfront mullions', new THREE.BoxGeometry(0.07, 2.4, 0.08), 'aluminium', mats);
   }
 
   /* -- R4. rooftop condenser units ---------------------------------------------------------
@@ -460,49 +478,42 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
   return root;
 }
 
-/* ------------------------------------------------------------------ brand fascia canvas */
+/* ------------------------------------------------------------------ brand fascia */
 
 /**
- * The Big C wordmark, drawn onto a canvas and assigned AFTER material construction. This is
- * the documented route for a printed brand fascia and is unaffected by the material's
- * `textureless` declaration -- what that declaration skips is the five-canvas PROCEDURAL
- * texture set, which is a different thing from a single authored graphic.
- *
- * Layout is measured off the plate: the white lightbox spans x 385..905 px and the green field
- * spans 575..755 px, so the green sits from 36.5% to 73% of the sign width.
+ * The Big C fascia face, BAKED once (scratch/big-c-store-building/sign/compose.py) and embedded
+ * as a WebP data URI: 2048 x 368 px for the 6.2 x 1.10 m lightbox face, ~22 KB. Layout is
+ * measured off the plate -- the green badge spans 35.4..72.8 % of the lightbox width and
+ * 5..95 % of its height (a 2.32 x 0.99 m field, aspect 2.3), and the three glyph boxes are read
+ * off the 4x badge crop. It is baked rather than drawn with fillText because the harness has no
+ * bold-italic sans and a host has whatever the player's OS has, so a drawn wordmark is a
+ * different shape on every machine. It is assigned AFTER material construction, which is the
+ * documented route for a printed brand fascia and is unaffected by the material's `textureless`
+ * declaration. drawFallbackSign() is the DECODE FALLBACK only.
  */
-function applyFasciaGraphic(root: THREE.Group): void {
-  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
-  const mesh = rt?.meshes?.['sign-lightbox'];
-  if (!mesh) return;
-  const material = mesh.material as THREE.MeshStandardMaterial;
-  if (!material || typeof document === 'undefined') return;
+const SIGN_IMAGE_DATA_URL =
+  'data:image/webp;base64,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';
 
-  // 2048 x 320: the fascia is 6.6 m wide, so the wordmark needs real horizontal resolution to
-  // stay crisp when a player walks up to the door.
+function drawFallbackSign(): HTMLCanvasElement | null {
   const W = 2048;
-  const H = 320;
+  const H = 368;
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) return null;
 
-  // The whole canvas starts as the measured lightbox white (#D9D9D8). The bottom 12.5% is the
-  // plain corner every non-front face of the box samples, so it must stay clean.
   ctx.fillStyle = '#D9D9D8';
   ctx.fillRect(0, 0, W, H);
 
-  const bandH = H * 0.875; // canvas rows 0..280 are the +Z face; 280..320 is the white corner
-  const gx0 = W * 0.365;
-  const gx1 = W * 0.73;
-  const gy0 = bandH * 0.1;
-  const gy1 = bandH * 0.9;
+  const gx0 = W * 0.354;
+  const gx1 = W * 0.728;
+  const gy0 = H * 0.05;
+  const gy1 = H * 0.95;
   const panelW = gx1 - gx0;
   const panelH = gy1 - gy0;
 
-  // green rounded-rect field
-  const r = panelH * 0.12;
+  const r = panelH * 0.03;
   ctx.fillStyle = '#8CC63F';
   ctx.beginPath();
   ctx.moveTo(gx0 + r, gy0);
@@ -517,32 +528,23 @@ function applyFasciaGraphic(root: THREE.Group): void {
   ctx.closePath();
   ctx.fill();
 
-  // The wordmark is fitted to the panel by MEASUREMENT, not by a guessed font size. Sized by
-  // ratio alone the glyphs filled about 40% of the green field against the plate's ~86%, and the
-  // shortfall is not something a fixed multiplier can fix: headless Chrome's font fallback
-  // decides the actual advance widths, so the only reliable way to fill a known box is to
-  // measure the text and scale it horizontally to fit.
+  // Fitted by MEASUREMENT: the host's font fallback decides advance widths, so the text is
+  // measured and scaled horizontally to the badge rather than sized by a guessed ratio.
   const cy = gy0 + panelH * 0.56;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
-
   const fontBig = `italic bold ${Math.round(panelH * 0.58)}px Arial, Helvetica, sans-serif`;
-  const fontC = `bold ${Math.round(panelH * 1.02)}px Arial, Helvetica, sans-serif`;
-
+  const fontC = `bold ${Math.round(panelH * 0.9)}px Arial, Helvetica, sans-serif`;
   ctx.font = fontBig;
   const wBig = ctx.measureText('Big').width;
   ctx.font = fontC;
   const wC = ctx.measureText('C').width;
-  const gap = panelH * 0.06;
-  const scaleX = (panelW * 0.86) / (wBig + gap + wC);
+  const gap = panelH * 0.04;
+  const scaleX = (panelW * 0.88) / (wBig + gap + wC);
 
   ctx.save();
-  ctx.translate(gx0 + panelW * 0.07, 0);
+  ctx.translate(gx0 + panelW * 0.06, 0);
   ctx.scale(scaleX, 1);
-
-  // Cream keyline around every glyph. It is not decoration: in the plate the outline is what
-  // separates the red letterforms from the green field, and without it the wordmark reads as a
-  // muddy red smear at the distance a player actually sees this fascia from.
   const stroke = (text: string, x: number, y: number, width: number) => {
     ctx.lineJoin = 'round';
     ctx.strokeStyle = '#FFF6E0';
@@ -550,27 +552,42 @@ function applyFasciaGraphic(root: THREE.Group): void {
     ctx.strokeText(text, x, y);
     ctx.fillText(text, x, y);
   };
-
   ctx.fillStyle = '#E30613';
   ctx.font = fontBig;
   stroke('Big', 0, cy + panelH * 0.05, panelH * 0.07);
   ctx.font = fontC;
-  stroke('C', wBig + gap, cy - panelH * 0.04, panelH * 0.07);
-
-  // small yellow "Big" on the C's upper-left shoulder, clear of the glyph
+  stroke('C', wBig + gap, cy - panelH * 0.1, panelH * 0.07);
   ctx.fillStyle = '#FFD400';
-  ctx.font = `italic bold ${Math.round(panelH * 0.28)}px Arial, Helvetica, sans-serif`;
-  stroke('Big', wBig + gap + wC * 0.02, gy0 + panelH * 0.13, panelH * 0.045);
+  ctx.font = `italic bold ${Math.round(panelH * 0.2)}px Arial, Helvetica, sans-serif`;
+  stroke('Big', wBig + gap + wC * 0.05, gy0 + panelH * 0.16, panelH * 0.045);
   ctx.restore();
+  return canvas;
+}
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = (THREE as any).SRGBColorSpace ?? tex.colorSpace;
-  tex.anisotropy = 4;
-  tex.needsUpdate = true;
+function applyFasciaGraphic(root: THREE.Group): void {
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const mesh = rt?.meshes?.['sign-lightbox'];
+  if (!mesh) return;
+  const material = mesh.material as THREE.MeshStandardMaterial;
+  if (!material || typeof document === 'undefined') return;
 
-  material.map = tex;
-  // White base so the canvas shows as drawn rather than being tinted by the measured albedo --
-  // the measured value is already painted into the canvas background.
+  const srgb = (THREE as any).SRGBColorSpace;
+  const baked = new THREE.TextureLoader().load(SIGN_IMAGE_DATA_URL, undefined, undefined, () => {
+    const canvas = drawFallbackSign();
+    if (!canvas) return;
+    const tex = new THREE.CanvasTexture(canvas);
+    if (srgb) tex.colorSpace = srgb;
+    tex.anisotropy = 4;
+    material.map = tex;
+    material.needsUpdate = true;
+  });
+  if (srgb) baked.colorSpace = srgb;
+  baked.anisotropy = 4;
+  baked.needsUpdate = true;
+
+  material.map = baked;
+  // A `map` MULTIPLIES `color`: the measured lightbox white is already painted into the image,
+  // so the colour slot must be white or the albedo is applied twice.
   material.color.setHex(0xffffff);
   material.needsUpdate = true;
 }

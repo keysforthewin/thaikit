@@ -43,14 +43,14 @@ const CONFIG = {
     "materials": [
       {
         "id": "stone",
-        "color": 14008472,
+        "color": 13350822,
         "roughness": 0.94,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "porcelain",
-        "color": 14142907,
+        "color": 15129803,
         "roughness": 0.7,
         "metalness": 0
       },
@@ -157,6 +157,141 @@ const CONFIG = {
       "finial": {
         "y0": 16.9,
         "y1": 18
+      },
+      "wear": {
+        "size": 512,
+        "stone": {
+          "tile": 3.2,
+          "course": 0.32,
+          "block": 0.8,
+          "joint": 6,
+          "bump": 0.04,
+          "clean": [
+            0.906,
+            0.973,
+            1
+          ],
+          "lichen": [
+            0.995,
+            0.978,
+            0.783
+          ],
+          "grime": [
+            0.7,
+            0.72,
+            0.75
+          ],
+          "jointTone": [
+            0.6,
+            0.6,
+            0.63
+          ],
+          "blockLo": 0.9,
+          "blockHi": 1,
+          "mottle": [
+            0.88,
+            0.88,
+            0.9
+          ],
+          "light": [
+            1,
+            1,
+            1
+          ],
+          "pit": [
+            0.62,
+            0.64,
+            0.68
+          ]
+        },
+        "porcelain": {
+          "tile": 3.2,
+          "bump": 0.05,
+          "mottle": [
+            0.91,
+            0.91,
+            0.9
+          ],
+          "wash": [
+            0.74,
+            0.75,
+            0.76
+          ],
+          "chips": [
+            {
+              "tone": [
+                0.99,
+                0.99,
+                0.99
+              ],
+              "w": 0.3
+            },
+            {
+              "tone": [
+                0.42,
+                0.5,
+                0.66
+              ],
+              "w": 0.22
+            },
+            {
+              "tone": [
+                0.46,
+                0.6,
+                0.5
+              ],
+              "w": 0.18
+            },
+            {
+              "tone": [
+                0.88,
+                0.76,
+                0.4
+              ],
+              "w": 0.15
+            },
+            {
+              "tone": [
+                0.8,
+                0.56,
+                0.42
+              ],
+              "w": 0.1
+            },
+            {
+              "tone": [
+                0.6,
+                0.62,
+                0.7
+              ],
+              "w": 0.05
+            }
+          ],
+          "chipCount": 680,
+          "chipRad": [
+            3,
+            9
+          ]
+        },
+        "red": {
+          "tile": 1.6,
+          "bump": 0.03,
+          "clean": [
+            0.555,
+            0.386,
+            0.363
+          ],
+          "worn": [
+            1,
+            1,
+            1
+          ],
+          "grime": [
+            0.74,
+            0.72,
+            0.74
+          ]
+        }
       }
     }
   } as any;
@@ -551,23 +686,27 @@ function pointedArchShape(w: number, spring: number, apexRise: number, sill: num
  * station list itself rather than by a separate fan.
  */
 function tubeAlong(stations: number[][], seg: number): THREE.BufferGeometry {
-  const tri: number[] = [];
-  const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
-  const at = (i: number, j: number) => {
+  // INDEXED, with shared ring vertices, so computeVertexNormals averages across the quads and the
+  // surface shades smooth. The first build emitted loose triangles, and a flat-shaded soft body
+  // shows every station as a crease -- a reclining figure that looked crumpled rather than draped.
+  const pos: number[] = [], idx: number[] = [];
+  for (let i = 0; i < stations.length; i++) {
     const [z, cx, cy, rx, ry] = stations[i];
-    const th = (j % seg) * Math.PI * 2 / seg;
-    return [cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z];
-  };
+    for (let j = 0; j < seg; j++) {
+      const th = j * Math.PI * 2 / seg;
+      pos.push(cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z);
+    }
+  }
   for (let i = 0; i < stations.length - 1; i++) {
     for (let j = 0; j < seg; j++) {
-      const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
-      push(a, b, c);
-      push(a, c, d);
+      const a = i * seg + j, b = (i + 1) * seg + j, c = (i + 1) * seg + (j + 1) % seg, d = i * seg + (j + 1) % seg;
+      idx.push(a, b, c, a, c, d);
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tri), 3));
-  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((pos.length / 3) * 2), 2));
+  g.setIndex(idx);
   g.computeVertexNormals();
   return g;
 }
@@ -719,6 +858,35 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
   const G = CONFIG.geometry as any;
 
 
+  /** Box-project UVs by each vertex's dominant normal axis, in metres over the tile size, so the
+   *  weathering tiles land at true scale and line up across every merged part. Every geometry
+   *  this is used on is non-indexed with per-face normals, so a face never straddles two
+   *  projections. */
+  function boxUv(geo: THREE.BufferGeometry, tile: number): void {
+    const p = geo.getAttribute('position'), n = geo.getAttribute('normal');
+    const out = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) {
+      const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
+      let u: number, v: number;
+      if (ay >= ax && ay >= az) { u = p.getX(i); v = p.getZ(i); }
+      else if (ax >= az) { u = p.getZ(i); v = p.getY(i); }
+      else { u = p.getX(i); v = p.getY(i); }
+      out[i * 2] = u / tile; out[i * 2 + 1] = v / tile;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
+  }
+  /** Re-map a lathe's UVs to a metre-scaled tile: u keeps LatheGeometry's own seamless 0..1
+   *  sweep, scaled to a whole number of repeats at the reference radius so the seam column lands
+   *  on a tile edge; v is world height over the tile size. */
+  function latheUv(geo: THREE.BufferGeometry, tile: number, rRef: number): void {
+    const p = geo.getAttribute('position'), uv = geo.getAttribute('uv');
+    const rep = Math.max(1, Math.round(2 * Math.PI * rRef / tile));
+    const out = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) { out[i * 2] = uv.getX(i) * rep; out[i * 2 + 1] = p.getY(i) / tile; }
+    geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
+  }
+  const W = G.wear;
+
   /* ---------------------------------------------------------------- terrace, balustrade, stair
    * All three are the same weathered stone, so all three ride ONE component and ONE draw call.
    * Grouping by MATERIAL rather than by location is the draw-call lever, and here it collapses
@@ -764,6 +932,7 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
     // second material: the plate measures the bottom plinth distinctly darker and greener than the
     // upper platform, and a second material would cost a draw call to say so.
     tintByHeight(geo, 0, 2.45, [0.82, 0.83, 0.80]);
+    boxUv(geo, W.stone.tile);
     add('terrace', 'Terrace, balustrade and stair', geo, 'stone');
     colliders['terrace'] = {
       shape: 'box', localCenter: [0, 9.0, 0], halfExtents: [4.5, 9.0, 4.5],
@@ -778,7 +947,9 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
    * z-fighting: the plan is a twenty-point polygon, not two rectangles. */
   {
     const T = G.tower;
-    add('tower', 'Tower body', extrudeSlab(redentedShape(T.a, T.r), T.y0, T.y1), 'porcelain');
+    const body = extrudeSlab(redentedShape(T.a, T.r), T.y0, T.y1);
+    boxUv(body, W.porcelain.tile);
+    add('tower', 'Tower body', body, 'porcelain');
   }
 
   /* ---------------------------------------------------------------- pilaster strips
@@ -795,6 +966,7 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
       boxAt(xf + P.proud / 2, py, (near + zf) / 2, P.proud, ph, P.w),
       boxAt((near + xf) / 2, py, zf + P.proud / 2, P.w, ph, P.proud),
     ]);
+    boxUv(unit, W.red.tile);
     addInst('pilasters', 'Redent pilaster strips', unit, 'red', quad(0, 0));
   }
 
@@ -821,12 +993,14 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
     ped.translate(0, PD.y, face - PD.depth + 0.09);
     ped.computeVertexNormals();
 
-    addInst('door-frames', 'False doors and pediments', mergeGeos([doorFrame, ped]), 'porcelain',
-      quad(0, 0));
+    const doorUnit = mergeGeos([doorFrame, ped]);
+    boxUv(doorUnit, W.porcelain.tile);
+    addInst('door-frames', 'False doors and pediments', doorUnit, 'porcelain', quad(0, 0));
 
     // The blind door's back panel: a real concavity 0.16 m behind the frame's front plane, and
     // 0.03 m PROUD of the wall it sits against rather than flush with it.
     const panel = boxAt(0, D.y + D.h / 2 - 0.10, face + 0.015, D.w - 0.48, D.h - 0.46, 0.05);
+    boxUv(panel, W.porcelain.tile);
     addInst('door-panels', 'Blind door panels', panel, 'shadow', quad(0, 0));
   }
 
@@ -850,7 +1024,9 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
       const la = a + T.lip;
       parts.push(extrudeSlab(redentedShape(la, la * T.redent), y0 + 0.02, y0 + 0.16));
     }
-    add('tiers', 'Corn-cob tiers', mergeGeos(parts), 'porcelain');
+    const stack = mergeGeos(parts);
+    boxUv(stack, W.porcelain.tile);
+    add('tiers', 'Corn-cob tiers', stack, 'porcelain');
   }
 
   /* ---------------------------------------------------------------- cap
@@ -865,7 +1041,9 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
       pts.push([C.r * Math.cos(t * Math.PI / 2), C.y0 + (C.y1 - C.y0) * t]);
     }
     pts.unshift([C.r, C.y0 - 0.0]);
-    add('cap', 'Domed cap', lathe(pts, C.seg), 'porcelain');
+    const dome = lathe(pts, C.seg);
+    latheUv(dome, W.porcelain.tile, C.r);
+    add('cap', 'Domed cap', dome, 'porcelain');
   }
 
   /* ---------------------------------------------------------------- trident finial
@@ -901,6 +1079,239 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
       }
     }
     add('finial', 'Gilt trident finial', mergeGeos(parts), 'gold');
+  }
+
+  /* ---------------------------------------------------------------- weathering
+   * The plate is not the flat cream the first build shipped. The terrace is coursed limestone
+   * under a near-continuous ochre lichen with grey grime washing down every face; the tower is
+   * white-washed stucco streaked grey below every lip and ENCRUSTED with porcelain chips -- white,
+   * blue, green, yellow, ochre -- which is the surface the registry names as this prop's identity;
+   * and the red pilaster paint is worn through to pale stucco in patches.
+   *
+   * All of it is delivered as three Canvas 2D tiles assigned AFTER material construction, the
+   * chedi's and the Khmer sanctuary's route: the sculpt materials stay declared textureless (no
+   * five-canvas procedural set, no per-pixel JavaScript, and the measured albedo is NOT thrown
+   * away), and each tile is a few hundred Path2D fills at 512 px -- single-digit milliseconds.
+   * Each is a MULTIPLIER on the material colour, bound as map and bumpMap, so a joint reads as a
+   * groove and a chip as a raised piece rather than as paint.
+   *
+   * Two of the three surfaces carry marks BRIGHTER than their clean ground (the lichen in red and
+   * green, the worn-through stucco in every channel), and a multiplier cannot brighten. Those two
+   * materials therefore hold the ENVELOPE -- stone declares it in cfg, red is re-based here on
+   * LINEAR components with the ratio raised to 2.2 because the tile is sRGB -- and the clean
+   * surface is painted into the tile with one multiply fill; everything after that is a ratio of
+   * the envelope. Nothing but the pits and the chips has a hard edge: hard-edged blotches on stone
+   * read as camouflage paint, which is the note that sent the sanctuary back.
+   *
+   * Under Node -- bands.mjs and check-coplanar run this factory without a DOM -- there is no
+   * canvas, no re-basing, and every material keeps its flat declared colour. */
+  {
+    const hasDom = typeof document !== 'undefined' && typeof (document as any).createElement === 'function';
+    const size = Math.min(W.size, options.textureSize ?? W.size);
+    const css = (t: number[], a: number) =>
+      'rgba(' + Math.round(Math.min(1, t[0]) * 255) + ',' + Math.round(Math.min(1, t[1]) * 255) + ','
+      + Math.round(Math.min(1, t[2]) * 255) + ',' + a + ')';
+    const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    type Painter = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void) => void;
+
+    function makeTile(seed: number, draw: Painter): HTMLCanvasElement | null {
+      if (!hasDom) return null;
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = size;
+      const ctx = cv.getContext('2d');
+      if (!ctx) return null;
+      const S = size;
+      // Every mark is built once and drawn at nine wrapped offsets, so the tile is seamless under
+      // RepeatWrapping; the shapes are precomputed before the nine fills or the copies differ.
+      const wrapped = (fn: () => void) => {
+        for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+          ctx.save(); ctx.translate(ox * S, oy * S); fn(); ctx.restore();
+        }
+      };
+      draw(ctx, rng(seed), S, wrapped);
+      return cv;
+    }
+
+    /** Ashlar coursing: the tile is an exact whole number of courses and blocks, laid in running
+     *  bond, drawn as jittered quadrilaterals over a joint-coloured ground so the joints come out
+     *  irregular for free. Each block carries its own tone from the measured spread. */
+    const coursing = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                      P: any) => {
+      const rows = Math.round(P.tile / P.course), cols = Math.round(P.tile / P.block);
+      const ch = S / rows, bw = S / cols, j = P.joint / 2;
+      ctx.fillStyle = css(P.jointTone, 1); ctx.fillRect(0, 0, S, S);
+      const blocks: { p: Path2D, tone: number[] }[] = [];
+      for (let row = 0; row < rows; row++) {
+        const off = (row % 2) * bw / 2;
+        for (let col = 0; col < cols; col++) {
+          const x0 = col * bw + off + j, x1 = x0 + bw - 2 * j, y0 = row * ch + j, y1 = y0 + ch - 2 * j;
+          const q = () => (r() - 0.5) * P.joint * 0.9;
+          const p = new Path2D();
+          p.moveTo(x0 + q(), y0 + q()); p.lineTo(x1 + q(), y0 + q());
+          p.lineTo(x1 + q(), y1 + q()); p.lineTo(x0 + q(), y1 + q()); p.closePath();
+          const t = P.blockLo + (P.blockHi - P.blockLo) * r();
+          blocks.push({ p, tone: [t, t * (0.97 + 0.03 * r()), t * (0.95 + 0.05 * r())] });
+        }
+      }
+      wrapped(() => { for (const b of blocks) { ctx.fillStyle = css(b.tone, 1); ctx.fill(b.p); } });
+    };
+    /** Soft low-frequency mottle: a few large discs drawn through a canvas blur, so the tone
+     *  drifts cloud-like over half a metre instead of stopping at a hard edge. */
+    const cloud = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, rad: number, alpha: number, blurPx: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, rad * S * (0.5 + r()), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y, rr, a] of marks) { ctx.fillStyle = css(tone, a); ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill(); }
+        ctx.filter = 'none';
+      });
+    };
+    /** Weathering washes: vertical gradient streaks fading DOWN the face, blurred so they read as
+     *  water-borne staining rather than as stripes. v is world height on every mapping here and
+     *  the canvas is flipped into UV space, so down the canvas is down the prop. */
+    const washes = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                    tone: number[], count: number, alpha: number, blurPx: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, S * (0.15 + 0.45 * r()), 18 + 60 * r(), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y0, len, w, a] of marks) {
+          const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+          g.addColorStop(0, css(tone, a)); g.addColorStop(0.4, css(tone, a * 0.6)); g.addColorStop(1, css(tone, 0));
+          ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+        }
+        ctx.filter = 'none';
+      });
+    };
+    /** Lichen as CRUST: clusters of tiny specks, the way it grows, not a painted patch. At 6 mm
+     *  a pixel the specks are 1-2 cm and blend to an ochre tinge at prop distance. */
+    const crust = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], clusters: number, perCluster: number, rad: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < clusters; i++) {
+        const cx = r() * S, cy = r() * S, R = rad * S * (0.4 + r());
+        for (let k = 0; k < perCluster; k++) {
+          const a = r() * Math.PI * 2, d = R * Math.sqrt(r());
+          const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.7, rr = 1 + 1.6 * r();
+          p.moveTo(x + rr, y); p.arc(x, y, rr, 0, Math.PI * 2);
+        }
+      }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+    /** Pits: small dark ellipses, the pocking of old limestone. */
+    const pits = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                  tone: number[], count: number, maxPx: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < count; i++) {
+        const x = r() * S, y = r() * S, rx = 1 + r() * maxPx, ry = rx * (0.6 + 0.6 * r());
+        p.moveTo(x + rx, y); p.ellipse(x, y, rx, ry, r() * Math.PI, 0, Math.PI * 2);
+      }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+    /** Fine grain: a scatter of near-transparent specks, so a flat area is not flat. */
+    const grain = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < count; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.4; p.rect(x, y, d, d); }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+    /** Porcelain chips: broken pieces, so each is an irregular hard-edged polygon of 4-7 sides,
+     *  never a disc. They are set in loose rosettes rather than scattered evenly -- the plate's
+     *  chips cluster around the arch motifs -- so two thirds sit in clusters and a third are
+     *  strays. One Path2D per colour family, each filled once at nine wrapped offsets. */
+    const chips = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   P: any) => {
+      const fams: { tone: number[], w: number }[] = P.chips;
+      const paths = fams.map(() => new Path2D());
+      const centres: number[][] = [];
+      for (let i = 0; i < 26; i++) centres.push([r() * S, r() * S, S * (0.04 + 0.09 * r())]);
+      for (let i = 0; i < P.chipCount; i++) {
+        let cx: number, cy: number;
+        if (r() < 0.75) {
+          const c = centres[Math.floor(r() * centres.length)];
+          const a = r() * Math.PI * 2, d = c[2] * Math.sqrt(r());
+          cx = c[0] + Math.cos(a) * d; cy = c[1] + Math.sin(a) * d;
+        } else { cx = r() * S; cy = r() * S; }
+        const R = P.chipRad[0] + (P.chipRad[1] - P.chipRad[0]) * r();
+        const n = 4 + Math.floor(r() * 4), rot = r() * Math.PI * 2;
+        let pick = r(), f = 0;
+        for (; f < fams.length - 1; f++) { pick -= fams[f].w; if (pick <= 0) break; }
+        const p = paths[f];
+        for (let k = 0; k < n; k++) {
+          const a = rot + (k / n) * Math.PI * 2 + (r() - 0.5) * 0.5, rr = R * (0.6 + 0.4 * r());
+          const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr * (0.7 + 0.3 * r());
+          if (k === 0) p.moveTo(x, y); else p.lineTo(x, y);
+        }
+        p.closePath();
+      }
+      wrapped(() => { fams.forEach((fm, i) => { ctx.fillStyle = css(fm.tone, 0.92); ctx.fill(paths[i]); }); });
+    };
+
+    const bind = (mat: THREE.MeshStandardMaterial, cv: HTMLCanvasElement | null, bump: number) => {
+      if (!cv) return;
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.colorSpace = THREE.SRGBColorSpace;   // the tile holds display-space ratios
+      tex.anisotropy = options.textureAnisotropy ?? 4;
+      mat.map = tex;
+      mat.bumpMap = tex;
+      mat.bumpScale = bump;
+      mat.needsUpdate = true;
+    };
+
+    // Limestone terrace: coursing and tonal drift in CLEAN-stone terms, the whole ground scaled to
+    // the clean ratio of the envelope with one multiply fill, then the lichen -- broad blurred
+    // ochre drifts with speck crust over them -- the grey washes running down, and light pocking.
+    {
+      const P = W.stone;
+      bind(materials.stone, makeTile(20260826, (ctx, r, S, wrapped) => {
+        coursing(ctx, r, S, wrapped, P);
+        cloud(ctx, r, S, wrapped, P.mottle, 10, 0.16, 0.5, 14);
+        cloud(ctx, r, S, wrapped, P.light, 8, 0.14, 0.4, 14);
+        grain(ctx, r, S, wrapped, P.jointTone, 5000, 0.07);
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
+        ctx.globalCompositeOperation = 'source-over';
+        cloud(ctx, r, S, wrapped, P.lichen, 30, 0.16, 0.95, 10);
+        crust(ctx, r, S, wrapped, P.lichen, 60, 40, 0.04, 0.8);
+        washes(ctx, r, S, wrapped, P.grime, 24, 0.7, 5);
+        cloud(ctx, r, S, wrapped, P.grime, 6, 0.09, 0.4, 16);
+        pits(ctx, r, S, wrapped, P.pit, 260, 2.0, 0.5);
+      }), P.bump);
+    }
+    // Stucco and chips: the tower, the tiers, the cap, the door frames -- and the door panels'
+    // own material, which is the same stucco in the recess and shares the one canvas.
+    {
+      const P = W.porcelain;
+      const tile = makeTile(8261403, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, S, S);
+        cloud(ctx, r, S, wrapped, P.mottle, 16, 0.15, 0.75, 14);
+        grain(ctx, r, S, wrapped, P.wash, 5000, 0.07);
+        washes(ctx, r, S, wrapped, P.wash, 30, 0.8, 5);
+        cloud(ctx, r, S, wrapped, P.wash, 8, 0.08, 0.4, 16);
+        chips(ctx, r, S, wrapped, P);
+      });
+      bind(materials.porcelain, tile, P.bump);
+      bind(materials.shadow, tile, P.bump);
+    }
+    // Red paint, re-based to its worn envelope: the tile's ground is the red as a ratio of the
+    // pale stucco, and the worn patches are painted back UP to the envelope as blurred clouds.
+    {
+      const P = W.red;
+      const m = materials.red;
+      if (hasDom) {
+        const c = m.color.clone();
+        m.color.setRGB(c.r / Math.pow(P.clean[0], 2.2), c.g / Math.pow(P.clean[1], 2.2), c.b / Math.pow(P.clean[2], 2.2));
+      }
+      bind(m, makeTile(11052011, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
+        cloud(ctx, r, S, wrapped, [P.clean[0] * 0.9, P.clean[1] * 0.9, P.clean[2] * 0.9], 8, 0.14, 0.5, 14);
+        cloud(ctx, r, S, wrapped, P.worn, 9, 0.07, 0.85, 6);
+        washes(ctx, r, S, wrapped, [P.clean[0] * P.grime[0], P.clean[1] * P.grime[1], P.clean[2] * P.grime[2]], 10, 0.5, 5);
+        grain(ctx, r, S, wrapped, P.worn, 2500, 0.08);
+      }), P.bump);
+    }
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;

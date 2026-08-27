@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 12.00 x 12.00 x 24.00 m, origin base-center, +Y up, long axis on Z.
+ * Envelope 14.00 x 17.00 x 24.00 m, origin base-center, +Y up, long axis on Z.
  * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.
  *
  * This is one of thaikit's MONUMENTAL buildings, and unlike the shared retail module its form is
@@ -39,7 +39,7 @@ const CONFIG = {
     "id": "ubosot",
     "name": "Ubosot",
     "exportName": "Ubosot",
-    "envelope": "Envelope 12.00 x 12.00 x 24.00 m, origin base-center, +Y up, long axis on Z.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+    "envelope": "Envelope 14.00 x 17.00 x 24.00 m, origin base-center, +Y up, long axis on Z.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
     "materials": [
       {
         "id": "stone",
@@ -78,86 +78,236 @@ const CONFIG = {
         "color": 5522747,
         "roughness": 0.96,
         "metalness": 0
+      },
+      {
+        "id": "carved",
+        "color": 16777215,
+        "roughness": 0.45,
+        "metalness": 0.2,
+        "envMapIntensity": 1.2
       }
     ],
     "geometry": {
-      "pitch": 1.056,
-      "platform": [
-        [
+      "floor": 1.3,
+      "platform": {
+        "slab1": [
           0,
-          0.55,
-          6,
+          0.45,
+          6.85,
           12
         ],
-        [
-          0.55,
-          1.1,
-          5.72,
-          11.72
+        "slab2": [
+          0.45,
+          1.08,
+          6.35,
+          11.3
         ],
-        [
-          1.1,
-          1.75,
-          5.46,
-          11.46
+        "cap": [
+          1.08,
+          1.3,
+          6.45,
+          11.4
         ]
-      ],
+      },
       "notch": {
         "halfX": 1.9,
         "zInner": 9.6
       },
       "stair": {
-        "steps": 5,
+        "steps": 4,
         "z0": 9.6,
-        "z1": 12,
-        "top": 1.75,
+        "z1": 11.3,
+        "yBase": 0.45,
+        "top": 1.3,
         "treadHalfX": 1.6
       },
+      "parapet": {
+        "outer": 6.12,
+        "thick": 0.32,
+        "y0": 1.3,
+        "y1": 1.85,
+        "gapHalfX": 1.9
+      },
       "column": {
-        "hw": 0.26,
-        "y0": 1.75,
-        "y1": 6.1,
-        "insetX": 4.86,
-        "insetZ": 10.4,
-        "longCount": 9,
-        "shortCount": 3
+        "hw": 0.275,
+        "y0": 1.3,
+        "y1": 6.6,
+        "insetX": 5.95,
+        "insetZ": 10.2,
+        "longCount": 11,
+        "shortCount": 4
+      },
+      "beam": {
+        "y0": 6.25,
+        "y1": 6.85,
+        "thick": 0.65
       },
       "wall": {
-        "y0": 1.75,
-        "y1": 6.3,
-        "hx": 3.6,
-        "hz": 9.6
+        "y0": 1.3,
+        "y1": 6.9,
+        "hx": 5.5,
+        "hz": 8.4
       },
       "door": {
-        "w": 2.2,
+        "w": 2,
         "h": 3.6,
-        "y": 1.75,
-        "z": 9.6
+        "frame": 0.3,
+        "proud": 0.1
       },
-      "tiers": [
-        [
-          6.1,
-          7.45,
-          5.45,
-          11.55
-        ],
-        [
-          7.45,
-          8.65,
-          3.95,
-          9
-        ],
-        [
-          8.65,
-          11.4,
-          2.7,
-          6.6
+      "window": {
+        "w": 1.1,
+        "h": 2.2,
+        "sill": 2.6,
+        "frame": 0.16,
+        "bays": [
+          1.02,
+          3.06,
+          5.1,
+          7.14
         ]
-      ],
-      "band": 0.42,
+      },
+      "skirt": {
+        "hx": 6.8,
+        "hz": 10.9,
+        "y0": 6.9,
+        "hxI": 4.7,
+        "hzI": 8.8,
+        "y1": 8.5,
+        "soffit": 6.5,
+        "band": 0.45
+      },
+      "mid": {
+        "hx": 5,
+        "y0": 9,
+        "drop": 8.05,
+        "hxT": 3.15,
+        "y1": 10.85,
+        "hz": 8.95,
+        "band": 0.45
+      },
+      "top": {
+        "hx": 3.1,
+        "y0": 10.9,
+        "drop": 10.3,
+        "band": 0.45,
+        "hz": 8.95,
+        "sections": [
+          [
+            -6.03,
+            6.03,
+            14.8
+          ],
+          [
+            6,
+            8.95,
+            14
+          ],
+          [
+            -8.95,
+            -6,
+            14
+          ]
+        ]
+      },
+      "gable": {
+        "slab": 0.15,
+        "boardW": 0.42,
+        "boardT": 0.3
+      },
+      "horn": {
+        "apexRise": 2.35,
+        "footRise": 1.3,
+        "cornerRise": 1.4
+      },
       "sema": {
-        "count": 8,
-        "h": 1.05
+        "h": 1.05,
+        "ped": 0.6
+      },
+      "wear": {
+        "size": 512,
+        "stone": {
+          "tile": 3,
+          "bump": 0.035,
+          "mottle": [
+            0.86,
+            0.86,
+            0.87
+          ],
+          "wash": [
+            0.55,
+            0.56,
+            0.58
+          ],
+          "streak": [
+            0.62,
+            0.63,
+            0.64
+          ],
+          "grain": [
+            0.7,
+            0.7,
+            0.72
+          ]
+        },
+        "red": {
+          "tile": 2,
+          "bump": 0.05,
+          "clean": [
+            0.565,
+            0.31,
+            0.3
+          ],
+          "flake": [
+            0.96,
+            0.96,
+            0.95
+          ],
+          "rim": [
+            0.3,
+            0.16,
+            0.14
+          ],
+          "grime": [
+            0.34,
+            0.2,
+            0.18
+          ],
+          "grain": [
+            0.45,
+            0.25,
+            0.23
+          ]
+        },
+        "roof": {
+          "tile": 2.4,
+          "cols": 11,
+          "rows": 7,
+          "bump": 0.045,
+          "avg": 0.9,
+          "joint": [
+            0.6,
+            0.58,
+            0.55
+          ],
+          "loTone": 0.84,
+          "hiTone": 1,
+          "moss": [
+            0.62,
+            0.66,
+            0.52
+          ],
+          "grime": [
+            0.7,
+            0.7,
+            0.7
+          ]
+        },
+        "pediment": {
+          "ground": "#74402e",
+          "gold": "#a8865a",
+          "goldHi": "#c9a774",
+          "goldLo": "#7a5a3a"
+        }
       }
     }
   } as any;
@@ -552,23 +702,27 @@ function pointedArchShape(w: number, spring: number, apexRise: number, sill: num
  * station list itself rather than by a separate fan.
  */
 function tubeAlong(stations: number[][], seg: number): THREE.BufferGeometry {
-  const tri: number[] = [];
-  const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
-  const at = (i: number, j: number) => {
+  // INDEXED, with shared ring vertices, so computeVertexNormals averages across the quads and the
+  // surface shades smooth. The first build emitted loose triangles, and a flat-shaded soft body
+  // shows every station as a crease -- a reclining figure that looked crumpled rather than draped.
+  const pos: number[] = [], idx: number[] = [];
+  for (let i = 0; i < stations.length; i++) {
     const [z, cx, cy, rx, ry] = stations[i];
-    const th = (j % seg) * Math.PI * 2 / seg;
-    return [cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z];
-  };
+    for (let j = 0; j < seg; j++) {
+      const th = j * Math.PI * 2 / seg;
+      pos.push(cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z);
+    }
+  }
   for (let i = 0; i < stations.length - 1; i++) {
     for (let j = 0; j < seg; j++) {
-      const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
-      push(a, b, c);
-      push(a, c, d);
+      const a = i * seg + j, b = (i + 1) * seg + j, c = (i + 1) * seg + (j + 1) % seg, d = i * seg + (j + 1) % seg;
+      idx.push(a, b, c, a, c, d);
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tri), 3));
-  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((pos.length / 3) * 2), 2));
+  g.setIndex(idx);
   g.computeVertexNormals();
   return g;
 }
@@ -720,70 +874,162 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
   const G = CONFIG.geometry as any;
 
 
-  /* ---------------------------------------------------------------- stone platform
-   * Three stepped slabs and a five-tread stair, all the same white stone and therefore ONE
-   * component and ONE draw call. The stair is cut into the plan as a notch on the +Z short end:
-   * hung off the outside, a flight projecting past a 24.00 m platform would push the bounding box
-   * off-centre and over the declared length at one end. */
-  {
-    const N = G.notch, ST = G.stair;
-    const parts: THREE.BufferGeometry[] = (G.platform as number[][]).map(
-      ([y0, y1, hx, hz]) => extrudeSlab(notchedRect(hx, hz, N.halfX, N.zInner), y0, y1));
-
-    // Five treads, each occupying only its own going. Stacked wedges all reaching z=12.00 would put
-    // five outer faces in one plane facing one way.
-    const run = (ST.z1 - ST.z0) / ST.steps, rise = ST.top / ST.steps;
-    for (let i = 0; i < ST.steps; i++) {
-      const z1 = ST.z1 - i * run, h = (i + 1) * rise;
-      parts.push(boxAt(0, h / 2, z1 - run / 2, ST.treadHalfX * 2, h, run));
+  /** Project UVs in METRES over a tile size, by each vertex's normal: vertical faces get (along,
+   *  height), horizontals get plan, and a roof slope gets (along, distance-up-the-slope) so a tile
+   *  course is not foreshortened on a 52-degree pitch. Every geometry here is non-indexed with
+   *  per-face normals, so a face never straddles two projections. */
+  function projUv(geo: THREE.BufferGeometry, tile: number): void {
+    const p = geo.getAttribute('position'), n = geo.getAttribute('normal');
+    const out = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) {
+      const nx = n.getX(i), ny = n.getY(i), nz = n.getZ(i);
+      const horiz = Math.sqrt(nx * nx + nz * nz);
+      let u: number, v: number;
+      if (horiz < 0.2) { u = p.getX(i); v = p.getZ(i); }
+      else {
+        u = Math.abs(nx) >= Math.abs(nz) ? p.getZ(i) : p.getX(i);
+        v = p.getY(i) / horiz;
+      }
+      out[i * 2] = u / tile; out[i * 2 + 1] = v / tile;
     }
+    geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
+  }
 
+  /** A quad strip between two horizontal rectangles [hx, hz, y] -- four trapezoids sharing their
+   *  hip edges. The winding is fixed per face against a hint direction, so the same builder makes
+   *  an outward-facing slope, a downward soffit and an inward closing wall. */
+  function ring(r0: number[], r1: number[], hint: (sx: number, sz: number) => number[]): THREE.BufferGeometry {
+    const corner = (r: number[], i: number) => [[r[0], r[2], -r[1]], [r[0], r[2], r[1]], [-r[0], r[2], r[1]], [-r[0], r[2], -r[1]]][i];
+    const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    const pos: number[] = [];
+    for (let s = 0; s < 4; s++) {
+      const a = corner(r0, s), b = corner(r0, (s + 1) % 4), c = corner(r1, (s + 1) % 4), d = corner(r1, s);
+      const h = hint(dirs[s][0], dirs[s][1]);
+      const tri = (p: number[], q: number[], r: number[]) => {
+        const ux = q[0] - p[0], uy = q[1] - p[1], uz = q[2] - p[2], vx = r[0] - p[0], vy = r[1] - p[1], vz = r[2] - p[2];
+        const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        if (nx * h[0] + ny * h[1] + nz * h[2] < 0) pos.push(...p, ...r, ...q); else pos.push(...p, ...q, ...r);
+      };
+      tri(a, b, c); tri(a, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+    g.computeVertexNormals();
+    return g;
+  }
+  const outUp = (sx: number, sz: number) => [sx, 1, sz];
+  const outward = (sx: number, sz: number) => [sx, 0, sz];
+  const inward = (sx: number, sz: number) => [-sx, 0, -sz];
+  const down = () => [0, -1, 0];
+
+  /** A roof layer's glaze band as a closed prism: the bottom 'band' metres of rise of the slope on
+   *  both sides, extruded along Z. */
+  /** A rectangular plan with a stair notch cut into BOTH short ends. */
+  function notchedRect2(hx: number, hz: number, nx: number, zInner: number): THREE.Shape {
+    const pts = [[hx, -hz], [hx, hz], [nx, hz], [nx, zInner], [-nx, zInner], [-nx, hz], [-hx, hz],
+                 [-hx, -hz], [-nx, -hz], [-nx, -zInner], [nx, -zInner], [nx, -hz]];
+    const shape = new THREE.Shape();
+    shape.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i][0], pts[i][1]);
+    shape.closePath();
+    return shape;
+  }
+  function bandProfile(hb: number, y0: number, pitch: number, band: number): THREE.Shape {
+    const hi = hb - band / pitch;
+    const s = new THREE.Shape();
+    s.moveTo(-hb, y0); s.lineTo(hb, y0); s.lineTo(hi, y0 + band); s.lineTo(-hi, y0 + band); s.closePath();
+    return s;
+  }
+  const FLOOR = G.floor as number;
+
+  /* ---------------------------------------------------------------- stone platform
+   * Bottom terrace, plinth, proud cap course, a four-tread stair at EACH end cut into the plinth
+   * plan as a notch, and the low parapet between the column bases: all one whitewashed stone and
+   * therefore ONE component and ONE draw call. */
+  {
+    const P = G.platform, N = G.notch, ST = G.stair, PA = G.parapet, C = G.column;
+    const parts: THREE.BufferGeometry[] = [];
+    const [a0, a1, ahx, ahz] = P.slab1;
+    parts.push(boxAt(0, (a0 + a1) / 2, 0, ahx * 2, a1 - a0, ahz * 2));
+    for (const [y0, y1, hx, hz] of [P.slab2, P.cap]) {
+      parts.push(extrudeSlab(notchedRect2(hx, hz, N.halfX, N.zInner), y0, y1));
+    }
+    // Treads occupy only their own going and start just inside the terrace slab, so no two
+    // undersides share the ground plane.
+    const run = (ST.z1 - ST.z0) / ST.steps, rise = (ST.top - ST.yBase) / ST.steps;
+    for (const zs of [-1, 1]) {
+      for (let i = 0; i < ST.steps; i++) {
+        const zOut = ST.z1 - i * run, top = ST.yBase + (i + 1) * rise, bot = ST.yBase - 0.01;
+        parts.push(boxAt(0, (top + bot) / 2, zs * (zOut - run / 2), ST.treadHalfX * 2, top - bot, run));
+      }
+    }
+    // Parapet: side runs the full colonnade length, end runs stopping at the side runs' inner
+    // faces and at the stair opening.
+    const ph = PA.y1 - PA.y0, py = (PA.y0 + PA.y1) / 2, inner = PA.outer - PA.thick;
+    const zEnd = C.insetZ + PA.thick / 2;
+    for (const xs of [-1, 1]) parts.push(boxAt(xs * (PA.outer - PA.thick / 2), py, 0, PA.thick, ph, zEnd * 2));
+    for (const zs of [-1, 1]) for (const xs of [-1, 1]) {
+      const x0 = PA.gapHalfX, x1 = inner;
+      parts.push(boxAt(xs * (x0 + x1) / 2, py - 0.01, zs * C.insetZ, x1 - x0, ph, PA.thick));
+    }
     const geo = mergeGeos(parts);
-    // Ground dirt and the black weathering streaks the plate shows on the plinth, as a per-vertex
-    // tint rather than a second material: the plate's bottom courses measure distinctly darker
-    // than the deck above them.
-    tintByHeight(geo, 0, 1.75, [0.80, 0.81, 0.79]);
-    add('platform', 'Stone platform and stair', geo, 'stone');
+    // Ground dirt and the black weathering the plate shows on the plinth, as a per-vertex tint on
+    // top of the stone tile: the plate's bottom courses measure distinctly darker than the deck.
+    tintByHeight(geo, 0, FLOOR, [0.80, 0.81, 0.79]);
+    projUv(geo, G.wear.stone.tile);
+    add('platform', 'Stone platform, stairs and parapet', geo, 'stone');
     colliders['platform'] = {
-      shape: 'box', localCenter: [0, 6.0, 0], halfExtents: [6.0, 6.0, 12.0],
+      shape: 'box', localCenter: [0, 8.5, 0], halfExtents: [7.0, 8.5, 12.0],
       notes: 'Asset declares collider "box". One convex proxy over the whole envelope; a level '
-           + 'builder collides with the hall, not with its individual columns.',
+           + 'builder collides with the hall, not with its thirty individual columns.',
     };
   }
 
-  /* ---------------------------------------------------------------- wall body
-   * A SOLID box inside the colonnade. The hall is an exterior shell only ever seen from outside,
-   * so there is no interior: an interior would cost draw calls, geometries and VRAM for something
-   * nobody sees, and a solid body also means the doorway needs no opening cut in it, which removes
-   * all four reveal faces and the z-fighting they cause. */
+  /* ---------------------------------------------------------------- hall body and door surrounds
+   * A SOLID box inside the colonnade -- an exterior shell only ever seen from outside, so there is
+   * no interior, and the doorways need no opening cut. Two stone door surrounds stand proud of
+   * the end faces; their feet are sunk into the cap course so no underside shares its plane. */
   {
-    const W = G.wall;
-    add('wall', 'Hall wall body', boxAt(0, (W.y0 + W.y1) / 2, 0, W.hx * 2, W.y1 - W.y0, W.hz * 2),
-      'stone');
+    const W = G.wall, D = G.door;
+    const parts = [boxAt(0, (W.y0 + W.y1) / 2, 0, W.hx * 2, W.y1 - W.y0, W.hz * 2)];
+    const fw = D.w + 2 * D.frame, fh = D.h + D.frame, fy0 = FLOOR - 0.10;
+    for (const zs of [-1, 1]) parts.push(boxAt(0, (fy0 + FLOOR + fh) / 2, zs * (W.hz + D.proud / 2), fw, FLOOR + fh - fy0, D.proud));
+    const geo = mergeGeos(parts);
+    projUv(geo, G.wear.stone.tile);
+    add('wall', 'Hall wall body and door surrounds', geo, 'stone');
   }
 
-  /* ---------------------------------------------------------------- doorway
-   * The one opening, on the +Z short end at the head of the stair. It stands 0.03 m PROUD of the
-   * wall face rather than recessed into it: the wall is a solid mass, so a panel sunk into it is
-   * inside the solid and invisible. What makes it read as a doorway is the surround standing in
-   * front of it, not the panel being sunk. */
+  /* ---------------------------------------------------------------- door and window leaves
+   * The plate's openings are dark timber leaves in white surrounds. Leaves are proud panels: the
+   * body is solid, so a sunk panel would be inside it and invisible. Doors are two panels merged;
+   * the sixteen window leaves are one InstancedMesh, their surrounds another. */
   {
-    const D = G.door;
-    add('doorway', 'Doorway', boxAt(0, D.y + D.h / 2, D.z + 0.03, D.w, D.h, 0.06), 'dark');
+    const W = G.wall, D = G.door, WI = G.window;
+    const leaves: THREE.BufferGeometry[] = [];
+    for (const zs of [-1, 1]) leaves.push(boxAt(0, FLOOR + D.h / 2, zs * (W.hz + D.proud + 0.03), D.w, D.h, 0.06));
+    add('doorway', 'Doorways', mergeGeos(leaves), 'dark');
+
+    const frame = new THREE.BoxGeometry(0.10, WI.h + 2 * WI.frame, WI.w + 2 * WI.frame);
+    projUv(frame, G.wear.stone.tile);
+    const leaf = new THREE.BoxGeometry(0.06, WI.h, WI.w);
+    const fm: THREE.Matrix4[] = [], lm: THREE.Matrix4[] = [];
+    const cy = FLOOR + WI.sill + WI.h / 2;
+    for (const xs of [-1, 1]) for (const bz of WI.bays as number[]) for (const zs of [-1, 1]) {
+      fm.push(new THREE.Matrix4().setPosition(xs * (W.hx + 0.05), cy, zs * bz));
+      lm.push(new THREE.Matrix4().setPosition(xs * (W.hx + 0.10 + 0.03), cy, zs * bz));
+    }
+    addInst('window-frames', 'Window surrounds', frame, 'stone', fm);
+    addInst('window-leaves', 'Window leaves', leaf, 'dark', lm);
   }
 
   /* ---------------------------------------------------------------- peristyle columns
-   * Twenty-four square red columns as ONE InstancedMesh: one geometry, one submission. As separate
-   * meshes they would be twenty-four draw calls of the twenty-four available, for twenty-four
-   * copies of one box. */
+   * Thirty square red columns as ONE InstancedMesh: eleven a side and four between the corners
+   * on each end, counted off the plate's right-hand elevation. Their heads are buried in the
+   * eaves beam, which is what carries the skirt. */
   {
     const C = G.column;
-    const unit = mergeGeos([
-      boxAt(0, 0, 0, C.hw * 2, C.y1 - C.y0, C.hw * 2),
-      // A slightly wider capital block at the head, where the plate shows the column meeting the
-      // eaves beam. Sunk 0.02 m into the shaft so no two top faces share a plane.
-      boxAt(0, (C.y1 - C.y0) / 2 - 0.13, 0, C.hw * 2.4, 0.26, C.hw * 2.4),
-    ]);
+    const unit = new THREE.BoxGeometry(C.hw * 2, C.y1 - C.y0, C.hw * 2);
+    projUv(unit, G.wear.red.tile);
     const cy = (C.y0 + C.y1) / 2;
     const mats: THREE.Matrix4[] = [];
     for (let i = 0; i < C.longCount; i++) {
@@ -799,157 +1045,186 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
     addInst('columns', 'Peristyle columns', unit, 'red', mats);
   }
 
-  /* ---------------------------------------------------------------- roof: tile fields
-   * Three nested TRUNCATED gable prisms, merged into one component. Each is the cross-section
-   * trapezoid of one tier extruded along the hall's length -- the roof is a prism, so a prism is
-   * what it should be built as, and a box decomposition of a 46-degree pitch is not a low-poly
-   * roof but a staircase. */
+  /* ---------------------------------------------------------------- roof
+   * Four registers, read off the proxy elevations:
+   *   skirt  -- a hipped portico ring over the colonnade, 37 degrees, eaves hw 6.8 at 6.4 m;
+   *   mid    -- one 45-degree layer the full 18 m, eaves hw 5.0 at 9.0 m;
+   *   top    -- the gable, telescoped: centre ridge 14.8 over 12 m, end ridges 14.0 over 3 m each,
+   *             one shared eaves line at hw 3.1 / 10.9 m.
+   * Each layer is three solids: a WHITE RISER (the vertical fascia band under the eaves, dropped
+   * below the layer beneath so it reads as the wall between roofs), a GLAZE BAND prism (the first
+   * 0.45 m of rise), and the TILE field above it. Consecutive solids meet as opposed faces. The
+   * skirt is built as quad rings instead of prisms because it hips round the ends. */
+  const SK = G.skirt, MD = G.mid, TP = G.top;
+  const skPitch = (SK.y1 - SK.y0) / (SK.hx - SK.hxI);
+  const mdPitch = (MD.y1 - MD.y0) / (MD.hx - MD.hxT);
   {
-    const T = G.tiers as number[][], B = G.band;
-    const orange: THREE.BufferGeometry[] = [];
-    const green: THREE.BufferGeometry[] = [];
-    for (const [y0, y1, hx, hz] of T) {
-      // The green eaves strip is the bottom B metres of the slope, as its own short trapezoid, and
-      // the orange field is everything above it. They meet at one height as OPPOSED faces -- the
-      // green's top and the orange's bottom -- which is how solids are meant to meet.
-      const ySplit = y0 + B;
-      green.push(extrudeAlongZ(tierProfile(hx, y0, ySplit, G.pitch), -hz, hz));
-      orange.push(extrudeAlongZ(tierProfile(hx - B / G.pitch, ySplit, y1, G.pitch), -hz + 0.01, hz - 0.01));
+    const tile: THREE.BufferGeometry[] = [], band: THREE.BufferGeometry[] = [], riser: THREE.BufferGeometry[] = [];
+    // skirt
+    const bi = SK.band / skPitch;
+    // The band's outer edge, the fascia strip's face and the soffit's outer edge are pulled
+    // apart by a few millimetres: an EDGE lying in a face's plane is not a z-fight, but the
+    // coplanar check compares bounding boxes and cannot tell the two apart.
+    const outer = [SK.hx + 0.003, SK.hz + 0.003, SK.y0], midR = [SK.hx - bi, SK.hz - bi, SK.y0 + SK.band], innerR = [SK.hxI, SK.hzI, SK.y1];
+    band.push(ring(outer, midR, outUp));
+    tile.push(ring(midR, innerR, outUp));
+    tile.push(ring([SK.hx - 0.005, SK.hz - 0.005, SK.soffit], [SK.hxI, SK.hzI, SK.soffit], down));
+    tile.push(ring([SK.hxI, SK.hzI, SK.soffit], [SK.hxI, SK.hzI, SK.y1], inward));
+    riser.push(ring([SK.hx, SK.hz, SK.soffit - 0.005], [SK.hx, SK.hz, SK.y0], outward));
+    // middle layer
+    riser.push(boxAt(0, (MD.drop + MD.y0) / 2, 0, MD.hx * 2, MD.y0 - MD.drop, MD.hz * 2));
+    band.push(extrudeAlongZ(bandProfile(MD.hx, MD.y0, mdPitch, MD.band), -MD.hz, MD.hz));
+    tile.push(extrudeAlongZ(tierProfile(MD.hx - MD.band / mdPitch, MD.y0 + MD.band, MD.y1, mdPitch), -MD.hz + 0.01, MD.hz - 0.01));
+    // top gable, three sections
+    riser.push(boxAt(0, (TP.drop + TP.y0) / 2, 0, TP.hx * 2, TP.y0 - TP.drop, TP.hz * 2));
+    for (const [z0, z1, ridge] of TP.sections as number[][]) {
+      const pitch = (ridge - TP.y0) / TP.hx;
+      band.push(extrudeAlongZ(bandProfile(TP.hx, TP.y0, pitch, TP.band), z0, z1));
+      tile.push(extrudeAlongZ(tierProfile(TP.hx - TP.band / pitch, TP.y0 + TP.band, ridge, pitch), z0 + 0.01, z1 - 0.01));
     }
-    add('roof-tile', 'Tile roof fields', mergeGeos(orange), 'tile');
-    add('roof-band', 'Green eaves bands', mergeGeos(green), 'green');
+    const tg = mergeGeos(tile), bg = mergeGeos(band), rg = mergeGeos(riser);
+    projUv(tg, G.wear.roof.tile); projUv(bg, G.wear.roof.tile); projUv(rg, G.wear.stone.tile);
+    add('roof-tile', 'Tile roof fields', tg, 'tile');
+    add('roof-band', 'Glazed eaves bands', bg, 'green');
+    add('roof-risers', 'Roof fascia bands', rg, 'stone');
   }
 
-  /* ---------------------------------------------------------------- roof: barge boards and ridge
-   * The white bargeboards that run up each gable rake, and the red ridge and eaves trim. Two
-   * components because they are two materials; each is one merged geometry.
-   *
-   * A board is a box ROTATED to the rake angle rather than a stair of small boxes: at 46 degrees a
-   * stepped approximation reads as serration from any distance at all. */
+  /* ---------------------------------------------------------------- gable walls, bargeboards, pediments
+   * Each gable end is a white slab standing 0.05 m proud of the risers behind it, following the
+   * stacked outline of the layers it closes; a bargeboard up every rake, offset outward so its
+   * lower edge sits on the roof edge; and the carved gilt pediment inside the top gable. The
+   * centre section's gables at z = +-6 are the same, and only their upper 0.8 m shows above the
+   * end sections' ridges -- which is exactly the telescoped step the plate shows. */
+  const GB = G.gable;
+  const gables: { z: number, ridge: number, full: boolean }[] = [];
+  for (const [z0, z1, ridge] of TP.sections as number[][]) {
+    const zo = Math.abs(z0) > Math.abs(z1) ? z0 : z1;
+    if (Math.abs(zo) > 8.9) gables.push({ z: Math.sign(zo) * 9.0, ridge, full: true });
+    else { gables.push({ z: 6.0, ridge, full: false }); gables.push({ z: -6.0, ridge, full: false }); }
+  }
   {
-    const T = G.tiers as number[][];
-    const white: THREE.BufferGeometry[] = [];
-    const red: THREE.BufferGeometry[] = [];
-    for (const [y0, y1, hx, hz] of T) {
-      const inset = (y1 - y0) / G.pitch;
-      const halfTop = Math.max(hx - inset, 0);
-      const run = hx - halfTop, rise = y1 - y0;
-      const len = Math.hypot(run, rise) + 0.10;
-      // atan2(RUN, RISE), not atan(pitch). rotateZ maps the box's +Y to (-sin, cos), so aiming it
-      // along the rake (-run, rise) needs sin = run/len -- the COMPLEMENT of the pitch angle. At
-      // this roof's 46 degrees the two are only three degrees apart, which is why the mistake
-      // survived here and was only caught on the 33-degree hall, where it stood the boards off
-      // the roof like scaffolding.
-      const ang = Math.atan2(run, rise);
-      for (const zs of [-1, 1]) {
+    const slabs: THREE.BufferGeometry[] = [], boards: THREE.BufferGeometry[] = [], reds: THREE.BufferGeometry[] = [];
+    const peds: THREE.BufferGeometry[] = [];
+    // The END gables carry ONE rake from the middle layer's eaves to the ridge: the plate's gilt
+    // pediment spans the whole gable, and the top layer's step shows only on the side slopes (the
+    // end sections' top pitch of 1.0 is the middle layer's 45 degrees continued). The centre
+    // section's gables at z = +-6 start at the top layer's own eaves.
+    const rakeOf = (g: { z: number, ridge: number, full: boolean }) =>
+      g.full ? [MD.hx + 0.05, MD.y0, MD.drop + 0.10] : [TP.hx + 0.05, TP.y0 + 0.02, TP.drop + 0.10];   // [hb, yb, yBottom]
+    for (const g of gables) {
+      const zs = Math.sign(g.z);
+      const [hb, yb, yBot] = rakeOf(g);
+      const s = new THREE.Shape();
+      s.moveTo(-hb, yBot); s.lineTo(hb, yBot); s.lineTo(hb, yb); s.lineTo(0, g.ridge + 0.01); s.lineTo(-hb, yb);
+      s.closePath();
+      const zIn = Math.abs(g.z) - 0.07, zOut = Math.abs(g.z) + GB.slab - 0.07;
+      slabs.push(extrudeAlongZ(s, zs > 0 ? zIn : -zOut, zs > 0 ? zOut : -zIn));
+      // bargeboards and their red outer strips, up each rake
+      {
+        const ht = 0, yt = g.ridge;
+        const run = hb - ht, rise = yt - yb, len = Math.hypot(run, rise) + 0.12;
+        // atan2(RUN, RISE): rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake
+        // needs the COMPLEMENT of the pitch angle -- three degrees off at 46 degrees, twenty-four
+        // at 33, which is how it survived a whole prop before the reclining hall caught it.
+        const ang = Math.atan2(run, rise);
+        const px = rise / len, py = run / len;   // unit perpendicular, outward-and-up
         for (const xs of [-1, 1]) {
-          // Bargeboard along one rake of one gable end.
-          const g = new THREE.BoxGeometry(0.20, len, 0.30);
-          g.rotateZ(xs * ang);
-          g.translate(xs * (hx + halfTop) / 2, (y0 + y1) / 2, zs * (hz + 0.14));
-          white.push(g);
-        }
-        // Red fascia along the same rake, sitting just outside the white board.
-        for (const xs of [-1, 1]) {
-          const g = new THREE.BoxGeometry(0.12, len, 0.14);
-          g.rotateZ(xs * ang);
-          g.translate(xs * (hx + halfTop) / 2, (y0 + y1) / 2, zs * (hz + 0.34));
-          red.push(g);
+          const cx = xs * (hb + ht) / 2, cy = (yb + yt) / 2;
+          const b = new THREE.BoxGeometry(GB.boardW, len, GB.boardT);
+          b.rotateZ(xs * ang);
+          b.translate(cx + xs * px * GB.boardW / 2, cy + py * GB.boardW / 2, zs * (zOut + GB.boardT / 2));
+          boards.push(b);
+          const r = new THREE.BoxGeometry(0.12, len, 0.16);
+          r.rotateZ(xs * ang);
+          r.translate(cx + xs * px * (GB.boardW + 0.06), cy + py * (GB.boardW + 0.06), zs * (zOut + 0.10));
+          reds.push(r);
         }
       }
-      // Red eaves fascia along both long sides, hung on the outside of the tile edge.
-      for (const xs of [-1, 1]) {
-        red.push(boxAt(xs * (hx + 0.08), y0 + 0.10, 0, 0.16, 0.30, hz * 2 + 0.30));
+      // pediment: the carved field, inset from the rakes, proud of the slab
+      const inset = 0.50, base = yb + 0.30;
+      const hw = hb - inset - 0.30 * hb / (g.ridge - yb), apex = g.ridge - inset * (g.ridge - yb) / hb - 0.15;
+      const t = new THREE.Shape();
+      t.moveTo(-hw, base); t.lineTo(hw, base); t.lineTo(0, apex); t.closePath();
+      const pg = extrudeAlongZ(t, zs > 0 ? zOut : -zOut - 0.18, zs > 0 ? zOut + 0.18 : -zOut);
+      // canvas UVs over the triangle's own box, apex at v = 1
+      const pp = pg.getAttribute('position'), uv = new Float32Array(pp.count * 2);
+      for (let i = 0; i < pp.count; i++) {
+        uv[i * 2] = (pp.getX(i) * zs + hw) / (2 * hw);
+        uv[i * 2 + 1] = (pp.getY(i) - base) / (apex - base);
       }
+      pg.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      peds.push(pg);
     }
-    // The ridge cap on the topmost tier.
-    const top = T[T.length - 1];
-    red.push(boxAt(0, top[0] + top[2] * G.pitch + 0.06, 0, 0.34, 0.24, top[3] * 2 + 0.40));
-    add('barge-boards', 'Bargeboards', mergeGeos(white), 'stone');
-    add('roof-trim', 'Ridge and eaves trim', mergeGeos(red), 'red');
+    const sg = mergeGeos(slabs); projUv(sg, G.wear.stone.tile);
+    add('gable-walls', 'Gable walls', sg, 'stone');
+    const bg = mergeGeos(boards); projUv(bg, G.wear.stone.tile);
+    add('barge-boards', 'Bargeboards', bg, 'stone');
+    add('pediment', 'Carved gable pediments', mergeGeos(peds), 'carved');
+
+    /* red trim: eaves fascias on every layer, the eaves beam on the columns, ridge caps, and the
+     * rake strips already collected. End runs butt against the side runs' inner faces, never
+     * overlapping them, so no two top faces share a plane. */
+    const fasciaRing = (hx: number, hz: number, y: number, h: number, t: number) => {
+      for (const xs of [-1, 1]) reds.push(boxAt(xs * (hx + t / 2), y, 0, t, h, hz * 2 + t * 2));
+      for (const zs of [-1, 1]) reds.push(boxAt(0, y - 0.01, zs * (hz + t / 2), hx * 2, h, t));
+    };
+    fasciaRing(SK.hx, SK.hz, SK.y0 - 0.20, 0.36, 0.14);
+    for (const xs of [-1, 1]) {
+      reds.push(boxAt(xs * (MD.hx + 0.07), MD.y0 - 0.20, 0, 0.14, 0.36, MD.hz * 2 + 0.10));
+      reds.push(boxAt(xs * (TP.hx + 0.07), TP.y0 - 0.20, 0, 0.14, 0.36, TP.hz * 2 + 0.10));
+    }
+    const C = G.column, B = G.beam;
+    const by = (B.y0 + B.y1) / 2, bh = B.y1 - B.y0;
+    for (const xs of [-1, 1]) reds.push(boxAt(xs * C.insetX, by, 0, B.thick, bh, C.insetZ * 2 + B.thick));
+    for (const zs of [-1, 1]) reds.push(boxAt(0, by - 0.01, zs * C.insetZ, C.insetX * 2 - B.thick, bh, B.thick));
+    for (const [z0, z1, ridge] of TP.sections as number[][]) {
+      reds.push(boxAt(0, ridge + 0.06, (z0 + z1) / 2, 0.36, 0.24, z1 - z0 + 0.24));
+    }
+    const rg = mergeGeos(reds); projUv(rg, G.wear.red.tile);
+    add('roof-trim', 'Eaves beam, fascias and ridge caps', rg, 'red');
   }
 
-  /* ---------------------------------------------------------------- gable pediments
-   * The carved gilt field in each gable of the topmost tier. Two of them, standing proud of the
-   * tier's end face so they overlap it rather than meeting it in its own plane. */
+  /* ---------------------------------------------------------------- chofa and rake-foot horns
+   * The curved finials -- the feature the registry notes say separates an ubosot from any other
+   * rectangular hall. One curled-horn geometry, sixteen instances: an apex chofa on every gable
+   * (2.35 m on the centre ridge, so its tip sets the declared 17.0 m), a horn at every rake foot
+   * of every layer, and one at each hip corner of the skirt. Each instance carries its own yaw,
+   * rise and hand; a NEGATIVE X scale mirrors the curl. */
   {
-    const T = G.tiers as number[][];
-    const [y0, , hx, hz] = T[T.length - 1];
-    const apex = y0 + hx * G.pitch;
-    const tri = new THREE.Shape();
-    tri.moveTo(-hx + 0.34, y0 + 0.20);
-    tri.lineTo(hx - 0.34, y0 + 0.20);
-    tri.lineTo(0, apex - 0.30);
-    tri.closePath();
-    const parts: THREE.BufferGeometry[] = [];
-    for (const zs of [-1, 1]) {
-      const g = new THREE.ExtrudeGeometry(tri, { depth: 0.22, bevelEnabled: false, curveSegments: 2 });
-      g.translate(0, 0, zs > 0 ? hz - 0.06 : -hz - 0.16);
-      g.computeVertexNormals();
-      parts.push(g);
-    }
-    add('pediment', 'Gable pediments', mergeGeos(parts), 'gilt');
-  }
-
-  /* ---------------------------------------------------------------- chofa horn finials
-   * The curved horns at every gable apex and every rake foot. The registry notes call them the
-   * feature that separates an ubosot from any other rectangular hall, so they are authored as real
-   * CURVES -- six tapering segments sampled along an arc -- and not as spikes: a straight spike at
-   * a ridge end reads as a lightning rod.
-   *
-   * Fourteen of them, as ONE InstancedMesh, each instance carrying its own yaw and its own mirror
-   * through a negative scale. */
-  {
-    const T = G.tiers as number[][];
-    const segs: THREE.BufferGeometry[] = [];
-    const n = 6;
-    const at = (u: number) => [0.08 + 0.36 * Math.sin(u * Math.PI * 0.46), 0.04 + 0.90 * u];
-    for (let j = 0; j < n; j++) {
-      const a = at(j / n), b = at((j + 1) / n);
-      const dx = b[0] - a[0], dy = b[1] - a[1];
-      const w = 0.19 * (1 - j / n) + 0.05;
-      const g = new THREE.BoxGeometry(w, Math.hypot(dx, dy) + 0.04, w);
-      g.rotateZ(Math.atan2(-dx, dy));
-      g.translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, 0);
-      segs.push(g);
-    }
-    const unit = mergeGeos(segs);
-
+    const H = G.horn;
+    const unit = curledHorn(0.46, 1.0, 0.20, 9);
     const mats: THREE.Matrix4[] = [];
-    const place = (x: number, y: number, z: number, yaw: number, mirror: number) =>
+    const place = (x: number, y: number, z: number, yaw: number, rise: number, mirror = 1) => {
+      const sxz = 0.55 + 0.32 * rise;
       mats.push(new THREE.Matrix4().compose(
         new THREE.Vector3(x, y, z),
         new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
-        new THREE.Vector3(mirror, 1, 1)));
-
-    // Two at the apex of the topmost gable, one facing each way along the ridge -- the pair that
-    // makes the roofline read.
-    const top = T[T.length - 1];
-    const apex = top[0] + top[2] * G.pitch;
-    place(0, apex - 0.50, top[3] + 0.10, 0, 1);
-    place(0, apex - 0.50, -top[3] - 0.10, Math.PI, 1);
-    // One at each rake foot of every tier: four corners per tier, mirrored so each curls outward.
-    for (const [y0, , hx, hz] of T) {
-      for (const zs of [-1, 1]) {
-        for (const xs of [-1, 1]) {
-          place(xs * (hx + 0.06), y0 + 0.16, zs * (hz + 0.16), zs > 0 ? 0 : Math.PI, xs);
-        }
+        new THREE.Vector3(sxz * mirror, rise, sxz)));
+    };
+    for (const g of gables) {
+      const zs = Math.sign(g.z), zf = Math.abs(g.z) + GB.slab + 0.16;
+      // apex, curling outward along the ridge
+      place(0, g.ridge - 0.30, zs * zf, zs > 0 ? -Math.PI / 2 : Math.PI / 2, g.full ? H.apexRise * (g.ridge > 14.5 ? 1 : 0.92) : H.apexRise);
+      // rake feet, curling outward across the building
+      const [fhb, fyb] = g.full ? [MD.hx, MD.y0] : [TP.hx, TP.y0];
+      for (const xs of [-1, 1]) {
+        place(xs * (fhb + 0.14), fyb + 0.02, zs * (zf - 0.02), xs > 0 ? 0 : Math.PI, H.footRise);
       }
     }
-    addInst('chofa', 'Chofa horn finials', unit, 'gilt', mats);
+    for (const zs of [-1, 1]) for (const xs of [-1, 1]) {
+      place(xs * (SK.hx - 0.28), SK.y0 + 0.02, zs * (SK.hz - 0.18), Math.atan2(-zs, xs), H.cornerRise);
+    }
+    addInst('chofa', 'Chofa and rake-foot horns', unit, 'gilt', mats);
   }
 
   /* ---------------------------------------------------------------- bai sema boundary stones
-   * Eight pointed stones on their own pedestals around the platform. The registry notes are
-   * explicit that these are what make the building an ORDINATION hall rather than a general
-   * assembly hall, so they belong to this asset and are not optional dressing. One instanced
-   * geometry, eight placements: four at the corners and four at the mid-points of the sides. */
+   * Eight pointed stones on pedestals, on the bottom terrace outside the plinth: four at the
+   * corners, two at the mid-sides, and one centred before each stair. The registry notes are
+   * explicit that these are what make the building an ORDINATION hall. */
   {
     const S = G.sema;
     const leaf = new THREE.Shape();
-    leaf.moveTo(-0.20, 0);
-    leaf.lineTo(0.20, 0);
-    leaf.lineTo(0.20, S.h * 0.52);
+    leaf.moveTo(-0.20, 0); leaf.lineTo(0.20, 0); leaf.lineTo(0.20, S.h * 0.52);
     leaf.quadraticCurveTo(0.20, S.h * 0.92, 0, S.h);
     leaf.quadraticCurveTo(-0.20, S.h * 0.92, -0.20, S.h * 0.52);
     leaf.closePath();
@@ -957,16 +1232,249 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
     blade.translate(0, 0.46, -0.065);
     blade.computeVertexNormals();
     const unit = mergeGeos([
-      boxAt(0, 0.10, 0, 0.72, 0.20, 0.72),
-      boxAt(0, 0.32, 0, 0.58, 0.26, 0.58),
+      boxAt(0, 0.10, 0, S.ped, 0.20, S.ped),
+      boxAt(0, 0.32, 0, S.ped * 0.8, 0.26, S.ped * 0.8),
       blade,
     ]);
+    projUv(unit, G.wear.stone.tile);
     const spots: number[][] = [
-      [-5.55, -11.55], [5.55, -11.55], [-5.55, 11.55], [5.55, 11.55],
-      [-5.55, 0], [5.55, 0], [0, -11.55], [0, 11.55],
+      [-6.56, -11.60], [6.56, -11.60], [-6.56, 11.60], [6.56, 11.60],
+      [-6.56, 0], [6.56, 0], [0, -11.65], [0, 11.65],
     ];
     addInst('sema', 'Bai sema boundary stones', unit, 'stone',
-      spots.map(([x, z]) => new THREE.Matrix4().setPosition(x, 0.55, z)));
+      spots.map(([x, z]) => new THREE.Matrix4().setPosition(x, G.platform.slab1[1], z)));
+  }
+
+  /* ---------------------------------------------------------------- weathering
+   * The plate is not a clean model: its whitewash is streaked grey-black down every face and
+   * grimed at the plinth, the red lacquer on the columns is PEELING to pale plaster in hand-sized
+   * flakes, the roof is laid in visible tile courses with grey-green growth in the field, and the
+   * pediment is dense gilt carving on red. The first build shipped flat paint and was returned.
+   *
+   * Delivered as four Canvas 2D tiles assigned AFTER material construction: the sculpt materials
+   * stay declared textureless (no five-canvas procedural set, no per-pixel JavaScript, and the
+   * measured albedo is NOT thrown away), and each tile is a few hundred Path2D fills at 512 px --
+   * single-digit milliseconds. Each is a MULTIPLIER on the material colour, bound as both map
+   * and bumpMap so a flake reads as lifted paint and a tile joint as a groove.
+   *
+   * The lacquer's flakes are BRIGHTER than the red, and a multiplier cannot brighten: the red
+   * material is re-based to the flake ENVELOPE and the clean red painted back as a ratio, on
+   * LINEAR components with the ratio raised to 2.2 because the sRGB tile is decoded before the
+   * multiply. Under Node -- bands.mjs and check-coplanar run this factory with no DOM -- there is
+   * no canvas and every material keeps its flat measured colour. */
+  {
+    const W = G.wear;
+    const hasDom = typeof document !== 'undefined' && typeof (document as any).createElement === 'function';
+    const size = Math.min(W.size, options.textureSize ?? W.size);
+    const css = (t: number[], a: number) =>
+      'rgba(' + Math.round(t[0] * 255) + ',' + Math.round(t[1] * 255) + ',' + Math.round(t[2] * 255) + ',' + a + ')';
+    const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    type Draw = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void) => void;
+
+    function makeTile(seed: number, draw: Draw): HTMLCanvasElement | null {
+      if (!hasDom) return null;
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = size;
+      const ctx = cv.getContext('2d');
+      if (!ctx) return null;
+      const S = size;
+      // Every mark is built once and drawn at nine wrapped offsets, so the tile is seamless under
+      // RepeatWrapping; shapes are precomputed before the nine fills or the copies differ.
+      const wrapped = (fn: () => void) => {
+        for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+          ctx.save(); ctx.translate(ox * S, oy * S); fn(); ctx.restore();
+        }
+      };
+      draw(ctx, rng(seed), S, wrapped);
+      return cv;
+    }
+    /** Soft low-frequency mottle through a canvas blur, so tone drifts cloud-like instead of
+     *  stopping at a hard edge -- hard blotches on stone read as camouflage paint. */
+    const cloud = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, rad: number, alpha: number, blurPx: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, rad * S * (0.5 + r()), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y, rr, a] of marks) { ctx.fillStyle = css(tone, a); ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill(); }
+        ctx.filter = 'none';
+      });
+    };
+    /** Water-borne washes: vertical gradient streaks fading DOWN the face (canvas +y is world -y
+     *  under flipY), blurred so they read as staining rather than stripes. */
+    const washes = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                    tone: number[], count: number, alpha: number, blurPx: number, wMin: number, wMax: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, S * (0.15 + 0.5 * r()), wMin + (wMax - wMin) * r(), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y0, len, w, a] of marks) {
+          const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+          g.addColorStop(0, css(tone, a)); g.addColorStop(0.4, css(tone, a * 0.6)); g.addColorStop(1, css(tone, 0));
+          ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+        }
+        ctx.filter = 'none';
+      });
+    };
+    /** Fine grain: near-transparent specks, so no area is a flat fill. */
+    const grain = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < count; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.4; p.rect(x, y, d, d); }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+    /** Peeling paint: a random WALK of overlapping discs filled once as a union (scattered discs
+     *  are polka dots; a flake is a worm), with a thin dark rim where the lifted edge shadows. */
+    const flakes = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                    tone: number[], rim: number[], count: number, rad: number) => {
+      for (let i = 0; i < count; i++) {
+        const p = new Path2D();
+        let cx = r() * S, cy = r() * S, a = r() * Math.PI * 2;
+        const R = rad * S * (0.4 + r()), n = 6 + Math.floor(r() * 12);
+        for (let k = 0; k < n; k++) {
+          a += (r() - 0.5) * 2.0;
+          cx += Math.cos(a) * R * 0.45; cy += Math.sin(a) * R * 0.45 * 1.4;
+          const rr = R * (0.35 + 0.5 * r());
+          p.moveTo(cx + rr, cy); p.arc(cx, cy, rr, 0, Math.PI * 2);
+        }
+        wrapped(() => {
+          ctx.lineWidth = 3; ctx.strokeStyle = css(rim, 0.7); ctx.stroke(p);
+          ctx.fillStyle = css(tone, 0.92); ctx.fill(p);
+        });
+      }
+    };
+    const bind = (mat: THREE.MeshStandardMaterial, cv: HTMLCanvasElement | null, bump: number, repeatUv = true) => {
+      if (!cv) return;
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = tex.wrapT = repeatUv ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
+      tex.colorSpace = THREE.SRGBColorSpace;   // the tile holds display-space ratios
+      tex.anisotropy = options.textureAnisotropy ?? 4;
+      mat.map = tex;
+      mat.bumpMap = tex;
+      mat.bumpScale = bump;
+      mat.needsUpdate = true;
+    };
+    const rebase = (m: THREE.MeshStandardMaterial, ratio: number[]) => {
+      if (!hasDom) return;
+      const c = m.color.clone();
+      m.color.setRGB(c.r / Math.pow(ratio[0], 2.2), c.g / Math.pow(ratio[1], 2.2), c.b / Math.pow(ratio[2], 2.2));
+    };
+
+    // Whitewashed stone: cloudy grey drift, grain, then the washes and streaks running down.
+    {
+      const P = W.stone;
+      bind(materials.stone, makeTile(20260826, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, S, S);
+        cloud(ctx, r, S, wrapped, P.mottle, 10, 0.18, 0.40, 16);
+        grain(ctx, r, S, wrapped, P.grain, 6000, 0.07);
+        washes(ctx, r, S, wrapped, P.wash, 9, 0.42, 9, 30, 110);
+        washes(ctx, r, S, wrapped, P.streak, 7, 0.45, 3, 5, 16);
+        cloud(ctx, r, S, wrapped, P.wash, 4, 0.10, 0.28, 20);
+      }), P.bump);
+    }
+    // Red lacquer: re-based to the plaster envelope, the clean red painted as its ratio, then the
+    // flakes, their rims, dark grime washes and grain.
+    {
+      const P = W.red;
+      rebase(materials.red, P.clean);
+      bind(materials.red, makeTile(8261403, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
+        cloud(ctx, r, S, wrapped, [P.clean[0] * 0.8, P.clean[1] * 0.8, P.clean[2] * 0.8], 10, 0.14, 0.5, 12);
+        washes(ctx, r, S, wrapped, P.grime, 18, 0.50, 6, 16, 70);
+        flakes(ctx, r, S, wrapped, P.flake, P.rim, 6, 0.028);
+        grain(ctx, r, S, wrapped, P.grain, 3000, 0.10);
+      }), P.bump);
+    }
+    // Roof: laid tile courses -- the tile is an exact whole number of courses and columns in
+    // running bond, each tile a scalloped rectangle in its own tone over a joint ground -- then
+    // grey-green growth and grime. One canvas serves both the terracotta field and the glaze
+    // band, since it is a multiplier and each keeps its own measured colour.
+    {
+      const P = W.roof;
+      const avg = [P.avg, P.avg, P.avg];
+      rebase(materials.tile, avg); rebase(materials.green, avg);
+      const cv = makeTile(11052011, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = css(P.joint, 1); ctx.fillRect(0, 0, S, S);
+        const cw = S / P.cols, rh = S / P.rows;
+        const tiles: { p: Path2D, t: number }[] = [];
+        for (let row = 0; row < P.rows; row++) {
+          const off = (row % 2) * cw / 2;
+          for (let col = 0; col < P.cols; col++) {
+            const x0 = col * cw + off + 1.5, x1 = x0 + cw - 3, y0 = row * rh + 1, y1 = y0 + rh - 2;
+            const p = new Path2D();
+            p.moveTo(x0, y0); p.lineTo(x1, y0); p.lineTo(x1, y1 - cw * 0.25);
+            p.quadraticCurveTo((x0 + x1) / 2, y1 + cw * 0.12, x0, y1 - cw * 0.25); p.closePath();
+            tiles.push({ p, t: P.loTone + (P.hiTone - P.loTone) * r() });
+          }
+        }
+        wrapped(() => { for (const t of tiles) { ctx.fillStyle = css([t.t, t.t * (0.97 + 0.03 * r()), t.t * 0.96], 1); ctx.fill(t.p); } });
+        cloud(ctx, r, S, wrapped, P.moss, 9, 0.12, 0.45, 10);
+        cloud(ctx, r, S, wrapped, P.grime, 6, 0.16, 0.35, 16);
+        grain(ctx, r, S, wrapped, P.joint, 2500, 0.08);
+      });
+      bind(materials.tile, cv, P.bump);
+      bind(materials.green, cv, P.bump);
+    }
+    // Pediment: the carved gilt field -- a central flame with tiers of mirrored kranok scrolls
+    // over red lacquer, drawn as stroked curves, plus the sawtooth border along both rakes. The
+    // canvas is absolute, clamped, and mapped over each pediment's own triangle, apex at the top.
+    {
+      const P = W.pediment;
+      bind(materials.carved, makeTile(7, (ctx, r, S) => {
+        ctx.fillStyle = P.ground; ctx.fillRect(0, 0, S, S);
+        const mid = S / 2;
+        const scroll = (x: number, y: number, w: number, h: number, dir: number, lw: number, col: string) => {
+          ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.bezierCurveTo(x + dir * w * 0.2, y - h * 0.6, x + dir * w * 0.9, y - h * 0.9, x + dir * w * 0.6, y - h * 0.35);
+          ctx.bezierCurveTo(x + dir * w * 0.45, y - h * 0.1, x + dir * w * 0.25, y - h * 0.2, x + dir * w * 0.35, y - h * 0.45);
+          ctx.stroke();
+        };
+        // tiers of scrolls climbing the triangle, each row narrower than the one below
+        for (let row = 0; row < 9; row++) {
+          const y = S * (0.97 - row * 0.095), half = mid * (0.94 - row * 0.10);
+          const n = 7 - Math.floor(row / 2);
+          for (let i = 0; i < n; i++) {
+            const x = half * (i + 0.5) / n, w = half / n * 1.1, h = S * 0.11;
+            for (const dir of [-1, 1]) {
+              scroll(mid + dir * x, y, w, h, dir, 6, P.gold);
+              scroll(mid + dir * x, y, w * 0.8, h * 0.8, dir, 2, P.goldHi);
+              scroll(mid + dir * (x + w * 0.5), y - h * 0.15, w * 0.5, h * 0.5, -dir, 2.5, P.goldLo);
+            }
+          }
+        }
+        // central flame: nested pointed leaves up the axis
+        for (let k = 0; k < 5; k++) {
+          const y0 = S * (0.98 - k * 0.19), h = S * 0.22, w = S * (0.11 - k * 0.012);
+          ctx.fillStyle = k % 2 ? P.goldHi : P.gold;
+          ctx.beginPath(); ctx.moveTo(mid, y0);
+          ctx.quadraticCurveTo(mid + w, y0 - h * 0.45, mid, y0 - h);
+          ctx.quadraticCurveTo(mid - w, y0 - h * 0.45, mid, y0); ctx.fill();
+          ctx.fillStyle = P.ground;
+          ctx.beginPath(); ctx.moveTo(mid, y0 - h * 0.12);
+          ctx.quadraticCurveTo(mid + w * 0.4, y0 - h * 0.45, mid, y0 - h * 0.82);
+          ctx.quadraticCurveTo(mid - w * 0.4, y0 - h * 0.45, mid, y0 - h * 0.12); ctx.fill();
+        }
+        // sawtooth borders along both rakes and the base
+        ctx.fillStyle = P.goldHi;
+        const teeth = 26;
+        for (let i = 0; i < teeth; i++) {
+          const t0 = i / teeth, t1 = (i + 0.5) / teeth, t2 = (i + 1) / teeth;
+          for (const dir of [-1, 1]) {
+            const px = (t: number) => mid + dir * mid * 0.97 * (1 - t), py = (t: number) => S * (0.03 + 0.95 * (1 - t));
+            ctx.beginPath(); ctx.moveTo(px(t0), py(t0)); ctx.lineTo(px(t1) + dir * 9, py(t1) - 9); ctx.lineTo(px(t2), py(t2)); ctx.fill();
+          }
+          ctx.beginPath(); ctx.moveTo(t0 * S, S * 0.985); ctx.lineTo(t1 * S, S * 0.955); ctx.lineTo(t2 * S, S * 0.985); ctx.fill();
+        }
+        // sparkle: small bright discs at the scroll eyes
+        ctx.fillStyle = P.goldHi;
+        for (let i = 0; i < 60; i++) {
+          const t = r(), y = S * (0.15 + 0.8 * t), x = mid + (r() - 0.5) * mid * 1.7 * (0.15 + 0.85 * t);
+          ctx.beginPath(); ctx.arc(x, y, 2 + 2 * r(), 0, Math.PI * 2); ctx.fill();
+        }
+      }), 0.02, false);
+    }
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;

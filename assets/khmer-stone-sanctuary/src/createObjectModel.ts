@@ -10,7 +10,7 @@ import * as THREE from 'three';
  * a second import.
  *
  * Envelope 12.00 x 9.00 x 12.00 m, origin base-center, +Y up.
- * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.
+ * Budget (hero2x): <=16000 triangles, <=16 draw calls, <=16 materials, <=16 unique geometries.
  *
  * This is one of thaikit's MONUMENTAL buildings, and unlike the shared retail module its form is
  * not a box: the recognisable feature is a curved or tiered profile that has to survive at the
@@ -39,25 +39,26 @@ const CONFIG = {
     "id": "khmer-stone-sanctuary",
     "name": "Khmer Stone Sanctuary",
     "exportName": "KhmerStoneSanctuary",
-    "envelope": "Envelope 12.00 x 9.00 x 12.00 m, origin base-center, +Y up.\n * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+    "envelope": "Envelope 12.00 x 9.00 x 12.00 m, origin base-center, +Y up.\n * Budget (hero2x): <=16000 triangles, <=16 draw calls, <=16 materials, <=16 unique geometries.",
     "materials": [
       {
         "id": "laterite",
-        "color": 7560014,
-        "roughness": 0.95,
+        "color": 7754816,
+        "roughness": 0.96,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "sandstone",
-        "color": 7561291,
-        "roughness": 0.93,
-        "metalness": 0
+        "color": 9139290,
+        "roughness": 0.94,
+        "metalness": 0,
+        "vertexColors": true
       },
       {
         "id": "pale",
         "color": 16777215,
-        "roughness": 0.92,
+        "roughness": 0.93,
         "metalness": 0
       },
       {
@@ -71,83 +72,583 @@ const CONFIG = {
       "platform": [
         [
           0,
-          0.45,
+          0.55,
           6
         ],
         [
-          0.45,
-          0.95,
-          5.6
+          0.55,
+          1.2,
+          5.75
         ]
       ],
       "notch": {
-        "halfZ": 1.6,
-        "xInner": 4.1
+        "halfZ": 1.55,
+        "xInner": 4.25
       },
       "stair": {
         "steps": 6,
-        "x0": 4.1,
+        "x0": 4.25,
         "x1": 6,
-        "top": 0.95,
-        "treadHalfZ": 1.45
+        "top": 1.2,
+        "treadHalfZ": 1.4
       },
       "parapet": {
-        "y0": 0.95,
-        "y1": 2.2,
-        "outer": 4.9,
-        "thick": 0.55
+        "y0": 1.2,
+        "y1": 2.05,
+        "outer": 5.4,
+        "thick": 0.6
+      },
+      "base": {
+        "y0": 1.2,
+        "y1": 1.55,
+        "a": 2.95,
+        "r": 0.48
       },
       "tower": {
-        "y0": 0.95,
-        "y1": 5,
-        "a": 3,
-        "r": 0.48
+        "y0": 1.55,
+        "y1": 4.85,
+        "a": 2.75,
+        "r": 0.46
       },
       "cornice": [
         [
-          5,
-          5.45,
-          3.38
+          4.85,
+          5.25,
+          3.05
         ],
         [
-          5.45,
-          5.65,
-          3.18
-        ]
-      ],
-      "roof": [
-        [
-          5.65,
-          6.5,
-          2.95
+          5.25,
+          5.75,
+          3.3
         ],
         [
-          6.5,
-          7.3,
-          2.72
+          5.75,
+          6.3,
+          3.5
         ]
       ],
-      "brokenTier": {
+      "tier1": {
+        "y0": 6.3,
+        "y1": 7.3,
+        "a": 2.95,
+        "aed": {
+          "w": 1.5,
+          "y0": 6.45,
+          "y1": 7.15,
+          "proud": 0.22
+        }
+      },
+      "tier1cap": {
         "y0": 7.3,
-        "y1": 8.05,
-        "a": 2.45
+        "y1": 7.55,
+        "a": 3.05,
+        "corner": 0.45
+      },
+      "tier2": {
+        "y0": 7.55,
+        "y1": 8.3,
+        "a": 2.45,
+        "aed": {
+          "w": 1.2,
+          "y0": 7.68,
+          "y1": 8.22,
+          "proud": 0.18
+        }
+      },
+      "brokenTier": {
+        "y0": 8.3,
+        "y1": 8.7,
+        "a": 2.4,
+        "t": 0.65
       },
       "door": {
         "w": 1.9,
-        "head": 3.7,
-        "depth": 0.46,
+        "head": 3.52,
         "jamb": 0.34,
-        "lintel": 0.36,
-        "sinkFrame": 0.75,
-        "sinkBlind": 0.82,
-        "sinkVoid": 0.88
+        "lintel": 0.4,
+        "col": {
+          "r": 0.15,
+          "ring": 0.19,
+          "x": 1.24
+        },
+        "sinkFrame": 1.02,
+        "sinkBlind": 1.09,
+        "sinkVoid": 1.15
       },
       "blocks": {
         "unit": [
-          0.92,
-          0.34,
-          0.56
+          1,
+          0.4,
+          0.6
+        ],
+        "list": [
+          [
+            -2.075,
+            8.85,
+            0.6,
+            1.62,
+            0,
+            0,
+            1.3,
+            0.75,
+            0.9,
+            1
+          ],
+          [
+            -2.075,
+            8.84,
+            -1.2,
+            1.51,
+            0,
+            0,
+            1.2,
+            0.7,
+            0.9,
+            2
+          ],
+          [
+            0.4,
+            8.83,
+            2.075,
+            0.04,
+            0,
+            0,
+            1.4,
+            0.65,
+            0.9,
+            0
+          ],
+          [
+            -1,
+            8.82,
+            2.075,
+            -0.05,
+            0,
+            0,
+            1.1,
+            0.6,
+            0.9,
+            1
+          ],
+          [
+            2.075,
+            8.72,
+            1.2,
+            1.6,
+            0,
+            0,
+            1,
+            0.65,
+            0.85,
+            2
+          ],
+          [
+            -0.8,
+            8.77,
+            -2.075,
+            0.03,
+            0,
+            0,
+            1.2,
+            0.6,
+            0.9,
+            3
+          ],
+          [
+            0.2,
+            8.46,
+            0.1,
+            0.5,
+            0,
+            0,
+            1.3,
+            0.8,
+            1.2,
+            2
+          ],
+          [
+            -0.7,
+            8.44,
+            -0.6,
+            1.2,
+            0,
+            0,
+            1,
+            0.7,
+            0.9,
+            1
+          ],
+          [
+            0.9,
+            8.43,
+            0.9,
+            -0.7,
+            0,
+            0,
+            0.9,
+            0.65,
+            0.8,
+            0
+          ],
+          [
+            0.3,
+            8.76,
+            0.1,
+            0.9,
+            0,
+            0,
+            0.9,
+            0.65,
+            0.8,
+            0
+          ],
+          [
+            2.75,
+            7.71,
+            -1.5,
+            1.67,
+            0,
+            0,
+            1.1,
+            0.8,
+            0.9,
+            2
+          ],
+          [
+            1.4,
+            7.69,
+            -2.75,
+            0.05,
+            0,
+            0,
+            1,
+            0.7,
+            0.9,
+            1
+          ],
+          [
+            4.1,
+            1.34,
+            -3.5,
+            0.35,
+            0,
+            0,
+            1,
+            0.6,
+            0.9,
+            0
+          ],
+          [
+            3.4,
+            1.36,
+            3.4,
+            0.4,
+            0,
+            0,
+            1.2,
+            0.8,
+            1,
+            0
+          ],
+          [
+            4.2,
+            1.34,
+            -2.3,
+            1,
+            0,
+            0,
+            1.1,
+            0.7,
+            0.9,
+            1
+          ],
+          [
+            -3.8,
+            1.36,
+            2.8,
+            -0.5,
+            0,
+            0,
+            1.3,
+            0.8,
+            1,
+            0
+          ],
+          [
+            -4.3,
+            1.33,
+            -3.4,
+            0.9,
+            0,
+            0,
+            1,
+            0.65,
+            0.9,
+            2
+          ],
+          [
+            3,
+            1.35,
+            -4.3,
+            0.2,
+            0,
+            0,
+            1.2,
+            0.75,
+            1,
+            3
+          ],
+          [
+            -2.6,
+            1.34,
+            -4.4,
+            2,
+            0,
+            0,
+            1,
+            0.7,
+            0.9,
+            1
+          ],
+          [
+            -0.3,
+            1.33,
+            4.3,
+            0.7,
+            0,
+            0,
+            1,
+            0.65,
+            0.9,
+            2
+          ],
+          [
+            -4.2,
+            1.35,
+            4.2,
+            1.4,
+            0,
+            0,
+            1.1,
+            0.75,
+            1,
+            0
+          ],
+          [
+            4.4,
+            1.34,
+            4,
+            -0.8,
+            0,
+            0,
+            1,
+            0.7,
+            1,
+            1
+          ],
+          [
+            -2,
+            1.36,
+            -3.2,
+            0.3,
+            0,
+            0,
+            0.9,
+            0.8,
+            0.8,
+            0
+          ],
+          [
+            -3.6,
+            1.63,
+            2.7,
+            0.1,
+            0,
+            0,
+            0.9,
+            0.7,
+            0.8,
+            2
+          ],
+          [
+            4.35,
+            1.6,
+            1.5,
+            0,
+            0,
+            0.55,
+            1,
+            0.9,
+            0.8,
+            0
+          ],
+          [
+            -4.4,
+            1.34,
+            -0.5,
+            1.6,
+            0,
+            0,
+            1,
+            0.7,
+            0.9,
+            1
+          ],
+          [
+            4.3,
+            1.33,
+            -4.4,
+            0.5,
+            0,
+            0,
+            0.9,
+            0.65,
+            0.8,
+            2
+          ],
+          [
+            1.8,
+            1.35,
+            -4.2,
+            -0.4,
+            0,
+            0,
+            1.1,
+            0.75,
+            1,
+            3
+          ],
+          [
+            -5.1,
+            2.19,
+            2.6,
+            1.62,
+            0,
+            0,
+            1,
+            0.7,
+            0.9,
+            2
+          ],
+          [
+            2.6,
+            2.19,
+            -5.1,
+            0.05,
+            0,
+            0,
+            1.1,
+            0.7,
+            0.9,
+            1
+          ]
+        ],
+        "tones": [
+          13605752,
+          12102551,
+          9139290,
+          6969928
         ]
+      },
+      "wear": {
+        "size": 512,
+        "laterite": {
+          "tile": 3.2,
+          "course": 0.32,
+          "block": 0.8,
+          "joint": 8,
+          "bump": 0.05,
+          "jointTone": [
+            0.55,
+            0.54,
+            0.54
+          ],
+          "pit": [
+            0.52,
+            0.52,
+            0.55
+          ],
+          "blockLo": 0.8,
+          "blockHi": 1,
+          "mottle": [
+            0.9,
+            0.9,
+            0.92
+          ]
+        },
+        "sandstone": {
+          "tile": 3.2,
+          "course": 0.4,
+          "block": 0.8,
+          "joint": 2,
+          "bump": 0.04,
+          "clean": [
+            0.79,
+            0.95,
+            1
+          ],
+          "side": [
+            1,
+            1,
+            1
+          ],
+          "crust": [
+            0.95,
+            0.9,
+            0.82
+          ],
+          "lichen": [
+            1,
+            1,
+            0.7
+          ],
+          "black": [
+            0.42,
+            0.5,
+            0.53
+          ],
+          "jointTone": [
+            0.66,
+            0.66,
+            0.66
+          ],
+          "pit": [
+            0.54,
+            0.65,
+            0.68
+          ],
+          "blockLo": 0.86,
+          "blockHi": 1,
+          "mottle": [
+            0.86,
+            0.86,
+            0.87
+          ],
+          "light": [
+            1,
+            1,
+            1
+          ]
+        },
+        "rubble": {
+          "tile": 1.2,
+          "bump": 0.03,
+          "pit": [
+            0.62,
+            0.62,
+            0.62
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.88
+          ],
+          "dark": [
+            0.7,
+            0.7,
+            0.7
+          ]
+        }
       }
     }
   } as any;
@@ -710,6 +1211,45 @@ export function createKhmerStoneSanctuaryModel(options: ProceduralModelOptions =
   const G = CONFIG.geometry as any;
 
 
+  /** Box-project UVs by each vertex's dominant normal axis, in metres over the tile size, so the
+   *  coursing tile lands at true block scale and lines up across every merged part. Every geometry
+   *  this is used on is non-indexed with per-face normals, so a face never straddles two
+   *  projections. */
+  function boxUv(geo: THREE.BufferGeometry, tile: number): void {
+    const p = geo.getAttribute('position'), n = geo.getAttribute('normal');
+    const out = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) {
+      const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
+      let u: number, v: number;
+      if (ay >= ax && ay >= az) { u = p.getX(i); v = p.getZ(i); }
+      else if (ax >= az) { u = p.getZ(i); v = p.getY(i); }
+      else { u = p.getX(i); v = p.getY(i); }
+      out[i * 2] = u / tile; out[i * 2 + 1] = v / tile;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
+  }
+  /** Four copies of a geometry authored on the +Z face, yawed a quarter turn each -- for parts
+   *  that belong INSIDE a merged component rather than in an instanced set. */
+  function quadMerge(geo: THREE.BufferGeometry): THREE.BufferGeometry[] {
+    return [0, 1, 2, 3].map((k) => { const g = geo.clone(); g.rotateY(k * Math.PI / 2); return g; });
+  }
+  /** Per-vertex tint by FACING: one display-space ratio for upward faces, another for the rest,
+   *  raised to 2.2 because vertex colours multiply in linear space. This is how the sandstone's
+   *  ledge-top lichen crust is delivered on one material: a repeating tile cannot tell a top
+   *  from a side, but a normal can. */
+  function tintByFacing(geo: THREE.BufferGeometry, side: number[], top: number[]): void {
+    const p = geo.getAttribute('position'), n = geo.getAttribute('normal');
+    const col = new Float32Array(p.count * 3);
+    const lin = (t: number[]) => t.map((v) => Math.pow(v, 2.2));
+    const S = lin(side), T = lin(top);
+    for (let i = 0; i < p.count; i++) {
+      const up = n.getY(i) > 0.7 ? T : S;
+      col[i * 3] = up[0]; col[i * 3 + 1] = up[1]; col[i * 3 + 2] = up[2];
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
+  const SAND = G.wear.sandstone;
+
   /* ---------------------------------------------------------------- laterite platform
    * Two slabs, a parapet enclosure and a six-tread stair, all the same red laterite and therefore
    * ONE component and ONE draw call.
@@ -723,8 +1263,9 @@ export function createKhmerStoneSanctuaryModel(options: ProceduralModelOptions =
     const parts: THREE.BufferGeometry[] = (G.platform as number[][]).map(
       ([y0, y1, a]) => extrudeSlab(notchedSquare(a, N.halfZ, N.xInner), y0, y1));
 
-    // Parapet enclosure. Side runs carry the full depth, front and back runs stop between them:
-    // run to full width, every corner would put two outer faces in one plane facing one way.
+    // Parapet enclosure, standing inside the platform edge on a ledge. Side runs carry the full
+    // depth, front and back runs stop between them: run to full width, every corner would put
+    // two outer faces in one plane facing one way.
     const bi = P.outer - P.thick, bc = P.outer - P.thick / 2, bh = P.y1 - P.y0, by = (P.y0 + P.y1) / 2;
     parts.push(boxAt(-bc, by, 0, P.thick, bh, P.outer * 2));
     parts.push(boxAt(0, by, bc, bi * 2, bh, P.thick));
@@ -744,8 +1285,9 @@ export function createKhmerStoneSanctuaryModel(options: ProceduralModelOptions =
     const geo = mergeGeos(parts);
     geo.rotateY(-Math.PI / 2);   // +X notch -> +Z, joining the stair to the doorway elevation
     // Ground dirt and the darker weathering of the lower courses, as a per-vertex tint rather than
-    // a second material: the plate's bottom courses measure distinctly darker than the parapet.
-    tintByHeight(geo, 0, 0.95, [0.78, 0.79, 0.80]);
+    // a second material: the plate's bottom courses measure distinctly darker than the enclosure.
+    tintByHeight(geo, 0, 1.20, [0.78, 0.79, 0.80]);
+    boxUv(geo, G.wear.laterite.tile);
     add('platform', 'Laterite platform, enclosure and stair', geo, 'laterite');
     colliders['platform'] = {
       shape: 'box', localCenter: [0, 4.5, 0], halfExtents: [6.0, 4.5, 6.0],
@@ -755,105 +1297,393 @@ export function createKhmerStoneSanctuaryModel(options: ProceduralModelOptions =
   }
 
   /* ---------------------------------------------------------------- sanctuary tower
-   * Body, two cornice bands and two intact roof tiers, all sandstone and all ONE component. The
-   * plan is redented, as a Khmer tower's is, and is one closed twenty-point polygon rather than
-   * crossed boxes -- correct shape, and no interior coincidence. */
+   * Base moulding, body, the three-band entablature, two tiers with their miniature aedicules and
+   * corner blocks, all sandstone and all ONE component. The plan is redented, as a Khmer tower's
+   * is, and each slab is one closed twenty-point polygon rather than crossed boxes -- correct
+   * shape, and no interior coincidence. Consecutive slabs meet top-to-bottom as opposed faces. */
   {
-    const T = G.tower;
-    const parts = [extrudeSlab(redentedShape(T.a, T.r), T.y0, T.y1)];
+    const T = G.tower, B = G.base, T1 = G.tier1, C1 = G.tier1cap, T2 = G.tier2;
+    const parts: THREE.BufferGeometry[] = [];
+    parts.push(extrudeSlab(redentedShape(B.a, B.r), B.y0, B.y1));
+    parts.push(extrudeSlab(redentedShape(T.a, T.r), T.y0, T.y1));
     for (const [y0, y1, a] of G.cornice as number[][]) {
-      parts.push(extrudeSlab(redentedShape(a, a * 0.16), y0, y1));
+      parts.push(extrudeSlab(redentedShape(a, a * 0.12), y0, y1));
     }
-    for (const [y0, y1, a] of G.roof as number[][]) {
-      parts.push(extrudeSlab(redentedShape(a, a * 0.16), y0, y1));
+    parts.push(extrudeSlab(redentedShape(T1.a, T1.a * 0.16), T1.y0, T1.y1));
+    parts.push(extrudeSlab(redentedShape(C1.a, C1.a * 0.16), C1.y0, C1.y1));
+    parts.push(extrudeSlab(redentedShape(T2.a, T2.a * 0.16), T2.y0, T2.y1));
+    // Each tier repeats the body's false door in miniature, one proud panel per face. On the
+    // plate these small aedicules are what make the roof read as a stack of shrines rather than
+    // as a stepped box.
+    for (const [tier, a] of [[T1, T1.a], [T2, T2.a]] as any[]) {
+      const d = tier.aed;
+      const panel = boxAt(0, (d.y0 + d.y1) / 2, a + d.proud / 2, d.w, d.y1 - d.y0, d.proud);
+      parts.push(...quadMerge(panel));
     }
-    add('tower', 'Sanctuary tower and roof tiers', mergeGeos(parts), 'sandstone');
+    // Corner blocks on the first tier's cap ledge -- acroteria -- on THREE corners. The fourth,
+    // (+X, -Z), is the one that has fallen; its blocks lie on the ledge and the cornice below.
+    {
+      // On the ledge that EXISTS: the cap plan is redented, so its geometric corner is cut back and
+      // a block put at (a, a) hangs over nothing -- which is exactly what the second build shipped,
+      // and it read as floating debris. The ledge at the corner is the square between the second
+      // tier's cut-back and the cap's, x and z both in [a-2r, a-r].
+      const c = C1.corner, o = C1.a - C1.a * 0.16 - c / 2 - 0.02;
+      for (const [sx, sz] of [[1, 1], [-1, 1], [-1, -1]]) {
+        parts.push(boxAt(sx * o, C1.y1 + c / 2, sz * o, c, c, c));
+      }
+    }
+    const geo = mergeGeos(parts);
+    boxUv(geo, SAND.tile);
+    tintByFacing(geo, SAND.side, SAND.crust);
+    add('tower', 'Sanctuary tower and roof tiers', geo, 'sandstone');
   }
 
   /* ---------------------------------------------------------------- collapsed top tier
-   * The top tier is authored as a PARTIAL ring with one corner gone. That is the whole difference
-   * between this asset and an intact tower, and the registry notes ask for it explicitly: a ruin
-   * is what an Isan sanctuary is actually found as. Three straight runs, deliberately not four. */
+   * The top tier is authored as a PARTIAL ring with the (+X, -Z) corner gone -- the same corner
+   * whose acroterion is missing below it and whose blocks lie on the ledges and the platform. That
+   * is the whole difference between this asset and an intact tower, and the registry notes ask
+   * for it explicitly. Four runs, two of them stopping short of the fallen corner, at two heights
+   * so the break reads as masonry giving way rather than a wall that was drawn shorter. */
   {
-    const B = G.brokenTier;
-    const h = B.y1 - B.y0, cy = (B.y0 + B.y1) / 2, t = 0.62;
-    add('broken-tier', 'Collapsed top tier', mergeGeos([
-      boxAt(-(B.a - t / 2), cy, 0, t, h, B.a * 2),
-      boxAt(0, cy, -(B.a - t / 2), (B.a - t) * 2, h, t),
-      // The +X run stops short: the corner it would have turned is the one that has fallen, and
-      // the blocks that made it are lying on the roof and the platform below.
-      boxAt(B.a - t / 2, cy, -B.a * 0.42, t, h * 0.72, B.a * 1.16),
-    ]), 'sandstone');
+    const R = G.brokenTier;
+    const h = R.y1 - R.y0, t = R.t, a = R.a, ai = a - t;
+    const geo = mergeGeos([
+      boxAt(-(a - t / 2), R.y0 + h / 2, 0, t, h, a * 2),                          // -X, full
+      boxAt(0, R.y0 + h / 2, a - t / 2, ai * 2, h, t),                            // +Z, between
+      boxAt(a - t / 2, R.y0 + h * 0.36, (a - 0.5) / 2, t, h * 0.72, a + 0.5),            // +X, stops at z=-0.5
+      boxAt((-ai + 0.9) / 2, R.y0 + h * 0.43, -(a - t / 2), ai + 0.9, h * 0.86, t),      // -Z, stops at x=+0.9
+    ]);
+    boxUv(geo, SAND.tile);
+    tintByFacing(geo, SAND.side, SAND.crust);
+    add('broken-tier', 'Collapsed top tier', geo, 'sandstone');
   }
 
   /* ---------------------------------------------------------------- door aedicules
-   * Four faces, each with a proud rectangular surround -- jambs and a lintel, as a Khmer door has;
-   * these are not arched, which is one of the things that separates this asset from the prang.
-   * One instanced unit, four rotations, one geometry. */
+   * Four faces, each with the Khmer door surround the plate shows: two RINGED COLONNETTES standing
+   * in front of plain jambs, a deep lintel over them, a tall pointed pediment above that, and a
+   * threshold step at the foot. The first build carried jambs and a lintel only, and the render
+   * read as a garage. One instanced unit, four rotations, one geometry. */
   {
     const T = G.tower, D = G.door;
     const face = T.a;
     const hw = D.w / 2 + D.jamb;
     const hF = D.head - D.sinkFrame;
-    const unit = mergeGeos([
-      boxAt(-(D.w / 2 + D.jamb / 2), D.sinkFrame + hF / 2, face + D.depth / 2 - 0.14, D.jamb, hF, D.depth),
-      boxAt(D.w / 2 + D.jamb / 2, D.sinkFrame + hF / 2, face + D.depth / 2 - 0.14, D.jamb, hF, D.depth),
-      boxAt(0, D.head + D.lintel / 2, face + D.depth / 2 - 0.14, hw * 2, D.lintel, D.depth),
-      // The pediment slab over the lintel -- in the plate it is the carved panel, and here it is
-      // the block that carries the door's silhouette above the opening.
-      boxAt(0, D.head + D.lintel + 0.22, face + D.depth / 2 - 0.20, hw * 1.86, 0.44, D.depth - 0.12),
-    ]);
+    const parts: THREE.BufferGeometry[] = [
+      // Jamb fronts at face+0.25, PROUD of the base moulding's face at face+0.20: level with it,
+      // the two planes coincide over the plinth's height and tear.
+      boxAt(-(D.w / 2 + D.jamb / 2), D.sinkFrame + hF / 2, face + 0.10, D.jamb, hF, 0.30),
+      boxAt(D.w / 2 + D.jamb / 2, D.sinkFrame + hF / 2, face + 0.10, D.jamb, hF, 0.30),
+      boxAt(0, D.head + D.lintel / 2, face + 0.10, hw * 2 + 0.28, D.lintel, 0.44),
+      // threshold step, running back INTO the base moulding so there is no slot between them
+      boxAt(0, 1.20 + 0.11, face + 0.55, D.w + 0.70, 0.22, 0.80),
+    ];
+    // Colonnettes: an engaged column each side with three ring collars, the plate's most
+    // recognisable door feature. Ten segments -- they are 0.30 m across on a 12 m prop.
+    for (const s of [-1, 1]) {
+      const x = s * D.col.x, z = face + 0.20;
+      parts.push(cylAt(x, D.sinkFrame + hF / 2, z, D.col.r, D.col.r, hF, 10));
+      for (const y of [1.55, 2.25, 2.95]) parts.push(cylAt(x, y, z, D.col.ring, D.col.ring, 0.10, 10));
+    }
+    // The pediment: a tall panel with a pointed head, standing on the lintel and stopping just
+    // under the first cornice band. In the plate it is the carved naga-frame over the door.
+    {
+      const y0 = D.head + D.lintel, w = hw + 0.14;
+      const sh = new THREE.Shape();
+      sh.moveTo(-w, y0); sh.lineTo(w, y0); sh.lineTo(w, y0 + 0.40);
+      sh.lineTo(w * 0.70, y0 + 0.58); sh.lineTo(w * 0.36, y0 + 0.78); sh.lineTo(0, y0 + 0.88);
+      sh.lineTo(-w * 0.36, y0 + 0.78); sh.lineTo(-w * 0.70, y0 + 0.58); sh.lineTo(-w, y0 + 0.40);
+      sh.closePath();
+      parts.push(extrudeAlongZ(sh, face - 0.05, face + 0.28));   // back buried in the wall, not floating off it
+    }
+    const unit = mergeGeos(parts);
+    boxUv(unit, SAND.tile);
+    tintByFacing(unit, SAND.side, SAND.crust);
     addInst('door-frames', 'Door aedicules', unit, 'sandstone', quad(0, 0));
 
     // THREE blind doors and ONE real opening. A Khmer sanctuary has a single cell and false doors
     // on the other three faces, so the set is deliberately not four identical things: quad()'s
     // first rotation is the identity, which puts index 0 on +Z, and that is the face left open.
-    // The blind panels stand 0.08 m PROUD of the wall between the jambs rather than sitting flush
-    // in it. Flush, they were the same stone at the same depth as the wall behind them and were
-    // simply invisible -- a false door has to read as a door, and with no colour difference to
-    // spend, the only thing left to say it with is depth.
+    // The blind panels stand 0.10 m PROUD of the wall between the jambs with a central rib a
+    // further 0.06 proud -- the closed leaves of a Khmer false door. Flush and the same stone as
+    // the wall, they were invisible: with no colour to spend, depth is what says 'door'.
     const hB = D.head - D.sinkBlind;
-    const blind = boxAt(0, D.sinkBlind + hB / 2, face + 0.05, D.w, hB, 0.10);
+    const blind = mergeGeos([
+      boxAt(0, D.sinkBlind + hB / 2, face + 0.05, D.w, hB, 0.10),
+      boxAt(0, D.sinkBlind + hB / 2 + 0.05, face + 0.09, 0.32, hB - 0.30, 0.14),
+    ]);
+    boxUv(blind, SAND.tile);
+    tintByFacing(blind, SAND.side, SAND.side);
     addInst('blind-doors', 'Blind door panels', blind, 'sandstone', quad(0, 0).slice(1));
 
     // The one real doorway. It sits 0.02 m PROUD of the wall face, not behind it: the tower is a
-    // SOLID mass, so a panel recessed into it is inside the solid and invisible, which is exactly
-    // what the first build shipped. The opening reads as an opening because the aedicule's jambs
-    // and lintel stand 0.32 m in front of it, not because the panel is sunk.
+    // SOLID mass, so a panel recessed into it is inside the solid and invisible. The opening
+    // reads as an opening because the colonnettes, jambs and lintel stand in front of it.
     const hV = D.head - D.sinkVoid;
-    add('doorway', 'Open doorway', boxAt(0, D.sinkVoid + hV / 2, face + 0.02, D.w, hV, 0.05), 'void');
+    add('doorway', 'Open doorway', boxAt(0, D.sinkVoid + hV / 2, face + 0.045, D.w, hV, 0.05), 'void');
   }
 
   /* ---------------------------------------------------------------- fallen blocks
-   * Twenty blocks scattered over the roof and the platform, as ONE InstancedMesh. Each instance
-   * carries its own rotation and its own non-uniform scale, all derived from its INDEX through a
-   * small integer hash -- never from a random source, so the model is byte-identical on every
-   * build. This is the component that makes the prop a ruin rather than a building. */
+   * Thirty blocks as ONE InstancedMesh: a heap on the truncated top, the slide of the fallen
+   * corner down the ledges, and the scatter across the platform. Every placement is AUTHORED --
+   * position, yaw, tilt, non-uniform scale and tone -- not hashed, so the top of the declared
+   * 9.00 m is a block put there on purpose. This is the component that makes the prop a ruin
+   * rather than a building. */
   {
     const U = G.blocks.unit as number[];
     const unit = boxAt(0, 0, 0, U[0], U[1], U[2]);
-    // Explicit placements: eight tumbled across the roof tiers, twelve on the platform and its
-    // enclosure. The highest block is what sets the declared 9.00 m, so it is placed on purpose.
-    const spots: number[][] = [
-      [-2.0, 8.19, 1.3], [1.9, 8.23, -1.6], [2.3, 8.11, 1.7], [-2.2, 8.31, -1.9],
-      [0.2, 8.53, 0.1], [1.3, 8.5656, -0.4], [-0.6, 8.7212, -0.8], [0.7, 8.70, 0.9],
-      [3.6, 1.14, 3.1], [4.4, 1.12, -2.2], [-3.9, 1.16, 2.6], [-4.6, 1.10, -3.3],
-      [3.1, 1.13, -4.2], [-2.9, 1.15, -4.6], [4.4, 2.43, 1.2], [-4.6, 2.41, -1.6],
-      [0.4, 1.12, 4.6], [-1.8, 1.14, 4.9], [5.0, 1.11, 4.4], [-4.4, 1.13, 4.3],
-    ];
-    let h = 2166136261;
-    const rnd = () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h >>> 0) % 10000) / 10000; };
-    const mats = spots.map(([x, y, z]) => new THREE.Matrix4().compose(
-      new THREE.Vector3(x, y, z),
-      new THREE.Quaternion().setFromEuler(new THREE.Euler(
-        (rnd() - 0.5) * 0.7, rnd() * Math.PI * 2, (rnd() - 0.5) * 0.7)),
-      new THREE.Vector3(0.7 + rnd() * 0.7, 0.8 + rnd() * 0.5, 0.7 + rnd() * 0.6)));
-    // Per-instance tones, all measured off blocks in the plate: pale sandstone, weathered grey,
-    // ochre and a dark brown. One material, one geometry, four stones -- and the material is white
-    // because setColorAt multiplies rather than replaces.
-    const tones = [0x9d8d7b, 0x6b5d4e, 0xb28665, 0x6c5843];
-    addInst('fallen-blocks', 'Fallen blocks', unit, 'pale', mats,
-      mats.map((_, i) => tones[(i * 3 + (i >> 2)) % tones.length]));
+    boxUv(unit, G.wear.rubble.tile);
+    const list = G.blocks.list as number[][];
+    // Each block is sunk a few DISTINCT millimetres into whatever it lies on. Level with it, its
+    // underside sits in the same plane as the tower's own base and its neighbours' undersides,
+    // all facing down -- eleven coplanar co-facing pairs in the first render of this build.
+    const mats = list.map(([x, y, z, yaw, tx, tz, sx, sy, sz], i) => new THREE.Matrix4().compose(
+      new THREE.Vector3(x, y - 0.004 * (1 + (i % 9)), z),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(tx, yaw, tz)),
+      new THREE.Vector3(sx, sy, sz)));
+    // Per-instance tones, all measured off blocks in the plate: the peach of a freshly broken
+    // face (219,165,128), a cream weathered face, the tower's own stone, and a dark one. One
+    // material, one geometry, four stones -- and the material is white because setColorAt
+    // multiplies rather than replaces.
+    const tones = G.blocks.tones as number[];
+    addInst('fallen-blocks', 'Fallen blocks', unit, 'pale', mats, list.map((b) => tones[b[9]]));
+  }
+
+  /* ---------------------------------------------------------------- weathering
+   * The plate's two stones are not flat. The laterite is laid in visible courses with wide dark
+   * joints and its face is peppered with vesicular pits; the sandstone is tight ashlar streaked
+   * BLACK down the pilasters and crusted ORANGE with lichen on every ledge. The first build left
+   * all of it out and read as a clay model.
+   *
+   * It is delivered as three Canvas 2D tiles assigned AFTER material construction, the chedi's
+   * route: the sculpt materials stay declared textureless (no five-canvas procedural set, no
+   * per-pixel JavaScript, and the measured albedo is NOT thrown away), and each tile is a few
+   * hundred Path2D fills at 512 px -- single-digit milliseconds. Each is a MULTIPLIER on the
+   * material colour, bound as both map and bumpMap so a joint reads as a groove and a lichen crust
+   * as a raised patch rather than as paint.
+   *
+   * The sandstone's lichen is BRIGHTER than the clean stone in red, and a multiplier cannot
+   * brighten. So the material is re-based here to the lichen ENVELOPE -- per-channel max of the
+   * clean stone and the lichen -- and the clean stone is painted as (0.79, 0.95, 1.0) of it. The
+   * division is done on LINEAR components with the ratio raised to 2.2, because the tile is
+   * sRGB and the shader decodes it before multiplying. Under Node -- bands.mjs and check-coplanar
+   * both run this factory without a DOM -- there is no canvas, no re-basing, and the material
+   * simply keeps its flat measured colour. */
+  {
+    const W = G.wear;
+    const hasDom = typeof document !== 'undefined' && typeof (document as any).createElement === 'function';
+    const size = Math.min(W.size, options.textureSize ?? W.size);
+    const css = (t: number[], a: number) =>
+      'rgba(' + Math.round(t[0] * 255) + ',' + Math.round(t[1] * 255) + ',' + Math.round(t[2] * 255) + ',' + a + ')';
+    const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+    function makeTile(seed: number, draw: (ctx: CanvasRenderingContext2D, r: () => number, S: number,
+                                           wrapped: (fn: () => void) => void) => void): HTMLCanvasElement | null {
+      if (!hasDom) return null;
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = size;
+      const ctx = cv.getContext('2d');
+      if (!ctx) return null;
+      const S = size;
+      // Every mark is built once and drawn at nine wrapped offsets, so the tile is seamless under
+      // RepeatWrapping; the shapes are precomputed before the nine fills or the copies differ.
+      const wrapped = (fn: () => void) => {
+        for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+          ctx.save(); ctx.translate(ox * S, oy * S); fn(); ctx.restore();
+        }
+      };
+      draw(ctx, rng(seed), S, wrapped);
+      return cv;
+    }
+
+    /** Ashlar coursing: the tile is an exact whole number of courses and blocks, laid in running
+     *  bond, drawn as jittered quadrilaterals over a joint-coloured ground so the joints come out
+     *  irregular for free. Each block carries its own tone from the measured spread. */
+    const coursing = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                      P: any) => {
+      const rows = Math.round(P.tile / P.course), cols = Math.round(P.tile / P.block);
+      const ch = S / rows, bw = S / cols, j = P.joint / 2;
+      ctx.fillStyle = css(P.jointTone, 1); ctx.fillRect(0, 0, S, S);
+      const blocks: { p: Path2D, tone: number[] }[] = [];
+      for (let row = 0; row < rows; row++) {
+        const off = (row % 2) * bw / 2;
+        for (let col = 0; col < cols; col++) {
+          const x0 = col * bw + off + j, x1 = x0 + bw - 2 * j, y0 = row * ch + j, y1 = y0 + ch - 2 * j;
+          const q = () => (r() - 0.5) * P.joint * 0.9;
+          const p = new Path2D();
+          p.moveTo(x0 + q(), y0 + q()); p.lineTo(x1 + q(), y0 + q());
+          p.lineTo(x1 + q(), y1 + q()); p.lineTo(x0 + q(), y1 + q()); p.closePath();
+          const t = P.blockLo + (P.blockHi - P.blockLo) * r();
+          blocks.push({ p, tone: [t, t * (0.97 + 0.03 * r()), t * (0.95 + 0.05 * r())] });
+        }
+      }
+      wrapped(() => { for (const b of blocks) { ctx.fillStyle = css(b.tone, 1); ctx.fill(b.p); } });
+    };
+    /** An irregular patch: a random WALK of overlapping discs, filled once as a union. Discs
+     *  scattered about a centre render as polka dots; a stain is a worm, not a spot. */
+    const blotch = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                    tone: number[], count: number, rad: number, alpha: number, vertical = 0) => {
+      for (let i = 0; i < count; i++) {
+        const halo = new Path2D(), core = new Path2D();
+        let cx = r() * S, cy = r() * S, a = r() * Math.PI * 2;
+        const R = rad * S * (0.5 + r()), n = 8 + Math.floor(r() * 16);
+        for (let k = 0; k < n; k++) {
+          a += (r() - 0.5) * 2.2;
+          // a vertical bias turns the walk into a streak running down the face
+          cx += Math.cos(a) * R * 0.4 * (1 - vertical); cy += Math.abs(Math.sin(a)) * R * 0.4 * (1 + vertical) ;
+          const rr = R * (0.35 + 0.5 * r());
+          halo.moveTo(cx + rr, cy); halo.arc(cx, cy, rr, 0, Math.PI * 2);
+          core.moveTo(cx + rr * 0.6, cy); core.arc(cx, cy, rr * 0.6, 0, Math.PI * 2);
+        }
+        const al = alpha * (0.6 + 0.4 * r());
+        wrapped(() => {
+          ctx.fillStyle = css(tone, al * 0.55); ctx.fill(halo);
+          ctx.fillStyle = css(tone, al * 0.45); ctx.fill(core);
+        });
+      }
+    };
+    /** Pits: small dark ellipses, the vesicles of laterite and the pocking of old sandstone. */
+    const pits = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                  tone: number[], count: number, maxPx: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < count; i++) {
+        const x = r() * S, y = r() * S, rx = 1 + r() * maxPx, ry = rx * (0.6 + 0.6 * r());
+        p.moveTo(x + rx, y); p.ellipse(x, y, rx, ry, r() * Math.PI, 0, Math.PI * 2);
+      }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+    /** Fine grain: a scatter of near-transparent specks, so a flat area is not flat. */
+    const grain = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < count; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.4; p.rect(x, y, d, d); }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+
+    /** Black weathering streaks: vertical bands starting hard under a ledge and fading DOWN the
+     *  face. v is world height on every mapping here and the canvas is flipped into UV space, so
+     *  down the canvas is down the prop. */
+    const streaks = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                     tone: number[], count: number, alpha: number) => {
+      for (let i = 0; i < count; i++) {
+        const x = r() * S, y0 = r() * S, len = S * (0.15 + 0.45 * r()), w = 12 + 44 * r();
+        const a = alpha * (0.5 + 0.5 * r());
+        wrapped(() => {
+          const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+          g.addColorStop(0, css(tone, a)); g.addColorStop(0.35, css(tone, a * 0.7)); g.addColorStop(1, css(tone, 0));
+          ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+        });
+      }
+    };
+
+    /** Soft low-frequency mottle: a few large discs drawn through a canvas blur, so the stone's
+     *  tone drifts cloud-like over half a metre instead of stopping at a hard edge. Hard-edged
+     *  random-walk blotches on this prop read as CAMOUFLAGE PAINT, which is the note that sent
+     *  the second build back. */
+    const cloud = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], count: number, rad: number, alpha: number, blurPx: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, rad * S * (0.5 + r()), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y, rr, a] of marks) { ctx.fillStyle = css(tone, a); ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill(); }
+        ctx.filter = 'none';
+      });
+    };
+    /** Soft weathering washes: vertical gradient streaks fading DOWN the face, blurred so they
+     *  read as water-borne staining rather than as stripes. */
+    const washes = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                    tone: number[], count: number, alpha: number, blurPx: number) => {
+      const marks: number[][] = [];
+      for (let i = 0; i < count; i++) marks.push([r() * S, r() * S, S * (0.15 + 0.45 * r()), 18 + 60 * r(), alpha * (0.5 + 0.5 * r())]);
+      wrapped(() => {
+        ctx.filter = 'blur(' + blurPx + 'px)';
+        for (const [x, y0, len, w, a] of marks) {
+          const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+          g.addColorStop(0, css(tone, a)); g.addColorStop(0.4, css(tone, a * 0.6)); g.addColorStop(1, css(tone, 0));
+          ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+        }
+        ctx.filter = 'none';
+      });
+    };
+    /** Lichen as CRUST: clusters of tiny specks, the way it grows, not a painted patch. At 6 mm
+     *  a pixel the specks are 1-2 cm and blend to an orange tinge at prop distance. */
+    const crust = (ctx: CanvasRenderingContext2D, r: () => number, S: number, wrapped: (fn: () => void) => void,
+                   tone: number[], clusters: number, perCluster: number, rad: number, alpha: number) => {
+      const p = new Path2D();
+      for (let i = 0; i < clusters; i++) {
+        const cx = r() * S, cy = r() * S, R = rad * S * (0.4 + r());
+        for (let k = 0; k < perCluster; k++) {
+          const a = r() * Math.PI * 2, d = R * Math.sqrt(r());
+          const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.7, rr = 1 + 1.6 * r();
+          p.moveTo(x + rr, y); p.arc(x, y, rr, 0, Math.PI * 2);
+        }
+      }
+      wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
+    };
+
+    const bind = (mat: THREE.MeshStandardMaterial, cv: HTMLCanvasElement | null, bump: number) => {
+      if (!cv) return;
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.colorSpace = THREE.SRGBColorSpace;   // the tile holds display-space ratios
+      tex.anisotropy = options.textureAnisotropy ?? 4;
+      mat.map = tex;
+      mat.bumpMap = tex;
+      mat.bumpScale = bump;
+      mat.needsUpdate = true;
+    };
+
+    // Laterite: coursing with wide joints, then the pitting that is the stone's whole character.
+    {
+      const P = W.laterite;
+      bind(materials.laterite, makeTile(20260826, (ctx, r, S, wrapped) => {
+        coursing(ctx, r, S, wrapped, P);
+        cloud(ctx, r, S, wrapped, P.mottle, 12, 0.14, 0.6, 12);
+        pits(ctx, r, S, wrapped, P.pit, 1100, 4.5, 0.8);
+        grain(ctx, r, S, wrapped, P.pit, 1800, 0.10);
+      }), P.bump);
+    }
+    // Sandstone: tight ashlar, black streaks running down, lichen crust, light pocking.
+    {
+      const P = W.sandstone;
+      const m = materials.sandstone;
+      if (hasDom) {
+        const c = m.color.clone();
+        m.color.setRGB(c.r / Math.pow(P.clean[0], 2.2), c.g / Math.pow(P.clean[1], 2.2), c.b / Math.pow(P.clean[2], 2.2));
+      }
+      // Coursing and mottle are painted in CLEAN-stone terms, then the whole ground is scaled to
+      // the clean ratio of the envelope with one multiply fill; everything after that -- the
+      // black, the lichen, the pits -- is a ratio of E, which is how the lichen reaches an orange
+      // BRIGHTER in red than the stone it sits on.
+      bind(m, makeTile(8261403, (ctx, r, S, wrapped) => {
+        coursing(ctx, r, S, wrapped, P);
+        // Stone first: cloudy tonal drift, light and dark, then grain so no block is a flat fill.
+        cloud(ctx, r, S, wrapped, P.mottle, 10, 0.16, 0.5, 14);
+        cloud(ctx, r, S, wrapped, P.light, 8, 0.14, 0.4, 14);
+        grain(ctx, r, S, wrapped, P.jointTone, 5000, 0.07);
+        grain(ctx, r, S, wrapped, P.light, 2500, 0.07);
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
+        ctx.globalCompositeOperation = 'source-over';
+        // Weathering: soft washes running down, a few broad dark clouds under them, then pocking
+        // and the lichen as speck clusters. Nothing here has a hard edge except the pits.
+        washes(ctx, r, S, wrapped, P.black, 18, 0.55, 5);
+        cloud(ctx, r, S, wrapped, P.black, 6, 0.09, 0.35, 16);
+        pits(ctx, r, S, wrapped, P.pit, 420, 2.2, 0.5);
+        crust(ctx, r, S, wrapped, P.lichen, 26, 34, 0.035, 0.55);
+      }), P.bump);
+    }
+    // Rubble: no coursing -- each instance is one block -- just mottle, pocking and a dark side.
+    {
+      const P = W.rubble;
+      bind(materials.pale, makeTile(11052011, (ctx, r, S, wrapped) => {
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, S, S);
+        blotch(ctx, r, S, wrapped, P.mottle, 16, 0.12, 0.7);
+        blotch(ctx, r, S, wrapped, P.dark, 6, 0.06, 0.6);
+        pits(ctx, r, S, wrapped, P.pit, 260, 2.5, 0.6);
+        grain(ctx, r, S, wrapped, P.dark, 1200, 0.10);
+      }), P.bump);
+    }
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
