@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Bounds, Center, Grid, OrbitControls, Stage, useBounds } from '@react-three/drei';
+import { Bounds, Center, Grid, OrbitControls, Stage, TransformControls, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
 
 /**
@@ -169,7 +169,7 @@ const names = (list) => entries(list).map(([name]) => name);
 
 /** Names on `sculptRuntime` that no object in the scene answers to. */
 const unplaced = (runtime) =>
-  ['pivots', 'sockets', 'colliders', 'groups'].reduce(
+  ['pivots', 'sockets', 'groups'].reduce(
     (total, key) => total + ((runtime.declared?.[key] ?? 0) - (runtime[key]?.length ?? 0)),
     0,
   );
@@ -189,7 +189,7 @@ const unplaced = (runtime) =>
  */
 function useRuntimeMarkers(scene) {
   return useMemo(() => {
-    const empty = { pivots: [], sockets: [], colliders: [], groups: [] };
+    const empty = { pivots: [], sockets: [], groups: [] };
     if (!scene) return empty;
     const rt = scene.userData?.sculptRuntime;
     if (!rt) return empty;
@@ -210,17 +210,6 @@ function useRuntimeMarkers(scene) {
       return out;
     };
 
-    // A collider's offset and dimensions are in the OWNING COMPONENT's local
-    // frame, so the proxy is parented to that node rather than positioned in
-    // world space -- otherwise it detaches the moment anything is animated.
-    const colliders = [];
-    for (const [name, value] of entries(rt.colliders)) {
-      const shape = value?.isObject3D ? value.userData?.collider : value;
-      const node = rt.byId?.nodes?.[name] ?? scene.getObjectByName(name);
-      if (!node || !shape || typeof shape !== 'object') continue;
-      colliders.push({ name, node, shape });
-    }
-
     // Members may be the Object3Ds themselves, or component ids to resolve.
     const groups = [];
     for (const [name, value] of entries(rt.destructionGroups)) {
@@ -234,12 +223,10 @@ function useRuntimeMarkers(scene) {
     return {
       pivots: resolve(rt.pivots),
       sockets: resolve(rt.sockets),
-      colliders,
       groups,
       declared: {
         pivots: names(rt.pivots).length,
         sockets: names(rt.sockets).length,
-        colliders: names(rt.colliders).length,
         groups: names(rt.destructionGroups).length,
       },
     };
@@ -297,84 +284,105 @@ function MarkerGizmos({ markers, size, kind }) {
 }
 
 /**
- * The physics proxy for one component, drawn as the shape the engine will use.
+ * The physics proxy for one part, drawn as the shape the engine will test.
  *
- * A collider is not the mesh: it is the cheap convex stand-in a physics engine
- * actually tests against, and the gap between the two is where a prop feels
- * wrong to walk into. Seeing them is the only way to notice a drum whose
- * collider is a box, or a bung cap whose collider swallows the whole lid.
+ * A collider is not the mesh: it is the cheap stand-in a physics engine actually
+ * tests against, and the gap between the two is where a prop feels wrong to walk
+ * into. Seeing them is the only way to notice a canopy with no box under its top
+ * face, or a doorway filled solid.
  *
- * Built from the collider record's own fields, in the owning component's local
- * frame. `scale` is the ONLY sizing field the sculpt spec guarantees, and it is
- * HALF-EXTENTS: `[radius, halfHeight, radius]` for the round types, half width /
- * height / depth for a box. The drum declares `[0.287, 0.405, 0.287]` for a
- * 0.58 m wide, 0.81 m tall barrel. `radius`/`height` are read first only because
- * a hand-written record may spell it that way; nothing in the pipeline emits
- * them, so reading ONLY those meant every generated collider fell through to the
- * marker-size fallback and drew a token cylinder a quarter of the real radius --
- * which reads as "this prop's physics proxy is far too small" when it means "the
- * viewer never found the size".
+ * The geometry is built at UNIT size and sized by the mesh's own scale, which is
+ * what makes the gizmo work: TransformControls in scale mode writes object.scale,
+ * so a unit box scaled to [w, h, d] hands back the extents directly instead of a
+ * multiplier over a size baked into the geometry.
  */
-function colliderGeometry(shape, fallbackSize) {
-  const type = String(shape.type ?? 'box').toLowerCase();
-  const declared = shape.scale ?? shape.size;
-  const half = Array.isArray(declared) ? declared.map((n) => Number(n)) : [];
-  // Per axis, not all-or-nothing: a record that sizes two axes and leaves the
-  // third at zero should keep the two it measured.
-  const halfAt = (i) => (Number.isFinite(half[i]) && half[i] > 0 ? half[i] : fallbackSize * 0.5);
-
-  const r = Number(shape.radius) || Math.max(halfAt(0), halfAt(2));
-  const h = Number(shape.height) || halfAt(1) * 2;
-
-  if (type === 'sphere') return new THREE.SphereGeometry(r, 16, 12);
-  if (type === 'cylinder') return new THREE.CylinderGeometry(r, r, h, 20, 1);
-  if (type === 'capsule') return new THREE.CapsuleGeometry(r, Math.max(0.001, h - 2 * r), 6, 12);
-  // `convex` and `mesh` have no cheap exact form here. A box on the declared
-  // extents is drawn rather than nothing, because "no proxy shown" and "proxy is
-  // a hull we cannot draw" must not look identical.
-  return new THREE.BoxGeometry(halfAt(0) * 2, halfAt(1) * 2, halfAt(2) * 2);
+function unitGeometry(type) {
+  if (type === 'sphere') return new THREE.SphereGeometry(0.5, 16, 12);
+  if (type === 'cylinder' || type === 'capsule') return new THREE.CylinderGeometry(0.5, 0.5, 1, 20, 1);
+  return new THREE.BoxGeometry(1, 1, 1);
 }
 
-function ColliderProxies({ colliders, fallbackSize }) {
-  const proxies = useMemo(
-    () =>
-      colliders.map(({ name, node, shape }) => {
-        const mesh = new THREE.Mesh(
-          colliderGeometry(shape, fallbackSize),
-          new THREE.MeshBasicMaterial({
-            // Amber, and distinct from the pivots' RGB axes and the sockets' cyan:
-            // three overlays that look alike are three overlays you cannot read.
-            color: shape.isTrigger ? 0xc06cf0 : 0xf0a63a,
-            wireframe: true,
-            depthTest: false,
-            depthWrite: false,
-            transparent: true,
-            opacity: 0.85,
-          }),
-        );
-        mesh.renderOrder = 998;
-        const offset = Array.isArray(shape.offset) ? shape.offset : [0, 0, 0];
-        mesh.position.set(Number(offset[0]) || 0, Number(offset[1]) || 0, Number(offset[2]) || 0);
-        mesh.name = `collider:${name}`;
-        return { name, node, mesh };
-      }),
-    [colliders, fallbackSize],
+const AMBER = 0xf0a63a;
+const TRIGGER = 0xc06cf0;
+const SELECTED = 0x7ee787;
+
+/**
+ * The compound, selectable and draggable.
+ *
+ * Parented to the SCENE ROOT rather than to a component node, because the record
+ * these parts come from is in root-local metres. The system this replaced kept
+ * each proxy under the component that owned it, which it had to: those offsets
+ * were in the component's own frame and detached the moment anything animated.
+ * One frame for the whole compound is what lets a consumer build a compound body
+ * from the file without walking the scene graph at all.
+ */
+function ColliderEditor({ parts, selected, onSelect, onCommit, mode, editable }) {
+  const refs = useRef([]);
+  const geoms = useMemo(() => parts.map((p) => unitGeometry(p.type)), [parts]);
+  useEffect(() => () => { for (const g of geoms) g.dispose(); }, [geoms]);
+
+  const target = refs.current[selected] ?? null;
+
+  // Read the gizmo's result back into the record. Yaw only: a walkable proxy has
+  // no use for pitch or roll, and constraining it keeps the record cheap for a
+  // consumer -- and honest, since nothing downstream reads two more angles.
+  const commit = () => {
+    const obj = refs.current[selected];
+    if (!obj) return;
+    onCommit(selected, {
+      offset: [obj.position.x, obj.position.y, obj.position.z].map((n) => +n.toFixed(4)),
+      scale: [obj.scale.x / 2, obj.scale.y / 2, obj.scale.z / 2].map((n) =>
+        +Math.max(0.005, n).toFixed(4),
+      ),
+      yaw: +obj.rotation.y.toFixed(4),
+    });
+  };
+
+  return (
+    <group>
+      {parts.map((p, i) => (
+        <mesh
+          key={`${p.name}-${i}`}
+          ref={(o) => { refs.current[i] = o; }}
+          geometry={geoms[i]}
+          position={p.offset}
+          rotation={[0, p.yaw ?? 0, 0]}
+          scale={[p.scale[0] * 2, p.scale[1] * 2, p.scale[2] * 2]}
+          renderOrder={998}
+          onPointerDown={(e) => {
+            if (!editable) return;
+            e.stopPropagation();
+            onSelect(i);
+          }}
+        >
+          <meshBasicMaterial
+            color={i === selected ? SELECTED : p.isTrigger ? TRIGGER : AMBER}
+            wireframe
+            // Draw through the prop: a collider is almost always INSIDE the
+            // geometry it stands in for, so a depth-tested proxy is invisible
+            // exactly when you most need to see it.
+            depthTest={false}
+            depthWrite={false}
+            transparent
+            opacity={i === selected ? 1 : 0.85}
+          />
+        </mesh>
+      ))}
+      {editable && target && (
+        <TransformControls
+          object={target}
+          mode={mode}
+          // OrbitControls is makeDefault, so the gizmo suspends orbiting for the
+          // length of a drag on its own. Without that, dragging a face spins the
+          // camera at the same time and neither gesture does what you meant.
+          onMouseUp={commit}
+          showX
+          showY
+          showZ
+        />
+      )}
+    </group>
   );
-
-  // Parented to the owning node, so a proxy follows its component when the model
-  // is exploded or animated instead of hanging in space where the part used to be.
-  useEffect(() => {
-    for (const p of proxies) p.node.add(p.mesh);
-    return () => {
-      for (const p of proxies) {
-        p.node.remove(p.mesh);
-        p.mesh.geometry.dispose();
-        p.mesh.material.dispose();
-      }
-    };
-  }, [proxies]);
-
-  return null;
 }
 
 /**
@@ -460,7 +468,7 @@ function useDestruction(scene, groups, active) {
 }
 
 function Model({
-  scene, wireframe, showPivots, showSockets, showColliders, breaking, onStats, onRuntime,
+  scene, wireframe, showPivots, showSockets, showColliders, breaking, onStats, onRuntime, collider,
 }) {
   const stats = useMeshStats(scene);
   const runtime = useRuntimeMarkers(scene);
@@ -501,14 +509,21 @@ function Model({
       <primitive object={scene} />
       {showPivots && <MarkerGizmos markers={runtime.pivots} size={markerSize} kind="pivot" />}
       {showSockets && <MarkerGizmos markers={runtime.sockets} size={markerSize} kind="socket" />}
-      {showColliders && (
-        <ColliderProxies colliders={runtime.colliders} fallbackSize={markerSize} />
+      {showColliders && collider.parts.length > 0 && (
+        <ColliderEditor
+          parts={collider.parts}
+          selected={collider.selected}
+          onSelect={collider.onSelect}
+          onCommit={collider.onCommit}
+          mode={collider.mode}
+          editable={collider.editable}
+        />
       )}
     </Center>
   );
 }
 
-export function Viewer({ url, version, exportName }) {
+export function Viewer({ url, version, exportName, colliders: parts, onCollidersChange }) {
   const [wireframe, setWireframe] = useState(false);
   const [grid, setGrid] = useState(true);
   const [pivots, setPivots] = useState(false);
@@ -517,6 +532,85 @@ export function Viewer({ url, version, exportName }) {
   const [breaking, setBreaking] = useState(false);
   const [stats, setStats] = useState(null);
   const [runtime, setRuntime] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [mode, setMode] = useState('translate');
+
+  const editable = typeof onCollidersChange === 'function';
+  const list = parts ?? [];
+
+  /**
+   * Deselect whenever the overlay is hidden or the prop changes.
+   *
+   * A selection index that outlives the list it indexes points at a different
+   * part, or at nothing -- and a gizmo attached to nothing throws.
+   */
+  useEffect(() => { setSelected(null); }, [url, colliders]);
+  useEffect(() => {
+    if (selected !== null && selected >= list.length) setSelected(null);
+  }, [selected, list.length]);
+
+  const commitPart = (index, patch) => {
+    if (!editable) return;
+    onCollidersChange(list.map((p, i) => (i === index ? { ...p, ...patch } : p)));
+  };
+
+  const removePart = (index) => {
+    if (!editable || index === null) return;
+    onCollidersChange(list.filter((_, i) => i !== index));
+    setSelected(null);
+  };
+
+  /**
+   * A new box at the middle of the prop, a fifth of its size, selected at once.
+   *
+   * Dropped where you can see it rather than at the origin: a part added at
+   * [0,0,0] on a base-center prop is half buried in the floor, and the first
+   * thing you would do is drag it out.
+   */
+  const addPart = () => {
+    if (!editable) return;
+    const box = scene ? new THREE.Box3().setFromObject(scene) : null;
+    const centre = box ? box.getCenter(new THREE.Vector3()) : new THREE.Vector3();
+    const size = box ? box.getSize(new THREE.Vector3()) : new THREE.Vector3(1, 1, 1);
+    const half = [size.x, size.y, size.z].map((n) => Math.max(0.05, n / 10));
+    const names = new Set(list.map((p) => p.name));
+    let n = list.length;
+    let name = `part${n}`;
+    while (names.has(name)) name = `part${(n += 1)}`;
+    onCollidersChange([
+      ...list,
+      {
+        name,
+        type: 'box',
+        offset: [+centre.x.toFixed(4), +centre.y.toFixed(4), +centre.z.toFixed(4)],
+        scale: half.map((v) => +v.toFixed(4)),
+        isTrigger: false,
+      },
+    ]);
+    setSelected(list.length);
+  };
+
+  /**
+   * Keyboard, guarded against a focused field.
+   *
+   * Delete is the whole reason for the guard: without it, backspacing a typo out
+   * of the notes box in the details tab silently deletes a collider behind it.
+   */
+  useEffect(() => {
+    if (!editable || !colliders) return undefined;
+    const onKey = (e) => {
+      const el = document.activeElement;
+      const tag = el?.tagName;
+      if (el?.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removePart(selected); }
+      else if (e.key === 'w' || e.key === 'W') setMode('translate');
+      else if (e.key === 'e' || e.key === 'E') setMode('rotate');
+      else if (e.key === 'r' || e.key === 'R') setMode('scale');
+      else if (e.key === 'Escape') setSelected(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   /**
    * A rebuilt prop always lands at the SAME path (`assets/<id>/model.bundle.js`),
@@ -568,6 +662,14 @@ export function Viewer({ url, version, exportName }) {
               breaking={breaking}
               onStats={setStats}
               onRuntime={setRuntime}
+              collider={{
+                parts: list,
+                selected,
+                onSelect: setSelected,
+                onCommit: commitPart,
+                mode,
+                editable,
+              }}
             />
           </Bounds>
         </Stage>
@@ -609,10 +711,10 @@ export function Viewer({ url, version, exportName }) {
         <button
           className={colliders ? 'primary' : ''}
           onClick={() => setColliders((v) => !v)}
-          disabled={runtime ? runtime.colliders.length === 0 : false}
-          title="the physics proxies an engine tests against — amber, or purple for a trigger"
+          disabled={!list.length && !editable}
+          title="the physics compound an engine tests against — amber, purple for a trigger, green for the selected part"
         >
-          colliders{runtime ? ` (${runtime.colliders.length})` : ''}
+          colliders ({list.length})
         </button>
         <button
           className={breaking ? 'primary' : ''}
@@ -623,6 +725,44 @@ export function Viewer({ url, version, exportName }) {
           break{runtime ? ` (${runtime.groups.length})` : ''}
         </button>
       </div>
+
+      {/*
+        The edit bar, opposite the view toggles. It appears only while the
+        colliders are actually being drawn: a gizmo mode row and a delete key
+        that act on something invisible are how you lose a part without noticing.
+      */}
+      {colliders && editable && (
+        <div className="edit-controls">
+          {selected !== null && (
+            <>
+              <span className="mono readout">
+                {list[selected]?.name} · {(list[selected]?.scale[0] * 2).toFixed(2)} ×{' '}
+                {(list[selected]?.scale[1] * 2).toFixed(2)} × {(list[selected]?.scale[2] * 2).toFixed(2)} m
+              </span>
+              <div className="gizmo">
+                {['translate', 'rotate', 'scale'].map((m, i) => (
+                  <button
+                    key={m}
+                    className={mode === m ? 'primary' : ''}
+                    onClick={() => setMode(m)}
+                    title={`${m} — ${'WER'[i]}`}
+                  >
+                    {m}
+                  </button>
+                ))}
+                <button onClick={() => removePart(selected)} title="remove this part — Delete">
+                  delete
+                </button>
+              </div>
+            </>
+          )}
+          <div className="gizmo">
+            <button className="primary" onClick={addPart} title="add a box at the centre of the prop">
+              + collider
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading && <div className="overlay">running factory…</div>}
 
@@ -639,7 +779,7 @@ export function Viewer({ url, version, exportName }) {
               <br />
               {runtime.pivots.length} pivot{runtime.pivots.length === 1 ? '' : 's'} ·{' '}
               {runtime.sockets.length} socket{runtime.sockets.length === 1 ? '' : 's'} ·{' '}
-              {runtime.colliders.length} collider{runtime.colliders.length === 1 ? '' : 's'} ·{' '}
+              {list.length} collider{list.length === 1 ? '' : 's'} ·{' '}
               {runtime.groups.length} group{runtime.groups.length === 1 ? '' : 's'}
               {/* A name on sculptRuntime with no object behind it draws nothing.
                   Counting it with the rest would make a broken contract look kept. */}

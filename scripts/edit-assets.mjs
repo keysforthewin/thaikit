@@ -45,7 +45,8 @@ const EDITABLE = new Set([
   'maxUniqueGeometries',
   'pivot',
   'placement',
-  'collider',
+  'physics.enabled',
+  'physics.massKg',
   'destructionGroups',
   'prompts.image',
   'prompts.texture',
@@ -92,8 +93,10 @@ const IMPACT = [
       BUDGET_AXES.some(({ key }) => p === key) ||
       p === 'pivot' ||
       // The runtime contract is an input to the build, not a description of it:
-      // asking for a lid that detaches changes what gets sculpted.
-      p === 'collider' ||
+      // asking for a lid that detaches changes what gets sculpted. Physics is
+      // deliberately NOT here: the geometry does not change because a crate got
+      // heavier, and staling on it would requeue a hundred props for a number
+      // the sculptor never sees.
       p === 'destructionGroups' ||
       p.startsWith('scale.declared'),
   },

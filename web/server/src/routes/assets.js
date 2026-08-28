@@ -29,7 +29,9 @@ const CreateInput = z.object({
   maxUniqueGeometries: z.number().int().positive().nullable().optional(),
   subject: z.enum(['prop', 'animal', 'character']).optional(),
   pivot: z.enum(['base-center', 'center', 'back-center', 'top-center']).optional(),
-  collider: z.enum(['box', 'cylinder', 'convex', 'none']).optional(),
+  physics: z
+    .object({ enabled: z.boolean().optional(), massKg: z.number().positive().nullable().optional() })
+    .optional(),
   destructionGroups: z.array(z.string()).optional(),
   placement: z.array(z.string()).optional(),
   notes: z.string().optional(),
@@ -93,7 +95,7 @@ function buildAsset(input, taken) {
     },
     pivot: input.pivot ?? 'base-center',
     placement: input.placement ?? ['floor'],
-    collider: input.collider ?? 'box',
+    physics: { enabled: input.physics?.enabled ?? false, massKg: input.physics?.massKg ?? null },
     destructionGroups: input.destructionGroups ?? [],
     status: { image: 'pending', model: 'pending' },
     image: null,

@@ -7,7 +7,7 @@
  */
 import { z } from 'zod';
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 /** A stage that generation moves through. Every stage tracks its own state. */
 export const StageState = z.enum([
@@ -44,8 +44,6 @@ export const Placement = z.enum([
   'surface',
   'vehicle-mounted',
 ]);
-
-export const Collider = z.enum(['box', 'cylinder', 'convex', 'none']);
 
 /**
  * What kind of thing this is, which is the single most consequential fact the
@@ -156,8 +154,75 @@ const Runtime = z.object({
   sockets: z.array(z.string()).default([]),
   /** Named pivots for parts that move. */
   pivots: z.array(z.string()).default([]),
-  colliders: z.array(z.string()).default([]),
   destructionGroups: z.array(z.string()).default([]),
+});
+
+/**
+ * What the derived compound in assets/<id>/colliders.json amounts to.
+ *
+ * The shapes themselves live in that sidecar, not here: a compound is a list of
+ * boxes and cylinders with extents in metres, and putting a hundred of those in
+ * registry.json would make every read of every asset pay for them. What is
+ * carried here is the pointer plus the self-check numbers, so promotion can gate
+ * and the browse grid can filter without opening the file.
+ *
+ * The numbers are the point. The system this replaced recorded a single word --
+ * `collider: 'box'` -- which said someone had thought about the prop and nothing
+ * about whether you could stand on it. `coverage` and `maxLedgeError` are
+ * measured by casting rays down onto the real geometry and onto the compound, so
+ * a prop that claims a walkable roof has a number behind the claim.
+ *
+ * `handTuned` is set when someone moved a part by hand in the web editor, and it
+ * makes the derivation refuse to overwrite: a hand-placed box is a measurement
+ * taken with a pair of eyes, and the script cannot see what they saw.
+ */
+const ColliderSummary = z.object({
+  /** assets/<id>/colliders.json, repo-relative POSIX. Null means never derived. */
+  file: z.string().nullable().default(null),
+  parts: z.number().int().nonnegative().default(0),
+  handTuned: z.boolean().default(false),
+  derivedAt: z.string().datetime().nullable().default(null),
+  /** Fraction of down-rays that hit the real geometry and also hit the compound. */
+  coverage: z.number().min(0).max(1).nullable().default(null),
+  /**
+   * Height disagreement underfoot, in metres. `max` is reported and deliberately
+   * NOT gated on: it is routinely two or three samples at an edge -- on the
+   * 7-Eleven it is two of 14,218, where the body box overhangs a 3 cm plinth lip.
+   */
+  maxLedgeError: z.number().nonnegative().nullable().default(null),
+  p95LedgeError: z.number().nonnegative().nullable().default(null),
+  /**
+   * The fraction of the footprint where the compound stands more than a step
+   * height ABOVE the real surface -- the player floating in mid-air. This is the
+   * one that is gated, because it is the one a player feels.
+   */
+  overshoot: z.number().min(0).max(1).nullable().default(null),
+  /** Set when measuring is not meaningful, e.g. a zero-thickness billboard. */
+  measurementSkipped: z.string().nullable().default(null),
+  /** "k/n" true ledges that survived into the compound. */
+  ledgesPreserved: z.string().nullable().default(null),
+});
+
+/**
+ * Whether this prop is a DYNAMIC body -- something a player can kick around.
+ *
+ * A declaration, like the destruction groups, and not a measurement: it is a
+ * decision about what the prop is for. The default is false, which is the right
+ * answer for most of the kit -- a building, a road tile and a bolted-down sign
+ * are static colliders, and making one dynamic costs a solver island every frame
+ * for something that must not move.
+ *
+ * `enabled` and `massKg` are separate fields rather than one nullable mass
+ * because "static" and "dynamic but not weighed yet" are different states, and
+ * collapsing them would make an un-weighed traffic cone indistinguishable from a
+ * building. derive-colliders.mjs reports a suggested mass from the compound's
+ * volume and never writes it: a number nobody decided still looks like a
+ * decision, which is the mistake the drum's hand-entered 99.8 already taught.
+ */
+const Physics = z.object({
+  enabled: z.boolean().default(false),
+  /** Kilograms. Null means not decided yet, which is distinct from a declared 0. */
+  massKg: z.number().positive().nullable().default(null),
 });
 
 /**
@@ -291,6 +356,7 @@ const Model = ModelStats.extend({
    */
   maps: z.array(TextureMap).default([]),
   runtime: Runtime.default({}),
+  colliders: ColliderSummary.default({}),
   reference: Reference.default({}),
   review: Review.default({}),
   quarantine: z
@@ -342,7 +408,7 @@ export const AssetSchema = z.object({
   scale: Scale,
   pivot: Pivot.default('base-center'),
   placement: z.array(Placement).default(['floor']),
-  collider: Collider.default('box'),
+  physics: Physics.default({}),
   /**
    * The named assemblies this prop must break into, as DESIGN INTENT rather than
    * as a measurement -- "lid, body, base" for a crate whose lid comes off.

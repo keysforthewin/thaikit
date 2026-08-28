@@ -122,7 +122,10 @@ async function normalize(draft, taken, catalogue) {
     subject: draft.subject ?? 'prop',
     pivot: draft.pivot ?? 'base-center',
     placement: draft.placement ?? catSpec.defaultPlacement ?? ['floor'],
-    collider: draft.collider ?? catSpec.defaultCollider ?? 'box',
+    physics: {
+      enabled: draft.physics?.enabled ?? catSpec.defaultPhysics ?? false,
+      massKg: draft.physics?.massKg ?? null,
+    },
     destructionGroups: draft.destructionGroups ?? [],
     status: { image: 'pending', model: 'pending' },
     image: null,

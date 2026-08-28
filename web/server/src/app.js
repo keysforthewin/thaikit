@@ -8,6 +8,7 @@ import { ASSETS_DIR, SCRATCH_DIR, readRegistry, etagFor, REGISTRY_PATH } from '@
 
 import { healthRouter } from './routes/health.js';
 import { assetsRouter } from './routes/assets.js';
+import { collidersRouter } from './routes/colliders.js';
 import { eventsRouter } from './routes/events.js';
 import { errorHandler } from './errors.js';
 import { CLIENT_DIST, IS_DEV } from './paths.js';
@@ -31,6 +32,7 @@ export async function createApp(state) {
 
   app.use('/api', healthRouter(state));
   app.use('/api', assetsRouter(state));
+  app.use('/api', collidersRouter(state));
   app.use('/api', eventsRouter(state));
 
   app.get('/api/meta', async (req, res, next) => {

@@ -15,6 +15,7 @@
  * Usage: node scripts/build-registry.mjs [--out dist/registry.json] [--report]
  */
 import fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { readRegistry, writeFileAtomic, REPO_ROOT } from '@thaikit/registry-core';
@@ -25,7 +26,34 @@ async function main() {
   const args = parseArgs();
   const registry = await readRegistry();
 
-  const ships = (a) =>
+  /**
+ * The compound's parts, read off the sidecar the derivation writes.
+ *
+ * Read at build time rather than carried in registry.json: the shapes are the
+ * bulky half of the record and only a consumer needs them, while the summary the
+ * registry does carry is what the gates and the browse grid read.
+ */
+function colliderParts(asset) {
+  const file = asset.model?.colliders?.file;
+  if (!file) return [];
+  try {
+    const doc = JSON.parse(readFileSync(path.join(REPO_ROOT, file), 'utf8'));
+    return (doc.parts ?? []).map((p) => ({
+      name: p.name,
+      type: p.type,
+      offset: p.offset,
+      scale: p.scale,
+      ...(p.isTrigger ? { isTrigger: true } : {}),
+    }));
+  } catch {
+    // A summary pointing at a file that will not parse is worth saying out loud,
+    // but it must not stop the whole registry from building.
+    log(`WARN   : ${asset.id} declares ${file} and it could not be read`);
+    return [];
+  }
+}
+
+const ships = (a) =>
     !a.hidden && a.model.status === 'done' && Boolean(a.model.file) && !a.model.quarantine;
 
   const shipped = registry.assets.filter(ships);
@@ -59,8 +87,24 @@ async function main() {
       subject: a.subject,
       tags: a.tags,
       placement: a.placement,
-      collider: a.collider,
       pivot: a.pivot,
+      /**
+       * Whether the prop is a dynamic body, and what it weighs. A declaration,
+       * so it ships even when massKg is still null -- a consumer needs to know
+       * the difference between "static" and "kickable but unweighed".
+       */
+      physics: a.physics,
+      /**
+       * The physics compound, inlined from assets/<id>/colliders.json so a
+       * consumer gets the shapes in the same fetch as the module path. Boxes and
+       * cylinders in ROOT-LOCAL metres, `scale` as half-extents, matching the
+       * asset's pivot -- base-center for almost everything, so y=0 is the ground.
+       *
+       * An empty array means no compound was derived. That is deliberately NOT
+       * the same as the old `collider: 'none'`, which was a claim that the prop
+       * should not collide; this is only the absence of one.
+       */
+      colliders: colliderParts(a),
       module: a.model.file,
       /** The named export to call. Not always the default. */
       export: a.model.export,

@@ -92,17 +92,15 @@ export async function judgeAsset(asset, stats) {
  * nobody asked for, and every one of those groups is contract a consumer may now
  * rely on.
  *
- * `collider: 'none'` is a real declaration too -- a prop nothing collides with --
- * so a model that ships colliders anyway is reported rather than waved through.
+ * Colliders used to be checked here too, against a declared `collider` word on
+ * the asset. They are not any more: the compound lives in assets/<id>/colliders.json
+ * and is judged by colliderVerdict() below, on measurements rather than on a count.
  */
 export function runtimeVerdict(asset, runtime) {
   const declared = [...(asset.destructionGroups ?? [])].sort();
   const built = [...(runtime?.destructionGroups ?? [])].sort();
   const missing = declared.filter((g) => !built.includes(g));
   const extra = built.filter((g) => !declared.includes(g));
-
-  const wantsCollider = (asset.collider ?? 'box') !== 'none';
-  const colliderCount = runtime?.colliders?.length ?? 0;
 
   const problems = [];
   if (missing.length) {
@@ -117,18 +115,101 @@ export function runtimeVerdict(asset, runtime) {
         'the asset, or drop them from the spec; an undeclared group is contract nobody asked for',
     );
   }
-  if (wantsCollider && colliderCount === 0) {
+  return { declared, built, missing, extra, problems, ok: problems.length === 0 };
+}
+
+/**
+ * How many collider parts a prop of this class may carry.
+ *
+ * A compound is only cheap while it is small. Every part is a shape the broad
+ * phase tests and the narrow phase may have to resolve, and a dynamic body pays
+ * for all of them every frame -- which is why a kickable prop gets half the
+ * ceiling of a static one it would otherwise share a class with.
+ */
+export function colliderPartCeiling(asset) {
+  const byClass = { small: 2, medium: 4, large: 8, hero: 8, hero2x: 8, hero4x: 8, hero8x: 8 };
+  const base = byClass[asset.budgetClass] ?? 4;
+  return asset.physics?.enabled ? Math.max(1, Math.floor(base / 2)) : base;
+}
+
+/**
+ * Whether the derived compound is fit to ship.
+ *
+ * The system this replaced could only count colliders, so "this prop has a
+ * physics proxy" and "you can stand on this prop's roof" were the same
+ * assertion. They are not. `coverage` is the fraction of down-rays that hit the
+ * real geometry and also hit the compound -- anything missing is the player
+ * falling through the model -- and `maxLedgeError` is how wrong the floor is
+ * underfoot in metres. Both are measured by derive-colliders.mjs, and a summary
+ * with neither of them present has not been measured at all.
+ */
+export function colliderVerdict(asset) {
+  const c = asset.model?.colliders ?? {};
+  const ceiling = colliderPartCeiling(asset);
+  const problems = [];
+
+  if (!c.file || !c.parts) {
     problems.push(
-      `collider is "${asset.collider}" but the model exposes none — nothing can be walked ` +
-        'into or shot at until a component carries actionProfile.collider',
+      'no derived compound — run scripts/derive-colliders.mjs, or pass --allow-no-colliders ' +
+        'for a prop nothing should ever collide with',
+    );
+    return { parts: 0, ceiling, problems, ok: false };
+  }
+  if (c.parts > ceiling) {
+    problems.push(
+      `${c.parts} collider parts against a ceiling of ${ceiling} for a ${asset.budgetClass} ` +
+        `prop${asset.physics?.enabled ? ' that is a dynamic body' : ''} — lower --max-parts, ` +
+        'or merge the layers that are not carrying a ledge',
     );
   }
-  if (!wantsCollider && colliderCount > 0) {
+  if (c.measurementSkipped) {
+    // A zero-thickness skyline billboard has nothing to cast a ray at. Stating
+    // the reason is the point: this is a decision on the record, not a gate
+    // somebody stepped over with a flag.
+    return { parts: c.parts, ceiling, coverage: null, skipped: c.measurementSkipped, problems, ok: problems.length === 0 };
+  }
+  if (c.coverage === null || c.overshoot === null) {
     problems.push(
-      `collider is "none" but the model exposes ${colliderCount} — set the asset's collider ` +
-        'to the shape it actually uses, or remove them from the spec',
+      'the compound carries no self-check — a proxy nobody measured is the shape of the ' +
+        'system this replaced; run derive-colliders.mjs --measure to record coverage and ' +
+        'overshoot for the shape that is there',
     );
+  } else {
+    // 0.95, not the 0.99 a hole in the middle would demand. Measured across the
+    // kit, 27 of 99 props sit under 0.99 and they are the ROUNDED ones -- the soi
+    // dog at 0.745, the fighting cock at 0.850, four vehicles in the 0.92s. An
+    // axis-aligned box cover of a curved silhouette leaves a thin RIM uncovered
+    // at the outline: a player stopping a few centimetres early, not a player
+    // falling through. A real hole shows up far below this.
+    if (c.coverage < 0.95) {
+      problems.push(
+        `coverage ${c.coverage.toFixed(3)} is under 0.95 — that fraction of the prop's ` +
+          'footprint has no collider over it. On a rounded prop that is the rim of the ' +
+          'silhouette and a sphere or capsule part fixes it; anywhere else it is a hole ' +
+          'a player falls through',
+      );
+    }
+    // Overshoot, not maxLedgeError. Gating on the max failed 69 of 100 props on
+    // artefacts two samples wide -- the same mistake as reporting a max alone.
+    // This is the fraction of the footprint where a player would stand more than
+    // a step height above the visible surface, and its median across the kit is
+    // 0.009. The tail is the monumental props, where a tapering spire in eight
+    // boxes overshoots nearly everywhere and the answer is a hand edit.
+    if (c.overshoot > 0.15) {
+      problems.push(
+        `${(c.overshoot * 100).toFixed(0)}% of the footprint stands more than the 0.30 m step ` +
+          'height above the real surface — the player floats there. Raise --max-parts so the ' +
+          'taper gets more layers, or place the parts by hand',
+      );
+    }
   }
 
-  return { declared, built, missing, extra, colliderCount, problems, ok: problems.length === 0 };
+  return {
+    parts: c.parts,
+    ceiling,
+    coverage: c.coverage,
+    overshoot: c.overshoot,
+    problems,
+    ok: problems.length === 0,
+  };
 }

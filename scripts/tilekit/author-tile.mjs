@@ -126,7 +126,6 @@ function spec(id, asset, tile) {
         primitive: 'plane-card',
         material: 'surface',
         transform: { position: [0, 0, 0], rotation: [-90, 0, 0], scale: [w, d, 1] },
-        actionProfile: { collider: asset.collider },
       },
       ...(SIGN[id]
         ? [
@@ -195,9 +194,11 @@ function factory(id, asset, tile) {
 `
     : '';
   const nodes = sign ? 4 : 2;
-  const colliders = sign
-    ? `[{ name: 'deck', shape: '${asset.collider}' }, { name: 'sign-post', shape: 'cylinder' }]`
-    : `[{ name: 'deck', shape: '${asset.collider}' }]`;
+  // No colliders on sculptRuntime any more. A tile's physics compound is derived
+  // from the built geometry by scripts/derive-colliders.mjs and lives in
+  // assets/<id>/colliders.json -- the names emitted here carried no extents and
+  // nothing ever read them.
+  const colliders = '[]';
 
   return `import * as THREE from 'three';
 

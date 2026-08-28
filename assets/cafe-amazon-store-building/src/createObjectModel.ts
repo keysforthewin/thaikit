@@ -1479,7 +1479,18 @@ function applyFrontTextures(
   options: ProceduralModelOptions,
 ): void {
   const signMesh = meshes['fascia-sign'];
-  if (signMesh) {
+  // GUARDED, like buildBrandCanvas and buildGlazingCanvas below it. THREE's
+  // ImageLoader reaches for document.createElement, and this module is evaluated
+  // under plain Node by check-coplanar.mjs and derive-colliders.mjs -- unguarded,
+  // the prop passed every browser render and then failed every Node-side gate
+  // with a stack trace that read as a broken module. It was the only one of the
+  // hundred that would not construct, so it shipped with no physics compound.
+  //
+  // The colour is set INSIDE the guard on purpose: it is white only because the
+  // baked canvas carries the measured green itself, so whitening it without
+  // assigning the map would leave the fascia white to anything reading materials
+  // outside a browser.
+  if (signMesh && typeof document !== 'undefined') {
     const mat = signMesh.material as THREE.MeshPhysicalMaterial;
     // The canvas carries the measured green itself; leaving color at anything
     // but white would multiply it in twice.

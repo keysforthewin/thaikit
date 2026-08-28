@@ -58,6 +58,68 @@ function PreviewImage({ image }) {
   );
 }
 
+/**
+ * What the compound is, and what measuring it said.
+ *
+ * The numbers are the point of the whole system. A prop used to declare the word
+ * "box" and that was the end of it; `coverage` is the fraction of the footprint
+ * with a collider over it, and anything missing is a player falling through the
+ * model. Once a part has been moved by hand they are cleared rather than carried
+ * forward -- a hand-placed box has not been measured, and showing the
+ * derivation's numbers beside it would present them as evidence for a shape
+ * nobody checked.
+ */
+function ColliderBar({ doc, parts, dirty, saving, onSave, assetId }) {
+  if (parts === null) return null;
+  const check = doc?.selfCheck ?? null;
+  const shapes = [...new Set((parts ?? []).map((p) => p.type))].join(', ');
+
+  return (
+    <div>
+      <div className="ref-head">
+        <span className="muted">
+          Physics compound — {parts.length} part{parts.length === 1 ? '' : 's'}
+          {shapes ? ` (${shapes})` : ''}
+          {doc?.handTuned && ' · hand-tuned'}
+        </span>
+        <button className={dirty ? 'primary' : ''} disabled={!dirty || saving} onClick={onSave}>
+          {saving ? 'saving…' : dirty ? 'save colliders' : 'saved'}
+        </button>
+      </div>
+      {!parts.length && (
+        <p className="collider-note">
+          No compound yet — nothing can be walked into or stood on. Derive one with{' '}
+          <code>node scripts/derive-colliders.mjs --id {assetId}</code>, or add parts by hand with
+          the button in the viewer.
+        </p>
+      )}
+      {check && (
+        <p className="collider-note">
+          coverage {check.coverage} · mean {check.meanAbsDelta} m · p95 {check.p95AbsDelta} m · max{' '}
+          {check.maxAbsDelta} m · volume ×{check.volumeRatio} · ledges {doc.ledgesPreserved}
+        </p>
+      )}
+      {doc?.handTuned && !check && (
+        <p className="collider-note">
+          Hand-tuned, so there are no measurements beside it. Re-derive with{' '}
+          <code>--force</code> to measure it again — that replaces the hand edits.
+        </p>
+      )}
+      {dirty && (
+        <p className="collider-note dirty">
+          Unsaved changes. Saving marks the compound hand-tuned, which makes the derivation refuse
+          to overwrite it without <code>--force</code>.
+        </p>
+      )}
+      {(doc?.ledgesLost ?? []).map((l) => (
+        <p key={l.y} className="collider-note dirty">
+          ledge at y={l.y} m ({l.area} m²) has no collider top within 0.10 m — {l.reason}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 export function Drawer({ id, rev, onClose, onChanged }) {
   const [asset, setAsset] = useState(null);
   const [tab, setTab] = useState('details');
@@ -65,6 +127,16 @@ export function Drawer({ id, rev, onClose, onChanged }) {
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const budgetClasses = useBudgetClasses();
+
+  /**
+   * The physics compound, which lives beside the module rather than in the
+   * registry, so it is fetched and saved on its own. `null` means "not asked
+   * yet", an empty array means "asked, and this prop has none" -- and the second
+   * is a state worth showing rather than an error.
+   */
+  const [colliders, setColliders] = useState(null);
+  const [colliderDoc, setColliderDoc] = useState(null);
+  const [colliderDirty, setColliderDirty] = useState(false);
 
   useEffect(() => {
     setError(null);
@@ -91,11 +163,23 @@ export function Drawer({ id, rev, onClose, onChanged }) {
         maxUniqueGeometries: a.maxUniqueGeometries ?? '',
         subject: a.subject ?? 'prop',
         pivot: a.pivot,
-        collider: a.collider,
+        physicsEnabled: a.physics?.enabled ?? false,
+        massKg: a.physics?.massKg ?? '',
         destructionGroups: (a.destructionGroups ?? []).join(', '),
         w: a.scale.declared.w, h: a.scale.declared.h, d: a.scale.declared.d,
       });
     }).catch((e) => setError(e.message));
+
+    setColliderDirty(false);
+    api.colliders(id)
+      .then((doc) => { setColliderDoc(doc); setColliders(doc.parts ?? []); })
+      .catch((e) => {
+        // 404 is the ordinary state of a prop nobody has derived yet, not a
+        // failure worth putting in the error bar.
+        if (e.status !== 404) setError(e.message);
+        setColliderDoc(null);
+        setColliders([]);
+      });
   }, [id]);
 
   /**
@@ -127,6 +211,48 @@ export function Drawer({ id, rev, onClose, onChanged }) {
     );
   }
 
+  /**
+   * Persist a hand-edited compound.
+   *
+   * Separate from save() because it writes a different file through a different
+   * route, and because the two conflict independently: a skill rebuilding this
+   * prop's model touches the registry entry, and a second tab moving a box
+   * touches the compound. Sharing one save button would make either conflict
+   * look like the other.
+   */
+  async function saveColliders() {
+    setSaving(true);
+    setError(null);
+    try {
+      const base = colliderDoc ?? {
+        schemaVersion: 1,
+        assetId: id,
+        frame: 'root-local',
+        units: 'm',
+        groundY: 0,
+      };
+      const { doc } = await api.saveColliders(id, { ...base, parts: colliders ?? [] });
+      setColliderDoc(doc);
+      setColliders(doc.parts ?? []);
+      setColliderDirty(false);
+      onChanged?.();
+    } catch (e) {
+      if (e.status === 409 && e.current) {
+        // Show what is on disk rather than only refusing. The parts you moved are
+        // still in `colliders`, so pressing save again writes them over the
+        // version you have now been shown.
+        setColliderDoc(e.current);
+        setError(
+          'the compound changed on disk — your edits are still here; press save again to write them over it',
+        );
+      } else {
+        setError(e.message);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function save() {
     setSaving(true);
     setError(null);
@@ -150,7 +276,10 @@ export function Drawer({ id, rev, onClose, onChanged }) {
         ),
         subject: draft.subject,
         pivot: draft.pivot,
-        collider: draft.collider,
+        physics: {
+          enabled: Boolean(draft.physicsEnabled),
+          massKg: draft.massKg === '' ? null : Number(draft.massKg),
+        },
         // Blank means "not breakable", which is a decision and not an omission --
         // the model must then expose no groups either.
         destructionGroups: draft.destructionGroups
@@ -298,21 +427,42 @@ export function Drawer({ id, rev, onClose, onChanged }) {
             </Field>
 
             {/*
-              The runtime contract, declared before the build rather than read off
-              it afterwards. A collider is the cheap convex proxy a physics engine
-              tests against instead of the mesh; the destruction groups are the
-              assemblies the prop is meant to come apart into. Both are checked at
-              promotion, so a crate whose lid was supposed to detach and did not is
-              a failure rather than something you find out by orbiting the model.
+              Two declarations, both decisions about what the prop is FOR rather
+              than descriptions of what got built. Physics says whether it is a
+              body a player can kick around; the destruction groups are the
+              assemblies it is meant to come apart into.
+
+              The collider shape used to live here as a single word, and it is
+              gone: what an engine needs is a compound with real extents, and
+              that is derived from the geometry and edited in the preview tab.
             */}
             <div className="row">
-              <Field label="Collider — the physics proxy, not the mesh">
-                <select
-                  value={draft.collider}
-                  onChange={(e) => setDraft({ ...draft, collider: e.target.value })}
-                >
-                  {['box', 'cylinder', 'convex', 'none'].map((c) => <option key={c}>{c}</option>)}
-                </select>
+              <Field label="Physics — a body that can be kicked around, and what it weighs">
+                <label className="checkline">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(draft.physicsEnabled)}
+                    onChange={(e) => setDraft({ ...draft, physicsEnabled: e.target.checked })}
+                  />
+                  dynamic body
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  placeholder={draft.physicsEnabled ? 'mass in kg' : 'static — no mass needed'}
+                  value={draft.massKg}
+                  // A mass on a static prop is a number nobody will ever read, so
+                  // the field only takes one once the prop is a body.
+                  disabled={!draft.physicsEnabled}
+                  onChange={(e) => setDraft({ ...draft, massKg: e.target.value })}
+                />
+                {draft.physicsEnabled && colliderDoc?.suggestedMassKg != null && (
+                  <span className="collider-note">
+                    derivation suggests {colliderDoc.suggestedMassKg} kg from the compound's volume —
+                    a check, not an answer
+                  </span>
+                )}
               </Field>
               <Field label="Destruction groups — what it breaks into. Blank = not breakable.">
                 <input
@@ -371,6 +521,16 @@ export function Drawer({ id, rev, onClose, onChanged }) {
               // place while the JSON stays identical -- rebuilding over an
               // existing prop does exactly that, and updatedAt does not budge.
               version={`${asset.updatedAt}|${rev ?? 0}`}
+              colliders={colliders ?? []}
+              onCollidersChange={(parts) => { setColliders(parts); setColliderDirty(true); }}
+            />
+            <ColliderBar
+              doc={colliderDoc}
+              parts={colliders}
+              dirty={colliderDirty}
+              saving={saving}
+              onSave={saveColliders}
+              assetId={asset.id}
             />
             {asset.model?.thumb && !asset.model?.file && (
               <p className="muted track-blurb unpromoted">
@@ -521,7 +681,9 @@ export function Drawer({ id, rev, onClose, onChanged }) {
             const rows = [
               ['pivots', rt.pivots],
               ['sockets', rt.sockets],
-              ['colliders', rt.colliders],
+              // Colliders are deliberately not here any more. They are not names
+              // on sculptRuntime; they are a compound of shapes with extents,
+              // listed below with the numbers that were measured off it.
               ['destruction groups', rt.destructionGroups],
             ];
             return (
@@ -532,6 +694,39 @@ export function Drawer({ id, rev, onClose, onChanged }) {
                   real hinge axis. Listing them here is how you notice a prop
                   that shipped with none.
                 */}
+                <Field label="Physics compound">
+                  {!(colliders ?? []).length ? (
+                    <p className="muted">
+                      No compound. Nothing can be walked into or stood on until one is derived.
+                    </p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr><th>part</th><th>shape</th><th>centre (m)</th><th>size (m)</th></tr>
+                      </thead>
+                      <tbody>
+                        {colliders.map((p, i) => (
+                          <tr key={`${p.name}-${i}`}>
+                            <td className="mono">{p.name}</td>
+                            <td>{p.type}{p.isTrigger ? ' · trigger' : ''}</td>
+                            <td className="mono">{p.offset.map((n) => n.toFixed(2)).join(', ')}</td>
+                            <td className="mono">
+                              {p.scale.map((n) => (n * 2).toFixed(2)).join(' × ')}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                  {colliderDoc?.selfCheck && (
+                    <p className="collider-note">
+                      measured over {colliderDoc.selfCheck.samples} down-rays · coverage{' '}
+                      {colliderDoc.selfCheck.coverage} · p95 {colliderDoc.selfCheck.p95AbsDelta} m ·
+                      max {colliderDoc.selfCheck.maxAbsDelta} m · ledges {colliderDoc.ledgesPreserved}
+                    </p>
+                  )}
+                </Field>
+
                 <Field label="Runtime hierarchy">
                   {rows.every(([, v]) => !v?.length) ? (
                     <p className="muted">

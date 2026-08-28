@@ -19,10 +19,12 @@
  *
  * Usage:
  *   node scripts/promote-model.mjs --id <id> [--from <scratchdir>] [--thumb-size 512]
- *                                  [--allow-over-budget] [--allow-contract-drift]
+ *                                  [--allow-over-budget] [--allow-contract-drift] [--allow-no-colliders]
  */
 import fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
 import sharp from 'sharp';
 import {
@@ -30,8 +32,48 @@ import {
 } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
-import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict } from './lib/budget.mjs';
+import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict, colliderVerdict } from './lib/budget.mjs';
 import { readSkillReview } from './lib/review.mjs';
+
+const nodeRequire = createRequire(import.meta.url);
+
+/**
+ * Construct the module under plain Node, and refuse it if it will not.
+ *
+ * Half this repo's gates evaluate the bundle outside a browser -- check-coplanar,
+ * derive-colliders, the tilekit probes -- and a factory that reaches for the DOM
+ * unguarded passes every render and then fails all of them with a stack trace
+ * that reads as a broken module. The Cafe Amazon shopfront shipped exactly that
+ * way: one unguarded THREE.TextureLoader on its baked fascia graphic, invisible
+ * in the browser, and it was the only prop of a hundred with no physics compound
+ * because it was the only one that would not construct.
+ *
+ * The three the harness hands the factory is the page's own, so this shim gives
+ * it the repo's -- the same contract, and the same refusal of anything else.
+ */
+function constructsUnderNode(bundlePath) {
+  try {
+    const THREE = nodeRequire('three');
+    const mod = { exports: {} };
+    new Function('module', 'exports', 'require', readFileSync(bundlePath, 'utf8'))(
+      mod,
+      mod.exports,
+      (name) => {
+        if (name === 'three') return THREE;
+        throw new Error(`the bundle must import three and nothing else; it asked for ${name}`);
+      },
+    );
+    const factory = mod.exports.createObjectModel ?? mod.exports.default;
+    if (typeof factory !== 'function') return { ok: false, error: 'no createObjectModel export' };
+    // No baseUrl, exactly as the Node-side gates call it: that is what makes a
+    // map load behind `if (options.baseUrl)` safe and an unguarded one fatal.
+    const root = factory(null, {});
+    if (!root?.isObject3D) return { ok: false, error: 'the factory did not return an Object3D' };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}
 
 async function exists(p) {
   try { await fs.access(p); return true; } catch { return false; }
@@ -122,19 +164,39 @@ async function main() {
   log(
     `runtime: ${runtime.built.length} destruction group(s) ` +
       `[${runtime.built.join(', ') || 'none'}] against declared ` +
-      `[${runtime.declared.join(', ') || 'none'}], ${runtime.colliderCount} collider(s) ` +
-      `for collider "${asset.collider}"`,
+      `[${runtime.declared.join(', ') || 'none'}]`,
   );
   if (!runtime.ok) {
     const detail = runtime.problems.join('\n  ');
     if (!args['allow-contract-drift']) {
       return fail(
         `${asset.name}'s runtime does not match what its entry declares:\n  ${detail}\n` +
-          'Fix the sculpt spec and rebuild, correct the declaration on the asset ' +
-          '(collider / destructionGroups), or pass --allow-contract-drift.',
+          'Fix the sculpt spec and rebuild, correct destructionGroups on the asset, ' +
+          'or pass --allow-contract-drift.',
       );
     }
     log(`WARN   : shipping with contract drift on --allow-contract-drift\n  ${detail}`);
+  }
+
+  // The physics compound, judged here for the same reason as the rest: before
+  // anything is copied. A prop that ships without one cannot be walked into or
+  // stood on, which used to be invisible because the old gate only counted
+  // colliders and every prop had exactly one.
+  const collider = colliderVerdict(asset);
+  log(
+    `colliders: ${collider.parts}/${collider.ceiling} part(s)` +
+      (collider.coverage != null ? `, coverage ${collider.coverage}` : ', unmeasured'),
+  );
+  if (!collider.ok) {
+    const detail = collider.problems.join('\n  ');
+    if (!args['allow-no-colliders']) {
+      return fail(
+        `${asset.name}'s physics compound is not fit to ship:\n  ${detail}\n` +
+          `Run node scripts/derive-colliders.mjs --id ${id}, correct it by hand in the ` +
+          'viewer, or pass --allow-no-colliders.',
+      );
+    }
+    log(`WARN   : shipping without a usable compound on --allow-no-colliders\n  ${detail}`);
   }
 
   const from = args.from ? path.resolve(args.from) : workDir(id);
@@ -148,6 +210,17 @@ async function main() {
         'Run build-model-module.mjs, then render-model.mjs, then this.',
     );
   }
+
+  const node = constructsUnderNode(bundleFrom);
+  if (!node.ok) {
+    return fail(
+      `${asset.name}'s module does not construct under plain Node: ${node.error}\n` +
+        'Every Node-side gate evaluates this bundle, so it would ship unable to be ' +
+        'measured. A baked graphic needs a `typeof document === \'undefined\'` guard, ' +
+        'or the load has to sit behind `if (options.baseUrl)`.',
+    );
+  }
+  log('node   : module constructs headlessly');
 
   const moved = {};
   moved.file = await copyIfPresent(bundleFrom, path.join(to, 'model.bundle.js'));

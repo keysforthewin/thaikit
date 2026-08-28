@@ -53,6 +53,25 @@ export const api = {
     request(`/api/assets/${id}?purgeFiles=${purgeFiles}`, { method: 'DELETE' }),
   bulk: (assets, mode = 'merge') =>
     request('/api/assets/bulk', { method: 'POST', body: JSON.stringify({ mode, assets }) }),
+
+  /**
+   * The physics compound, which lives in a file beside the module rather than in
+   * the registry -- so it gets its own ETag key. A prop that was never derived
+   * answers 404, which is a state the drawer shows rather than an error.
+   */
+  colliders: (id) => request(`/api/assets/${id}/colliders`, {}, `colliders:${id}`),
+  saveColliders: (id, doc) =>
+    request(
+      `/api/assets/${id}/colliders`,
+      {
+        method: 'PUT',
+        headers: etags.has(`colliders:${id}`)
+          ? { 'If-Match': etags.get(`colliders:${id}`) }
+          : {},
+        body: JSON.stringify(doc),
+      },
+      `colliders:${id}`,
+    ),
 };
 
 /**

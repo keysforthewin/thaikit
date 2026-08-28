@@ -42,12 +42,28 @@ that still says "mesh" means the model.
   is the ONLY place they are combined. A prop at a third of its triangle budget can
   still be what costs a low-end GPU its frame. `render-model.mjs` measures all four
   and warns; `promote-model.mjs` is the gate that refuses to ship an overrun.
-- **Colliders and destruction groups are declared on the ASSET, not discovered on
-  the model.** `collider` is the physics proxy's shape; `destructionGroups` names
-  the assemblies the prop must break into, empty meaning not breakable.
-  `promote-model.mjs` checks built against declared as an EQUALITY in both
-  directions — a group declared and not built is a prop that does not come apart
-  as promised, and one built and not declared is contract nobody asked for.
+- **The collider is DERIVED from the geometry; destruction groups are DECLARED on
+  the asset.** They used to be the same kind of thing and they are not. A
+  `destructionGroup` is design intent — the assemblies the prop must break into,
+  empty meaning not breakable — and `promote-model.mjs` checks built against
+  declared as an EQUALITY in both directions. A collider is a MEASUREMENT:
+  `scripts/derive-colliders.mjs` evaluates the shipped module under Node,
+  voxelises its triangles and writes a compound of boxes and cylinders to
+  `assets/<id>/colliders.json` in root-local metres, with `scale` as half-extents.
+  The old `collider: 'box' | 'cylinder' | 'convex' | 'none'` enum is gone: it
+  published one word to consumers, the harness discarded the shapes and kept the
+  names, and the gate could only assert the count was not zero — so a hundred
+  props shipped exactly one collider each and not one of them could be stood on.
+  `physics.enabled` and `physics.massKg` are the declaration that word was
+  pretending to be, and `physics.enabled` HALVES the part ceiling, so set it
+  before deriving.
+- **A collider without its self-check is the old system again.** The derivation
+  casts rays down onto the real geometry and onto the compound and records
+  `coverage` (below 0.99 is a player falling through), `p95`/`maxAbsDelta` (how
+  wrong the floor is underfoot) and `ledgesPreserved`. `promote-model.mjs` gates
+  on them. Saving a hand edit in the viewer CLEARS them, because a moved box has
+  not been measured — never quote a derivation's coverage beside a shape somebody
+  dragged. A `handTuned` file makes the derivation refuse without `--force`.
 - **thaikit never scores a model, but it does carry the score.**
   `scripts/lib/review.mjs` reads img2threejs's own verdict out of the sculpt
   spec's `reviewHistory` (fidelity, layer scores, per-feature scores) and the
@@ -249,9 +265,15 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   the endpoint forces it. There is then no proxy and no band table: build from the plate alone,
   say so in `meshyNote` with the confidence, and keep the refused log in `scratch/<id>/`.
 - **A baked `TextureLoader` graphic must be guarded with `typeof document === 'undefined'`.**
-  `check-coplanar.mjs` and the runtime probe evaluate the bundle under plain Node, where
-  `ImageLoader` throws; unguarded, the prop passes the browser render and then fails every
-  Node-side gate with a stack trace that reads as a broken module.
+  `check-coplanar.mjs`, `derive-colliders.mjs` and the runtime probe evaluate the bundle under
+  plain Node, where `ImageLoader` throws; unguarded, the prop passes the browser render and then
+  fails every Node-side gate with a stack trace that reads as a broken module. The Cafe Amazon
+  shopfront shipped that way — one unguarded loader on its fascia graphic — and was the only prop
+  of a hundred with no physics compound, because it was the only one that would not construct.
+  `promote-model.mjs` now constructs the module headlessly before it copies anything, so this
+  cannot ship silently again. A load behind `if (options.baseUrl)` needs no guard and is the
+  better pattern where the texture is a shipped map: the Node-side gates call the factory with
+  `{}`, which is how all 25 imposters and road tiles are already safe.
 - **`LatheGeometry` shares the corner vertex between an end disc and the side wall, so
   `computeVertexNormals` tilts the wall's first ring 45 degrees and the harness shades a dark band
   there** — a ring the turntable gate flagged as a 4,876 px HOLE under the stainless bin's cap and a
