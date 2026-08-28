@@ -72,7 +72,7 @@
       "formLanguage": [
         "step-through-frame",
         "leg-shield",
-        "spoked-wheels",
+        "wire-spoked-wheels",
         "tube-frame",
         "bilateral-symmetry"
       ],
@@ -88,9 +88,9 @@
       "materialFamilies": [
         "navy-automotive-paint",
         "chrome-and-alloy",
-        "black-vinyl-and-rubber"
+        "dusty-rubber"
       ],
-      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. The most common vehicle on Thai roads. The plate shows a navy underbone with white pinstripes on the leg shield and side covers, a black vinyl seat, chrome rear rack, round chrome mirrors on tall stems, a rectangular headlamp between amber indicators, silver engine cases, a chrome exhaust and wire-spoked wheels with drum hubs."
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. The most common vehicle on Thai roads. The plate shows a navy underbone with white pinstripes on the leg shield and side covers, a black vinyl seat, a chrome rear rack with a slotted plate, round chrome mirrors on tall stems, a rectangular headlamp between amber indicators, silver engine cases with a forward-canted barrel, a chain to a rear sprocket, a dusty exhaust on the right and wire-spoked wheels with drum hubs."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,13 +108,13 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 2,
+        "materialLayers": 3,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "The identity is the underbone layout: a leg shield rising to a headlamp cowl, a step-through floor, side covers under a flat seat, a chrome rack behind it, spoked wheels front and rear. It is an assembly of small parts, not one shell.",
-        "Two materials: the paint (leg shield, covers, fenders, cowl, pinstripes as vertex colours) and a white vertex-coloured trim carrying chrome, alloy, black, seat vinyl, lamp lenses and the tyres.",
-        "One repetition system: two wheels off one lathe, each a named pivot on its axle.",
+        "The identity is the underbone layout: a leg shield rising to a handlebar cowl, a step-through floor, side covers under a flat seat, a chrome rack behind it, wire-spoked wheels front and rear. It is an assembly of small parts, not one shell.",
+        "Three materials: the paint (leg shield, covers, seat, fenders, cowl, swingarm, fork shrouds, pinstripes as vertex colours), a white vertex-coloured trim carrying chrome, alloy, lamps and black rubber, and a third for the tyres, whose tread tile has to multiply the rubber without touching anything else.",
+        "One repetition system: two wheels off one open wire-wheel geometry, each a named pivot on its axle.",
         "Action readiness is the wheels: two hinge pivots, convex collider, not breakable. Steering is not articulated."
       ]
     },
@@ -129,7 +129,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "A motorcycle is legible by its silhouette gaps as much as its masses -- the step-through, the daylight under the seat, the space inside the fork -- so the frame is tubes and the panels are thin extrusions rather than one blocked mass. Every tube run is a polyline of cylinders merged into one geometry."
+      "rationale": "A motorcycle is legible by its silhouette gaps as much as its masses -- the step-through, the daylight under the seat, the space inside the fork, and above all the daylight THROUGH a wire wheel -- so the frame is tubes, the panels are thin extrusions, and the wheel is an open tyre ring with a rim, a drum hub and eighteen prism spokes rather than a dished disc."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -153,7 +153,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "front fender arc and headlamp cowl in the body paint",
+          "description": "fenders hugging both tyres and the handlebar cowl, in the body paint",
           "mapsTo": {
             "ref": "body"
           },
@@ -164,7 +164,7 @@
           "zone": "fittings",
           "kind": "linework",
           "identityDefining": true,
-          "description": "chrome rear rack, handlebar, fork legs, round mirrors on stems, exhaust",
+          "description": "chrome rear rack with a slotted plate, handlebar, fork sliders, round mirrors on tall stems, headlamp and lamps",
           "mapsTo": {
             "ref": "trim"
           },
@@ -175,7 +175,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "alloy engine block and dark crankcase under the floor, swingarm and shock",
+          "description": "alloy barrel and head canted forward over a dark crankcase, chain to the rear sprocket, exhaust and shocks",
           "mapsTo": {
             "ref": "trim"
           },
@@ -186,10 +186,22 @@
           "zone": "wheels",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two spoked wheels with drum hubs on 0.54 m tyres",
+          "description": "two OPEN wire wheels with drum hubs on 0.556 m tyres",
           "mapsTo": {
             "ref": "wheels"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-tread",
+          "zone": "wheels",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "circumferential grooves cut by staggered sipes, with road dust on the lower shoulder",
+          "mapsTo": {
+            "ref": "d8-tread"
+          },
+          "onMaterial": "rubber",
           "realization": "unreported"
         },
         {
@@ -197,7 +209,7 @@
           "zone": "body",
           "kind": "decal",
           "identityDefining": false,
-          "description": "white pinstripes on the side covers",
+          "description": "white pinstripes on the side covers and the rear fender edge",
           "mapsTo": {
             "ref": "body"
           },
@@ -244,17 +256,18 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
     "resolvedUnknowns": [
-      "The wheels are wire-spoked in the plate; the spokes are eighteen thin boxes merged into the wheel lathe, and the hub dish behind them is a mid grey so the wheel does not read as a hole at prop distance.",
-      "The turntable gate's enclosed-background signal fires on the step-through gap and on the daylight inside the fork and under the seat: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
-      "The right side is mirrored from the left; the exhaust runs on the right."
+      "The wheels are wire-spoked in the plate and are built OPEN: a closed tyre-ring lathe, a rim ring, a drum hub and eighteen three-sided prism spokes, with daylight through them. The first build used the closed dished lathe, which is a solid disc that HIDES the spokes merged into it -- it shipped two grey discs.",
+      "The turntable gate's enclosed-background signal fires on the step-through gap, the daylight inside the fork, under the seat and now through the wire wheels: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
+      "The right side is mirrored from the left; the exhaust runs on the right, dull and dusty rather than bright chrome (measured #4d4137 on the plate's silencer).",
+      "The chain, sprockets and kickstart are read off the plate's left-side crop; the countershaft sprocket is inferred behind its cover at confidence 0.75."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.70 x 1.07 x 1.92 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Rendered model matches the reference silhouette, the 0.71 x 1.25 x 1.92 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=8 draw calls, <=4 materials, <=8 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus one named pivot per wheel (2); zero sockets; convex collider; no destruction groups.",
       "Every material declares textureless with named evidence."
@@ -263,7 +276,7 @@
       "macroComponents": 1,
       "mesoComponents": 2,
       "microFeatureGroups": 3,
-      "materialLayers": 2,
+      "materialLayers": 3,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -274,34 +287,38 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.70 x 1.07 x 1.92 m",
+          "Envelope 0.71 x 1.25 x 1.92 m",
           "Underbone layout: leg shield, step-through, seat, rack",
-          "Wheels 0.54 m at the proxy stations"
+          "Wheels 0.556 m at the proxy stations 0.15 L and 0.80 L"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "a scooter with a floorboard and no engine",
-          "a blocked mass with no step-through"
+          "a blocked mass with no step-through",
+          "a wheelbase read off the wrong length"
         ]
       },
       {
         "id": "fittings",
-        "name": "Chrome fittings and engine",
+        "name": "Front end, drivetrain and fittings",
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Rack, bars, mirrors, fork and exhaust in chrome tubes",
-          "Engine block and crankcase under the floor"
+          "Fork sliders on the real rake THROUGH the front hub",
+          "Headlamp, indicators and instrument set into the cowl",
+          "Chain, sprockets, exhaust and shocks present",
+          "Rack, bars and mirrors in chrome tubes"
         ],
         "evidenceRefs": [
           "region-chrome",
           "region-engine"
         ],
         "failureModes": [
-          "no rack or mirrors",
-          "a solid slab where the engine is"
+          "forks that miss the hub",
+          "no drivetrain",
+          "a bright chrome exhaust dominating the silhouette"
         ]
       },
       {
@@ -310,7 +327,8 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Two instanced spoked wheels",
+          "Two instanced OPEN wire wheels with daylight through them",
+          "A tread tile on its own material",
           "One named pivot per wheel on the axle"
         ],
         "evidenceRefs": [
@@ -318,22 +336,26 @@
         ],
         "failureModes": [
           "flat discs",
+          "a dish hiding its own spokes",
           "no pivots"
         ]
       },
       {
         "id": "paint",
-        "name": "Paint and pinstripes",
+        "name": "Paint, pinstripes and tread",
         "required": false,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Navy as measured with white pinstripes"
+          "Navy as measured with white pinstripes",
+          "A tread that reads as rubber at prop distance"
         ],
         "evidenceRefs": [
-          "region-paint"
+          "region-paint",
+          "region-tyre"
         ],
         "failureModes": [
-          "a lifted grey-blue"
+          "a lifted grey-blue",
+          "a flat grey tyre"
         ]
       }
     ],
@@ -359,7 +381,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 8 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -497,7 +519,7 @@
     },
     {
       "id": "fittings",
-      "name": "Chrome fittings and engine",
+      "name": "Front end, drivetrain and fittings",
       "tier": "critical",
       "passIds": [
         "form-refinement"
@@ -531,7 +553,7 @@
     },
     {
       "id": "paint",
-      "name": "Paint and pinstripes",
+      "name": "Paint, pinstripes and tread",
       "tier": "important",
       "passIds": [
         "material-pass",
@@ -540,10 +562,12 @@
       "minimumScore": 0.75,
       "mustPass": false,
       "componentRefs": [
-        "body"
+        "body",
+        "wheels"
       ],
       "evidenceRefs": [
-        "region-paint"
+        "region-paint",
+        "region-tyre"
       ]
     }
   ],
@@ -667,8 +691,8 @@
         "type": "hinge",
         "localPosition": [
           0,
-          0.27,
-          0.76
+          0.278,
+          0.64
         ],
         "axis": [
           1,
@@ -683,8 +707,8 @@
         "type": "hinge",
         "localPosition": [
           0,
-          0.27,
-          -0.48
+          0.278,
+          -0.58
         ],
         "axis": [
           1,
@@ -708,9 +732,10 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The wheels are wire-spoked in the plate; the spokes are eighteen thin boxes merged into the wheel lathe, and the hub dish behind them is a mid grey so the wheel does not read as a hole at prop distance.",
-    "The turntable gate's enclosed-background signal fires on the step-through gap and on the daylight inside the fork and under the seat: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
-    "The right side is mirrored from the left; the exhaust runs on the right."
+    "The wheels are wire-spoked in the plate and are built OPEN: a closed tyre-ring lathe, a rim ring, a drum hub and eighteen three-sided prism spokes, with daylight through them. The first build used the closed dished lathe, which is a solid disc that HIDES the spokes merged into it -- it shipped two grey discs.",
+    "The turntable gate's enclosed-background signal fires on the step-through gap, the daylight inside the fork, under the seat and now through the wire wheels: real open air on a motorcycle. --allow-holes is set on the _holecc measurement.",
+    "The right side is mirrored from the left; the exhaust runs on the right, dull and dusty rather than bright chrome (measured #4d4137 on the plate's silencer).",
+    "The chain, sprockets and kickstart are read off the plate's left-side crop; the countershaft sprocket is inferred behind its cover at confidence 0.75."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -722,13 +747,13 @@
   },
   "silhouette": {
     "envelope": {
-      "w": 0.7,
-      "h": 1.07,
+      "w": 0.71,
+      "h": 1.25,
       "d": 1.92
     },
-    "description": "Wheels 0.54 m in diameter at z +0.76 and -0.48 (1.24 wheelbase); a front fender arc over the front wheel; fork legs up to a headlamp cowl at 0.86-1.00 m; handlebar at 1.00 m with mirrors to 1.125 m; a leg shield from 0.32 to 0.84 m at z 0.36-0.62; a step-through floor at 0.33-0.39 m; side covers 0.40-0.60 m under a seat at 0.61-0.71 m from z 0.03 to -0.59; a rack at 0.60 m to z -1.00; engine block under the floor.",
-    "envelopeDerivation": "x spans -0.35..+0.35 at the handlebar and mirror tips; y 0.00 to 1.125 at the mirror heads; z -1.04..+1.03 rear rack to front fender, +Z forward. The Meshy proxy normalises to L:H:W = 1 : 0.654 : 0.384 (1.92 x 1.26 x 0.74 at the declared length); the registry height of 1.07 is to the bar tops and the mirrors add the rest, as they do here.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.654 : 0.384. Its side elevation (scratch/honda-wave/_ev/side.png) reads wheels 0.30 H at 0.10 L and 0.87 L, seat 0.55-0.60 H over 0.45-0.65 L, leg shield 0.30-0.65 H at 0.22-0.32 L, bars 0.82 H, mirrors to 1.00 H, rack 0.55 H over 0.70-0.95 L -- and those fractions at the declared 1.92 m are what is built. The band table's residuals are the proxy's mirror-inclusive height."
+    "description": "Wheels 0.556 m in diameter at z +0.64 and -0.58 (1.22 wheelbase); a front fender hugging the tyre at 18-38 mm from -8 to 134 degrees; chrome fork sliders on 27 degrees of rake THROUGH the front hub, into navy shrouds and a triple clamp at 0.83; a handlebar cowl 0.87-1.015 m carrying a rectangular headlamp and two amber pods; bars at 1.00 m across 0.69 m with mirrors to 1.258 m; a leg shield from 0.30 to 0.87 m, front face z +0.575, top edge back at z +0.30; a step-through floor at 0.28-0.32 m; side covers 0.47-0.672 m from z +0.08 to -0.47 under a seat at 0.674-0.755 m from z +0.11 to -0.46; a chrome rack 0.75 m over z -0.46..-0.93; engine 0.19-0.46 m between the wheels with the barrel canted 20 degrees forward.",
+    "envelopeDerivation": "x spans -0.356..+0.356 at the mirror heads; y 0.000 to 1.258 at the mirror tips; z -0.939 to +0.942, rear mudflap to front fender, +Z forward. The Meshy proxy (bbox 1.897 x 1.240 x 0.727) normalises to L:H:W = 1 : 0.654 : 0.383, i.e. 1.92 x 1.255 x 0.735 at the declared length, and the wheel centres sit at 0.15 L and 0.80 L for a 1.23 m wheelbase. The registry height of 1.07 was a list-time estimate to the BAR TOPS; it has been corrected to 1.25 on the proxy arithmetic, with the bars still at 1.00 and the mirrors carrying the rest.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.654 : 0.383. Its side elevation and occupancy map (scratch/honda-wave/_ev/) read wheel centres at 0.15 L and 0.80 L, bars at 0.80 H, mirror tips at 0.98 H, seat top at 0.60 H over 0.50-0.73 L, rack at 0.545 H over 0.75-0.98 L and the leg shield spanning 0.21-0.35 L -- and those fractions at the declared 1.92 m are what is built. The first build read the same map at a wrong length and put the front axle 0.12 m too far back."
   },
   "viewEvidence": [
     {
@@ -778,19 +803,19 @@
   "componentTree": [
     {
       "id": "body",
-      "name": "Bodywork: leg shield, covers, fenders, cowl",
+      "name": "Bodywork: leg shield, covers, fenders, cowl and seat",
       "level": "macro",
       "role": "body",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four thin side-profile extrusions (leg shield with 25 percent tumblehome, rear side covers, front fender arc, headlamp cowl), the floor cover, pinstripes and the rear mudguard tip merged into ONE geometry and ONE draw call.",
+      "topologyRationale": "Six thin side-profile extrusions (leg shield with 28 percent tumblehome, side covers, seat pad, two fenders hugging their tyres, handlebar cowl), the floor cover, seven pinstripe boxes and seven painted tube runs (swingarm, fork shrouds, shock bodies) merged into ONE geometry and ONE draw call.",
       "materialId": "paint",
       "material": "paint",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Leg shield 0.32-0.84 m at z 0.36-0.62, 0.40 wide; covers 0.40-0.60 m from z 0.12 to -0.86, 0.30 wide; fender arc over the front wheel; cowl 0.86-1.00 m.",
+        "topologyIntent": "Leg shield 0.30-0.87 m over z +0.30..+0.575, 0.36 wide; covers 0.47-0.672 m from z +0.08 to -0.47, 0.225 wide; seat 0.674-0.755 m from z +0.11 to -0.46, 0.285 wide so it overhangs the covers; front fender -8..134 deg at 18-38 mm off the tread; cowl 0.87-1.015 m.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -799,18 +824,18 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Every panel is a separate thin extrusion at its own width; the floor cover sits between the covers at a different height; pinstripes stand 4 mm proud.",
+        "zFightingNote": "Every panel is a separate thin extrusion at its own width; the seat is 0.285 wide over 0.225-wide covers and meets them as an opposed butt; the fenders stand 18 mm off the tread; pinstripes stand 4 mm proud of the tumbled flank. check-coplanar reports clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with height-keyed UVs for the dust tile."
       },
       "localFeatures": [
         {
           "id": "d1-underbone",
-          "description": "leg shield, floor, covers",
+          "description": "leg shield, floor, covers, seat",
           "delivery": "sideExtrude panels"
         },
         {
           "id": "d2-fenders-cowl",
-          "description": "fender and cowl",
+          "description": "hugging fenders and cowl",
           "delivery": "sideExtrude arcs"
         },
         {
@@ -827,7 +852,7 @@
       "colorMaterialRecipe": {
         "materialId": "paint",
         "baseColor": "#343f58",
-        "recipe": "Navy paint as measured; pinstripes as vertex colour.",
+        "recipe": "Navy paint as measured; seat vinyl and pinstripes as vertex colour.",
         "evidenceRef": "region-paint",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(52, 63, 88, 1.0)",
@@ -868,12 +893,12 @@
           "shape": "convex",
           "localCenter": [
             0,
-            0.535,
+            0.625,
             0
           ],
           "halfExtents": [
-            0.35,
-            0.535,
+            0.355,
+            0.625,
             0.96
           ],
           "notes": "Declared on the asset as convex: one hull over the whole machine."
@@ -882,19 +907,19 @@
     },
     {
       "id": "trim",
-      "name": "Frame, forks, engine, seat and fittings",
+      "name": "Frame, forks, engine, drivetrain and fittings",
       "level": "meso",
       "role": "detail",
       "importance": 0.9,
       "confidence": 0.86,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Twenty tube runs (fork, stem, bars, mirror stems, spine, swingarm, shock, exhaust, rack), the seat, engine block, crankcase, lamps, grips, instrument, mirror heads and footpegs: one merge, one submission.",
+      "topologyRationale": "Twenty-six tube runs (fork sliders on the rake, stem, bars, mirror stems, backbone, subframe, shock lowers, chain runs, exhaust and silencer, kickstart, centre stand, rack frame and struts, indicator stalks), eight lathes (indicator pods, side repeaters, engine covers, rear sprocket, silencer cap), twenty boxes (engine, clamps, headlamp, instrument, rack slats, lamps, mudflap) and seven cylinders (mirror heads, grips, pegs, sprocket cover): one merge, one submission.",
       "materialId": "trim",
       "material": "trim",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "Handlebar 0.68 m across at 1.00 m; mirrors to 1.125 m; rack 0.32 x 0.38 m at 0.60 m; seat 0.26 x 0.62 m at 0.61-0.71 m; engine 0.22 x 0.22 x 0.30 m at 0.19-0.41 m.",
+        "topologyIntent": "Handlebar 0.69 m across at 1.00 m; mirror heads 0.124 m across at 1.196 m; rack 0.30 x 0.47 m at 0.75 m; engine 0.17 x 0.16 x 0.24 m at 0.175-0.335 m with the barrel canted 0.35 rad forward to 0.46 m; silencer 0.052 m across at 0.26 m on the right.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -903,19 +928,19 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Tubes overlap their joints by 1.2 radii and meet the panels as opposed faces; the seat sits on the covers' top face as an opposed butt.",
+        "zFightingNote": "Tubes overlap their joints by 1.2 radii and meet the panels as opposed faces; the headlamp lens stands 5 mm proud of its bezel; the chrome shield trim stands 5 mm proud of the tumbled shield face; the rack slats sit 2 mm under the frame tubes.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d3-chrome",
-          "description": "chrome fittings",
-          "delivery": "tube() runs"
+          "description": "chrome fittings and lamps",
+          "delivery": "tube(), lathe() and tinted boxes"
         },
         {
           "id": "d4-engine",
-          "description": "engine and swingarm",
-          "delivery": "tinted boxes and tubes"
+          "description": "engine, chain and exhaust",
+          "delivery": "tinted boxes, lathes and tubes"
         }
       ],
       "colorMaterialRecipe": {
@@ -952,15 +977,15 @@
       "level": "meso",
       "role": "mechanism",
       "importance": 0.9,
-      "confidence": 0.84,
+      "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One lathe with eighteen spoke boxes merged in, as an InstancedMesh with two instances.",
-      "materialId": "trim",
-      "material": "trim",
+      "topologyRationale": "An OPEN wire wheel -- a closed tyre-ring lathe, a rim ring, a drum hub and cap, and eighteen three-sided prism spokes -- as ONE geometry in an InstancedMesh with two instances.",
+      "materialId": "rubber",
+      "material": "rubber",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "0.27 m radius, 0.08 m wide, rim 0.20 m, at z +0.76 and -0.48.",
+        "topologyIntent": "0.278 m tyre radius, 0.216 m rim, 0.076 m wide, hub 0.072 m at z +0.64 and -0.58.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -969,26 +994,31 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Closed lathe; the fork lowers end at the hub face as opposed butts.",
+        "zFightingNote": "The tyre profile is closed back on itself; the rim ring sits inside the bead; the fork sliders and swingarm end at the hub faces as opposed butts.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d6-wheels",
-          "description": "two spoked wheels",
+          "description": "two open wire wheels",
           "delivery": "repetitionSystems.wheels"
+        },
+        {
+          "id": "d8-tread",
+          "description": "tread and road dust",
+          "delivery": "tyre canvas with around-by-profile UVs"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "trim",
-        "baseColor": "#4c4a46",
-        "recipe": "Tyre #4c4a46, rim and hub #a9a7a2, spokes #b0aea9 as vertex colours.",
+        "materialId": "rubber",
+        "baseColor": "#6e675d",
+        "recipe": "Tyre #6e675d, rim #a9a7a2, drum hub #8a8378, spokes #b0aea9 as vertex colours under a tread tile.",
         "evidenceRef": "region-tyre",
-        "confidence": 0.84,
-        "dominantAlbedo": "rgba(76, 74, 70, 1.0)",
-        "secondaryAlbedo": "rgba(76, 74, 70, 1.0)",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(110, 103, 93, 1.0)",
+        "secondaryAlbedo": "rgba(110, 103, 93, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.84
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "child",
@@ -996,8 +1026,8 @@
           "mode": "custom",
           "localPosition": [
             0,
-            0.27,
-            0.76
+            0.278,
+            0.64
           ],
           "axis": [
             1,
@@ -1063,7 +1093,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-paint (side cover, PBR confidence 0.763) at #343f58, luma 63. Shipped as measured: the panels are thin and set against chrome and daylight, and the turntable gate did not read them as holes. White pinstripes #d8dde0 are vertex-coloured boxes 4 mm proud.",
+          "Measured on viewEvidence region-paint (side cover, PBR confidence 0.763) at #343f58, luma 63 -- the plate reads #2b3551 lit and #1e2638 in shade, and #343f58 is the mid. Shipped as measured: the panels are thin and set against chrome and daylight. White pinstripes #d8dde0 are vertex-coloured boxes 4 mm proud; the seat is the same material at #4c4c4e.",
           "Textureless as DECLARED: a light road-dust multiplier canvas is bound after construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1077,7 +1107,7 @@
     },
     {
       "id": "trim",
-      "name": "Chrome, alloy, vinyl and rubber",
+      "name": "Chrome, alloy, vinyl and lamps",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#ffffff",
@@ -1099,7 +1129,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "WHITE on purpose with vertexColors: chrome #b9bcbf (region-chrome), engine alloy #6c6a66 (region-engine, 0.860), crankcase and swingarm #4a4742, seat vinyl #575759 (region-seat), tyres #4c4a46 and rims #a9a7a2 (region-tyre, 0.841), lamp #d8dde0, indicators #b87a3a, tail lamp #b03030.",
+          "WHITE on purpose with vertexColors: chrome #b9bcbf (region-chrome, plate #a7a5a4 on the rack), engine alloy #9b9c96 (region-engine 0.860, measured on the cases) over a crankcase #63625e (plate #585754, lifted off luma 58 for the side-lit frame), dark fittings #4a4742, black grips and pegs #565658 (plate #434344), a dusty exhaust #7a766f (plate #4d4137), lamp lens #d8dde0, indicators #b87a3a (plate #95532f), tail lamp #b03030.",
           "Textureless as DECLARED: the parts are 6-40 mm; nothing resolves a texture at prop distance. No metalness: the harness has no environment map and chrome with nothing to reflect renders black."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1110,6 +1140,49 @@
         "confidence": 0.86,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "rubber",
+      "name": "Tyre rubber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/rubber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/tyre.png. extract_pbr_evidence confidence 0.841. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d8-tread",
+          "region": "wheels",
+          "roughness": 0.88,
+          "evidence": "crops/tyre.png -- circumferential grooves cut by staggered sipes, with road dust on the lower shoulder"
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE with vertexColors under a tread canvas bound AFTER construction: the tyre carries #6e675d, the rim #a9a7a2, the drum hub #8a8378 and the spokes #b0aea9. Measured tread #49453e on region-tyre (0.841), authored 1.275x against the tile's base of 200/255 so dust and scuffs can go brighter than the rubber under a multiply canvas, and lifted to luma 105 so the back-lit 180 frame (0.55 of painted luma) clears the gate's 58.",
+          "Textureless as DECLARED: the tread is a post-construction 256 px canvas, not a synthesised PBR set. Its UVs are around-by-profile at 0.05 m per repeat (35 repeats on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. It is its own material because a tread that multiplied the chrome and the paint would ruin both."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tyre.png",
+        "pbrReport": "material-evidence/rubber.pbr.json",
+        "confidence": 0.841,
+        "verdict": "pass"
+      }
     }
   ],
   "repetitionSystems": [
@@ -1118,20 +1191,20 @@
       "name": "Wheels",
       "instanceCount": 2,
       "sourceComponent": "wheels",
-      "material": "trim",
+      "material": "rubber",
       "renderAs": "InstancedMesh",
-      "sharedGeometry": "spoked-wheel-lathe",
+      "sharedGeometry": "open-wire-wheel",
       "placement": {
         "mode": "explicit",
-        "note": "z +0.76 and -0.48 on the centreline."
+        "note": "z +0.64 and -0.58 on the centreline."
       },
       "instanceDimensions": {
-        "width": 0.08,
-        "height": 0.54,
-        "depth": 0.54
+        "width": 0.076,
+        "height": 0.556,
+        "depth": 0.556
       },
       "rationale": "Two wheels at one geometry and one submission; each instance is a named axle pivot.",
-      "zFightingNote": "Closed lathe with the spokes inside the rim."
+      "zFightingNote": "Closed tyre ring; the rim, hub and spokes are inside it and pinned to the tile's white band."
     }
   ],
   "buildPasses": [
@@ -1242,274 +1315,379 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T04:43:12.393123+00:00",
+      "timestamp": "2026-08-28T17:25:35.717124+00:00",
       "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:35.801297+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:35.883507+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:35.963690+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.044466+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.124641+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.206758+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.288347+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "fittings",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Front end on 27 degrees of rake: chrome sliders THROUGH the front hub into navy shrouds, a triple clamp and lower yoke, a stem to the bar clamp, pulled-back bars with black grips, tall mirror stems to 0.124 m heads, a 0.146 m headlamp with a proud lens in the cowl between two amber pods, an instrument with a pale face, fender stays. Drivetrain: canted alloy barrel and finned head over a crankcase with two round covers, two chain runs to a rear sprocket under a navy chain guard, a dull #7a766f exhaust and silencer on the right, painted swingarm, shocks with chrome lowers, footpegs, kickstart and centre stand. Tail: a chrome rack of frame, rear rail, four struts and three slats, tail lamp on its bracket, two amber indicators on stalks, a black mudflap.",
+          "notes": "The first build's forks missed the hub entirely and the exhaust was a bright chrome tube across the whole silhouette; the plate measures the silencer at #4d4137, so it is authored dull."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.368590+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.450305+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.531755+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.613570+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.694170+00:00",
+      "passId": "lighting-pass",
       "estimatedFidelity": 0.85,
       "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.476061+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
-        },
-        {
-          "id": "wheels",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.554706+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "fittings",
-          "tier": "critical",
-          "score": 0.83,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
-          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.634618+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "paint",
-          "tier": "important",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.717021+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "paint",
-          "tier": "important",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.801585+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:43:12.883033+00:00",
+      "timestamp": "2026-08-28T17:25:36.773936+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:43:12.963064+00:00",
+      "timestamp": "2026-08-28T17:25:36.857757+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
         },
         {
           "id": "fittings",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
-          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+          "evidence": "Front end on 27 degrees of rake: chrome sliders THROUGH the front hub into navy shrouds, a triple clamp and lower yoke, a stem to the bar clamp, pulled-back bars with black grips, tall mirror stems to 0.124 m heads, a 0.146 m headlamp with a proud lens in the cowl between two amber pods, an instrument with a pale face, fender stays. Drivetrain: canted alloy barrel and finned head over a crankcase with two round covers, two chain runs to a rear sprocket under a navy chain guard, a dull #7a766f exhaust and silencer on the right, painted swingarm, shocks with chrome lowers, footpegs, kickstart and centre stand. Tail: a chrome rack of frame, rear rail, four struts and three slats, tail lamp on its bracket, two amber indicators on stalks, a black mudflap.",
+          "notes": "The first build's forks missed the hub entirely and the exhaust was a bright chrome tube across the whole silhouette; the plate measures the silencer at #4d4137, so it is authored dull."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
         },
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
       "cameraView": "",
       "notes": "",
@@ -1518,89 +1696,40 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T04:43:12.393123+00:00",
+      "timestamp": "2026-08-28T17:25:35.717124+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
-        }
-      ],
-      "action": "continue",
-      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/honda-wave/review/clay/clay-315.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T04:43:12.476061+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
-        },
-        {
-          "id": "wheels",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: four thin panel extrusions, twenty tube runs, seat, engine, wheels at the proxy stations.",
+      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 8, three materials of 4.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/honda-wave/review/clay/clay-45.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1608,31 +1737,200 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.554706+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-08-28T17:25:35.801297+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The wheels were the CLOSED dished lathe -- a solid disc that hides the eighteen spokes merged into it, so the prop shipped two grey discs. Rebuilt as the open wire wheel: tyre ring, rim ring, 0.164 m drum hub with a chrome cap, prism spokes, daylight through.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:35.883507+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Stations re-read off scratch/honda-wave/_ev/occupancy.txt. The wheel centres are at 0.15 L and 0.80 L, not the 0.10 / 0.87 the first build used: the front axle moved forward 0.12 m to z +0.64 and the wheelbase closed to 1.22 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:35.963690+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: stations re-read off the proxy occupancy map (wheel centres 0.15 L / 0.80 L), six panel extrusions, twenty-eight tube runs, eight lathes, and the wheels rebuilt as OPEN wire wheels.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.044466+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The fork was two vertical sticks landing behind the hub. Rebuilt on 27 degrees of rake through the hub, with navy shrouds, a triple clamp, a lower yoke, fender stays and a stem into the bar clamp.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.124641+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Added the drivetrain the plate shows and the first build had not: canted barrel and finned head, round engine covers, two chain runs to a rear sprocket under a chain guard, a dull silencer on the right, shocks with chrome lowers, kickstart and centre stand.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.206758+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rear body re-cut: the covers were a 0.30 m slab that swallowed the rear wheel. Narrowed to 0.225 with the bottom edge lifted clear of the fender crown, under a 0.285 m saddle that overhangs them.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.288347+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "fittings",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
-          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+          "evidence": "Front end on 27 degrees of rake: chrome sliders THROUGH the front hub into navy shrouds, a triple clamp and lower yoke, a stem to the bar clamp, pulled-back bars with black grips, tall mirror stems to 0.124 m heads, a 0.146 m headlamp with a proud lens in the cowl between two amber pods, an instrument with a pale face, fender stays. Drivetrain: canted alloy barrel and finned head over a crankcase with two round covers, two chain runs to a rear sprocket under a navy chain guard, a dull #7a766f exhaust and silencer on the right, painted swingarm, shocks with chrome lowers, footpegs, kickstart and centre stand. Tail: a chrome rack of frame, rear rail, four struts and three slats, tail lamp on its bracket, two amber indicators on stalks, a black mudflap.",
+          "notes": "The first build's forks missed the hub entirely and the exhaust was a bright chrome tube across the whole silhouette; the plate measures the silencer at #4d4137, so it is authored dull."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: fender arc, cowl tumblehome, rack bars, mirror heads, pegs, lamps.",
+      "summary": "Form refinement: front end on the real rake, hugging fenders, headlamp and pods in the cowl, engine top end, chain and sprocket, rack with a slotted plate, tail cluster.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1640,7 +1938,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1648,31 +1946,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.634618+00:00",
+      "timestamp": "2026-08-28T17:25:36.368590+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "paint",
-          "tier": "important",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.716-0.860; chrome without metalness because the harness has no environment map.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Added a third material for the tyres so the tread canvas multiplies the rubber alone; the rim, hub and spokes pin to its white band. Engine alloy corrected to the measured #9b9c96 over a #63625e crankcase, and the exhaust to the measured dull #7a766f -- bright chrome had made it the loudest thing in the silhouette.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1680,7 +1962,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1688,31 +1970,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.717021+00:00",
+      "timestamp": "2026-08-28T17:25:36.450305+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.716-0.860; a third material for the tyres, because a tread canvas that multiplied the chrome and the paint would ruin both. Chrome without metalness because the harness has no environment map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.531755+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "paint",
-          "tier": "important",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: one 256 px dust canvas; pinstripes as geometry.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Bound the tread tile (three circumferential grooves cut by staggered sipes, road dust on the lower shoulder, bump on the cuts) and smooth-shaded the six wrapped panels below 34 degrees; flat facets across a 12-degree step were the loudest low-poly tell on the prop.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1720,7 +2026,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1728,17 +2034,57 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.801585+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-08-28T17:25:36.613570+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "paint",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a 256 px dust canvas on the paint and a 256 px tread canvas on the rubber; pinstripes as geometry; the wrapped panels smooth-shaded below 34 degrees.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T17:25:36.694170+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "action": "continue",
@@ -1750,7 +2096,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1758,27 +2104,27 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.883033+00:00",
+      "timestamp": "2026-08-28T17:25:36.773936+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
         }
       ],
       "action": "continue",
@@ -1790,7 +2136,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1798,58 +2144,58 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:43:12.963064+00:00",
+      "timestamp": "2026-08-28T17:25:36.857757+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.83,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 0.70 x 1.125 x 2.07 m (mirror tips, fender to rack) against a declared 0.70 x 1.07 x 1.92; the proxy's stations (wheels 0.10 / 0.87 L, seat 0.45-0.65 L, shield 0.22-0.32 L) at the declared length.",
-          "notes": "The rack overhangs the rear wheel by 0.15 m as the plate shows; the declared length is to the wheels."
+          "evidence": "Envelope built at 0.712 x 1.258 x 1.891 m against a declared 0.71 x 1.25 x 1.92 -- within 1.6% on the longest axis and 0.6% on the other two. Stations off the proxy occupancy map: wheel centres at 0.15 L and 0.80 L (built z +0.64 and -0.58, a 1.22 m wheelbase), bars at 0.80 H = 1.00 m, mirror tips at 0.98 H = 1.258 m, seat top 0.60 H = 0.755 m, rack 0.545 H over 0.75-0.98 L, leg shield spanning 0.21-0.35 L.",
+          "notes": "The first build read the same map at a wrong length and put the front axle 0.12 m back; the declared height of 1.07 was a list-time estimate to the bar tops and has been corrected to 1.25 with the proxy arithmetic in the registry notes."
         },
         {
           "id": "fittings",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Chrome rack of five bars, handlebar with grips and round mirrors on stems, fork legs and lowers, exhaust, rear shock; alloy engine block over a dark crankcase, swingarm.",
-          "notes": "Every fitting a tube run or a tinted box on the one white trim material."
+          "evidence": "Front end on 27 degrees of rake: chrome sliders THROUGH the front hub into navy shrouds, a triple clamp and lower yoke, a stem to the bar clamp, pulled-back bars with black grips, tall mirror stems to 0.124 m heads, a 0.146 m headlamp with a proud lens in the cowl between two amber pods, an instrument with a pale face, fender stays. Drivetrain: canted alloy barrel and finned head over a crankcase with two round covers, two chain runs to a rear sprocket under a navy chain guard, a dull #7a766f exhaust and silencer on the right, painted swingarm, shocks with chrome lowers, footpegs, kickstart and centre stand. Tail: a chrome rack of frame, rear rail, four struts and three slats, tail lamp on its bracket, two amber indicators on stalks, a black mudflap.",
+          "notes": "The first build's forks missed the hub entirely and the exhaust was a bright chrome tube across the whole silhouette; the plate measures the silencer at #4d4137, so it is authored dull."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked wheels (18 spokes each) with a mid-grey hub dish; pivots wheel-front and wheel-rear on the axle.",
-          "notes": "Spokes read as a lace at prop distance; the dish behind them keeps the wheel from reading as a hole."
+          "evidence": "Two instanced OPEN wire wheels at one geometry: a closed tyre-ring lathe (16 segments), a rim ring, a 0.164 m drum hub with a chrome cap and eighteen three-sided prism spokes, with real daylight between them. Tread UVs are around-by-profile at 0.05 m per repeat (35 on a 0.556 m wheel); the rim, hub and spokes pin to the tile's white top 4% so their vertex colours render unmultiplied. Pivots wheel-front and wheel-rear on the axles.",
+          "notes": "The first build used the CLOSED dished lathe, which is a solid disc that hides the spokes merged into it -- it scored 0.84 with two grey discs and a note claiming the spokes read as a lace."
         },
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Navy #343f58 as measured with white pinstripes 4 mm proud; a faint dust wash.",
-          "notes": "Not lifted: the panels are thin and set against chrome."
+          "evidence": "Navy #343f58 as measured (plate #2b3551 lit, #1e2638 shaded), white pinstripes 4 mm proud on the covers and the rear fender edge, seat vinyl #4c4c4e, engine alloy #9b9c96 over a #63625e crankcase, chrome #b9bcbf, amber #b87a3a -- every tone off a plate crop. Two post-construction canvases: a dust multiplier on the paint and a tread on the rubber. The wrapped panels (shield, covers, seat, both fenders, cowl) are smooth-shaded below 34 degrees.",
+          "notes": "Not lifted: the panels are thin and set against chrome and daylight. The tyre is authored 1.275x its measured tread against the tile's base of 200/255 and lifted to luma 105 for the back-lit frame."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 2,776/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, one 256 px canvas at 0.3 MB, factory 48 ms. Turntable: enclosed background is the step-through and fork daylight, allowed on measurement.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 3,736/4,000 triangles, 3/8 draw calls, 3/4 materials, 3/8 unique geometries, two 256 px canvases at 0.7 MB, factory 85 ms. Twenty-two tube runs are built open, which is half the triangles of a capped one. Turntable: enclosed background is the step-through, the fork daylight and the gaps between the spokes, allowed on measurement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1857,7 +2203,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/honda-wave/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/honda-wave/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1880,9 +2226,9 @@
   "performanceBudget": {
     "qualityPriority": "real-time",
     "targetTriangles": 4000,
-    "maxDrawCalls": 4,
-    "maxMaterials": 3,
-    "maxUniqueGeometries": 6,
+    "maxDrawCalls": 8,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
@@ -1891,27 +2237,27 @@
         "components": 3,
         "repetitionSystems": 1,
         "projectedTotal": 4,
-        "budget": 4,
-        "headroom": 0,
-        "note": "Two components and one repetition system: 3 of 4. Forty-odd fittings ride one merge."
+        "budget": 8,
+        "headroom": 4,
+        "note": "Two components and one repetition system: 3 of 8. Sixty-odd fittings ride one merge."
       },
       "materials": {
-        "projectedTotal": 2,
-        "budget": 3,
+        "projectedTotal": 3,
+        "budget": 4,
         "headroom": 1,
-        "note": "paint and a white vertex-coloured trim: 2 of 3. Chrome, alloy, vinyl, rubber and lamps differ in albedo only."
+        "note": "paint, a white vertex-coloured trim and a rubber carrying the tread tile: 3 of 4. Chrome, alloy, vinyl and lamps differ in albedo only and share the trim; the tyre is separate ONLY because its canvas would otherwise multiply them."
       },
       "uniqueGeometries": {
         "projectedTotal": 4,
-        "budget": 6,
-        "headroom": 2,
+        "budget": 8,
+        "headroom": 4,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 2776,
+        "measured": 3716,
         "budget": 4000,
-        "headroom": 1224,
-        "note": "2,776 of 4,000: the spoked wheel lathe is the cost (two instances of one geometry); the tubes are 8-segment cylinders."
+        "headroom": 284,
+        "note": "3,716 of 4,000: the open wire wheel is the cost at ~600 triangles per geometry (two instances), and every tube run whose ends are buried is built open, which is half the triangles of a capped one."
       }
     }
   },
@@ -1969,7 +2315,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Thin side-profile extrusions for the panels, polyline tubes for the frame and fittings, a spoked lathe for the wheel, boxes for the rest."
+      "strategy": "Thin side-profile extrusions for the panels and the tyre-hugging fenders, polyline tubes for the frame, drivetrain and fittings, lathes for the lamp pods and engine covers, an open wire-wheel lathe, boxes for the rest."
     },
     {
       "id": "instancing",
@@ -1981,7 +2327,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 256 px dust canvas is bound after construction on the paint. 0.3 MB of texture VRAM, factory 48 ms."
+      "strategy": "Every material is declared textureless. Two canvases are bound after construction: a 256 px dust multiplier on the paint and a 256 px tread on the rubber. 0.7 MB of texture VRAM, factory 85 ms."
     }
   ],
   "animationAnchors": [],
@@ -1990,7 +2336,7 @@
     {
       "id": "open-frame-turntable",
       "severity": "low",
-      "description": "The turntable gate flags the step-through and the daylight in the fork and under the seat.",
+      "description": "The turntable gate flags the step-through, the fork daylight and now the gaps between the spokes.",
       "mitigation": "Real open air on a motorcycle; --allow-holes on the _holecc measurement logged per azimuth."
     },
     {
@@ -1998,6 +2344,12 @@
       "severity": "low",
       "description": "The right side is not in the plate.",
       "mitigation": "region-right at confidence 0.80."
+    },
+    {
+      "id": "triangle-headroom",
+      "severity": "low",
+      "description": "3,716 of 4,000 leaves 7 percent of headroom; a third wheel or a rider would not fit.",
+      "mitigation": "Wheel seg 16 and 18 spokes are the levers; open tubes already bought 300 triangles."
     }
   ],
   "localSpecSearch": {
@@ -2009,47 +2361,5 @@
       "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
     },
     "matches": []
-  },
-  "tier1Results": [
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.3222,
-        "aspectRatioDelta": 0.0607,
-        "scaleDelta": 0.4152,
-        "bilateralSymmetryError": 0.1531,
-        "colorDelta": {
-          "checked": 3,
-          "maxDeltaE": 13.92,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 10.52
-            },
-            {
-              "componentId": null,
-              "deltaE": 13.92
-            },
-            {
-              "componentId": null,
-              "deltaE": 11.16
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [
-        "silhouette IoU 0.322 is below threshold 0.85",
-        "aspect-ratio delta 0.061 exceeds threshold 0.05",
-        "scale delta 0.415 exceeds threshold 0.08",
-        "blockout requires --map-stripped-render evidence"
-      ],
-      "maskWarnings": [
-        "reference: 2.1% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured",
-        "render: 3.7% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
-      ],
-      "renderHash": "246f74725379705a",
-      "passId": "blockout"
-    }
-  ]
+  }
 }

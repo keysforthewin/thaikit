@@ -1,5 +1,23 @@
 import * as THREE from 'three';
 
+/**
+ * FamilyMart Store Building -- procedural Three.js factory.
+ *
+ * `three` is imported as a bare specifier and NOTHING else. The bundle is CommonJS with a bare
+ * require("three") and the host page injects its OWN three instance; a second copy means this
+ * file's Mesh is not the renderer's Mesh and nothing draws. That is also why geometry merging and
+ * instancing are hand-rolled below -- anything under three/examples/jsm is a second import.
+ *
+ * Envelope 8.00 x 4.60 x 7.00 m, origin base-center, +Y up, shopfront facing +Z.
+ * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.
+ *
+ * One of thaikit's shared retail-module buildings. The shell front face sits at z=+2.50 rather
+ * than the envelope edge so the entrance canopy can cantilever forward and still land exactly on
+ * the declared 7.0 m depth. Every surface pair on the facade is deliberately offset in depth:
+ * two surfaces in the same plane facing the same way tear into interleaved triangles as the
+ * camera moves, and authoring components flush against one another produces that by default.
+ */
+
 export type ProceduralModelOptions = {
   wireframe?: boolean;
   castShadow?: boolean;
@@ -17,1075 +35,1342 @@ export type ProceduralModelRuntime = {
   destructionGroups: Record<string, THREE.Object3D[]>;
 };
 
-type SculptMaterialSpec = Record<string, any>;
-
-// bevelEnabled defaults to true on THREE.ExtrudeGeometry and rounds every
-// corner — sharp/pointed profiles (blades, fork tines, spikes) need
-// bevelEnabled: false plus lineTo()-only path segments near the tip, since a
-// curve command cannot produce a true converging point.
-function buildExtrudeShape(points: [number, number][], holes?: [number, number][][]): THREE.Shape {
-  const shape = new THREE.Shape();
-  if (points.length > 0) {
-    shape.moveTo(points[0][0], points[0][1]);
-    for (let i = 1; i < points.length; i += 1) {
-      shape.lineTo(points[i][0], points[i][1]);
-    }
-  }
-  // Cutouts (e.g. an oval wire-cutter hole) as THREE.Path added to shape.holes —
-  // dep-free boolean subtraction via the tessellator, no CSG library needed.
-  for (const loop of holes ?? []) {
-    if (loop.length < 3) continue;
-    const path = new THREE.Path();
-    path.moveTo(loop[0][0], loop[0][1]);
-    for (let i = 1; i < loop.length; i += 1) path.lineTo(loop[i][0], loop[i][1]);
-    path.closePath();
-    shape.holes.push(path);
-  }
-  return shape;
-}
-
-// Build an N-gon oval loop (for hole authoring from a compact {cx,cy,rx,ry} descriptor).
-function ovalLoop(cx: number, cy: number, rx: number, ry: number, seg = 24): [number, number][] {
-  const loop: [number, number][] = [];
-  for (let i = 0; i < seg; i += 1) {
-    const a = (i / seg) * Math.PI * 2;
-    loop.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]);
-  }
-  return loop;
-}
-
-function buildExtrudeGeometry(profile: { points: [number, number][]; depth: number; holes?: [number, number][][]; ovalHoles?: { cx: number; cy: number; rx: number; ry: number }[] }): THREE.ExtrudeGeometry {
-  const holes = [...(profile.holes ?? []), ...((profile.ovalHoles ?? []).map((o) => ovalLoop(o.cx, o.cy, o.rx, o.ry)))];
-  const shape = buildExtrudeShape(profile.points, holes);
-  return new THREE.ExtrudeGeometry(shape, {
-    depth: profile.depth,
-    bevelEnabled: false,
-    steps: 1,
-  });
-}
-
-function hashString(value: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function readLayerNumber(value: unknown, keys: string[], fallback: number): number {
-  if (typeof value === 'number') return value;
-  if (value && typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    for (const key of keys) {
-      if (typeof record[key] === 'number') return record[key] as number;
-    }
-  }
-  return fallback;
-}
-
-function hexToRgb(hex: string): [number, number, number] {
-  const normalized = /^#[0-9a-f]{3}$/i.test(hex)
-    ? '#' + hex.slice(1).split('').map((part) => part + part).join('')
-    : hex;
-  const value = /^#[0-9a-f]{6}$/i.test(normalized) ? Number.parseInt(normalized.slice(1), 16) : 0x8a7a5f;
-  return [clampAlbedoChannel((value >> 16) & 255), clampAlbedoChannel((value >> 8) & 255), clampAlbedoChannel(value & 255)];
-}
-
-function materialPalette(spec: SculptMaterialSpec): string[] {
-  const palette = spec.colorVariation?.palette;
-  if (Array.isArray(palette) && palette.length > 0) return palette.filter((value) => typeof value === 'string');
-  const secondary = spec.albedo?.secondary;
-  const colors = [spec.baseColor ?? spec.color ?? spec.albedo?.dominant, ...(Array.isArray(secondary) ? secondary : [])];
-  return colors.filter((value): value is string => typeof value === 'string' && value.startsWith('#'));
-}
-
-function clamp01(value: number): number {
-  return Math.max(0, Math.min(1, value));
-}
-
-function clampAlbedoChannel(value: number): number {
-  return Math.max(30, Math.min(240, Math.round(value)));
-}
-
-function clampPbrF0(value: number): number {
-  return Math.max(0.02, Math.min(1, value));
-}
-
-function clampPbrIor(value: number): number {
-  return Math.max(1, Math.min(2.5, value));
-}
-
-function clampPbrMetalness(value: number): number {
-  return value >= 0.5 ? 1 : 0;
-}
-
-function clampedAlbedoColor(spec: SculptMaterialSpec): THREE.Color {
-  const source = typeof spec.baseColor === 'string' ? spec.baseColor : '#8A7A5F';
-  // setStyle with an explicit SRGBColorSpace, NOT the numeric constructor.
-  //
-  // `new THREE.Color(r, g, b)` treats its arguments as LINEAR working-space components,
-  // while an authored `baseColor` hex is sRGB. Feeding one to the other skipped the
-  // transfer function and lifted every dark albedo: #2e2a28, authored as a near-black
-  // vinyl, rendered at roughly sRGB 0.46 — a mid grey. The error is largest exactly where
-  // it matters most, because the transfer curve is steepest near black.
-  return new THREE.Color().setStyle(source, THREE.SRGBColorSpace);
-}
-
-function smoothCurve(value: number): number {
-  return value * value * (3 - 2 * value);
-}
-
-function periodicHash(x: number, y: number, seed: number, periodX: number, periodY: number): number {
-  const wrappedX = ((x % periodX) + periodX) % periodX;
-  const wrappedY = ((y % periodY) + periodY) % periodY;
-  let value = Math.imul(wrappedX + seed * 17, 374761393) ^ Math.imul(wrappedY + seed * 31, 668265263);
-  value = Math.imul(value ^ (value >>> 13), 1274126177);
-  return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
-}
-
-function periodicValueNoise(u: number, v: number, seed: number, periodX: number, periodY: number): number {
-  const x = u * periodX;
-  const y = v * periodY;
-  const x0 = Math.floor(x);
-  const y0 = Math.floor(y);
-  const tx = smoothCurve(x - x0);
-  const ty = smoothCurve(y - y0);
-  const a = periodicHash(x0, y0, seed, periodX, periodY);
-  const b = periodicHash(x0 + 1, y0, seed, periodX, periodY);
-  const c = periodicHash(x0, y0 + 1, seed, periodX, periodY);
-  const d = periodicHash(x0 + 1, y0 + 1, seed, periodX, periodY);
-  return THREE.MathUtils.lerp(THREE.MathUtils.lerp(a, b, tx), THREE.MathUtils.lerp(c, d, tx), ty);
-}
-
-type SurfaceBand = {
-  frequency: number;
-  amplitude: number;
-  stretchX: number;
-  stretchY: number;
-  ridge: boolean;
-};
-
-function surfaceBands(spec: SculptMaterialSpec): SurfaceBand[] {
-  const source = Array.isArray(spec.surfaceFrequencyBands) ? spec.surfaceFrequencyBands : [];
-  const parsed = source.flatMap((item: unknown) => {
-    if (!item || typeof item !== 'object') return [];
-    const band = item as Record<string, unknown>;
-    const frequency = typeof band.frequency === 'number' ? band.frequency : 0;
-    const amplitude = typeof band.amplitude === 'number' ? band.amplitude : 0;
-    if (frequency <= 0 || amplitude <= 0) return [];
-    const stretch = Array.isArray(band.stretch) ? band.stretch : [1, 1];
-    const description = `${String(band.pattern ?? '')} ${String(band.role ?? '')}`.toLowerCase();
-    return [{
-      frequency,
-      amplitude,
-      stretchX: typeof stretch[0] === 'number' ? Math.max(0.1, stretch[0]) : 1,
-      stretchY: typeof stretch[1] === 'number' ? Math.max(0.1, stretch[1]) : 1,
-      ridge: /(ridge|groove|grain|fiber|striated|crack)/.test(description),
-    }];
-  });
-  return parsed.length > 0 ? parsed : [
-    { frequency: 2, amplitude: 0.42, stretchX: 1, stretchY: 1, ridge: false },
-    { frequency: 12, amplitude: 0.22, stretchX: 1, stretchY: 1, ridge: false },
-    { frequency: 56, amplitude: 0.08, stretchX: 1, stretchY: 1, ridge: false },
-  ];
-}
-
-function sampleSurface(u: number, v: number, bands: SurfaceBand[], seed: number): number {
-  let value = 0;
-  let weight = 0;
-  for (let index = 0; index < bands.length; index += 1) {
-    const band = bands[index];
-    const periodX = Math.max(1, Math.round(band.frequency * band.stretchX));
-    const periodY = Math.max(1, Math.round(band.frequency * band.stretchY));
-    let sample = periodicValueNoise(u, v, seed + index * 1013, periodX, periodY);
-    if (band.ridge) sample = 1 - Math.abs(sample * 2 - 1);
-    value += sample * band.amplitude;
-    weight += band.amplitude;
-  }
-  return weight > 0 ? clamp01(value / weight) : 0.5;
-}
-
-function mixPalette(colors: [number, number, number][], value: number): [number, number, number] {
-  if (colors.length === 1) return colors[0];
-  const scaled = clamp01(value) * (colors.length - 1);
-  const index = Math.min(colors.length - 2, Math.floor(scaled));
-  const mix = scaled - index;
-  const a = colors[index];
-  const b = colors[index + 1];
-  return [
-    Math.round(THREE.MathUtils.lerp(a[0], b[0], mix)),
-    Math.round(THREE.MathUtils.lerp(a[1], b[1], mix)),
-    Math.round(THREE.MathUtils.lerp(a[2], b[2], mix)),
-  ];
-}
-
-type ColorGradientStop = { offset: number; color: string };
-type ColorGradientSpec = {
-  type: 'linear' | 'radial';
-  axis: [number, number];
-  stops: ColorGradientStop[];
-};
-
-function parseRgba(value: string): [number, number, number] {
-  const match = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(value);
-  if (!match) return [138, 122, 95];
-  return [clampAlbedoChannel(Number(match[1])), clampAlbedoChannel(Number(match[2])), clampAlbedoChannel(Number(match[3]))];
-}
-
-// Analytical per-pixel gradient sample. The extraction schema's colorGradient carries
-// exact rgba(...) stop colors (see extract_part_color_recipe.py), so this samples the
-// same trend directly in JS math rather than round-tripping through a Canvas 2D
-// createLinearGradient/createRadialGradient object — same visual result, and it composes
-// directly with the existing noise/height-correlated colorVariation blend below.
-function sampleColorGradient(gradient: ColorGradientSpec, u: number, v: number): [number, number, number] {
-  const stops = gradient.stops.length >= 2 ? gradient.stops : [{ offset: 0, color: 'rgba(138,122,95,1)' }, { offset: 1, color: 'rgba(138,122,95,1)' }];
-  let t: number;
-  if (gradient.type === 'radial') {
-    const [cx, cy] = gradient.axis;
-    const dx = u - cx;
-    const dy = v - cy;
-    const maxRadius = Math.max(0.001, Math.hypot(Math.max(cx, 1 - cx), Math.max(cy, 1 - cy)));
-    t = clamp01(Math.hypot(dx, dy) / maxRadius);
-  } else {
-    const [ax, ay] = gradient.axis;
-    const projection = (u - 0.5) * ax + (v - 0.5) * ay;
-    const maxProjection = 0.5 * (Math.abs(ax) + Math.abs(ay)) || 0.5;
-    t = clamp01(projection / maxProjection + 0.5);
-  }
-  const scaled = t * (stops.length - 1);
-  const index = Math.min(stops.length - 2, Math.max(0, Math.floor(scaled)));
-  const mix = scaled - index;
-  const a = parseRgba(stops[index].color);
-  const b = parseRgba(stops[index + 1].color);
-  return [
-    THREE.MathUtils.lerp(a[0], b[0], mix),
-    THREE.MathUtils.lerp(a[1], b[1], mix),
-    THREE.MathUtils.lerp(a[2], b[2], mix),
-  ];
-}
-
-function writePixel(data: Uint8ClampedArray, offset: number, red: number, green: number, blue: number): void {
-  data[offset] = Math.max(0, Math.min(255, Math.round(red)));
-  data[offset + 1] = Math.max(0, Math.min(255, Math.round(green)));
-  data[offset + 2] = Math.max(0, Math.min(255, Math.round(blue)));
-  data[offset + 3] = 255;
-}
-
-function makeCanvas(size: number): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  return canvas;
-}
-
-function createMapTexture(
-  canvas: HTMLCanvasElement,
-  colorSpace: THREE.ColorSpace,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): THREE.CanvasTexture {
-  const texture = new THREE.CanvasTexture(canvas);
-  const projection = spec.textureProjection && typeof spec.textureProjection === 'object' ? spec.textureProjection : {};
-  const repeat = Array.isArray(projection.repeat) ? projection.repeat : [2, 2];
-  texture.colorSpace = colorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(
-    typeof repeat[0] === 'number' ? repeat[0] : 2,
-    typeof repeat[1] === 'number' ? repeat[1] : 2,
-  );
-  texture.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? projection.anisotropy ?? 8));
-  texture.needsUpdate = true;
-  return texture;
-}
-
-type ProceduralTextureSet = {
-  albedo: THREE.Texture;
-  roughness: THREE.Texture;
-  height: THREE.Texture;
-  normal: THREE.Texture;
-  ao: THREE.Texture;
-  source: 'reference-pixel-extraction' | 'procedural';
-};
-
-function referenceMapUrl(spec: SculptMaterialSpec, channel: string): string | null {
-  const reference = spec.referencePbr;
-  if (!reference || typeof reference !== 'object') return null;
-  if (reference.usable === false) return null;
-  const confidence = typeof reference.confidence === 'number'
-    ? reference.confidence
-    : (typeof reference.estimatedFidelity === 'number' ? reference.estimatedFidelity : 0);
-  const threshold = typeof reference.targetThreshold === 'number' ? reference.targetThreshold : 0.7;
-  if (confidence < threshold) return null;
-  const maps = reference.maps;
-  if (!maps || typeof maps !== 'object') return null;
-  const map = (maps as Record<string, unknown>)[channel];
-  if (!map || typeof map !== 'object') return null;
-  const record = map as Record<string, unknown>;
-  const url = typeof record.url === 'string' && record.url.trim() ? record.url : record.path;
-  return typeof url === 'string' && url.trim() ? url : null;
-}
-
-function createLoadedMapTexture(
-  url: string,
-  colorSpace: THREE.ColorSpace,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): THREE.Texture {
-  const texture = new THREE.TextureLoader().load(url);
-  const projection = spec.textureProjection && typeof spec.textureProjection === 'object' ? spec.textureProjection : {};
-  const repeat = Array.isArray(projection.repeat) ? projection.repeat : [1, 1];
-  texture.colorSpace = colorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(
-    typeof repeat[0] === 'number' ? repeat[0] : 1,
-    typeof repeat[1] === 'number' ? repeat[1] : 1,
-  );
-  texture.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? projection.anisotropy ?? 8));
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function makeReferenceTextureSet(spec: SculptMaterialSpec, options: ProceduralModelOptions): ProceduralTextureSet | null {
-  const albedo = referenceMapUrl(spec, 'albedo');
-  const roughness = referenceMapUrl(spec, 'roughness');
-  const height = referenceMapUrl(spec, 'height');
-  const normal = referenceMapUrl(spec, 'normal');
-  const ao = referenceMapUrl(spec, 'ao');
-  if (!albedo || !roughness || !height || !normal || !ao) return null;
-  return {
-    albedo: createLoadedMapTexture(albedo, THREE.SRGBColorSpace, spec, options),
-    roughness: createLoadedMapTexture(roughness, THREE.NoColorSpace, spec, options),
-    height: createLoadedMapTexture(height, THREE.NoColorSpace, spec, options),
-    normal: createLoadedMapTexture(normal, THREE.NoColorSpace, spec, options),
-    ao: createLoadedMapTexture(ao, THREE.NoColorSpace, spec, options),
-    source: 'reference-pixel-extraction',
-  };
-}
-
-function makeProceduralTextureSet(
-  id: string,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): ProceduralTextureSet | null {
-  if (typeof document === 'undefined') return null;
-  const qualityFirst = (options.qualityPriority ?? 'reference-fidelity') === 'reference-fidelity';
-  const requested = options.textureSize ?? spec.textureResolution;
-  const requestedSize = typeof requested === 'number' && Number.isFinite(requested)
-    ? requested
-    : (qualityFirst ? 1024 : 512);
-  const size = Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(requestedSize))));
-  const canvases = {
-    albedo: makeCanvas(size),
-    roughness: makeCanvas(size),
-    height: makeCanvas(size),
-    normal: makeCanvas(size),
-    ao: makeCanvas(size),
-  };
-  const contexts = {
-    albedo: canvases.albedo.getContext('2d'),
-    roughness: canvases.roughness.getContext('2d'),
-    height: canvases.height.getContext('2d'),
-    normal: canvases.normal.getContext('2d'),
-    ao: canvases.ao.getContext('2d'),
-  };
-  if (!contexts.albedo || !contexts.roughness || !contexts.height || !contexts.normal || !contexts.ao) return null;
-  const images = {
-    albedo: contexts.albedo.createImageData(size, size),
-    roughness: contexts.roughness.createImageData(size, size),
-    height: contexts.height.createImageData(size, size),
-    normal: contexts.normal.createImageData(size, size),
-    ao: contexts.ao.createImageData(size, size),
-  };
-  const seed = hashString(id);
-  const bands = surfaceBands(spec);
-  const heightField = new Float32Array(size * size);
-  const roughnessField = new Float32Array(size * size);
-  const palette = materialPalette(spec);
-  const fallback = typeof spec.baseColor === 'string' ? spec.baseColor : '#8A7A5F';
-  const colors = (palette.length >= 2 ? palette : [fallback, '#6E614B', '#A08F70']).map(hexToRgb);
-  const baseRoughness = clamp01(readLayerNumber(spec.roughness, ['base'], 0.76));
-  const roughnessVariation = clamp01(readLayerNumber(spec.roughness, ['variation'], 0.18));
-  const colorAmplitude = clamp01(readLayerNumber(spec.colorVariation, ['amplitude', 'variation'], 0.18));
-  const heightCorrelation = clamp01(readLayerNumber(spec.colorVariation, ['heightCorrelation'], 0.3));
-  const colorGradient: ColorGradientSpec | undefined = spec.colorGradient;
-  for (let y = 0; y < size; y += 1) {
-    const v = y / size;
-    for (let x = 0; x < size; x += 1) {
-      const u = x / size;
-      const index = y * size + x;
-      const height = sampleSurface(u, v, bands, seed + 101);
-      const roughNoise = sampleSurface(u, v, bands, seed + 7001);
-      const colorNoise = sampleSurface(u, v, bands, seed + 15013);
-      heightField[index] = height;
-      roughnessField[index] = clamp01(baseRoughness + (roughNoise - 0.5) * roughnessVariation * 2);
-      let color: [number, number, number];
-      if (colorGradient) {
-        // Evidence-derived spatial gradient (Plan 1.3 Workstream C) takes priority
-        // over the noise-based palette blend below — it is a measured trend, not a guess.
-        color = sampleColorGradient(colorGradient, u, v);
-      } else {
-        const paletteValue = clamp01(
-          0.5 + (colorNoise - 0.5) * colorAmplitude * 2 + (height - 0.5) * heightCorrelation
-        );
-        color = mixPalette(colors, paletteValue);
+const CONFIG = {
+    "id": "familymart-store-building",
+    "name": "FamilyMart Store Building",
+    "exportName": "FamilyMartStoreBuilding",
+    "materials": [
+      {
+        "id": "wall",
+        "color": 9672602,
+        "roughness": 0.94,
+        "metalness": 0
+      },
+      {
+        "id": "deck",
+        "color": 7238261,
+        "roughness": 0.95,
+        "metalness": 0
+      },
+      {
+        "id": "fascia",
+        "color": 15066856,
+        "roughness": 0.34,
+        "metalness": 0,
+        "envMapIntensity": 0.6
+      },
+      {
+        "id": "glass",
+        "color": 7304049,
+        "roughness": 0.14,
+        "metalness": 0,
+        "opacity": 0.94,
+        "envMapIntensity": 1.1
+      },
+      {
+        "id": "alu",
+        "color": 13948629,
+        "roughness": 0.38,
+        "metalness": 0.18
+      },
+      {
+        "id": "galv",
+        "color": 11053997,
+        "roughness": 0.55,
+        "metalness": 0.28
+      },
+      {
+        "id": "decal",
+        "color": 16777215,
+        "roughness": 0.3,
+        "metalness": 0
+      },
+      {
+        "id": "steel",
+        "color": 7633019,
+        "roughness": 0.62,
+        "metalness": 0.22
       }
-      writePixel(images.albedo.data, index * 4, color[0], color[1], color[2]);
+    ],
+    "geometry": {
+      "shellFront": 3.1,
+      "fasciaWall": {
+        "cy": 4.075,
+        "cz": 3.1,
+        "h": 1.05,
+        "d": 0.6
+      },
+      "fasciaWallMaterial": "wall",
+      "parapetW": 7.95,
+      "parapetSides": {
+        "cy": 4.075,
+        "h": 1.05,
+        "thick": 0.24,
+        "cx": 3.855
+      },
+      "parapetExtra": [
+        [
+          -3.745,
+          1.71,
+          3.15,
+          0.45,
+          3.42,
+          0.3
+        ],
+        [
+          0,
+          0.06,
+          -0.01,
+          7.91,
+          0.12,
+          6.9
+        ]
+      ],
+      "frameMaterial": "alu",
+      "fascia": {
+        "boards": [
+          {
+            "w": 7.98,
+            "h": 1.07,
+            "d": 0.12,
+            "at": [
+              0,
+              3.935,
+              3.44
+            ],
+            "face": "+Z"
+          },
+          {
+            "w": 0.12,
+            "h": 1.07,
+            "d": 2.55,
+            "at": [
+              3.94,
+              3.935,
+              2.225
+            ],
+            "face": "+X",
+            "u": [
+              0.02,
+              0.3
+            ]
+          }
+        ]
+      },
+      "glazing": {
+        "cx": 0.205,
+        "cy": 1.7,
+        "cz": 3.2,
+        "w": 7.17,
+        "h": 3.04,
+        "d": 0.08
+      },
+      "glazingExtra": [
+        [
+          -0.295,
+          1.34,
+          3.29,
+          0.99,
+          2.36,
+          0.06
+        ],
+        [
+          0.745,
+          1.34,
+          3.29,
+          0.87,
+          2.36,
+          0.06
+        ],
+        [
+          3.92,
+          1.7,
+          2.99,
+          0.08,
+          3.04,
+          0.86
+        ]
+      ],
+      "frame": [
+        [
+          0.205,
+          3.29,
+          3.29,
+          7.45,
+          0.14,
+          0.14
+        ],
+        [
+          0.205,
+          0.15,
+          3.29,
+          7.45,
+          0.2,
+          0.14
+        ],
+        [
+          -3.34,
+          1.7,
+          3.29,
+          0.2,
+          3.04,
+          0.14
+        ],
+        [
+          3.8,
+          1.7,
+          3.31,
+          0.28,
+          3.04,
+          0.24
+        ],
+        [
+          0.19499999999999984,
+          2.665,
+          3.325,
+          4.5,
+          0.21,
+          0.17
+        ],
+        [
+          0.255,
+          1.35,
+          3.36,
+          0.125,
+          2.5,
+          0.1
+        ],
+        [
+          0.16,
+          2.665,
+          3.415,
+          0.36,
+          0.09,
+          0.04
+        ],
+        [
+          -0.295,
+          2.52,
+          3.325,
+          0.99,
+          0.06,
+          0.07
+        ],
+        [
+          0.745,
+          2.52,
+          3.325,
+          0.87,
+          0.06,
+          0.07
+        ],
+        [
+          3.94,
+          3.29,
+          3.02,
+          0.09,
+          0.14,
+          0.92
+        ],
+        [
+          3.94,
+          0.15,
+          3.02,
+          0.09,
+          0.2,
+          0.92
+        ],
+        [
+          3.94,
+          1.7,
+          2.6,
+          0.09,
+          3.04,
+          0.1
+        ],
+        [
+          3.95,
+          2.815,
+          -2.5,
+          0.07,
+          0.09,
+          0.99
+        ],
+        [
+          3.95,
+          2.065,
+          -2.5,
+          0.07,
+          0.09,
+          0.99
+        ],
+        [
+          3.95,
+          2.44,
+          -2.975,
+          0.07,
+          0.84,
+          0.05
+        ],
+        [
+          3.95,
+          2.44,
+          -2.025,
+          0.07,
+          0.84,
+          0.05
+        ],
+        [
+          3.9625,
+          1.225,
+          0.815,
+          0.045,
+          2.45,
+          0.08
+        ],
+        [
+          3.9625,
+          1.225,
+          -0.315,
+          0.045,
+          2.45,
+          0.08
+        ],
+        [
+          3.9625,
+          2.415,
+          0.25,
+          0.045,
+          0.07,
+          1.21
+        ]
+      ],
+      "mullions": {
+        "w": 0.065,
+        "h": 3.07,
+        "cy": 1.685,
+        "cz": 3.33,
+        "x": [
+          -2.02,
+          -0.83,
+          1.21,
+          2.41
+        ]
+      },
+      "sideFeature": {
+        "name": "Service door, louvre and side window",
+        "material": "steel",
+        "boxes": [
+          [
+            3.96,
+            1.2,
+            0.25,
+            0.04,
+            2.4,
+            1.05
+          ],
+          [
+            3.9875,
+            0.45,
+            0.42,
+            0.015,
+            0.3,
+            0.7
+          ],
+          [
+            3.9875,
+            1.15,
+            0.7,
+            0.015,
+            0.05,
+            0.16
+          ],
+          [
+            3.965,
+            2.44,
+            -2.5,
+            0.03,
+            0.66,
+            0.85
+          ]
+        ]
+      },
+      "extraFeature": {
+        "name": "Rooftop plant deck",
+        "material": "galv",
+        "boxes": [
+          [
+            -0.75,
+            3.87,
+            -1.75,
+            2.3,
+            0.5,
+            0.55
+          ],
+          [
+            -0.75,
+            4.145,
+            -1.75,
+            2.42,
+            0.05,
+            0.7
+          ],
+          [
+            -1.7,
+            3.79,
+            -1.75,
+            0.06,
+            0.34,
+            0.6
+          ],
+          [
+            0.2,
+            3.79,
+            -1.75,
+            0.06,
+            0.34,
+            0.6
+          ],
+          [
+            1.2,
+            3.96,
+            -1.65,
+            1.05,
+            0.68,
+            0.72
+          ],
+          [
+            1.2,
+            3.96,
+            -1.275,
+            0.66,
+            0.56,
+            0.04
+          ],
+          {
+            "cyl": [
+              1.2,
+              3.96,
+              -1.245,
+              0.21,
+              0.03,
+              16,
+              1.5707963267948966
+            ]
+          },
+          [
+            2.05,
+            4.02,
+            -2.45,
+            0.46,
+            0.8,
+            0.52
+          ],
+          {
+            "cyl": [
+              2.05,
+              3.86,
+              -2.17,
+              0.035,
+              0.48,
+              8
+            ]
+          },
+          [
+            2.9,
+            4.09,
+            -1.95,
+            1,
+            0.94,
+            0.9
+          ],
+          [
+            2.9,
+            4.09,
+            -1.49,
+            0.84,
+            0.78,
+            0.04
+          ],
+          [
+            2.9,
+            4.575,
+            -1.95,
+            1.06,
+            0.03,
+            0.96
+          ]
+        ]
+      },
+      "tintFeature": {
+        "name": "Glazing decal bands",
+        "material": "decal",
+        "tones": [
+          3121482,
+          3121482,
+          3121482,
+          3121482,
+          2068676,
+          2068676,
+          2068676,
+          2068676
+        ],
+        "boxes": [
+          [
+            -2.105,
+            1.25,
+            3.245,
+            2.51,
+            0.03,
+            0.012
+          ],
+          [
+            0.185,
+            1.25,
+            3.325,
+            2.03,
+            0.03,
+            0.012
+          ],
+          [
+            2.495,
+            1.25,
+            3.245,
+            2.59,
+            0.03,
+            0.012
+          ],
+          [
+            3.965,
+            1.25,
+            2.99,
+            0.012,
+            0.03,
+            0.82
+          ],
+          [
+            -2.105,
+            1.165,
+            3.245,
+            2.51,
+            0.03,
+            0.012
+          ],
+          [
+            0.185,
+            1.165,
+            3.325,
+            2.03,
+            0.03,
+            0.012
+          ],
+          [
+            2.495,
+            1.165,
+            3.245,
+            2.59,
+            0.03,
+            0.012
+          ],
+          [
+            3.965,
+            1.165,
+            2.99,
+            0.012,
+            0.03,
+            0.82
+          ]
+        ]
+      },
+      "condensers": []
+    },
+    "graphic": {
+      "baked": "data:image/webp;base64,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",
+      "size": [
+        2048,
+        384
+      ],
+      "background": "#E5E6E8",
+      "ops": [
+        {
+          "type": "rect",
+          "x": 0,
+          "y": 0.03,
+          "w": 1,
+          "h": 0.284,
+          "fill": "#35A24B"
+        },
+        {
+          "type": "rect",
+          "x": 0,
+          "y": 0.814,
+          "w": 1,
+          "h": 0.118,
+          "fill": "#2191C5"
+        },
+        {
+          "type": "rect",
+          "x": 0.32,
+          "y": 0.402,
+          "w": 0.072,
+          "h": 0.115,
+          "fill": "#35A24B"
+        },
+        {
+          "type": "rect",
+          "x": 0.32,
+          "y": 0.54,
+          "w": 0.072,
+          "h": 0.115,
+          "fill": "#1A90C8"
+        },
+        {
+          "type": "text",
+          "text": "FamilyMart",
+          "x0": 0.404,
+          "x1": 0.664,
+          "cy": 0.545,
+          "size": 0.24,
+          "fill": "#2191C5"
+        }
+      ],
+      "wall": {
+        "meshes": [
+          "building-shell",
+          "parapet"
+        ],
+        "tile": 2.5,
+        "size": 512,
+        "seed": 20260828,
+        "base": 248,
+        "patches": 55,
+        "patchAmp": 22,
+        "streaks": 260,
+        "streakAmp": 52,
+        "specks": 3200,
+        "speckAmp": 36
+      }
     }
+  } as any;
+
+/* ------------------------------------------------------------------ geometry helpers */
+
+/** Local stand-in for BufferGeometryUtils.mergeGeometries, which cannot be imported here.
+ *  Everything is converted to non-indexed so attribute arrays can be appended; that changes the
+ *  vertex count but NOT the triangle count, which is the axis the budget measures. */
+function mergeGeos(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  const parts: THREE.BufferGeometry[] = [];
+  const temp: boolean[] = [];
+  for (const g of geos) {
+    if (g.index) { parts.push(g.toNonIndexed()); temp.push(true); }
+    else { parts.push(g); temp.push(false); }
   }
-  const normalStrength = Math.max(0.05, readLayerNumber(spec.normal, ['strength', 'amplitude'], 0.35));
-  const aoStrength = clamp01(readLayerNumber(spec.ambientOcclusion, ['cavityStrength', 'strength'], 0.35));
-  for (let y = 0; y < size; y += 1) {
-    const up = ((y - 1 + size) % size) * size;
-    const down = ((y + 1) % size) * size;
-    for (let x = 0; x < size; x += 1) {
-      const left = (x - 1 + size) % size;
-      const right = (x + 1) % size;
-      const index = y * size + x;
-      const center = heightField[index];
-      const dx = (heightField[y * size + right] - heightField[y * size + left]) * normalStrength * 6;
-      const dy = (heightField[down + x] - heightField[up + x]) * normalStrength * 6;
-      const inverseLength = 1 / Math.sqrt(dx * dx + dy * dy + 1);
-      const normalX = -dx * inverseLength;
-      const normalY = -dy * inverseLength;
-      const normalZ = inverseLength;
-      const neighborAverage = (
-        heightField[y * size + left] + heightField[y * size + right]
-        + heightField[up + x] + heightField[down + x]
-      ) * 0.25;
-      const cavity = Math.max(0, neighborAverage - center);
-      const ao = clamp01(1 - aoStrength * (cavity * 12 + (1 - center) * 0.16));
-      const offset = index * 4;
-      const heightByte = center * 255;
-      const roughnessByte = roughnessField[index] * 255;
-      writePixel(images.height.data, offset, heightByte, heightByte, heightByte);
-      writePixel(images.roughness.data, offset, roughnessByte, roughnessByte, roughnessByte);
-      writePixel(
-        images.normal.data, offset,
-        (normalX * 0.5 + 0.5) * 255,
-        (normalY * 0.5 + 0.5) * 255,
-        (normalZ * 0.5 + 0.5) * 255,
-      );
-      writePixel(images.ao.data, offset, ao * 255, ao * 255, ao * 255);
+  let total = 0;
+  for (const g of parts) total += g.getAttribute('position').count;
+  const position = new Float32Array(total * 3);
+  const normal = new Float32Array(total * 3);
+  const uv = new Float32Array(total * 2);
+  let v = 0;
+  for (const g of parts) {
+    const p = g.getAttribute('position'), n = g.getAttribute('normal'), t = g.getAttribute('uv');
+    for (let i = 0; i < p.count; i++) {
+      position[(v + i) * 3] = p.getX(i); position[(v + i) * 3 + 1] = p.getY(i); position[(v + i) * 3 + 2] = p.getZ(i);
+      if (n) { normal[(v + i) * 3] = n.getX(i); normal[(v + i) * 3 + 1] = n.getY(i); normal[(v + i) * 3 + 2] = n.getZ(i); }
+      if (t) { uv[(v + i) * 2] = t.getX(i); uv[(v + i) * 2 + 1] = t.getY(i); }
     }
+    v += p.count;
   }
-  contexts.albedo.putImageData(images.albedo, 0, 0);
-  contexts.roughness.putImageData(images.roughness, 0, 0);
-  contexts.height.putImageData(images.height, 0, 0);
-  contexts.normal.putImageData(images.normal, 0, 0);
-  contexts.ao.putImageData(images.ao, 0, 0);
-  return {
-    albedo: createMapTexture(canvases.albedo, THREE.SRGBColorSpace, spec, options),
-    roughness: createMapTexture(canvases.roughness, THREE.NoColorSpace, spec, options),
-    height: createMapTexture(canvases.height, THREE.NoColorSpace, spec, options),
-    normal: createMapTexture(canvases.normal, THREE.NoColorSpace, spec, options),
-    ao: createMapTexture(canvases.ao, THREE.NoColorSpace, spec, options),
-    source: 'procedural',
-  };
+  for (let i = 0; i < parts.length; i++) { if (temp[i]) parts[i].dispose(); geos[i].dispose(); }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(position, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+  out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  out.computeBoundingBox(); out.computeBoundingSphere();
+  return out;
 }
 
-function createSculptMaterial(id: string, spec: SculptMaterialSpec, options: ProceduralModelOptions, denseComponent = false): THREE.MeshPhysicalMaterial {
-  // A material that declares -- with evidence -- that its subject carries no texture
-  // detail gets NO texture set. Synthesising one anyway is not a harmless default: the
-  // branch below then forces color to white and roughness to 1 and reads both from the
-  // generated maps, so the authored albedo and the reference-derived roughness are both
-  // discarded, and the model gains mottling the reference does not have. Measured on the
-  // tuxedo cat, whose black fur rendered as speckled grey-and-white from a palette that
-  // only ever described two flat regions.
-  const textureless = (spec.textureless as { declared?: boolean } | undefined)?.declared === true;
-  const textures = textureless
-    ? null
-    : makeReferenceTextureSet(spec, options) ?? makeProceduralTextureSet(id, spec, options);
-  const material = new THREE.MeshPhysicalMaterial({
-    color: textures ? 0xffffff : clampedAlbedoColor(spec),
-    roughness: textures ? 1 : clamp01(readLayerNumber(spec.roughness, ['base'], 0.76)),
-    metalness: clampPbrMetalness(readLayerNumber(spec.metalness, ['base'], 0.0)),
-    clearcoat: clamp01(readLayerNumber(spec.clearcoat, ['base', 'amount'], 0)),
-    clearcoatRoughness: clamp01(readLayerNumber(spec.clearcoatRoughness, ['base'], 0.25)),
-    transmission: clamp01(readLayerNumber(spec.transmission, ['base', 'amount'], 0)),
-    ior: clampPbrIor(readLayerNumber(spec.ior, ['base', 'value'], 1.5)),
-    thickness: Math.max(0, readLayerNumber(spec.thickness, ['base', 'amount'], 0)),
-    attenuationDistance: Math.max(0.001, readLayerNumber(spec.attenuationDistance, ['base', 'value'], Infinity)),
-    attenuationColor: new THREE.Color(typeof spec.attenuationColor === 'string' ? spec.attenuationColor : '#ffffff'),
-    sheen: clamp01(readLayerNumber(spec.sheen, ['base', 'amount'], 0)),
-    sheenColor: new THREE.Color(typeof spec.sheenColor === 'string' ? spec.sheenColor : '#ffffff'),
-    sheenRoughness: clamp01(readLayerNumber(spec.sheenRoughness, ['base'], 1.0)),
-    iridescence: clamp01(readLayerNumber(spec.iridescence, ['base', 'amount'], 0)),
-    iridescenceIOR: clampPbrIor(readLayerNumber(spec.iridescenceIOR, ['base', 'value'], 1.3)),
-    anisotropy: clamp01(readLayerNumber(spec.anisotropy, ['base', 'amount'], 0)),
-    anisotropyRotation: readLayerNumber(spec.anisotropy, ['rotation'], 0),
-    specularIntensity: clampPbrF0(readLayerNumber(spec.specularF0 ?? spec.f0 ?? spec.specularIntensity, ['base', 'value'], 1.0)),
-    specularColor: new THREE.Color(typeof spec.specularColor === 'string' ? spec.specularColor : '#ffffff'),
-    emissive: new THREE.Color(typeof spec.emissive === 'string' ? spec.emissive : '#000000'),
-    emissiveIntensity: Math.max(0, readLayerNumber(spec.emissiveIntensity, ['base'], 1.0)),
-    opacity: clamp01(readLayerNumber(spec.opacity, ['base'], 1)),
-    transparent: readLayerNumber(spec.transmission, ['base', 'amount'], 0) > 0 || readLayerNumber(spec.opacity, ['base'], 1) < 1,
-    alphaTest: Math.max(0, readLayerNumber(spec.alpha, ['cutoff', 'alphaTest'], 0)),
-    wireframe: options.wireframe ?? false,
-    side: spec.doubleSided === true ? THREE.DoubleSide : THREE.FrontSide,
-    flatShading: spec.flatShading === true,
-  });
-  if (textures) {
-    material.map = textures.albedo;
-    material.roughnessMap = textures.roughness;
-    material.normalMap = textures.normal;
-    material.normalScale.setScalar(Math.max(0.05, readLayerNumber(spec.normal, ['strength', 'amplitude'], 0.35)));
-    material.aoMap = textures.ao;
-    material.aoMap.channel = 0;
-    material.aoMapIntensity = readLayerNumber(spec.ambientOcclusion, ['cavityStrength', 'strength'], 0.35);
-    const denseMesh = denseComponent || spec.denseMesh === true || spec.geometryDensity === 'dense' || spec.topologyClass === 'dense';
-    const bumpScale = Math.max(0, readLayerNumber(spec.bump, ['amplitude', 'strength'], 0));
-    const effectiveBumpScale = denseMesh ? Math.max(0.05, bumpScale) : bumpScale;
-    if (effectiveBumpScale > 0) {
-      material.bumpMap = textures.height;
-      material.bumpScale = effectiveBumpScale;
+function boxAt(cx: number, cy: number, cz: number, w: number, h: number, d: number) {
+  const g = new THREE.BoxGeometry(w, h, d); g.translate(cx, cy, cz); return g;
+}
+function cylAt(cx: number, cy: number, cz: number, r: number, h: number, seg = 16) {
+  const g = new THREE.CylinderGeometry(r, r, h, seg); g.translate(cx, cy, cz); return g;
+}
+/** A box list is the merge lever for everything in one material. An entry is
+ *  [cx, cy, cz, w, h, d] with an optional seventh number, a rotation about X in radians applied
+ *  before the translate (a sloped keypad shelf), or `{ cyl: [cx, cy, cz, r, h, seg?, rotX?, rotZ?] }`
+ *  for a round part in the same submission (a door pull bar). */
+function boxes(list: (number[] | { cyl: number[] })[]) {
+  return mergeGeos(list.map((b) => {
+    if (!Array.isArray(b)) {
+      const c = b.cyl;
+      const g = new THREE.CylinderGeometry(c[3], c[3], c[4], c[5] ?? 12);
+      if (c[6]) g.rotateX(c[6]);
+      if (c[7]) g.rotateZ(c[7]);
+      g.translate(c[0], c[1], c[2]);
+      return g;
     }
-    const displacementScale = Math.max(0, readLayerNumber(spec.displacement, ['amplitude', 'strength'], 0));
-    const effectiveDisplacementScale = denseMesh ? Math.max(0.005, displacementScale) : displacementScale;
-    if (effectiveDisplacementScale > 0) {
-      material.displacementMap = textures.height;
-      material.displacementScale = effectiveDisplacementScale;
-      material.displacementBias = -effectiveDisplacementScale * 0.5;
-    }
+    if (b[6]) { const g = new THREE.BoxGeometry(b[3], b[4], b[5]); g.rotateX(b[6]); g.translate(b[0], b[1], b[2]); return g; }
+    return boxAt(b[0], b[1], b[2], b[3], b[4], b[5]);
+  }));
+}
+
+/* ------------------------------------------------------------------ materials */
+
+/**
+ * Every material is declared `textureless` in the sculpt spec, so no procedural texture set is
+ * synthesised. That matters twice. Speed: makeProceduralTextureSet writes FIVE canvases per
+ * material pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution.
+ * Correctness: whenever a texture set exists the generator forces color to white and roughness
+ * to 1 and reads both back from the generated maps, discarding the measured albedo -- which is
+ * what renders a building mid-grey.
+ *
+ * Metalness is capped well below physical for metals. The thaikit harness supplies a hemisphere
+ * light and three directionals and NO environment map, and a metal with nothing to reflect
+ * renders black. The albedo stays measured; the metalness is what is wrong for this rig.
+ *
+ * The one printed graphic, the brand fascia, is a canvas assigned AFTER material construction.
+ * The textureless declaration does not affect that, and it is the documented route.
+ */
+function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.MeshStandardMaterial> {
+  const map: Record<string, THREE.MeshStandardMaterial> = {};
+  for (const s of CONFIG.materials as any[]) {
+    const m = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(s.color),
+      roughness: s.roughness,
+      metalness: s.metalness,
+      wireframe: options.wireframe ?? false,
+    });
+    if (s.envMapIntensity !== undefined) m.envMapIntensity = s.envMapIntensity;
+    if (s.opacity !== undefined) { m.transparent = true; m.opacity = s.opacity; m.depthWrite = true; }
+    m.name = s.id;
+    map[s.id] = m;
   }
-  material.envMapIntensity = readLayerNumber(spec, ['envMapIntensity'], 0.8);
-  material.userData.sculptMaterial = spec;
-  material.userData.proceduralMapsIndependent = true;
-  material.userData.pbrConstraints = { albedoRange: [30, 240], binaryMetalness: true, f0Range: [0.02, 1], iorRange: [1, 2.5] };
-  material.userData.pbrTextureSource = textures?.source ?? 'flat-fallback';
-  material.userData.referencePbr = spec.referencePbr ?? null;
-  material.userData.referenceMaterialId = spec.referenceMaterialId ?? spec.materialReference?.profileId ?? null;
-  material.userData.materialEvidence = spec.materialEvidence ?? null;
-  material.userData.validationViews = spec.materialReference?.validationViews ?? [];
-  material.needsUpdate = true;
-  return material;
+  return map;
 }
 
-type AttachmentEndpoint = {
-  start: THREE.Vector3;
-  midpoint: THREE.Vector3;
-  quaternion: THREE.Quaternion;
-  length: number;
-  baseRadius: number;
-  endRadius: number;
-};
+/* ------------------------------------------------------------------ the model */
 
-function readVector3(value: unknown, fallback: [number, number, number]): THREE.Vector3 {
-  if (Array.isArray(value) && value.length === 3 && value.every((item) => typeof item === 'number')) {
-    return new THREE.Vector3(value[0], value[1], value[2]);
-  }
-  return new THREE.Vector3(fallback[0], fallback[1], fallback[2]);
-}
-
-function readNumber(value: unknown, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
-}
-
-function makeAttachmentEndpoint(attachment: unknown): AttachmentEndpoint | null {
-  if (!attachment || typeof attachment !== 'object') return null;
-  const record = attachment as Record<string, unknown>;
-  const start = readVector3(record.localStart, [0, 0, 0]);
-  const end = readVector3(record.localEnd, [0, 1, 0]);
-  const delta = end.clone().sub(start);
-  const length = delta.length();
-  if (length <= 0.0001) return null;
-  const direction = delta.clone().normalize();
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-  const baseRadius = Math.max(0.005, readNumber(record.baseRadius, 0.06));
-  const endRadius = Math.max(0.003, readNumber(record.endRadius, baseRadius * 0.55));
-  return {
-    start,
-    midpoint: delta.multiplyScalar(0.5),
-    quaternion,
-    length,
-    baseRadius,
-    endRadius,
-  };
-}
-
-// Generated from ObjectSculptSpec target: FamilyMart Store Building
-// Sculpt build pass: optimization-pass
-// This factory is intentionally pass-gated. Finish browser screenshot review before unlocking deeper passes.
 export function createFamilyMartStoreBuildingModel(options: ProceduralModelOptions = {}): THREE.Group {
   const root = new THREE.Group();
-  root.name = "FamilyMart Store Building";
-  root.userData.reconstructionEvidence = {"itemFamily": null, "subtype": null, "componentAdapter": null, "route": null, "exactnessTier": null, "referenceCamera": {"solved": false, "fovDegrees": 40.0, "aspect": 1.0, "orientation": {"yaw": 0.0, "pitch": 0.0, "roll": 0.0}, "positionHint": [0.0, 0.0, 3.0], "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."}, "approximationNotes": []};
-  root.userData.materialPipeline = {};
-  root.userData.materialReferenceRegistry = null;
+  root.name = 'FamilyMart Store Building';
 
-
-  // ---- printed graphics: road markings in the albedo, not on a second surface --------
-  // A painted marking has no thickness. Drawing it into the carriageway's base colour is
-  // the physically correct representation AND it is why this tile needs no proud quad
-  // over the asphalt -- the one thing guaranteed to z-fight as the camera moves. The
-  // canvas is drawn with fillRect only, so it costs microseconds; it is not the per-pixel
-  // synthesis that `textureless` exists to prevent.
-  function buildMarkingTexture(specIn: any): THREE.Texture | null {
-    if (typeof document === 'undefined') return null;   // headless without a DOM: skip
-    const spec = specIn;
-    // Resolution per canvas, not one global size: a 0.6 m drain grate at 512 square costs the
-    // same VRAM as an 8 m road surface for detail nobody can resolve. Default 512, opt down.
-    //
-    // The canvas must match the SURFACE'S ASPECT, not be square. A square canvas stretched
-    // across an 8.0 x 0.92 m fascia scales x and y by 8.7:1, which smears a wordmark into an
-    // unreadable streak while leaving the plain colour bands looking fine -- so the bug only
-    // shows on the one element that carries the identity.
-    const PX = spec.px ?? 512;
-    const PY = spec.pxH ?? Math.max(8, Math.round(PX * (spec.depth / spec.width)));
-    const canvas = document.createElement('canvas');
-    canvas.width = PX; canvas.height = PY;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-    ctx.fillStyle = spec.base;
-    ctx.fillRect(0, 0, PX, PY);
-    // metres -> pixels. The SECOND axis scales by PY, not PX. Scaling both by PX drew
-    // everything 8.7x too tall on a 2048x236 fascia, so only a sliver of the intended layout
-    // reached the surface -- the brand band vanished while the plain colours still looked
-    // plausible, which is why it read as a mapping problem rather than a scaling one.
-    //
-    // Canvas y grows DOWNWARD while three's CanvasTexture already flips for UV, so a band whose
-    // second axis is HEIGHT needs flipY to come out the right way up: on a fascia the difference
-    // is the brand's top band ending up along its bottom edge.
-    const ux = (x: number) => ((x + spec.width / 2) / spec.width) * PX;
-    const vz = spec.flipY
-      ? (z: number) => (1 - (z + spec.depth / 2) / spec.depth) * PY
-      : (z: number) => ((z + spec.depth / 2) / spec.depth) * PY;
-    for (const b of spec.bands ?? []) {
-      ctx.fillStyle = b.color;
-      ctx.fillRect(ux(b.x0), Math.min(vz(b.z0), vz(b.z1)), ux(b.x1) - ux(b.x0), Math.abs(vz(b.z1) - vz(b.z0)));
-    }
-    // Polylines: a curved edge line is a STROKE, not a run of little squares. Approximating an
-    // arc with axis-aligned rects gave a dotted line that reads as a lane of cat's eyes rather
-    // than as painted edge marking.
-    for (const pl of spec.polylines ?? []) {
-      if (!pl.points || pl.points.length < 2) continue;
-      ctx.strokeStyle = pl.color;
-      ctx.lineWidth = Math.max(1, (pl.width / spec.width) * PX);
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      if (pl.dash) ctx.setLineDash(pl.dash.map((v) => (v / spec.depth) * PX));
-      else ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(ux(pl.points[0][0]), vz(pl.points[0][1]));
-      for (const [px, pz] of pl.points.slice(1)) ctx.lineTo(ux(px), vz(pz));
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-    for (const d of spec.dashes ?? []) {
-      ctx.fillStyle = d.color;
-      ctx.fillRect(ux(d.x0), Math.min(vz(d.z0), vz(d.z1)), ux(d.x1) - ux(d.x0), Math.abs(vz(d.z1) - vz(d.z0)));
-    }
-    // Wordmarks. A brand fascia is PRINTED GRAPHICS -- the case CLAUDE.md reserves the
-    // after-construction canvas for. Drawn rather than modelled: lettering as geometry would
-    // cost a draw call and several geometries on the axis this class is tightest on, and paint
-    // has no thickness to model anyway.
-    for (const t of spec.texts ?? []) {
-      const px = Math.max(6, (t.size / spec.depth) * PY);
-      ctx.font = `${t.weight ?? 700} ${px}px ${t.font ?? 'Helvetica, Arial, sans-serif'}`;
-      ctx.fillStyle = t.color;
-      ctx.textAlign = t.align ?? 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(t.text, ux(t.x), vz(t.z));
-    }
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = 4;
-    if (spec.uvMode === 'metres') {
-      // ExtrudeGeometry's WorldUVGenerator emits CAP uvs as the shape's own (x, y) -- that is,
-      // in METRES, spanning -4..4 on an 8 m tile -- not the 0..1 a BoxGeometry gives. Left
-      // alone the canvas tiles eight times across the road and the lane lines come out as a
-      // fine stripe pattern. Remap: u * (1/width) + 0.5 lands metres back on 0..1, which is
-      // exactly the mapping the canvas was drawn with.
-      tex.wrapS = THREE.ClampToEdgeWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
-      tex.repeat.set(1 / spec.width, 1 / spec.depth);
-      tex.offset.set(0.5, 0.5);
-    }
-    tex.needsUpdate = true;
-    return tex;
-  }
-  const materialMap: Record<string, THREE.Material> = {};
-  materialMap["render"] = createSculptMaterial(
-    "render",
-    {"id": "render", "name": "Painted cement render, walls", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#6D6F74", "color": "#6D6F74", "albedo": {"dominant": "#6D6F74", "secondary": ["#5A5C60", "#7B7D82"], "samplingNotes": "Measured on a 67x143 px crop of the +X flank between the door and the rear corner. Luma spread 5.2 -- the flattest read anywhere on this plate, so the crop sits on one surface and the number is the render's own albedo with no lift applied."}, "colorVariation": {"palette": ["#6D6F74", "#5A5C60", "#7B7D82"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.86, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.0, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.12, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [{"id": "wall-streaking", "albedo": "#5F6165", "roughnessDelta": 0.03, "coverage": 0.18, "evidenceRefs": ["full-object"], "description": "Run-off staining down the render below the coping drip, heaviest in the top 0.8 m of each wall. Carried as a shading note rather than a texture: it is localised dirt, not albedo variation of the material, and the plate's own crop spread of 5.2 says the render itself is uniform."}], "shaderNotes": ["MeshStandardMaterial, metalness 0. Flat painted render."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/render-wall.png, 9,581 px: luma P10 108.1, P90 113.4, spread 5.2. A spread that small over that many pixels is a flat matte dielectric with no resolvable relief.", "The vertical streaking visible on the plate is run-off staining, which is localised dirt rather than albedo variation of the material, so it does not justify a texture set.", "Cost measurement carried from the 7-Eleven: declaring textureless took createObjectModel from 24,180 ms to 23 ms, and the cost is the SQUARE of textureResolution."]}},
-    options
-  );
-  materialMap["roof-grey"] = createSculptMaterial(
-    "roof-grey",
-    {"id": "roof-grey", "name": "Weathered flat-roof membrane", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#7C8288", "color": "#7C8288", "albedo": {"dominant": "#7C8288", "secondary": ["#6B7076"], "samplingNotes": "Read from the roof deck between the parapet and the plant. Recorded at LOW confidence: the crop measured spread 82.2 because at this camera angle the deck and the parapet's inner face cannot be separated by any axis-aligned box."}, "colorVariation": {"palette": ["#7C8288", "#6B7076"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.92, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.0, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.2, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["Authored from a REFUSED crop, deliberately. The honest alternative to a bad measurement is an authored value that says so, not a bad measurement."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/roof-deck.png measures spread 82.2, which is REFUSED as a direct albedo reading and recorded as such; the authored value is the crop's lit quartile, one step below the render, which is the relationship the plate plainly shows.", "A flat-roof membrane at prop distance is a value, not a pattern: this surface is visible only from above and is never the read that identifies the building."]}},
-    options
-  );
-  materialMap["white-trim"] = createSculptMaterial(
-    "white-trim",
-    {"id": "white-trim", "name": "White coping and shopfront framing", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#D4D6D7", "color": "#D4D6D7", "albedo": {"dominant": "#D4D6D7", "secondary": ["#C3C5C6", "#E2E4E5"], "samplingNotes": "Two crops. The coping (184x10 px, spread 25.1, in full key) gives #CACAC8 with no lift needed. The framing crop (205x10 px on a transom) straddles glazing either side and measures spread 172.2, so only its LIT quartile #D4D6D7 is used. The two agree within a few units, which is why they share one material."}, "colorVariation": {"palette": ["#D4D6D7", "#C3C5C6", "#E2E4E5"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.55, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.15, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.0, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["Coping and framing share this material on an observed match, not on convenience: the two independent crops land within a few units of each other.", "metalness 0.15 rather than a bare-metal value. The review harness has no environment map, and a high metalness with nothing to reflect renders near-black."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/coping.png, 1,840 px, spread 25.1 in full key: a single lit surface.", "material-crops/frame-white.png, spread 172.2: REFUSED as a mean and used only for its lit quartile. A 205x10 px band across a shopfront on a three-quarter view cannot avoid the glass either side of the transom.", "Mill-finish aluminium and painted coping are both flat at prop distance: a 0.075 m mullion on an 8 m facade is under two texels from across a street."]}},
-    options
-  );
-  materialMap["fascia"] = createSculptMaterial(
-    "fascia",
-    {"id": "fascia", "name": "Brand fascia, printed", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#FFFFFF", "color": "#FFFFFF", "albedo": {"dominant": "#FFFFFF", "secondary": ["#408546", "#1B6FB4"], "samplingNotes": "color is WHITE BY DESIGN. The surface colour lives in a canvas assigned AFTER material construction -- the route this kit reserves for printed graphics -- so a tinted base would multiply through and darken the wordmark along with the field."}, "colorVariation": {"palette": ["#FFFFFF", "#408546", "#1B6FB4"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.5, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.0, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.0, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["The green band, the blue line and the wordmark are ONE canvas on this material. As geometry they would have cost three materials and three geometries on a class whose binding axes are exactly those two."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/fascia-green.png, 530 px, spread 9.4: a single flat surface, measured #29562d on the SHADED right wing. The authored green #408546 is that value lifted 1.55x toward full key, and the lift is stated rather than hidden.", "material-crops/fascia-white.png, 636 px, spread 21.3, same shaded wing, measured #8F939A and lifted to the field white for the same reason.", "material-crops/fascia-blue.png is REFUSED: spread 110.6 over a 5 px band. No placement on this plate isolates a 6-pixel stripe, so the blue is AUTHORED from the brand and labelled as authored.", "Printed vinyl has no relief at prop distance; the identity is the flat field plus the wordmark, and the wordmark is a canvas assigned after construction, which the textureless declaration does not affect."]}},
-    options
-  );
-  materialMap["glass-tinted"] = createSculptMaterial(
-    "glass-tinted",
-    {"id": "glass-tinted", "name": "Tinted shopfront glazing", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#7E8A8A", "color": "#7E8A8A", "albedo": {"dominant": "#7E8A8A", "secondary": ["#6E7A7A"], "samplingNotes": "AUTHORED, not sampled, and deliberately. The crop measures a mid neutral, but every one of those pixels is the shop INTERIOR -- shelving, a magazine rack, a ceiling -- seen through the pane. Sampling it would reproduce a photograph of a room this model does not contain."}, "colorVariation": {"palette": ["#7E8A8A", "#6E7A7A"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.1, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.05, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.0, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["metalness 0.05: the harness has no environment map and a metallic pane with nothing to reflect renders black."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/glazing.png measures spread 158.2, and inspection of the crop shows why: it is shelving and a lit ceiling, not a surface. REFUSED by rule, not by spread.", "Glass identity is the specular lobe and the tint, both carried by scalars. A generated texture set would force color to white and roughness to 1 and destroy precisely the two properties that make it read as glass."]}, "opacity": 0.92, "transparent": true, "opacityNote": "0.92 rather than a truly transparent pane. This prop is an exterior shell with NO interior geometry, so a transparent pane would show the inside of the far wall or the backdrop and read as a hole punched in the facade. At 0.92 it reads as glass with a hint of depth and nothing behind it is legible."},
-    options
-  );
-  materialMap["door-grey"] = createSculptMaterial(
-    "door-grey",
-    {"id": "door-grey", "name": "Painted steel service door", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#3B3F42", "color": "#3B3F42", "albedo": {"dominant": "#3B3F42", "secondary": ["#33373A"], "samplingNotes": "Measured on a 29x102 px crop of the flank door. Spread 35 across a flat leaf."}, "colorVariation": {"palette": ["#3B3F42", "#33373A"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.7, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.0, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.0, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["MeshStandardMaterial, metalness 0. Flat paint on steel."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["material-crops/door.png, 2,958 px, spread 35.0: one flat painted panel.", "The louvre at its foot is under a texel at prop distance and is not modelled or textured."]}},
-    options
-  );
-  materialMap["galvanised"] = createSculptMaterial(
-    "galvanised",
-    {"id": "galvanised", "name": "Galvanised condenser casing", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#9AA0A4", "color": "#9AA0A4", "albedo": {"dominant": "#9AA0A4", "secondary": ["#868C90"], "samplingNotes": "Authored from the rooftop plant, which sits at the top of the plate at a shallow angle where no crop of usable area is available. Recorded as authored."}, "colorVariation": {"palette": ["#9AA0A4", "#868C90"], "pattern": "mottled", "amplitude": 0.05, "heightCorrelation": 0.0}, "roughness": {"base": 0.55, "variation": 0.05, "map": "none", "localResponse": "Scalar; this surface has no cavity or edge-wear response worth a channel at prop distance."}, "metalness": {"base": 0.25, "variation": 0.0}, "ambientOcclusion": {"cavityStrength": 0.0, "contactShadowBias": 0.0, "notes": "No AO channel; the shell's own cast shadows carry the occlusion read."}, "wear": {"edgeWear": 0.0, "scratches": [], "chips": []}, "dirt": {"amount": 0.0, "cavityBias": 0.0, "color": "#4A4640"}, "localOverrides": [], "shaderNotes": ["metalness 0.25 for the same environment-map reason as the other metals here."], "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.", "textureless": {"declared": true, "evidence": ["No crop of sufficient area exists: the plant occupies roughly 40x25 px at a grazing angle, below the reference-admission floor, so no measurement is claimed for it.", "Spangle is a centimetre-scale crystal pattern; on a 2.4 m condenser bank seen at prop distance it is under one texel and reads as the value alone."]}},
-    options
-  );
-
-  const nodes: Record<string, THREE.Object3D> = { root };
+  const materials = buildMaterials(options);
+  const nodes: Record<string, THREE.Object3D> = {};
   const meshes: Record<string, THREE.Mesh> = {};
   const sockets: Record<string, THREE.Object3D> = {};
   const colliders: Record<string, unknown> = {};
   const destructionGroups: Record<string, THREE.Object3D[]> = {};
+  const castShadow = options.castShadow ?? true;
+  const receiveShadow = options.receiveShadow ?? true;
 
-  const endpoint_building_shell_0 = makeAttachmentEndpoint(null);
-
-  {
-    const tex = buildMarkingTexture({"materialId":"fascia","width":8,"depth":0.9199999999999999,"px":2048,"base":"#F2F3F3","bands":[{"x0":-4,"x1":4,"z0":0.15999999999999998,"z1":0.45999999999999996,"color":"#408546"},{"x0":-4,"x1":4,"z0":-0.36,"z1":-0.2899999999999999,"color":"#1B6FB4"},{"x0":-4,"x1":4,"z0":-0.45999999999999996,"z1":-0.42,"color":"#C9CCCE"},{"x0":-2.3,"x1":-1.85,"z0":-0.02,"z1":0.13,"color":"#408546"},{"x0":-2.3,"x1":-1.85,"z0":-0.17,"z1":-0.04,"color":"#1B6FB4"}],"texts":[{"text":"FamilyMart","x":-0.35,"z":-0.03,"size":0.4,"color":"#1B6FB4","weight":700,"align":"left"}],"flipY":true});
-    const target = materialMap["fascia"] as THREE.MeshStandardMaterial | undefined;
-    if (tex && target) {
-      // color stays white: the surface colour lives in the map, and multiplying a tinted
-      // base through it would darken the light marks along with the dark ground.
-      target.map = tex;
-      target.color = new THREE.Color(0xffffff);
-      target.needsUpdate = true;
+  function add(id: string, name: string, geo: THREE.BufferGeometry, matId: string) {
+    const node = new THREE.Group(); node.name = name + '__node';
+    const mesh = new THREE.Mesh(geo, materials[matId]);
+    mesh.name = name; mesh.castShadow = castShadow; mesh.receiveShadow = receiveShadow;
+    node.add(mesh); root.add(node);
+    nodes[id] = node; meshes[id] = mesh; colliders[id] = null;
+    return mesh;
+  }
+  function addInst(id: string, name: string, geo: THREE.BufferGeometry, matId: string, mats: THREE.Matrix4[], cols?: number[]) {
+    const node = new THREE.Group(); node.name = name + '__node';
+    const inst = new THREE.InstancedMesh(geo, materials[matId], mats.length);
+    inst.name = name; inst.castShadow = castShadow; inst.receiveShadow = receiveShadow;
+    for (let i = 0; i < mats.length; i++) inst.setMatrixAt(i, mats[i]);
+    if (cols) {
+      const c = new THREE.Color();
+      for (let i = 0; i < cols.length; i++) inst.setColorAt(i, c.setHex(cols[i]));
+      if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
     }
+    inst.instanceMatrix.needsUpdate = true;
+    node.add(inst); root.add(node);
+    nodes[id] = node; meshes[id] = inst as unknown as THREE.Mesh; colliders[id] = null;
+    return inst;
   }
-  const node_building_shell_0 = new THREE.Group();
-  node_building_shell_0.name = "Render wall shell__pivot";
-  node_building_shell_0.scale.set(1, 1, 1);
-  if (endpoint_building_shell_0) {
-    node_building_shell_0.position.copy(endpoint_building_shell_0.start);
-    node_building_shell_0.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_building_shell_0.position.set(0.0, 1.85, 0.0);
-    node_building_shell_0.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_building_shell_0.userData.sculptComponent = {"id": "building-shell", "name": "Render wall shell", "level": "macro", "role": "body", "importance": 1.0, "confidence": 0.9, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A rigid box with flat faces and no interior: a prop kit is only ever looked at from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid rather than a wall ring for the same reason.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 7.8, "height": 3.7, "depth": 6.8, "units": "meters", "confidence": 0.9}, "transform": {"position": [0, 1.85, 0], "rotation": [0, 0, 0], "scale": [7.8, 3.7, 6.8]}, "actionProfile": {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "The ONLY pivot on this prop. A shop building is static level geometry: no part turns on an axis, so a second pivot would promise a mechanism that does not exist. The roller shutter and the doors are modelled closed and do not open."}, "transformChannels": {"translate": true, "rotate": true, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": {"type": "box", "offset": [0, 2.3, 0], "scale": [8.0, 4.6, 7.0], "isTrigger": false, "notes": "The asset's declared collider: one box over the whole envelope. A building is a solid obstacle; nothing about it needs a finer proxy."}, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "render"}}, "material": "render", "materialLayers": ["render"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "wall-mass", "description": "The building mass, 7.8 x 3.7 x 6.8 m, inset inside the declared 8.0 x 4.6 x 7.0 m envelope so the parapet and fascia can stand proud of it without overhanging the footprint.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#6D6F74", "secondary": ["#6D6F74"], "zones": [{"id": "wall", "albedo": "#6D6F74", "note": "flat render, the flattest read on the plate"}, {"id": "wall-shadowed", "albedo": "#595b5f", "note": "the flank away from the key"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(109, 111, 116, 1.0)", "secondaryAlbedo": "rgba(109, 111, 116, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.8}};
-  node_building_shell_0.userData.actionProfile = {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "The ONLY pivot on this prop. A shop building is static level geometry: no part turns on an axis, so a second pivot would promise a mechanism that does not exist. The roller shutter and the doors are modelled closed and do not open."}, "transformChannels": {"translate": true, "rotate": true, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": {"type": "box", "offset": [0, 2.3, 0], "scale": [8.0, 4.6, 7.0], "isTrigger": false, "notes": "The asset's declared collider: one box over the whole envelope. A building is a solid obstacle; nothing about it needs a finer proxy."}, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "render"}};
-  (nodes["root"] ?? root).add(node_building_shell_0);
-  nodes["building-shell"] = node_building_shell_0;
-  const mesh_building_shell_0Geometry = endpoint_building_shell_0
-    ? new THREE.CylinderGeometry(endpoint_building_shell_0.endRadius, endpoint_building_shell_0.baseRadius, endpoint_building_shell_0.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_building_shell_0) {
-    mesh_building_shell_0Geometry.scale(7.8, 3.7, 6.8);
-  }
-  const mesh_building_shell_0 = new THREE.Mesh(
-    mesh_building_shell_0Geometry,
-    materialMap["render"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_building_shell_0.name = "Render wall shell";
-  if (endpoint_building_shell_0) {
-    mesh_building_shell_0.position.copy(endpoint_building_shell_0.midpoint);
-    mesh_building_shell_0.quaternion.copy(endpoint_building_shell_0.quaternion);
-  }
-  mesh_building_shell_0.castShadow = options.castShadow ?? true;
-  mesh_building_shell_0.receiveShadow = options.receiveShadow ?? true;
-  mesh_building_shell_0.userData.sculptComponent = {"id": "building-shell", "name": "Render wall shell", "level": "macro", "role": "body", "importance": 1.0, "confidence": 0.9, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A rigid box with flat faces and no interior: a prop kit is only ever looked at from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid rather than a wall ring for the same reason.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 7.8, "height": 3.7, "depth": 6.8, "units": "meters", "confidence": 0.9}, "transform": {"position": [0, 1.85, 0], "rotation": [0, 0, 0], "scale": [7.8, 3.7, 6.8]}, "actionProfile": {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "The ONLY pivot on this prop. A shop building is static level geometry: no part turns on an axis, so a second pivot would promise a mechanism that does not exist. The roller shutter and the doors are modelled closed and do not open."}, "transformChannels": {"translate": true, "rotate": true, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": {"type": "box", "offset": [0, 2.3, 0], "scale": [8.0, 4.6, 7.0], "isTrigger": false, "notes": "The asset's declared collider: one box over the whole envelope. A building is a solid obstacle; nothing about it needs a finer proxy."}, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "render"}}, "material": "render", "materialLayers": ["render"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "wall-mass", "description": "The building mass, 7.8 x 3.7 x 6.8 m, inset inside the declared 8.0 x 4.6 x 7.0 m envelope so the parapet and fascia can stand proud of it without overhanging the footprint.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#6D6F74", "secondary": ["#6D6F74"], "zones": [{"id": "wall", "albedo": "#6D6F74", "note": "flat render, the flattest read on the plate"}, {"id": "wall-shadowed", "albedo": "#595b5f", "note": "the flank away from the key"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(109, 111, 116, 1.0)", "secondaryAlbedo": "rgba(109, 111, 116, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.8}};
-  node_building_shell_0.add(mesh_building_shell_0);
-  meshes["building-shell"] = mesh_building_shell_0;
-  colliders["building-shell"] = {"type": "box", "offset": [0, 2.3, 0], "scale": [8.0, 4.6, 7.0], "isTrigger": false, "notes": "The asset's declared collider: one box over the whole envelope. A building is a solid obstacle; nothing about it needs a finer proxy."};
 
-  const endpoint_roof_deck_1 = makeAttachmentEndpoint(null);
-  const node_roof_deck_1 = new THREE.Group();
-  node_roof_deck_1.name = "Flat roof deck__pivot";
-  node_roof_deck_1.scale.set(1, 1, 1);
-  if (endpoint_roof_deck_1) {
-    node_roof_deck_1.position.copy(endpoint_roof_deck_1.start);
-    node_roof_deck_1.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_roof_deck_1.position.set(0.0, 3.75, 0.0);
-    node_roof_deck_1.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_roof_deck_1.userData.sculptComponent = {"id": "roof-deck", "name": "Flat roof deck", "level": "meso", "role": "surface", "importance": 0.4, "confidence": 0.6, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat slab. It exists because the parapet stands above it -- without a deck the parapet ring would frame a hole straight through the building.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 7.359999999999999, "height": 0.14, "depth": 6.359999999999999, "units": "meters", "confidence": 0.6}, "transform": {"position": [0, 3.75, 0], "rotation": [0, 0, 0], "scale": [7.359999999999999, 0.14, 6.359999999999999]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "roof-grey"}}, "material": "roof-grey", "materialLayers": ["roof-grey"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "deck", "description": "Spans y=3.68 to 3.8200000000000003, so it EMBEDS 20 mm into the wall top rather than resting on it. Flush, its underside and the parapet's underside both sat at y=3.7 facing down; their footprints are complementary so nothing actually overlaps, but an envelope test cannot see that and check-coplanar reported a 46.8 m2 same-facing pair. Embedding is also the honest contact type -- a deck is laid INTO its upstand.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#7C8288", "secondary": ["#7C8288"], "zones": [{"id": "deck", "albedo": "#7C8288", "note": "weathered flat-roof membrane"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(124, 130, 136, 1.0)", "secondaryAlbedo": "rgba(124, 130, 136, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.8}};
-  node_roof_deck_1.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "roof-grey"}};
-  (nodes["root"] ?? root).add(node_roof_deck_1);
-  nodes["roof-deck"] = node_roof_deck_1;
-  const mesh_roof_deck_1Geometry = endpoint_roof_deck_1
-    ? new THREE.CylinderGeometry(endpoint_roof_deck_1.endRadius, endpoint_roof_deck_1.baseRadius, endpoint_roof_deck_1.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_roof_deck_1) {
-    mesh_roof_deck_1Geometry.scale(7.359999999999999, 0.14, 6.359999999999999);
-  }
-  const mesh_roof_deck_1 = new THREE.Mesh(
-    mesh_roof_deck_1Geometry,
-    materialMap["roof-grey"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_roof_deck_1.name = "Flat roof deck";
-  if (endpoint_roof_deck_1) {
-    mesh_roof_deck_1.position.copy(endpoint_roof_deck_1.midpoint);
-    mesh_roof_deck_1.quaternion.copy(endpoint_roof_deck_1.quaternion);
-  }
-  mesh_roof_deck_1.castShadow = options.castShadow ?? true;
-  mesh_roof_deck_1.receiveShadow = options.receiveShadow ?? true;
-  mesh_roof_deck_1.userData.sculptComponent = {"id": "roof-deck", "name": "Flat roof deck", "level": "meso", "role": "surface", "importance": 0.4, "confidence": 0.6, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat slab. It exists because the parapet stands above it -- without a deck the parapet ring would frame a hole straight through the building.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 7.359999999999999, "height": 0.14, "depth": 6.359999999999999, "units": "meters", "confidence": 0.6}, "transform": {"position": [0, 3.75, 0], "rotation": [0, 0, 0], "scale": [7.359999999999999, 0.14, 6.359999999999999]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "roof-grey"}}, "material": "roof-grey", "materialLayers": ["roof-grey"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "deck", "description": "Spans y=3.68 to 3.8200000000000003, so it EMBEDS 20 mm into the wall top rather than resting on it. Flush, its underside and the parapet's underside both sat at y=3.7 facing down; their footprints are complementary so nothing actually overlaps, but an envelope test cannot see that and check-coplanar reported a 46.8 m2 same-facing pair. Embedding is also the honest contact type -- a deck is laid INTO its upstand.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#7C8288", "secondary": ["#7C8288"], "zones": [{"id": "deck", "albedo": "#7C8288", "note": "weathered flat-roof membrane"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(124, 130, 136, 1.0)", "secondaryAlbedo": "rgba(124, 130, 136, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.8}};
-  node_roof_deck_1.add(mesh_roof_deck_1);
-  meshes["roof-deck"] = mesh_roof_deck_1;
-  colliders["roof-deck"] = null;
+  const G = CONFIG.geometry as any;
 
-  const endpoint_parapet_2 = makeAttachmentEndpoint(null);
-  const node_parapet_2 = new THREE.Group();
-  node_parapet_2.name = "Parapet upstand__pivot";
-  node_parapet_2.scale.set(1, 1, 1);
-  if (endpoint_parapet_2) {
-    node_parapet_2.position.copy(endpoint_parapet_2.start);
-    node_parapet_2.rotation.set(1.5707963267948966, 0.0, 0.0);
-  } else {
-    node_parapet_2.position.set(0.0, 4.3, 0.0);
-    node_parapet_2.rotation.set(1.5707963267948966, 0.0, 0.0);
-  }
-  node_parapet_2.userData.sculptComponent = {"id": "parapet", "name": "Parapet upstand", "level": "meso", "role": "body", "importance": 0.7, "confidence": 0.8, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "An extruded RING -- the roof outline with the deck opening as a hole -- so the upstand's inner and outer faces come from one geometry and cannot drift apart. This is what makes the building read as a flat-roofed shop rather than an open-topped box.", "geometryDescriptor": {"topologyIntent": "roof outline extruded with the deck opening as a hole", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "profile2D": {"points": [[-3.9, -3.4], [3.9, -3.4], [3.9, 3.4], [-3.9, 3.4]], "depth": 0.5999999999999996, "holes": [[[-3.6799999999999997, -3.1799999999999997], [3.6799999999999997, -3.1799999999999997], [3.6799999999999997, 3.1799999999999997], [-3.6799999999999997, 3.1799999999999997]]]}}, "parent": null, "attachment": null, "dimensions": {"width": 7.8, "height": 0.5999999999999996, "depth": 6.8, "units": "meters", "confidence": 0.8}, "transform": {"position": [0, 4.3, 0], "rotation": [1.5707963267948966, 0, 0], "scale": [1, 1, 1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}}, "material": "white-trim", "materialLayers": ["white-trim"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "coping", "description": "Upstand from y=3.7 to y=4.3, 0.22 m thick, capping the walls. Reads a clear step lighter than the render below it, which is what separates the two planes.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#D4D6D7", "secondary": ["#D4D6D7"], "zones": [{"id": "coping", "albedo": "#D4D6D7", "note": "in full key, no lift needed"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(212, 214, 215, 1.0)", "secondaryAlbedo": "rgba(212, 214, 215, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_parapet_2.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}};
-  (nodes["root"] ?? root).add(node_parapet_2);
-  nodes["parapet"] = node_parapet_2;
-  const mesh_parapet_2Geometry = endpoint_parapet_2
-    ? new THREE.CylinderGeometry(endpoint_parapet_2.endRadius, endpoint_parapet_2.baseRadius, endpoint_parapet_2.length, 16, 6)
-    : buildExtrudeGeometry({"points": [[-3.9, -3.4], [3.9, -3.4], [3.9, 3.4], [-3.9, 3.4]], "depth": 0.5999999999999996, "holes": [[[-3.6799999999999997, -3.1799999999999997], [3.6799999999999997, -3.1799999999999997], [3.6799999999999997, 3.1799999999999997], [-3.6799999999999997, 3.1799999999999997]]]});
-  if (!endpoint_parapet_2) {
-    mesh_parapet_2Geometry.scale(1.0, 1.0, 1.0);
-  }
-  const mesh_parapet_2 = new THREE.Mesh(
-    mesh_parapet_2Geometry,
-    materialMap["white-trim"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_parapet_2.name = "Parapet upstand";
-  if (endpoint_parapet_2) {
-    mesh_parapet_2.position.copy(endpoint_parapet_2.midpoint);
-    mesh_parapet_2.quaternion.copy(endpoint_parapet_2.quaternion);
-  }
-  mesh_parapet_2.castShadow = options.castShadow ?? true;
-  mesh_parapet_2.receiveShadow = options.receiveShadow ?? true;
-  mesh_parapet_2.userData.sculptComponent = {"id": "parapet", "name": "Parapet upstand", "level": "meso", "role": "body", "importance": 0.7, "confidence": 0.8, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "An extruded RING -- the roof outline with the deck opening as a hole -- so the upstand's inner and outer faces come from one geometry and cannot drift apart. This is what makes the building read as a flat-roofed shop rather than an open-topped box.", "geometryDescriptor": {"topologyIntent": "roof outline extruded with the deck opening as a hole", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "profile2D": {"points": [[-3.9, -3.4], [3.9, -3.4], [3.9, 3.4], [-3.9, 3.4]], "depth": 0.5999999999999996, "holes": [[[-3.6799999999999997, -3.1799999999999997], [3.6799999999999997, -3.1799999999999997], [3.6799999999999997, 3.1799999999999997], [-3.6799999999999997, 3.1799999999999997]]]}}, "parent": null, "attachment": null, "dimensions": {"width": 7.8, "height": 0.5999999999999996, "depth": 6.8, "units": "meters", "confidence": 0.8}, "transform": {"position": [0, 4.3, 0], "rotation": [1.5707963267948966, 0, 0], "scale": [1, 1, 1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}}, "material": "white-trim", "materialLayers": ["white-trim"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "coping", "description": "Upstand from y=3.7 to y=4.3, 0.22 m thick, capping the walls. Reads a clear step lighter than the render below it, which is what separates the two planes.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#D4D6D7", "secondary": ["#D4D6D7"], "zones": [{"id": "coping", "albedo": "#D4D6D7", "note": "in full key, no lift needed"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(212, 214, 215, 1.0)", "secondaryAlbedo": "rgba(212, 214, 215, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_parapet_2.add(mesh_parapet_2);
-  meshes["parapet"] = mesh_parapet_2;
-  colliders["parapet"] = null;
+  /* Shell: SOLID box, not a ring. The prop is an exterior shell only ever seen from outside, so
+   * an interior costs draw calls, geometries and VRAM for something nobody sees -- and solid
+   * means the shopfront needs no opening cut in it, which removes all four reveal faces and the
+   * z-fighting they cause. Set 0.06 m INSIDE the parapet ring on every elevation so no wall face
+   * is ever coplanar and co-facing with a parapet face. */
+  // How far forward the shell face sits. The DEFAULT 2.50 leaves 1.00 m for an entrance canopy to
+  // cantilever into, so the canopy nose lands exactly on the declared 7.0 m depth. A building with
+  // NO forward cantilever must push this out instead, or the prop is built short of its declared
+  // envelope -- MK first came out 6.3 m deep against a declared 7.0 for exactly that reason.
+  const SF = (G.shellFront ?? 2.50) as number;
+  add('building-shell', 'Building shell', boxAt(0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44), 'wall');
+  colliders['building-shell'] = {
+    shape: 'box', localCenter: [0, 2.3, 0], halfExtents: [4.0, 2.3, 3.5],
+    notes: 'Asset declares collider "box". One convex proxy over the whole envelope.',
+  };
 
-  const endpoint_fascia_band_3 = makeAttachmentEndpoint(null);
-  const node_fascia_band_3 = new THREE.Group();
-  node_fascia_band_3.name = "Brand fascia band__pivot";
-  node_fascia_band_3.scale.set(1, 1, 1);
-  if (endpoint_fascia_band_3) {
-    node_fascia_band_3.position.copy(endpoint_fascia_band_3.start);
-    node_fascia_band_3.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_fascia_band_3.position.set(0.0, 3.4, 3.51);
-    node_fascia_band_3.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_fascia_band_3.userData.sculptComponent = {"id": "fascia-band", "name": "Brand fascia band", "level": "meso", "role": "signage", "importance": 0.95, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A shallow sign tray hung on the front. Its stripes and wordmark are PRINTED GRAPHICS carried in this material's canvas albedo -- paint has no thickness, and as proud panels they would be several coplanar surfaces over one face, plus materials and geometries on the two axes this class is tightest on.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 8.0, "height": 0.9199999999999999, "depth": 0.22, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 3.4, 3.51], "rotation": [0, 0, 0], "scale": [8.0, 0.9199999999999999, 0.22]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "fascia"}}, "material": "fascia", "materialLayers": ["fascia"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "brand-band", "description": "White field with a green band along the top and a blue line near the bottom, carrying the wordmark. This is the single most identity-defining surface on the prop: the shell is generic and the fascia is what names it.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#FFFFFF", "secondary": ["#FFFFFF"], "zones": [{"id": "field", "albedo": "#FFFFFF", "note": "white by design; the colour lives in the canvas"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(255, 255, 255, 1.0)", "secondaryAlbedo": "rgba(255, 255, 255, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_fascia_band_3.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "fascia"}};
-  (nodes["root"] ?? root).add(node_fascia_band_3);
-  nodes["fascia-band"] = node_fascia_band_3;
-  const mesh_fascia_band_3Geometry = endpoint_fascia_band_3
-    ? new THREE.CylinderGeometry(endpoint_fascia_band_3.endRadius, endpoint_fascia_band_3.baseRadius, endpoint_fascia_band_3.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_fascia_band_3) {
-    mesh_fascia_band_3Geometry.scale(8.0, 0.9199999999999999, 0.22);
-  }
-  const mesh_fascia_band_3 = new THREE.Mesh(
-    mesh_fascia_band_3Geometry,
-    materialMap["fascia"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_fascia_band_3.name = "Brand fascia band";
-  if (endpoint_fascia_band_3) {
-    mesh_fascia_band_3.position.copy(endpoint_fascia_band_3.midpoint);
-    mesh_fascia_band_3.quaternion.copy(endpoint_fascia_band_3.quaternion);
-  }
-  mesh_fascia_band_3.castShadow = options.castShadow ?? true;
-  mesh_fascia_band_3.receiveShadow = options.receiveShadow ?? true;
-  mesh_fascia_band_3.userData.sculptComponent = {"id": "fascia-band", "name": "Brand fascia band", "level": "meso", "role": "signage", "importance": 0.95, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A shallow sign tray hung on the front. Its stripes and wordmark are PRINTED GRAPHICS carried in this material's canvas albedo -- paint has no thickness, and as proud panels they would be several coplanar surfaces over one face, plus materials and geometries on the two axes this class is tightest on.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 8.0, "height": 0.9199999999999999, "depth": 0.22, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 3.4, 3.51], "rotation": [0, 0, 0], "scale": [8.0, 0.9199999999999999, 0.22]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "fascia"}}, "material": "fascia", "materialLayers": ["fascia"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "brand-band", "description": "White field with a green band along the top and a blue line near the bottom, carrying the wordmark. This is the single most identity-defining surface on the prop: the shell is generic and the fascia is what names it.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#FFFFFF", "secondary": ["#FFFFFF"], "zones": [{"id": "field", "albedo": "#FFFFFF", "note": "white by design; the colour lives in the canvas"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(255, 255, 255, 1.0)", "secondaryAlbedo": "rgba(255, 255, 255, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_fascia_band_3.add(mesh_fascia_band_3);
-  meshes["fascia-band"] = mesh_fascia_band_3;
-  colliders["fascia-band"] = null;
+  /* Roof deck spans y 3.50..3.62 so its underside is sunk INTO the shell rather than resting on
+   * it. Authored flush, the deck's bottom face and the parapet ring's bottom face were both at
+   * y=3.550 and both facing down -- 46 m2 of coplanar co-facing surface. */
+  add('roof-deck', 'Roof deck', boxAt(0, 3.56, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40), 'deck');
 
-  const endpoint_shopfront_glazing_4 = makeAttachmentEndpoint(null);
-  const node_shopfront_glazing_4 = new THREE.Group();
-  node_shopfront_glazing_4.name = "Shopfront glazing__pivot";
-  node_shopfront_glazing_4.scale.set(1, 1, 1);
-  if (endpoint_shopfront_glazing_4) {
-    node_shopfront_glazing_4.position.copy(endpoint_shopfront_glazing_4.start);
-    node_shopfront_glazing_4.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_shopfront_glazing_4.position.set(0.0, 1.53, 3.42);
-    node_shopfront_glazing_4.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_shopfront_glazing_4.userData.sculptComponent = {"id": "shopfront-glazing", "name": "Shopfront glazing", "level": "meso", "role": "surface", "importance": 0.8, "confidence": 0.75, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A tinted, mostly opaque pane -- NOT a window. This prop is an exterior shell with nothing behind it, so a transparent pane would show the inside of the far wall and read as a hole punched in the facade.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 6.9, "height": 2.62, "depth": 0.04, "units": "meters", "confidence": 0.75}, "transform": {"position": [0, 1.53, 3.42], "rotation": [0, 0, 0], "scale": [6.9, 2.62, 0.04]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "glass-tinted"}}, "material": "glass-tinted", "materialLayers": ["glass-tinted"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "pane", "description": "Stands 0.02 m PROUD of the wall face at z=3.4. Flush would be a coplanar co-facing pair over 18 m2 of facade -- the exact defect the 7-Eleven shipped eight of.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#7E8A8A", "secondary": ["#7E8A8A"], "zones": [{"id": "pane", "albedo": "#7E8A8A", "note": "authored tint, not sampled"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(126, 138, 138, 1.0)", "secondaryAlbedo": "rgba(126, 138, 138, 1.0)", "materialClass": "glass", "materialClassConfidence": 0.8}};
-  node_shopfront_glazing_4.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "glass-tinted"}};
-  (nodes["root"] ?? root).add(node_shopfront_glazing_4);
-  nodes["shopfront-glazing"] = node_shopfront_glazing_4;
-  const mesh_shopfront_glazing_4Geometry = endpoint_shopfront_glazing_4
-    ? new THREE.CylinderGeometry(endpoint_shopfront_glazing_4.endRadius, endpoint_shopfront_glazing_4.baseRadius, endpoint_shopfront_glazing_4.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_shopfront_glazing_4) {
-    mesh_shopfront_glazing_4Geometry.scale(6.9, 2.62, 0.04);
-  }
-  const mesh_shopfront_glazing_4 = new THREE.Mesh(
-    mesh_shopfront_glazing_4Geometry,
-    materialMap["glass-tinted"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_shopfront_glazing_4.name = "Shopfront glazing";
-  if (endpoint_shopfront_glazing_4) {
-    mesh_shopfront_glazing_4.position.copy(endpoint_shopfront_glazing_4.midpoint);
-    mesh_shopfront_glazing_4.quaternion.copy(endpoint_shopfront_glazing_4.quaternion);
-  }
-  mesh_shopfront_glazing_4.castShadow = options.castShadow ?? true;
-  mesh_shopfront_glazing_4.receiveShadow = options.receiveShadow ?? true;
-  mesh_shopfront_glazing_4.userData.sculptComponent = {"id": "shopfront-glazing", "name": "Shopfront glazing", "level": "meso", "role": "surface", "importance": 0.8, "confidence": 0.75, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A tinted, mostly opaque pane -- NOT a window. This prop is an exterior shell with nothing behind it, so a transparent pane would show the inside of the far wall and read as a hole punched in the facade.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 6.9, "height": 2.62, "depth": 0.04, "units": "meters", "confidence": 0.75}, "transform": {"position": [0, 1.53, 3.42], "rotation": [0, 0, 0], "scale": [6.9, 2.62, 0.04]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "glass-tinted"}}, "material": "glass-tinted", "materialLayers": ["glass-tinted"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "pane", "description": "Stands 0.02 m PROUD of the wall face at z=3.4. Flush would be a coplanar co-facing pair over 18 m2 of facade -- the exact defect the 7-Eleven shipped eight of.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#7E8A8A", "secondary": ["#7E8A8A"], "zones": [{"id": "pane", "albedo": "#7E8A8A", "note": "authored tint, not sampled"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(126, 138, 138, 1.0)", "secondaryAlbedo": "rgba(126, 138, 138, 1.0)", "materialClass": "glass", "materialClassConfidence": 0.8}};
-  node_shopfront_glazing_4.add(mesh_shopfront_glazing_4);
-  meshes["shopfront-glazing"] = mesh_shopfront_glazing_4;
-  colliders["shopfront-glazing"] = null;
+  /* Parapet: front fascia wall plus three upstands, MERGED into one component and one draw call.
+   * The front is taller than the sides, which a plan extrusion cannot express. Outer faces stand
+   * 0.06 m proud of the walls -- a coping drip edge, and what keeps them off the wall planes. */
+  const PS = (G.parapetSides ?? { cy: 3.75, h: 0.4, thick: 0.24 }) as any;
+  // Parapet plan size. It defaults to the full 8.00 m envelope width, but a building whose FASCIA
+  // turns the corner has to pull the ring in: the return board is the outermost thing on that
+  // elevation, and a parapet at the same +-4.00 both hides it and puts two co-facing planes at the
+  // same x. `parapetW` and `PS.cx` are how a config buys that clearance without every sibling
+  // moving.
+  const PW = (G.parapetW ?? 8.0) as number;
+  const PCX = (PS.cx ?? 3.88) as number;
+  add('parapet', 'Parapet ring and fascia wall', boxes([
+    [0, G.fasciaWall.cy, G.fasciaWall.cz, PW, G.fasciaWall.h, G.fasciaWall.d],
+    // Side and rear upstands. `parapetSides` overrides the default 0.40 m upstand for a plate whose
+    // parapet is a full-height ring rather than a low kerb; the front is always the taller face and
+    // comes in through `fasciaWall`, which a plan extrusion could not express.
+    [-PCX, PS.cy, (SF - 0.30 - 3.5) / 2, PS.thick, PS.h, SF + 3.20],
+    [PCX, PS.cy, (SF - 0.30 - 3.5) / 2, PS.thick, PS.h, SF + 3.20],
+    [0, PS.cy, -3.38, PW, PS.h, 0.24],
+    // Anything else in the SAME material folds in here rather than costing its own draw call --
+    // full-height facade cladding, corner pilasters, a plinth. This is the merge lever: two
+    // parts that share a material should never be two submissions.
+    ...((G.parapetExtra ?? []) as number[][]),
+  ]), G.fasciaWallMaterial);
 
-  const endpoint_shopfront_framing_5 = makeAttachmentEndpoint(null);
-  const node_shopfront_framing_5 = new THREE.Group();
-  node_shopfront_framing_5.name = "Shopfront framing__pivot";
-  node_shopfront_framing_5.scale.set(1, 1, 1);
-  if (endpoint_shopfront_framing_5) {
-    node_shopfront_framing_5.position.copy(endpoint_shopfront_framing_5.start);
-    node_shopfront_framing_5.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_shopfront_framing_5.position.set(0.0, 0.12, 3.4499999999999997);
-    node_shopfront_framing_5.rotation.set(0.0, 0.0, 0.0);
+  /* Brand fascia panel. Sunk INTO the fascia wall at the back and standing proud at the front, so
+   * it overlaps its surround instead of meeting it. UVs are AUTHORED: the +Z face samples the
+   * wordmark band of the canvas and the other five faces sample a plain corner of the same
+   * canvas, which keeps the brand graphic at ONE material and ONE draw call. */
+  {
+    const f = G.fascia;
+    let g: THREE.BufferGeometry;
+    if (f.shape === 'disc') {
+      // A round sign disc, built as a CircleGeometry face plus a shallow cylinder body.
+      //
+      // The obvious construction -- one cylinder rotated to face +Z -- puts the wordmark on its
+      // side, because CylinderGeometry lays its cap UVs out in the cylinder's own XZ plane and
+      // rotating the geometry does not rotate them with it. CircleGeometry's UVs are already
+      // (x, y) in the plane it faces, so the square canvas lands the right way up with no
+      // correction. The body's UVs are collapsed onto a plain corner of the same canvas so the
+      // disc's edge does not smear the wordmark around its rim.
+      const r = f.w / 2;
+      const face = new THREE.CircleGeometry(r, 32);
+      face.translate(0, 0, 0.061);
+      const body = new THREE.CylinderGeometry(r, r, 0.12, 32);
+      body.rotateX(-Math.PI / 2);
+      const buv = body.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < buv.count; i++) buv.setXY(i, 0.02, 0.02);
+      buv.needsUpdate = true;
+      g = mergeGeos([face, body]);
+      g.translate(0, f.cy, f.cz);
+    } else {
+      // BoxGeometry vertex order is px, nx, py, ny, pz, nz -- four vertices per face -- so the
+      // outward face of a board is a known slice of the uv attribute. A building can carry the
+      // same mark on more than one elevation (this kit's hospital signs its front AND its side),
+      // so `boards` lets each board name the face that samples the graphic while every other face
+      // samples a plain corner of the same canvas. One material, one draw call, any number of
+      // boards facing any way.
+      const FACE_SLICE: Record<string, number> = { '+X': 0, '-X': 4, '+Y': 8, '-Y': 12, '+Z': 16, '-Z': 20 };
+      const boards = (f.boards as any[]) ?? [{ w: f.w, h: f.h, d: 0.12, at: [0, f.cy, f.cz], face: '+Z' }];
+      const parts: THREE.BufferGeometry[] = [];
+      for (const bd of boards) {
+        const b = new THREE.BoxGeometry(bd.w, bd.h, bd.d ?? 0.12);
+        const uv = b.getAttribute('uv') as THREE.BufferAttribute;
+        // `plain` boards carry no graphic at all: a band that wraps three sides of a canopy should
+        // repeat its mark on none of the returns, only on the face that fronts the street.
+        // The test is an explicit boolean, NOT a sentinel index -- setting the slice start to -1
+        // still satisfied `i >= start && i < start + 4` for vertices 0, 1 and 2, so three corners
+        // of the +X face kept sampling the wordmark band and smeared a stretched ghost of the mark
+        // along every return.
+        const plain = bd.plain === true;
+        const startAt = FACE_SLICE[bd.face ?? '+Z'];
+        // `u: [u0, u1]` lets a board sample a horizontal SLICE of the canvas band instead of all of
+        // it, so two boards with two different graphics (a blue board with white text, a white board
+        // with blue text) still share one canvas, one material and one draw call. `plainUV` is the
+        // canvas point the board's other five faces sample; it defaults to the bottom-left corner
+        // and a board whose ground is not the canvas background names its own.
+        const u0 = bd.u ? bd.u[0] : 0, u1 = bd.u ? bd.u[1] : 1;
+        const pu = bd.plainUV ? bd.plainUV[0] : 0.015, pv = bd.plainUV ? bd.plainUV[1] : 0.015;
+        for (let i = 0; i < uv.count; i++) {
+          // `f.uvRect` [u0, v0, u1, v1] names the ATLAS region the band occupies when the sign
+          // shares its image with other textured parts; default is the canvas contract (top 87.5 %).
+          const R = (f.uvRect as number[]) ?? [0, 0.125, 1, 1];
+          if (!plain && i >= startAt && i < startAt + 4) uv.setXY(i, R[0] + (u0 + uv.getX(i) * (u1 - u0)) * (R[2] - R[0]), R[1] + uv.getY(i) * (R[3] - R[1]));
+          else uv.setXY(i, pu, pv);
+        }
+        uv.needsUpdate = true;
+        b.translate(bd.at[0], bd.at[1], bd.at[2]);
+        parts.push(b);
+      }
+      g = parts.length === 1 ? parts[0] : mergeGeos(parts);
+    }
+    // `curved`: textured bulged fronts (an ATM kiosk face) that ride the SAME material and
+    // submission as the sign, sampling their own region of the baked atlas. Each is a partial
+    // cylinder about Y, apex at z, edges at z - bulge, spanning w by h, UVs remapped to uvRect.
+    if (f.curved) {
+      const cparts: THREE.BufferGeometry[] = [g];
+      for (const c of f.curved as any[]) {
+        const R = (c.w * c.w / 4 + c.bulge * c.bulge) / (2 * c.bulge);
+        const half = Math.asin(c.w / 2 / R);
+        const cyl = new THREE.CylinderGeometry(R, R, c.h, c.seg ?? 12, 1, true, -half, 2 * half);
+        const cuv = cyl.getAttribute('uv') as THREE.BufferAttribute;
+        const r = c.uvRect as number[];
+        for (let i = 0; i < cuv.count; i++) cuv.setXY(i, r[0] + cuv.getX(i) * (r[2] - r[0]), r[1] + cuv.getY(i) * (r[3] - r[1]));
+        cyl.translate(c.x, c.y, c.z - R);
+        cparts.push(cyl);
+      }
+      g = mergeGeos(cparts);
+    }
+    add('fascia-panel', 'Brand fascia panel', g, 'fascia');
   }
-  node_shopfront_framing_5.userData.sculptComponent = {"id": "shopfront-framing", "name": "Shopfront framing", "level": "meso", "role": "body", "importance": 0.7, "confidence": 0.7, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "One extruded frame with the window openings as holes, rather than a mullion per bay: a bay per component would be five draw calls and five geometries for a part that is one welded assembly in life. It OVERLAPS the glazing it frames rather than meeting its reveal edge, which is the kit's standing rule.", "geometryDescriptor": {"topologyIntent": "one frame plate with the window bays as holes", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "profile2D": {"points": [[-3.55, 0.0], [3.55, 0.0], [3.55, 2.82], [-3.55, 2.82]], "depth": 0.06, "holes": [[[-3.42, 0.1], [-2.112, 0.1], [-2.112, 2.72], [-3.42, 2.72]], [[-2.037, 0.1], [-0.7289999999999999, 0.1], [-0.7289999999999999, 2.72], [-2.037, 2.72]], [[-0.6539999999999999, 0.1], [0.6540000000000001, 0.1], [0.6540000000000001, 2.72], [-0.6539999999999999, 2.72]], [[0.7290000000000001, 0.1], [2.037, 0.1], [2.037, 2.72], [0.7290000000000001, 2.72]], [[2.112, 0.1], [3.42, 0.1], [3.42, 2.72], [2.112, 2.72]]]}}, "parent": null, "attachment": null, "dimensions": {"width": 7.1, "height": 2.82, "depth": 0.06, "units": "meters", "confidence": 0.7}, "transform": {"position": [0, 0.12, 3.4499999999999997], "rotation": [0, 0, 0], "scale": [1, 1, 1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}}, "material": "white-trim", "materialLayers": ["white-trim"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "mullions", "description": "Perimeter frame plus four intermediate mullions and one transom, giving five bays. The openings are 0.05 m SMALLER than the glazing behind them on every side, so the frame laps the pane.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#D4D6D7", "secondary": ["#D4D6D7"], "zones": [{"id": "frame", "albedo": "#D4D6D7", "note": "lit figure only; the crop straddles glazing"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(212, 214, 215, 1.0)", "secondaryAlbedo": "rgba(212, 214, 215, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_shopfront_framing_5.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}};
-  (nodes["root"] ?? root).add(node_shopfront_framing_5);
-  nodes["shopfront-framing"] = node_shopfront_framing_5;
-  const mesh_shopfront_framing_5Geometry = endpoint_shopfront_framing_5
-    ? new THREE.CylinderGeometry(endpoint_shopfront_framing_5.endRadius, endpoint_shopfront_framing_5.baseRadius, endpoint_shopfront_framing_5.length, 16, 6)
-    : buildExtrudeGeometry({"points": [[-3.55, 0.0], [3.55, 0.0], [3.55, 2.82], [-3.55, 2.82]], "depth": 0.06, "holes": [[[-3.42, 0.1], [-2.112, 0.1], [-2.112, 2.72], [-3.42, 2.72]], [[-2.037, 0.1], [-0.7289999999999999, 0.1], [-0.7289999999999999, 2.72], [-2.037, 2.72]], [[-0.6539999999999999, 0.1], [0.6540000000000001, 0.1], [0.6540000000000001, 2.72], [-0.6539999999999999, 2.72]], [[0.7290000000000001, 0.1], [2.037, 0.1], [2.037, 2.72], [0.7290000000000001, 2.72]], [[2.112, 0.1], [3.42, 0.1], [3.42, 2.72], [2.112, 2.72]]]});
-  if (!endpoint_shopfront_framing_5) {
-    mesh_shopfront_framing_5Geometry.scale(1.0, 1.0, 1.0);
-  }
-  const mesh_shopfront_framing_5 = new THREE.Mesh(
-    mesh_shopfront_framing_5Geometry,
-    materialMap["white-trim"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_shopfront_framing_5.name = "Shopfront framing";
-  if (endpoint_shopfront_framing_5) {
-    mesh_shopfront_framing_5.position.copy(endpoint_shopfront_framing_5.midpoint);
-    mesh_shopfront_framing_5.quaternion.copy(endpoint_shopfront_framing_5.quaternion);
-  }
-  mesh_shopfront_framing_5.castShadow = options.castShadow ?? true;
-  mesh_shopfront_framing_5.receiveShadow = options.receiveShadow ?? true;
-  mesh_shopfront_framing_5.userData.sculptComponent = {"id": "shopfront-framing", "name": "Shopfront framing", "level": "meso", "role": "body", "importance": 0.7, "confidence": 0.7, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "One extruded frame with the window openings as holes, rather than a mullion per bay: a bay per component would be five draw calls and five geometries for a part that is one welded assembly in life. It OVERLAPS the glazing it frames rather than meeting its reveal edge, which is the kit's standing rule.", "geometryDescriptor": {"topologyIntent": "one frame plate with the window bays as holes", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "profile2D": {"points": [[-3.55, 0.0], [3.55, 0.0], [3.55, 2.82], [-3.55, 2.82]], "depth": 0.06, "holes": [[[-3.42, 0.1], [-2.112, 0.1], [-2.112, 2.72], [-3.42, 2.72]], [[-2.037, 0.1], [-0.7289999999999999, 0.1], [-0.7289999999999999, 2.72], [-2.037, 2.72]], [[-0.6539999999999999, 0.1], [0.6540000000000001, 0.1], [0.6540000000000001, 2.72], [-0.6539999999999999, 2.72]], [[0.7290000000000001, 0.1], [2.037, 0.1], [2.037, 2.72], [0.7290000000000001, 2.72]], [[2.112, 0.1], [3.42, 0.1], [3.42, 2.72], [2.112, 2.72]]]}}, "parent": null, "attachment": null, "dimensions": {"width": 7.1, "height": 2.82, "depth": 0.06, "units": "meters", "confidence": 0.7}, "transform": {"position": [0, 0.12, 3.4499999999999997], "rotation": [0, 0, 0], "scale": [1, 1, 1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "white-trim"}}, "material": "white-trim", "materialLayers": ["white-trim"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "mullions", "description": "Perimeter frame plus four intermediate mullions and one transom, giving five bays. The openings are 0.05 m SMALLER than the glazing behind them on every side, so the frame laps the pane.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#D4D6D7", "secondary": ["#D4D6D7"], "zones": [{"id": "frame", "albedo": "#D4D6D7", "note": "lit figure only; the crop straddles glazing"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(212, 214, 215, 1.0)", "secondaryAlbedo": "rgba(212, 214, 215, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_shopfront_framing_5.add(mesh_shopfront_framing_5);
-  meshes["shopfront-framing"] = mesh_shopfront_framing_5;
-  colliders["shopfront-framing"] = null;
 
-  const endpoint_service_door_6 = makeAttachmentEndpoint(null);
-  const node_service_door_6 = new THREE.Group();
-  node_service_door_6.name = "Service door__pivot";
-  node_service_door_6.scale.set(1, 1, 1);
-  if (endpoint_service_door_6) {
-    node_service_door_6.position.copy(endpoint_service_door_6.start);
-    node_service_door_6.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_service_door_6.position.set(3.9299999999999997, 1.025, -0.6);
-    node_service_door_6.rotation.set(0.0, 0.0, 0.0);
+  /* One glazing pane, not one per bay: the mullion grid in front does the dividing. Overlaps INTO
+   * the facade at the back and sits RECESSED behind the framing at the front. Mostly opaque by
+   * design -- there is no interior behind it, so a transparent pane would read as a hole. */
+  // The pane is not always centred: a branch plan can put its glazing to one side of the entrance.
+  // Authored centred while its framing sat off to the left, the two read as unrelated parts.
+  // `glazingExtra` folds further panes -- a side window, a clerestory -- into the SAME component:
+  // one material, one draw call, however many openings the plate shows.
+  {
+    const pane = boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, G.glazing.d ?? 0.10);
+    const extra = (G.glazingExtra ?? []) as number[][];
+    add('shopfront-glazing', 'Shopfront glazing',
+        extra.length ? mergeGeos([pane, ...extra.map((b) => boxAt(b[0], b[1], b[2], b[3], b[4], b[5]))]) : pane, 'glass');
   }
-  node_service_door_6.userData.sculptComponent = {"id": "service-door", "name": "Service door", "level": "meso", "role": "hardware", "importance": 0.35, "confidence": 0.6, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat leaf standing proud of the flank. Modelled shut and given no pivot: it is scenery, and a hinge would be a promise the prop cannot keep.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 0.06, "height": 2.05, "depth": 0.95, "units": "meters", "confidence": 0.6}, "transform": {"position": [3.9299999999999997, 1.025, -0.6], "rotation": [0, 0, 0], "scale": [0.06, 2.05, 0.95]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "door-grey"}}, "material": "door-grey", "materialLayers": ["door-grey"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "leaf", "description": "Stands 0.03 m proud of the flank wall so it reads as a leaf in a frame rather than as a painted rectangle.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#3B3F42", "secondary": ["#3B3F42"], "zones": [{"id": "leaf", "albedo": "#3B3F42", "note": "flat painted steel"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(59, 63, 66, 1.0)", "secondaryAlbedo": "rgba(59, 63, 66, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_service_door_6.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "door-grey"}};
-  (nodes["root"] ?? root).add(node_service_door_6);
-  nodes["service-door"] = node_service_door_6;
-  const mesh_service_door_6Geometry = endpoint_service_door_6
-    ? new THREE.CylinderGeometry(endpoint_service_door_6.endRadius, endpoint_service_door_6.baseRadius, endpoint_service_door_6.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_service_door_6) {
-    mesh_service_door_6Geometry.scale(0.06, 2.05, 0.95);
-  }
-  const mesh_service_door_6 = new THREE.Mesh(
-    mesh_service_door_6Geometry,
-    materialMap["door-grey"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_service_door_6.name = "Service door";
-  if (endpoint_service_door_6) {
-    mesh_service_door_6.position.copy(endpoint_service_door_6.midpoint);
-    mesh_service_door_6.quaternion.copy(endpoint_service_door_6.quaternion);
-  }
-  mesh_service_door_6.castShadow = options.castShadow ?? true;
-  mesh_service_door_6.receiveShadow = options.receiveShadow ?? true;
-  mesh_service_door_6.userData.sculptComponent = {"id": "service-door", "name": "Service door", "level": "meso", "role": "hardware", "importance": 0.35, "confidence": 0.6, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat leaf standing proud of the flank. Modelled shut and given no pivot: it is scenery, and a hinge would be a promise the prop cannot keep.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 0.06, "height": 2.05, "depth": 0.95, "units": "meters", "confidence": 0.6}, "transform": {"position": [3.9299999999999997, 1.025, -0.6], "rotation": [0, 0, 0], "scale": [0.06, 2.05, 0.95]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "door-grey"}}, "material": "door-grey", "materialLayers": ["door-grey"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "leaf", "description": "Stands 0.03 m proud of the flank wall so it reads as a leaf in a frame rather than as a painted rectangle.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#3B3F42", "secondary": ["#3B3F42"], "zones": [{"id": "leaf", "albedo": "#3B3F42", "note": "flat painted steel"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(59, 63, 66, 1.0)", "secondaryAlbedo": "rgba(59, 63, 66, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_service_door_6.add(mesh_service_door_6);
-  meshes["service-door"] = mesh_service_door_6;
-  colliders["service-door"] = null;
 
-  const endpoint_rooftop_plant_7 = makeAttachmentEndpoint(null);
-  const node_rooftop_plant_7 = new THREE.Group();
-  node_rooftop_plant_7.name = "Rooftop condenser plant__pivot";
-  node_rooftop_plant_7.scale.set(1, 1, 1);
-  if (endpoint_rooftop_plant_7) {
-    node_rooftop_plant_7.position.copy(endpoint_rooftop_plant_7.start);
-    node_rooftop_plant_7.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_rooftop_plant_7.position.set(1.1, 4.245, -1.4);
-    node_rooftop_plant_7.rotation.set(0.0, 0.0, 0.0);
+  /* Framing, transom, kick rail, door jambs and header MERGED into one component. Every part is
+   * the same metal; folding them together is the draw-call lever chosen in the blockout, not an
+   * optimisation deferred to the end -- a part split for authoring convenience cannot be merged
+   * afterwards once a pivot hangs off it. Front face stands proud of glazing and mullions. */
+  add('shopfront-frame', 'Shopfront framing and door bay', boxes(G.frame), G.frameMaterial);
+
+  /* Side feature: shutter, service door or louvre, per plate. Stands proud of the wall face but
+   * deliberately NOT out to the parapet plane at +-4.00 -- a face at exactly +-4.00 would be
+   * coplanar and co-facing with the parapet outer face, which the bounding-box coplanarity check
+   * flags even though the two never overlap in Y. */
+  if (G.sideFeature) add('side-feature', G.sideFeature.name, boxes(G.sideFeature.boxes), G.sideFeature.material);
+
+  /* Front feature: cladding band, ATM bank, upper-storey band or forecourt, per plate. */
+  if (G.frontFeature) add('front-feature', G.frontFeature.name, boxes(G.frontFeature.boxes), G.frontFeature.material);
+
+  /* A third merged slot, for whatever the plate has that the two above do not cover -- a parapet
+   * coping, a kerb, a forecourt column base. Same rule as the others: everything in it shares one
+   * material and is submitted once. */
+  if (G.extraFeature) add('extra-feature', G.extraFeature.name, boxes(G.extraFeature.boxes), G.extraFeature.material);
+
+  /* A fourth merged slot. Two features in DIFFERENT materials cannot share a component, and a
+   * plate that shows a galvanised plant deck AND a painted steel service door needs both. */
+  if (G.extraFeature2) add('extra-feature-2', G.extraFeature2.name, boxes(G.extraFeature2.boxes), G.extraFeature2.material);
+
+  /* A TINTED merged slot: one component, one material, and a per-BOX colour written into a vertex
+   * colour attribute. This is how a two-colour applied graphic -- a vinyl decal band on a shopfront,
+   * a painted stripe on a kerb -- ships without a material per colour, on a kit whose material
+   * ceiling is the axis these props are tightest on after draw calls.
+   *
+   * Two rules make it safe. The material must be WHITE, because a vertex colour MULTIPLIES with
+   * material.color and a tinted base would darken every tone. And EVERY vertex has to be written,
+   * because the shader reads a missing colour attribute as (0,0,0) and renders the mesh black --
+   * the failure that shipped the ubosot's walls and eight boundary stones as silhouettes. Both are
+   * satisfied here by construction: the attribute is filled box by box over the whole merge. The
+   * tones are LINEAR, matching how three.js multiplies them. */
+  if (G.tintFeature) {
+    const t = G.tintFeature;
+    const list = t.boxes as (number[] | { cyl: number[] })[];
+    const parts = list.map((b) => boxes([b]));
+    const geo = mergeGeos(parts.map((g) => g.clone()));
+    const col = new Float32Array(geo.getAttribute('position').count * 3);
+    const c = new THREE.Color();
+    let v = 0;
+    for (let i = 0; i < parts.length; i++) {
+      const n = parts[i].getAttribute('position').count;
+      c.setHex(t.tones[i % t.tones.length]);
+      // setHex on a Color is sRGB-decoded by three.js when colorManagement is on, which is what a
+      // vertex colour wants: the multiply happens in linear space.
+      for (let k = 0; k < n; k++) { col[(v + k) * 3] = c.r; col[(v + k) * 3 + 1] = c.g; col[(v + k) * 3 + 2] = c.b; }
+      v += n;
+      parts[i].dispose();
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const mesh = add('tint-feature', t.name, geo, t.material);
+    (mesh.material as THREE.MeshStandardMaterial).vertexColors = true;
+    (mesh.material as THREE.MeshStandardMaterial).needsUpdate = true;
   }
-  node_rooftop_plant_7.userData.sculptComponent = {"id": "rooftop-plant", "name": "Rooftop condenser plant", "level": "meso", "role": "hardware", "importance": 0.5, "confidence": 0.55, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A boxy condenser bank. Every Thai shop of this type carries one and it is a large part of the roofline read; one box for the bank rather than a unit each keeps it to a single draw call.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 2.4, "height": 0.85, "depth": 1.1, "units": "meters", "confidence": 0.55}, "transform": {"position": [1.1, 4.245, -1.4], "rotation": [0, 0, 0], "scale": [2.4, 0.85, 1.1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "galvanised"}}, "material": "galvanised", "materialLayers": ["galvanised"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "condenser-bank", "description": "Sits ON the roof deck, inside the parapet, so it breaks the roofline exactly as far as the plate shows and no further.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#9AA0A4", "secondary": ["#9AA0A4"], "zones": [{"id": "casing", "albedo": "#9AA0A4", "note": "galvanised steel casing"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(154, 160, 164, 1.0)", "secondaryAlbedo": "rgba(154, 160, 164, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_rooftop_plant_7.userData.actionProfile = {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "galvanised"}};
-  (nodes["root"] ?? root).add(node_rooftop_plant_7);
-  nodes["rooftop-plant"] = node_rooftop_plant_7;
-  const mesh_rooftop_plant_7Geometry = endpoint_rooftop_plant_7
-    ? new THREE.CylinderGeometry(endpoint_rooftop_plant_7.endRadius, endpoint_rooftop_plant_7.baseRadius, endpoint_rooftop_plant_7.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_rooftop_plant_7) {
-    mesh_rooftop_plant_7Geometry.scale(2.4, 0.85, 1.1);
+
+  /* Mullions: the fine vertical grid is the most recognisable thing about a shopfront. Instances
+   * on one geometry cost one draw call; as components they would have cost one each and blown the
+   * ceiling on their own. They sit INSIDE the frame depth band at both ends so they are not
+   * coplanar with it, while still standing proud of the glazing so the glass reads as recessed. */
+  {
+    const m = G.mullions;
+    const mats = (m.x as number[]).map((x) => new THREE.Matrix4().setPosition(x, m.cy, m.cz ?? 2.58));
+    addInst('shopfront-mullions', 'Shopfront mullions', new THREE.BoxGeometry(m.w, m.h, 0.08), G.frameMaterial, mats);
   }
-  const mesh_rooftop_plant_7 = new THREE.Mesh(
-    mesh_rooftop_plant_7Geometry,
-    materialMap["galvanised"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_rooftop_plant_7.name = "Rooftop condenser plant";
-  if (endpoint_rooftop_plant_7) {
-    mesh_rooftop_plant_7.position.copy(endpoint_rooftop_plant_7.midpoint);
-    mesh_rooftop_plant_7.quaternion.copy(endpoint_rooftop_plant_7.quaternion);
+
+  /* Rooftop condensers: casing, fan cowl and four feet MERGED into a single instanced geometry.
+   * Feet start below the deck top so the two overlap rather than sharing a plane.
+   *
+   * An EMPTY list is a legitimate answer, not a missing config. Instancing one casing is the right
+   * lever when a plate shows the same box two or three times; it is the wrong one when the plate
+   * shows genuinely different units -- a hooded duct run, a wall-type condenser with a square fan
+   * guard, a tall louvred tower -- and repeating one casing three times is then a simplification
+   * that costs fidelity to save nothing. Such a plant deck comes in through `extraFeature` as
+   * merged geometry: still ONE draw call, and every unit its own shape. */
+  if ((G.condensers as number[][] ?? []).length) {
+    const parts: THREE.BufferGeometry[] = [
+      boxAt(0, 0.46, 0, 0.95, 0.72, 0.85),
+      cylAt(0, 0.87, 0, 0.30, 0.10, 16),
+    ];
+    for (const fx of [-0.4, 0.4]) for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.10, 0.08));
+    const unit = mergeGeos(parts);
+    const mats = (G.condensers as number[][]).map(([x, z, yaw]) =>
+      new THREE.Matrix4().compose(
+        new THREE.Vector3(x, 3.60, z),
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
+        new THREE.Vector3(1, 1, 1),
+      ));
+    // The plant material is CONFIGURABLE, not hard-coded. Referencing a 'galv' id that a config
+    // does not define silently hands InstancedMesh an undefined material, three.js substitutes a
+    // default, and the prop ships one material over its ceiling with nothing in the config to
+    // explain the extra.
+    addInst('plant-condensers', 'Rooftop condenser units', unit, G.plantMaterial ?? 'galv', mats);
   }
-  mesh_rooftop_plant_7.castShadow = options.castShadow ?? true;
-  mesh_rooftop_plant_7.receiveShadow = options.receiveShadow ?? true;
-  mesh_rooftop_plant_7.userData.sculptComponent = {"id": "rooftop-plant", "name": "Rooftop condenser plant", "level": "meso", "role": "hardware", "importance": 0.5, "confidence": 0.55, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A boxy condenser bank. Every Thai shop of this type carries one and it is a large part of the roofline read; one box for the bank rather than a unit each keeps it to a single draw call.", "geometryDescriptor": {"topologyIntent": "low-poly blockout with bevel-ready edges", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry"}, "parent": null, "attachment": null, "dimensions": {"width": 2.4, "height": 0.85, "depth": 1.1, "units": "meters", "confidence": 0.55}, "transform": {"position": [1.1, 4.245, -1.4], "rotation": [0, 0, 0], "scale": [2.4, 0.85, 1.1]}, "actionProfile": {"animationRole": "static", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 1.0, "note": "Inherited placement only; this component declares no axis."}, "transformChannels": {"translate": false, "rotate": false, "scale": false, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": false}, "sockets": [], "collider": null, "constraints": [], "destruction": {"breakable": false, "fractureGroup": null, "seamRefs": [], "detachableFragments": [], "breakImpulse": 0.0, "debrisMaterial": "galvanised"}}, "material": "galvanised", "materialLayers": ["galvanised"], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "condenser-bank", "description": "Sits ON the roof deck, inside the parapet, so it breaks the roofline exactly as far as the plate shows and no further.", "evidenceRefs": ["full-object"]}], "surfaceDetail": {"macroRoughness": 0.0, "microRoughness": 0.0, "bumpAmplitude": 0.0, "normalPattern": "", "displacementPattern": "", "occlusionPattern": "", "edgeWearPattern": "", "notes": ""}, "evidenceRefs": ["full-object"], "details": [], "fidelityTier": "blockout", "colorMaterialRecipe": {"dominant": "#9AA0A4", "secondary": ["#9AA0A4"], "zones": [{"id": "casing", "albedo": "#9AA0A4", "note": "galvanised steel casing"}], "finishStyle": "matte", "gradientStops": [], "dominantAlbedo": "rgba(154, 160, 164, 1.0)", "secondaryAlbedo": "rgba(154, 160, 164, 1.0)", "materialClass": "metal", "materialClassConfidence": 0.8}};
-  node_rooftop_plant_7.add(mesh_rooftop_plant_7);
-  meshes["rooftop-plant"] = mesh_rooftop_plant_7;
-  colliders["rooftop-plant"] = null;
+
+  /* Optional instanced extra: canopy plates, pilasters or forecourt columns, per plate. */
+  if (G.extraSystem) {
+    const e = G.extraSystem;
+    let unit: THREE.BufferGeometry;
+    if (e.kind === 'plate') {
+      unit = mergeGeos([boxAt(0, 0, 0, e.w, e.h, e.d), cylAt(0, -e.h / 2 - 0.015, 0, 0.085, 0.03, 12)]);
+    } else {
+      unit = boxAt(0, 0, 0, e.w, e.h, e.d);
+    }
+    const mats = (e.at as number[][]).map(([x, y, z]) => new THREE.Matrix4().setPosition(x, y, z));
+    addInst(e.id, e.name, unit, e.material, mats, e.tones ? mats.map((_, i) => e.tones[i % e.tones.length]) : undefined);
+  }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
+  return root;
+}
 
-  // ONE pivot: the root. This prop is static level geometry -- nothing turns on an axis and
-  // nothing attaches to it -- so a named pivot per component, or any socket at all, would be
-  // contract the kit has to keep for a mechanism that does not exist.
-  {
+/* ------------------------------------------------------------------ brand fascia canvas */
+
+/** Draw the brand wordmark onto a canvas and assign it AFTER material construction. This is the
+ *  documented route for a printed brand fascia and is unaffected by the material's `textureless`
+ *  declaration -- what that skips is the five-canvas PROCEDURAL set, a different thing entirely.
+ *
+ *  Text is fitted to its field by MEASUREMENT rather than by a font-size ratio: headless Chrome's
+ *  font fallback decides the real advance widths, so the only reliable way to fill a known box is
+ *  to measure the string and scale it horizontally. */
+function applyFasciaGraphic(root: THREE.Group): void {
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const mesh = rt?.meshes?.['fascia-panel'];
+  if (!mesh || typeof document === 'undefined') return;
+  const material = mesh.material as THREE.MeshStandardMaterial;
+  if (!material) return;
+
+  const g = CONFIG.graphic as any;
+  const srgb = (THREE as any).SRGBColorSpace;
+
+  // A BAKED sign -- the face image composed once from a real font and vector marks and embedded
+  // as a WebP data URI -- beats fillText, which draws a different wordmark on every machine's
+  // font fallback. Laid out to the same UV contract as the canvas: the top 87.5 % is the band
+  // the +Z face samples and the bottom-left corner is the plain field every other face samples.
+  // Assigned synchronously so the harness waits on the decode; the canvas ops below are the
+  // decode FALLBACK only.
+  if (g.baked) {
+    const baked = new THREE.TextureLoader().load(g.baked, undefined, undefined, () => {
+      const c = drawFasciaCanvas(g);
+      if (!c) return;
+      const t = new THREE.CanvasTexture(c);
+      if (srgb) t.colorSpace = srgb;
+      t.anisotropy = 4;
+      material.map = t;
+      material.needsUpdate = true;
+    });
+    if (srgb) baked.colorSpace = srgb;
+    baked.anisotropy = 4;
+    baked.needsUpdate = true;
+    material.map = baked;
+    material.color.setHex(0xffffff);
+    material.needsUpdate = true;
+    return;
+  }
+
+  const canvas = drawFasciaCanvas(g);
+  if (!canvas) return;
+  const tex = new THREE.CanvasTexture(canvas);
+  if (srgb) tex.colorSpace = srgb;
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  material.map = tex;
+  // White base so the canvas shows as drawn rather than tinted -- the measured fascia colour is
+  // already painted into the canvas background.
+  material.color.setHex(0xffffff);
+  material.needsUpdate = true;
+}
+
+function drawFasciaCanvas(g: any): HTMLCanvasElement | null {
+  // A round sign needs a SQUARE canvas: the cylinder cap maps the circle into the unit square,
+  // so a 2048x320 strip would squash the mark flat. A rectangular fascia keeps the wide strip,
+  // where the bottom 12.5% is the plain corner every non-front face samples.
+  const square = !!g.square;
+  const W = square ? 512 : (g.size?.[0] ?? 2048), H = square ? 512 : (g.size?.[1] ?? 320);
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.fillStyle = g.background;
+  ctx.fillRect(0, 0, W, H);
+  const band = square ? H : H * (g.bandFrac ?? 0.875);
+
+  const fit = (text: string, font: string, x0: number, x1: number, cy: number, fill: string, strokeCol?: string, strokeW?: number) => {
+    ctx.font = font;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    const w = ctx.measureText(text).width;
+    const s = (x1 - x0) / w;
+    ctx.save();
+    ctx.translate(x0, 0);
+    ctx.scale(s, 1);
+    if (strokeCol) { ctx.lineJoin = 'round'; ctx.strokeStyle = strokeCol; ctx.lineWidth = (strokeW ?? 6) / s; ctx.strokeText(text, 0, cy); }
+    ctx.fillStyle = fill;
+    ctx.fillText(text, 0, cy);
+    ctx.restore();
+  };
+
+  for (const op of g.ops as any[]) {
+    if (op.type === 'rect') {
+      ctx.fillStyle = op.fill;
+      const x = op.x * W, y = op.y * band, w = op.w * W, h = op.h * band, r = (op.r ?? 0) * band;
+      ctx.beginPath();
+      if (r > 0) {
+        ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+      } else ctx.rect(x, y, w, h);
+      ctx.closePath(); ctx.fill();
+    } else if (op.type === 'circle') {
+      ctx.fillStyle = op.fill;
+      ctx.beginPath();
+      ctx.arc(op.cx * W, op.cy * band, op.r * band, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (op.type === 'poly') {
+      // An arbitrary polygon in normalised canvas coords, for a mark a font cannot set -- a
+      // lightning bolt, a chevron, a leaf. Points are [x, y] with x a fraction of the canvas width
+      // and y a fraction of the band height.
+      ctx.fillStyle = op.fill;
+      ctx.beginPath();
+      const pts = op.points as number[][];
+      ctx.moveTo(pts[0][0] * W, pts[0][1] * band);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0] * W, pts[i][1] * band);
+      ctx.closePath();
+      ctx.fill();
+    } else if (op.type === 'text') {
+      fit(op.text, `${op.style ?? 'bold'} ${Math.round(op.size * band)}px ${op.family ?? 'Arial, Helvetica, sans-serif'}`,
+        op.x0 * W, op.x1 * W, op.cy * band, op.fill, op.stroke, op.strokeW ? op.strokeW * band : undefined);
+    }
+  }
+
+  return canvas;
+}
+
+/* ------------------------------------------------------------------ glazing graphic */
+
+/** A building is an exterior shell with no interior, so a plain tinted pane reads as a blind slab
+ *  -- or, dark enough, as a hole. `graphic.glass` paints a de-lit interior view into the glazing:
+ *  one baked image projected by WORLD x/y over `rect` [x0, y0, x1, y1] so it lines up across the
+ *  window pane, the transom and the door leaves, which are separate boxes in one merged mesh.
+ *  Assigned after material construction; the material stays `textureless` in the spec. */
+function applyGlassGraphic(root: THREE.Group): void {
+  const g = (CONFIG.graphic as any)?.glass;
+  // Node has no `document`, and thaikit's coplanar checker and part manifest evaluate this
+  // module there: TextureLoader would throw, so the glazing keeps its flat fallback albedo.
+  if (!g || typeof document === 'undefined') return;
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const mesh = rt?.meshes?.['shopfront-glazing'];
+  if (!mesh) return;
+  const material = mesh.material as THREE.MeshStandardMaterial;
+  if (!material) return;
+  const geo = mesh.geometry as THREE.BufferGeometry;
+  const pos = geo.getAttribute('position');
+  const [x0, y0, x1, y1] = g.rect as number[];
+  const uv = new Float32Array(pos.count * 2);
+  for (let i = 0; i < pos.count; i++) {
+    uv[i * 2] = (pos.getX(i) - x0) / (x1 - x0);
+    uv[i * 2 + 1] = (pos.getY(i) - y0) / (y1 - y0);
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  const srgb = (THREE as any).SRGBColorSpace;
+  const tex = new THREE.TextureLoader().load(g.baked);
+  if (srgb) tex.colorSpace = srgb;
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  material.map = tex;
+  // The image carries the tint; a coloured base would apply it twice.
+  material.color.setHex(0xffffff);
+  if (g.roughness !== undefined) material.roughness = g.roughness;
+  material.needsUpdate = true;
+}
+
+/* ------------------------------------------------------------------ wall render graphic */
+
+/** A rendered concrete wall is not a flat colour. Every plate in this set shows the same thing --
+ *  vertical rain streaking off the coping, patchy float marks, a darker band where the wall meets
+ *  the ground -- and a wall authored as one albedo reads as painted card next to the shopfront's
+ *  real detail. `graphic.wall` paints a SEAMLESS tile once and repeats it over the wall meshes.
+ *
+ *  It is a post-construction canvas, so the material stays `textureless` in the spec: what that
+ *  declaration skips is createSculptMaterial's five-canvas procedural set, which costs the square
+ *  of its resolution and discards the measured albedo. One tile drawn once costs milliseconds and
+ *  keeps the albedo, because the tile is authored in MULTIPLIER space -- mid-grey 128 is "leave the
+ *  measured colour alone" -- and is applied as `map` over the material's own colour.
+ *
+ *  UVs are metric and WORLD-PLANAR, chosen per vertex off the face normal: an X-facing face is
+ *  projected (z, y), a Z-facing face (x, y), a Y-facing face (x, z). Box UVs would stretch one
+ *  tile over each face, which puts a 7-metre-wide streak on the side wall and a 0.24-metre-wide one
+ *  on the parapet coping. */
+function applyWallGraphic(root: THREE.Group): void {
+  const g = (CONFIG.graphic as any)?.wall;
+  if (!g || typeof document === 'undefined') return;
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  if (!rt) return;
+  const tile = g.tile ?? 2.5;
+  let tex: THREE.Texture | null = null;
+  for (const id of (g.meshes as string[])) {
+    const mesh = rt.meshes?.[id];
+    if (!mesh) continue;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
+    if (!pos || !nrm) continue;
+    const uv = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      const ax = Math.abs(nrm.getX(i)), ay = Math.abs(nrm.getY(i)), az = Math.abs(nrm.getZ(i));
+      let u: number, v: number;
+      if (ax >= ay && ax >= az) { u = pos.getZ(i); v = pos.getY(i); }
+      else if (az >= ay) { u = pos.getX(i); v = pos.getY(i); }
+      else { u = pos.getX(i); v = pos.getZ(i); }
+      uv[i * 2] = u / tile; uv[i * 2 + 1] = v / tile;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    if (!tex) {
+      const canvas = drawWallCanvas(g);
+      if (!canvas) return;
+      tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      const srgb = (THREE as any).SRGBColorSpace;
+      if (srgb) tex.colorSpace = srgb;
+      tex.anisotropy = 4; tex.needsUpdate = true;
+    }
+    const material = mesh.material as THREE.MeshStandardMaterial;
+    // ONE texture for however many meshes share the material: assigning per mesh would upload the
+    // same canvas twice and cost VRAM for nothing.
+    if (material && material.map !== tex) { material.map = tex; material.needsUpdate = true; }
+  }
+}
+
+/** Seamless render tile in MULTIPLIER space, and the neutral value is WHITE, not mid-grey.
+ *  `map` multiplies the material colour by the texture's LINEAR value, and the texture is decoded
+ *  as sRGB, so a tile drawn around 128 multiplies the measured albedo by 0.216 and renders a light
+ *  grey render wall near black -- which is exactly what the first build of this tile did. `base`
+ *  therefore sits just under white and every mark DARKENS from it; the wall's own albedo stays the
+ *  material's, and the tile only ever takes value away.
+ *
+ *  Everything wraps by drawing each mark a second time at x-W and x+W, which is what makes the
+ *  tile seamless -- a mark clipped at the edge is the single most visible artefact when a wall is
+ *  8 tiles wide. */
+function drawWallCanvas(g: any): HTMLCanvasElement | null {
+  const N = g.size ?? 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = N; canvas.height = N;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  let seed = g.seed ?? 20260828;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const base = g.base ?? 246;
+  ctx.fillStyle = `rgb(${base},${base},${base})`;
+  ctx.fillRect(0, 0, N, N);
+
+  // Broad float-mark blotches: low-frequency patchiness in the render coat.
+  for (let i = 0; i < (g.patches ?? 90); i++) {
+    const x = rnd() * N, y = rnd() * N, r = (0.05 + rnd() * 0.18) * N;
+    const v = base - rnd() * (g.patchAmp ?? 26);
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, `rgba(${v | 0},${v | 0},${v | 0},0.55)`);
+    grad.addColorStop(1, `rgba(${v | 0},${v | 0},${v | 0},0)`);
+    ctx.fillStyle = grad;
+    for (const dx of [-N, 0, N]) { ctx.save(); ctx.translate(dx, 0); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+  }
+  // Vertical rain streaks. Narrow, soft-edged, top-weighted -- water runs DOWN from the coping and
+  // fades out, so the alpha ramps to nothing at the bottom of each streak rather than stopping.
+  for (let i = 0; i < (g.streaks ?? 130); i++) {
+    const x = rnd() * N, w = (0.002 + rnd() * 0.010) * N;
+    const y0 = rnd() * N * 0.5, len = (0.25 + rnd() * 0.75) * N;
+    const dark = base - (6 + rnd() * (g.streakAmp ?? 22));
+    const grad = ctx.createLinearGradient(0, y0, 0, y0 + len);
+    grad.addColorStop(0, `rgba(${dark | 0},${dark | 0},${dark | 0},0.42)`);
+    grad.addColorStop(0.35, `rgba(${dark | 0},${dark | 0},${dark | 0},0.26)`);
+    grad.addColorStop(1, `rgba(${dark | 0},${dark | 0},${dark | 0},0)`);
+    ctx.fillStyle = grad;
+    for (const dx of [-N, 0, N]) ctx.fillRect(x + dx - w / 2, y0, w, len);
+  }
+  // Fine speckle: the aggregate in the render, at the limit of what a prop-distance viewer resolves.
+  for (let i = 0; i < (g.specks ?? 2600); i++) {
+    const x = rnd() * N, y = rnd() * N, r = 0.5 + rnd() * 1.6;
+    const v = base - rnd() * (g.speckAmp ?? 30);
+    ctx.fillStyle = `rgba(${v | 0},${v | 0},${v | 0},0.30)`;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  }
+  return canvas;
+}
+
+/* ------------------------------------------------------------------ thaikit entry point */
+
+/**
+ * thaikit entry point. The registry records `createObjectModel` as the export and calls it with
+ * (spec, options). `spec` is accepted and attached for host-side inspection -- the reconstruction
+ * data already lives in this module, so it is deliberately not a second source of truth.
+ */
+export function createObjectModel(spec?: unknown, options: ProceduralModelOptions = {}): THREE.Group {
+  const root = createFamilyMartStoreBuildingModel(options);
+  if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
+
+  applyFasciaGraphic(root);
+  applyGlassGraphic(root);
+  applyWallGraphic(root);
+
+  const rt = root.userData.sculptRuntime as Record<string, any> | undefined;
+  if (rt) {
+    const nodes = (rt.nodes ?? {}) as Record<string, THREE.Object3D>;
+
+    // Pivots: ONE. A static exterior shell -- nothing opens, turns or swings. The doors and any
+    // shutter are authored as fixed geometry, so they get no axis: a named pivot is a promise
+    // that a part turns on it, and a prop that declares pivots it has no mechanisms for has
+    // described a machine that does not exist.
+    const pivots: THREE.Object3D[] = [];
     const rootPivot = new THREE.Object3D();
-    rootPivot.name = "root";
+    rootPivot.name = 'root';
     rootPivot.position.set(0, 0, 0);
     rootPivot.userData.actionProfile = {
       animationRole: 'root',
-      pivot: { mode: 'custom', localPosition: [0, 0, 0], axis: [0, 1, 0], name: "root" },
+      pivot: { mode: 'custom', localPosition: [0, 0, 0], axis: [0, 1, 0], name: 'root' },
     };
     root.add(rootPivot);
+    pivots.push(rootPivot);
 
-    // Colliders are plain DATA, not Object3D, so they carry no .name and would stringify as
-    // [object Object]. Give each the id of the component it owns, and DROP the empty ones:
-    // the generator writes an entry per component whether or not one was declared, and a
-    // nameless empty proxy reads as a physics shape that exists and does nothing.
-    const colliderList = Object.entries(colliders as Record<string, any>)
+    // Sockets: NONE. Nothing attaches to this prop and nothing is emitted from it.
+
+    // Colliders are plain DATA, not Object3D, so they carry no .name of their own. Give each the
+    // id of the component it owns and drop the empty ones -- a nameless empty proxy in the
+    // runtime list reads as a physics shape that exists and does nothing.
+    const colliders = Object.entries((rt.colliders ?? {}) as Record<string, any>)
       .filter(([, c]) => c && typeof c === 'object' && Object.keys(c).length > 0)
       .map(([id, c]) => ({ name: id, ...(c as object) }));
 
-    // Destruction groups DERIVED from what was actually built, never assumed empty: promotion
-    // checks built against declared as an equality in both directions, so a component that
-    // somehow carried a fractureGroup must show up here and fail loudly rather than be
-    // quietly dropped at this boundary.
+    // Destruction groups: this prop declares NONE, and promotion checks built against declared as
+    // an equality in BOTH directions. Derived rather than assumed empty, so a component that
+    // somehow carried a fractureGroup fails the gate loudly instead of being dropped here.
     const grouped = new Map<string, THREE.Object3D[]>();
-    for (const [name, members] of Object.entries(destructionGroups as Record<string, THREE.Object3D[]>)) {
+    for (const [name, members] of Object.entries((rt.destructionGroups ?? {}) as Record<string, THREE.Object3D[]>)) {
       grouped.set(name, [...members]);
     }
     for (const node of Object.values(nodes)) {
@@ -1096,75 +1381,18 @@ export function createFamilyMartStoreBuildingModel(options: ProceduralModelOptio
     }
 
     root.userData.sculptRuntime = {
+      ...rt,
+      // A COUNT, not the Record. thaikit's harness returns this field straight across the
+      // puppeteer bridge and its registry field is a number; a Record of Object3D is circular and
+      // fails to serialise, which surfaces as the whole stats object arriving undefined. The
+      // Record stays reachable under byId.
       nodes: Object.keys(nodes).length,
-      meshes,
-      pivots: [rootPivot],
-      sockets: Object.values(sockets as Record<string, THREE.Object3D>),
-      colliders: colliderList,
+      pivots,
+      sockets: Object.values((rt.sockets ?? {}) as Record<string, THREE.Object3D>),
+      colliders,
       destructionGroups: [...grouped.entries()].map(([name, members]) => ({ name, members })),
-      byId: { nodes, meshes, sockets },
+      byId: { nodes, meshes: rt.meshes ?? {}, sockets: rt.sockets ?? {} },
     };
   }
-  root.userData.lookDevTargets = {"contactShadow": {"enabled": true, "strength": 0.6, "radius": 0.4, "note": "A building needs a firm contact shadow or it floats off the tile it stands on."}, "groundShadow": {"enabled": true, "receive": true, "note": "castShadow matters more than receiveShadow here: this prop shades the street."}, "environment": {"intensity": 0.4, "note": "The glazing and the metals need SOMETHING to reflect; with no environment map a metallic surface renders near-black, which is why metalness is held low."}};
-  root.userData.actionReadiness = {
-    note: 'Use root.userData.sculptRuntime.nodes for transforms, sockets for attachments, colliders for physics proxies, and destructionGroups for breakable sets.',
-  };
   return root;
-}
-
-export function createFamilyMartStoreBuildingLookDevLights(
-  mode: 'neutral' | 'grazing' | 'reference' = 'neutral',
-): THREE.Group {
-  const lights = new THREE.Group();
-  lights.name = "FamilyMart Store Building look-dev lights";
-  const hemi = new THREE.HemisphereLight(
-    mode === 'reference' ? 0xfff0d6 : 0xf2f4ff,
-    0x363b42,
-    mode === 'grazing' ? 0.28 : mode === 'reference' ? 0.72 : 0.85,
-  );
-  lights.add(hemi);
-  const key = new THREE.DirectionalLight(
-    mode === 'reference' ? 0xffcf8a : 0xfff4e8,
-    mode === 'grazing' ? 4.2 : mode === 'reference' ? 2.6 : 2.15,
-  );
-  if (mode === 'grazing') key.position.set(7.5, 1.1, 4.0);
-  else if (mode === 'reference') key.position.set(-4.5, 7.5, 5.0);
-  else key.position.set(-4.0, 6.0, 5.5);
-  key.castShadow = true;
-  key.shadow.mapSize.set(4096, 4096);
-  key.shadow.bias = -0.00025;
-  key.shadow.normalBias = 0.018;
-  key.shadow.radius = 7;
-  key.shadow.blurSamples = 24;
-  key.shadow.camera.near = 0.5;
-  key.shadow.camera.far = 30;
-  key.shadow.camera.left = -2.6;
-  key.shadow.camera.right = 2.6;
-  key.shadow.camera.top = 2.6;
-  key.shadow.camera.bottom = -2.6;
-  key.shadow.camera.updateProjectionMatrix();
-  lights.add(key);
-  const fill = new THREE.DirectionalLight(0xa8c4ff, mode === 'grazing' ? 0.12 : 0.42);
-  fill.position.set(4.0, 3.0, 3.5);
-  lights.add(fill);
-  const rim = new THREE.DirectionalLight(0xfff1c4, mode === 'grazing' ? 0.28 : 0.85);
-  rim.position.set(0.5, 4.5, -6.0);
-  lights.add(rim);
-  lights.userData.reviewMode = mode;
-  lights.userData.lightingFromPhoto = [{"id": "key", "role": "key", "type": "directional", "direction": [-0.42, 0.8, 0.43], "intensity": 1.0, "intensityRelative": 1.0, "colorTemperatureK": 5600, "color": "#FFF4E2", "evidence": "The front elevation is in shade while the flank and the coping take the light: a high key from behind and to the camera-left."}, {"id": "fill", "role": "fill", "type": "hemisphere", "direction": [0, 1, 0], "intensity": 0.42, "intensityRelative": 0.42, "colorTemperatureK": 7000, "color": "#CFE0F0", "evidence": "The shaded front elevation still reads its own colours rather than going to black, so a broad sky fill is present. This is exactly why the front-elevation crops are lifted before use."}, {"id": "rim", "role": "rim", "type": "directional", "direction": [0.6, 0.4, -0.7], "intensity": 0.22, "intensityRelative": 0.22, "colorTemperatureK": 6200, "color": "#E8EEF6", "evidence": "The parapet's far edge separates from the backdrop with a faint bright line."}, {"id": "exposure", "role": "grade", "type": "tone-mapping", "toneMapping": "ACES filmic", "exposure": 1.0, "contactShadow": {"enabled": true, "strength": 0.6, "radius": 0.4}, "groundShadow": {"enabled": true, "receive": true}, "ambientOcclusion": {"enabled": false, "note": "No AO pass: the shopfront reveal is the only cavity and the framing's own cast shadow carries it."}, "evidence": "The plate holds detail in both the lit coping and the shaded front, which is a filmic roll-off rather than a linear grade."}];
-  lights.userData.lookDevTargets = {"contactShadow": {"enabled": true, "strength": 0.6, "radius": 0.4, "note": "A building needs a firm contact shadow or it floats off the tile it stands on."}, "groundShadow": {"enabled": true, "receive": true, "note": "castShadow matters more than receiveShadow here: this prop shades the street."}, "environment": {"intensity": 0.4, "note": "The glazing and the metals need SOMETHING to reflect; with no environment map a metallic surface renders near-black, which is why metalness is held low."}};
-  return lights;
-}
-
-// Preview-only exports (environment, camera framing, presentation composer, orbit
-// controls) are deliberately NOT shipped: they imported three/examples/jsm, and this
-// bundle must import 'three' as a bare specifier and nothing else. The host page
-// injects its own three instance, and a second copy makes this factory's Mesh a
-// different class from the renderer's, so nothing draws.
-
-// thaikit entry point. Adapts the generated one-argument factory to thaikit's
-// (spec, options) contract; the reconstruction spec is already baked into the module,
-// so the first argument is accepted and ignored rather than being mistaken for options.
-export function createObjectModel(_spec?: unknown, options: ProceduralModelOptions = {}): THREE.Group {
-  return createFamilyMartStoreBuildingModel(options ?? {});
 }

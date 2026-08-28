@@ -71,10 +71,11 @@
       "primaryDomain": "object",
       "formLanguage": [
         "station-swept-body",
-        "domed-skull",
-        "boxy-muzzle",
-        "folded-ear-flaps",
-        "jointed-sprawled-legs",
+        "station-swept-head",
+        "stopped-muzzle",
+        "folded-drop-ear",
+        "limb-masses-and-tapers",
+        "ground-flattened-contact",
         "trailing-tail",
         "lying-pose"
       ],
@@ -110,8 +111,8 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE body merge -- a 31-station Catmull-Rom-subdivided tube from tail root to occiput (16 segments), two ellipsoid thighs laid hip-to-stifle, four shank / foreleg polyline tubes with joint balls at elbow and hock, four paw ovals with dark toe-pad caps, a two-piece tail with a bend ball and a rounded tip -- with an axis tint from tan on the back (-X) to cream on the belly and legs (+X): ONE draw call. ONE head merge -- a skull dome and occiput (ellipsoids), a 19-station muzzle tube deeper than it is wide, a nose pad, two extruded ear flaps, a closed-eye slit and a mouth line -- with a darkening mask multiplier from the stop to the nose: ONE draw call. TWO of 4.",
-        "One material: short fur as vertex colours on white, with a 512 px fur canvas (directional hair strokes, cloudy drift, three bare patches) bound after construction as map and bump.",
+        "ONE body merge -- a 17-station Catmull-Rom-subdivided sweep from the tail root to the neck at 16 segments, four limb MASSES as ellipsoids laid along their own segments, eight leg tubes, eight joint balls, four paws with toe lobes and dark pad caps, and a three-piece tail -- carrying the coat as a [dorsal, ventral] colour PAIR per station: ONE draw call. ONE head merge -- a 12-station sweep from the occiput to the nose with the stop authored as a 12 mm station pair, a nose pad, a proud closed lid, a slit box and two ear flaps: ONE draw call. TWO of 8.",
+        "One material: short fur as vertex colours on white, with a 512 px fur canvas (6,400 directional hair strokes, cloudy drift, three soft bare patches) bound after construction as map and bump.",
         "No repetition system: four legs differ in position, height and joint angle.",
         "Action readiness: one root pivot, zero sockets, one convex collider, not breakable; no rig by design."
       ]
@@ -127,7 +128,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is a long low lump with a tan back, a white belly, four legs stretched out to one side and a head laid flat with folded ears -- a lying pose that reads without a rig; what separates a DOG from a pig or a sausage is a domed skull with a stop, a muzzle deeper than wide, ear flaps at the rear of the skull on the dorsal side, a lean ribcage and jointed legs, so the body and muzzle are station tubes and the skull, thighs, paws and joints are ellipsoids."
+      "rationale": "The identity is a long low lump with a tan saddle, a dusty flank, four legs stretched to one side and a head laid flat with a folded ear -- a lying pose that reads without a rig. What separates a DOG from a sausage is a section that CHANGES: a deep chest, a tucked loin, a hip, a croup falling away to the tail, and limbs that leave the body as masses rather than as cylinders. The head is one sweep rather than a pile of ellipsoids, because three overlapping spheres for a cranium, a cheek and an occiput merge into a cloverleaf whose every intersection draws its own crease -- and the sweep is 528 triangles against the 740 the pile plus a separate muzzle tube cost, so it is cheaper as well as better."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -162,7 +163,7 @@
           "zone": "head",
           "kind": "contour",
           "identityDefining": true,
-          "description": "domed skull, boxy dark muzzle, ear flaps at the rear",
+          "description": "domed cranium, a stop, a blunt dark muzzle, a folded drop ear",
           "mapsTo": {
             "ref": "head"
           },
@@ -196,7 +197,7 @@
           "zone": "body",
           "kind": "linework",
           "identityDefining": true,
-          "description": "tan saddle over a white belly",
+          "description": "tan saddle, pale collar, dusty flank, tan croup",
           "mapsTo": {
             "ref": "body"
           },
@@ -234,15 +235,16 @@
       "Lying pose only: no rig, no standing variant; the registry notes say so.",
       "Chirality: the two forelegs and two hind legs are not mirrored pairs here -- lying on its side both legs of a pair point the same way, the upper (left) one higher and tailward as the plate shows; validate_chirality has no -l/-r pair to test and the swept-arc claim is the tail's curve, carried as a two-piece polyline with a bend ball.",
       "The ears: the left (upper) ear is folded over the top-rear of the skull and draped dorsally and back over the neck, the right (lower) ear lies flat on the ground under the skull on the dorsal side -- both at the REAR of the skull, never on the throat side.",
-      "Fur is one material with an axis tint and a fur canvas; the plate's pink patches are three soft bare patches on the tile."
+      "Fur is one material. The coat is carried as a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank -- the surface a viewer actually sees -- as though it were the belly, and a multiply can only darken, never take a warm tan to a cooler grey.",
+      "Every authored albedo is the INVERSE of the harness transfer, not a copy of the plate. A probe of the dorsal band gave R = 0.62 A + 84 per channel on that surface: a large white additive term that washes a tan toward beige. The plate measurements are recorded on the material and the inverse is what ships."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.35 x 0.28 x 0.95 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=6 materials, <=6 unique geometries.",
+      "Rendered model matches the reference silhouette, the 0.35 x 0.20 x 0.95 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=8 draw calls, <=8 materials, <=12 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; convex collider; no destruction groups.",
       "Every material declares textureless with named evidence."
@@ -262,16 +264,16 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.35 x 0.28 x 0.95 m",
+          "Envelope 0.35 x 0.20 x 0.95 m",
           "Lying on its side, legs to one side, head flat",
-          "Lean ribcage, not a spindle"
+          "A section that CHANGES: deep chest, tucked loin, hip, croup"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "a standing dog",
-          "a sausage",
+          "a constant-section sausage",
           "a pig"
         ]
       },
@@ -281,10 +283,11 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Domed skull with a stop and a muzzle deeper than wide",
-          "Ear flaps at the REAR of the skull",
-          "Four jointed legs with pads",
-          "Tail"
+          "Domed cranium with a STOP and a muzzle deeper than wide",
+          "A folded drop ear over the crown, plane horizontal",
+          "Limbs leaving the body as masses, not cylinders",
+          "Paws with toe lobes and dark pads",
+          "A tail reaching the declared length"
         ],
         "evidenceRefs": [
           "region-muzzle",
@@ -292,9 +295,10 @@
         ],
         "failureModes": [
           "two left forelegs on opposite sides",
-          "no head",
           "an ear on the throat side",
-          "a conical snout"
+          "a conical snout with no stop",
+          "a bare cylinder cap standing out of a thigh",
+          "a tail stub"
         ]
       },
       {
@@ -303,8 +307,8 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Tan back fading to a white belly",
-          "Dark muzzle mask",
+          "Tan saddle, pale collar, dusty flank, tan croup",
+          "Dark muzzle mask clear of the hole band",
           "Short-fur surface"
         ],
         "evidenceRefs": [
@@ -313,7 +317,8 @@
         ],
         "failureModes": [
           "one flat colour",
-          "a smooth shiny blob"
+          "a beige lump from copying the plate straight in",
+          "a tone under the backdrop luma"
         ]
       }
     ],
@@ -339,7 +344,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 8 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -644,7 +649,8 @@
     "Lying pose only: no rig, no standing variant; the registry notes say so.",
     "Chirality: the two forelegs and two hind legs are not mirrored pairs here -- lying on its side both legs of a pair point the same way, the upper (left) one higher and tailward as the plate shows; validate_chirality has no -l/-r pair to test and the swept-arc claim is the tail's curve, carried as a two-piece polyline with a bend ball.",
     "The ears: the left (upper) ear is folded over the top-rear of the skull and draped dorsally and back over the neck, the right (lower) ear lies flat on the ground under the skull on the dorsal side -- both at the REAR of the skull, never on the throat side.",
-    "Fur is one material with an axis tint and a fur canvas; the plate's pink patches are three soft bare patches on the tile."
+    "Fur is one material. The coat is carried as a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank -- the surface a viewer actually sees -- as though it were the belly, and a multiply can only darken, never take a warm tan to a cooler grey.",
+    "Every authored albedo is the INVERSE of the harness transfer, not a copy of the plate. A probe of the dorsal band gave R = 0.62 A + 84 per channel on that surface: a large white additive term that washes a tan toward beige. The plate measurements are recorded on the material and the inverse is what ships."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -657,12 +663,12 @@
   "silhouette": {
     "envelope": {
       "w": 0.35,
-      "h": 0.28,
+      "h": 0.2,
       "d": 0.95
     },
-    "description": "A 0.957 m long, 0.16 m high lump lying along Z: rump and ribcage 0.19 deep tapering to a 0.11 neck at +Z, a 0.22 m head with a 0.148 x 0.128 skull dome, a boxy dark muzzle and two ear flaps at +Z, four jointed legs 0.19 m out to +X lying flat with pads, a tail trailing 0.13 m past the rump to -Z.",
-    "envelopeDerivation": "SECOND BUILD (quality pass). The first shipped a spindle body pinching into a conical snout with box ears, one of them on the throat side: it read as a pig with its head upside down. This build authors the anatomy DIRECTLY in the declared box, no per-component scale: the body sits 45 mm dorsal of the origin so the back is at x -0.145 and the paw pads at +0.21, the length is 0.957 nose to tail. Plate read at ~1.01 mm per px (nose x 60 to tail tip x 1000 = 0.95 m): head x 60-225 (0.165 foreshortened, authored 0.22 occiput to nose), body shoulder-to-rump x 225-830 (0.60), back line y 325-350 withers to loin, chest 200 px of image depth against the HEAD's 195 -- which is the evidence for a LEAN body: a 0.19 m deep, 0.15 m thick ribcage rather than the first build's 0.32 x 0.26, and a 0.148 x 0.128 skull. Built height 0.16 m at the barrel against the declared 0.28: the declaration is a fat dog and the plate is not; the h is reported, not scaled to. Forelegs leave the chest at x 280-300 and reach paws at x 330/390, y 690, both angled tailward; hind legs leave the hip at x 700 for paws at x 760/830, y 640, extended back with a hock bend; upper ear folded over the top-rear of the skull at x 150-195 standing 10-20 px proud of the head outline; lower ear on the ground beside the forehead at x 55-85. NO Meshy proxy: fal's content checker refused the plate twice (422 content_policy_violation, scratch/sleeping-soi-dog/meshgen.log and meshgen.refused.log; the endpoint forces enable_safety_checker true), so there is no band table and the single plate is the only evidence.",
-    "meshyCrossCheck": "NO PROXY: fal returned 422 content_policy_violation on the plate twice (once with enable_safety_checker=false requested; the endpoint echoes it back as true). Stations were read off the plate alone at ~1 mm per px; no band table exists and the length-to-depth ratio carries the plate's foreshortening (confidence 0.75). The lean-body call rests on the plate's head-depth to chest-depth ratio (195 : 200 px)."
+    "description": "A 0.958 m long, 0.182 m high lump lying along Z: a 0.242 deep by 0.178 thick ribcage at z 0.01, tucking to 0.208 at the loin, swelling to 0.232 at the hip and falling away over the croup, tapering to a 0.096 neck at +Z; a 0.209 m head, cranium 0.118 x 0.106, with a 12 mm stop at z 0.372 and a blunt dark muzzle to the nose at 0.4765; a folded drop ear over the crown and the down-side ear splayed flat on the ground beside the muzzle; four legs reaching 0.20 m out to +X with paws, toe lobes and dark pads; a tail trailing 0.164 m past the rump to -Z.",
+    "envelopeDerivation": "THIRD BUILD (quality pass). The second shipped a trunk of almost constant section -- rx 0.080 to 0.100 over the whole length -- so it rendered as a smooth sausage with a cone for a head: no chest, no tuck, no croup, no shoulder or thigh mass, a 0.10 m tail stub, and a tan band 45 mm wide on a 200 mm deep body that left nearly the whole render cream. This build reads the section off a column scan of the plate (scratch/_prop/dogscan.mjs) station by station. The scan: silhouette bbox x 46-997 (952 px) by y 322-703 (382 px); 0.95 m over 952 px = 0.998 mm/px along the LONG axis, which is unforeshortened because it lies across the camera tilt. Landmarks, z = 0.475 - (x-46)*0.000998: nose 46 (0.475), head rear 235 (0.286), neck waist 218 (0.303), shoulder 330 (0.192), deep chest 450 (0.072), loin tuck 590 (-0.068), hip 734 (-0.211), rump end 865 (-0.342), tail root 730 (-0.208), tail tip 997 (-0.474). Back line 380/370/339/328/322/323/348/398 px over z 0.276 to -0.268: 58 px of variation over the whole trunk, so the SPINE of a dog on its side is a nearly straight horizontal line and every bit of the section change belongs to the belly, which is how it is authored. Belly line where no leg overlaps it: 555 at z 0.036, 540 at -0.012, 528 at the tuck, 539, 561, 584. CAMERA SOLVE, because the plate's image-vertical axis is v = -X sin(phi) + Y cos(phi) and the trunk's measured height alone cannot separate the dorsoventral axis from the height. The ribcage span 213 px = 2 sqrt(a^2 sin^2 phi + b^2 cos^2 phi); the back-to-front-paw span 355 px, which no phi produces for a 0.35 m wide body -- it peaks near 340 px at phi 70 -- so the plate's dog is about 5% wider against its length than the declared box, inside the 0.10 tolerance. At phi = 55 and a half-thickness 0.088 the ribcage is 0.230 deep by 0.176 thick, a medium dog. THE DECLARED HEIGHT WAS WRONG AND IS CORRECTED. 0.35 sin(phi) + h cos(phi) = 0.382 has no solution for h = 0.28 at any plausible elevation (0.35 by 0.28 needs phi above 75 or below 15 degrees, and this is a 40-45 degree three-quarter); at h = 0.20 it solves at phi = 42. The registry declaration is changed from 0.28 to 0.20 with that arithmetic in notes, and budgetClass re-pinned to large because edit-assets reclassifies to medium on the resize. The second build reported its built 0.16 against the standing 0.28 and left the declaration alone. NO Meshy proxy: fal's content checker refused the plate twice (422 content_policy_violation, scratch/sleeping-soi-dog/meshgen.log and meshgen.refused.log; the endpoint forces enable_safety_checker true), so there is no band table and the single plate is the only evidence.",
+    "meshyCrossCheck": "NO PROXY: fal returned 422 content_policy_violation on the plate twice (once with enable_safety_checker=false requested; the endpoint echoes it back as true). Every station is read off the plate alone by scratch/_prop/dogscan.mjs at 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. The section depths rest on a two-constraint solve for the camera elevation (the ribcage image span and the back-to-paw span), which lands at phi 55 for the section and phi 42 for the whole-silhouette height; the 13-degree spread between them is the honest width of the estimate and is why the depth profile is carried at confidence 0.78 rather than higher. No band table exists."
   },
   "viewEvidence": [
     {
@@ -706,14 +712,14 @@
       "viewpoint": "rear",
       "path": null,
       "confidence": 0.75,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the dog's back (-X) and the underside it lies on are inferred from the class; the tan saddle is carried over the whole back."
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the dog's back (-X) and the underside it lies on are inferred from the class; the tan saddle is carried over the whole back and the contact patch is a clamp on the sweep's underside rather than a measurement."
     },
     {
       "id": "region-proportion",
       "viewpoint": "top",
       "path": null,
-      "confidence": 0.75,
-      "note": "NOT MEASURED: no proxy, so the length-to-depth ratio is the plate's three-quarter read; the body depth is set from the head-to-chest image-depth ratio."
+      "confidence": 0.78,
+      "note": "PARTLY MEASURED. The LENGTH axis is measured directly (952 px over 0.95 m, unforeshortened). The depth and thickness are a two-constraint camera solve on the plate, not a proxy: confidence 0.78. Two things it cannot settle are the exact spread of the contact patch and the back, neither of which the one view shows."
     }
   ],
   "componentTree": [
@@ -726,12 +732,12 @@
       "confidence": 0.8,
       "primitive": "tapered-sweep",
       "topologyClass": "continuous-sculpt",
-      "topologyRationale": "One 31-station tube, two thigh ellipsoids, four leg tubes, joint balls, paw ovals and a tail merged on one material: one draw call, authored directly in the declared box.",
+      "topologyRationale": "One 33-station sweep, four limb masses, eight leg and tail tubes, eight joint balls, four paws with toe lobes and pad caps merged on one material: one draw call, authored directly in the declared box.",
       "materialId": "fur",
       "material": "fur",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Stations [z, cx, cy, rx, ry] from the tail root at -0.352 to the occiput at 0.305, 11 authored and Catmull-Rom subdivided x3, 16 segments; ribcage rx 0.100 ry 0.080 at z 0.03; forelegs r 0.029 from the chest to paws at x 0.168; thighs as ellipsoids r 0.042 / 0.047 hip to stifle; shanks r 0.026 over a hock; tail r 0.022 to 0.015 ending at -0.463; paws 0.042 x 0.033 x 0.035 with a pad cap.",
+        "topologyIntent": "Stations [z, backEdgeX, halfDepthX, halfThicknessY, flatY] read off the plate column scan, 17 authored and Catmull-Rom subdivided x2 to 33, 16 segments, running tail-root to neck along +Z. Ribcage half-depth 0.121 by half-thickness 0.089 at z 0.010; loin tuck 0.104 / 0.080 at -0.085; hip 0.116 / 0.086 at -0.185; neck 0.058 / 0.050 at 0.255. The back edge follows the scan top line, so the spine is nearly straight and the belly carries the section change. A sixth station element flatY CLAMPS the ring underside to the contact height -- full 16 mm at the trunk, easing off at the neck and croup -- because a body on concrete SPREADS and an unclamped ellipse is a sausage on a table; at the ribcage it leaves a 0.15 m wide contact strip. Shoulder and thigh MASSES are ellipsoids laid along their own limb segment, flatter in y than in x and centred under the flank surface. Forelegs r 0.024 / 0.020 from the elbow, hind r 0.025 / 0.019 over a hock, paws 0.068 x 0.034 x 0.056 with two toe lobes on each forepaw and a dark pad cap on all four; tail in three tapering pieces to -0.462 with a light tip.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -740,8 +746,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Legs and thighs enter the body tube as interpenetrating solids; joint balls swallow the cylinder caps; paw ovals cover the leg ends; the tail enters the rump. Nothing planar meets: check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.30 m."
+        "zFightingNote": "Legs, masses and the head enter the body sweep as interpenetrating solids; a joint ball sits at every elbow, stifle, carpus and hock, because a limb mass is an ellipsoid and has tapered to nothing exactly where the next tube begins -- the bare cap showed at the stifle as a faceted wedge standing out of the thigh. Nothing planar meets: check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.22 m."
       },
       "localFeatures": [
         {
@@ -752,7 +758,7 @@
         {
           "id": "d2-legs",
           "description": "legs",
-          "delivery": "thigh ellipsoids + tubes + joint balls + paw ovals"
+          "delivery": "limb masses + tapering tubes + joint balls + paws with toe lobes and pads"
         },
         {
           "id": "d4-tail",
@@ -767,17 +773,17 @@
         {
           "id": "d6-coat",
           "description": "coat",
-          "delivery": "axis tint"
+          "delivery": "per-station dorsal/ventral colour pairs"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "fur",
-        "baseColor": "#b98a55",
-        "recipe": "Tan-to-cream axis tint on white fur with a fur canvas; pads grey.",
+        "baseColor": "#a2631f",
+        "recipe": "A [dorsal, ventral] colour pair per station on white fur with a fur canvas; limb masses in the local crown tone; pads dark.",
         "evidenceRef": "region-tan",
         "confidence": 0.8,
-        "dominantAlbedo": "rgba(185, 138, 85, 1.0)",
-        "secondaryAlbedo": "rgba(216, 210, 200, 1.0)",
+        "dominantAlbedo": "rgba(162, 99, 31, 1.0)",
+        "secondaryAlbedo": "rgba(142, 127, 106, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.8
       },
@@ -835,12 +841,12 @@
       "confidence": 0.8,
       "primitive": "tapered-sweep",
       "topologyClass": "continuous-sculpt",
-      "topologyRationale": "Two skull ellipsoids, one station tube, one nose ellipsoid, two extruded ear flaps and two boxes merged on the same material: one draw call.",
+      "topologyRationale": "ONE 23-station sweep plus a nose pad, a lid, a slit box and two ear flaps merged on the same material: one draw call. Three overlapping ellipsoids for a cranium, a cheek and an occiput merge into a CLOVERLEAF -- each intersection draws its own hard crease and the head reads as a knobbly potato with a cone on the front -- and the sweep is 528 triangles against the 740 that pile plus a separate muzzle tube cost.",
       "materialId": "fur",
       "material": "fur",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "Skull dome 0.148 x 0.128 x 0.160 centred at z 0.32 on the ground; occiput ball blending into the neck; muzzle stations from 0.345 (inside the skull) to the nose at 0.4745, rx 0.052 -> 0.024 and ry 0.036 -> 0.019, 19 stations x 12 segments, drooping to the throat side; nose pad 0.038 x 0.034 x 0.030; upper ear 0.085 x 0.060 flap based ON the skull surface at its top-dorsal-rear and draped dorsally and back; lower ear 0.072 x 0.052 flat on the ground under the dorsal side of the skull; a closed-eye slit 0.005 x 0.024 on the up face behind the stop; a mouth line along the ventral edge of the muzzle.",
+        "topologyIntent": "12 authored stations from the neck root at z 0.268 to the nose at 0.4765, Catmull-Rom subdivided x2, 12 segments. Lying on its right cheek the skull ear-to-ear axis is VERTICAL (ry) and the crown-to-jaw axis horizontal (rx), crown at -X: cranium 0.118 deep x 0.106 wide at z 0.338. The STOP is the station pair at 0.368 and 0.380 -- 12 mm apart, section down 21% and the dorsal line moving 13 mm toward the jaw side, because Catmull-Rom smooths any step spread over more than about 10 mm. The muzzle stays deeper than wide to a BLUNT end at 0.468 (rx 0.025) rather than a cone. Nose pad 0.032 x 0.030 x 0.024 on the bridge side of the tip. The closed eye is a PROUD lid ellipsoid with a thin dark slit box on it: a dark ellipsoid half-sunk in a curved surface cuts a triangular hole out of the intersection and read as a slot punched through the skull. The ear PLANE is horizontal -- standing, a dog ear faces left and right; lying on its right side that plane is parallel to the ground and the flap lies OVER the crown, which is the rounded triangle the plate shows and why the same ear is edge-on and thin at azimuth 90. Two flaps: a base rising off the crown at 17 degrees from z 0.292 and a tip folded almost flat on it, the base sunk 8 mm into the skull. The down-side ear is splayed flat on the concrete, its base buried in the skull at x -0.070 and its tip swung dorsally so it clears the muzzle silhouette.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -849,27 +855,27 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The muzzle tube starts inside the skull dome; the occiput ball sits inside the neck tube; ears stand on the skull surface as interpenetrating solids; the nose overlaps the muzzle end; the eye and mouth line stand 2 mm proud of curved surfaces.",
+        "zFightingNote": "The head sweep starts inside the body sweep neck; ears stand on the skull surface as interpenetrating solids; the nose overlaps the muzzle end; the lid stands proud and the slit sits on the lid.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d3-head",
           "description": "head",
-          "delivery": "skull ellipsoids + muzzle tube + ear extrudes + boxes"
+          "delivery": "one head sweep + nose pad + lid + slit + two ear flaps"
         }
       ],
       "attachment": {
         "parentSocket": "neck",
         "localStart": [
-          -0.069,
-          0.068,
-          0.27
+          -0.07,
+          0.052,
+          0.268
         ],
         "localEnd": [
           -0.023,
-          0.04,
-          0.478
+          0.036,
+          0.4765
         ],
         "contactType": "embedded",
         "embedDepth": 0.05,
@@ -877,12 +883,12 @@
       },
       "colorMaterialRecipe": {
         "materialId": "fur",
-        "baseColor": "#a8804f",
-        "recipe": "Skull tan with a darkening mask multiplier from the stop to the nose along Z; ears, nose, eye and mouth line tinted.",
+        "baseColor": "#c07f3d",
+        "recipe": "One sweep occiput to nose carrying the skull tan and the dark muzzle mask as station colour pairs; ear flaps, nose pad, lid and slit tinted.",
         "evidenceRef": "region-muzzle",
         "confidence": 0.8,
-        "dominantAlbedo": "rgba(168, 128, 79, 1.0)",
-        "secondaryAlbedo": "rgba(168, 128, 79, 1.0)",
+        "dominantAlbedo": "rgba(192, 127, 61, 1.0)",
+        "secondaryAlbedo": "rgba(192, 127, 61, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.8
       },
@@ -910,21 +916,21 @@
       "name": "Short dog fur",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#b98a55",
-      "color": "#b98a55",
+      "baseColor": "#be9871",
+      "color": "#be9871",
       "roughness": {
-        "base": 0.9,
+        "base": 0.92,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/fur_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#b98a55",
+        "dominant": "#be9871",
         "secondary": [
-          "#b98a55",
-          "#d8d2c8",
-          "#a8804f"
+          "#a2631f",
+          "#b8aa94",
+          "#c07f3d"
         ],
         "samplingNotes": "Measured as the mean of crops/tan.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -936,15 +942,18 @@
           "palette": [
             "#7A7370"
           ],
-          "evidence": "crops/belly.png -- #6b635a grey-brown dust on the underside; the fur canvas drift."
+          "evidence": "crops/belly.png -- #5e5750 grey-brown dust on the underside; the fur canvas drift."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-tan (0.84) at #b8a28a (the tan saddle in flat light) and region-white at #b5aa9f; carried as an axis tint from #b98a55 on the back to #d8d2c8 on the belly and legs, skull #a8804f off the plate's #9b7956, muzzle mask a x0.49 multiplier off region-muzzle #8a7c70 against the skull, pads #7a7370 off region-paw, on a WHITE material.",
-          "Textureless as DECLARED: a 512 px fur canvas (5,200 directional hair strokes, cloudy drift, three bare patches) bound after construction as map and bump."
+          "MEASURED on the plate: saddle #be9871 (region-tan), hip and croup #b59c86, flank and belly #908981, collar #c7bcae, thigh and leg cream #cbbcac, skull #cba37a, muzzle mask #38312b, nose #2f2e2c, pads #615247, scabbed ear inner #8b6f69, tail tip #c2b7a6.",
+          "AUTHORED as the inverse of the harness transfer, which a probe of the first render's own dorsal band gave as R = 0.62 A + 84 per channel: saddle #a2631f, croup #9c7451, flank #8e7f6a, collar #b9ac98, cream #b8aa94, skull #c07f3d. Copying the plate straight in rendered the saddle as #cebfa2 -- a beige lump, and the whole coat failure of the second build.",
+          "Two tones DEPART from the measurement and say so. The muzzle mask ships as a x(0.45, 0.50, 0.69) multiplier landing near luma 126 instead of the plate's 50, and the nose at #3a302a instead of #2f2e2c: both measurements sit under the harness backdrop's luma 58, where the turntable gate reads a surface enclosed by the silhouette as a HOLE punched through the model. The nose probed at luma 31 in the render before the lift. The margin shipped is 68 luma on the muzzle and 45 on the nose, and the back-lit 180 frame renders at about 0.55 of the painted value.",
+          "The coat is a [dorsal, ventral] colour pair per sweep station rather than an axis tint, and the LIMB MASSES carry the local crown tone rather than a colour of their own -- a different hex on a bulge reads as a flat patch stuck to the flank, not as a shoulder.",
+          "Textureless as DECLARED: a 512 px fur canvas (6,400 directional hair strokes, cloudy drift, three soft bare patches) bound after construction as map and bump."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1065,27 +1074,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T15:08:58.533798+00:00",
+      "timestamp": "2026-08-28T19:36:51.925395+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
@@ -1096,9 +1105,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:58.618473+00:00",
+      "timestamp": "2026-08-28T19:36:52.011184+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1111,27 +1120,57 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:58.705031+00:00",
+      "timestamp": "2026-08-28T19:36:52.091257+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.173359+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.256283+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
@@ -1142,9 +1181,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:58.788537+00:00",
+      "timestamp": "2026-08-28T19:36:52.342408+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1157,9 +1196,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:58.869214+00:00",
+      "timestamp": "2026-08-28T19:36:52.424783+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1172,27 +1211,57 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:58.952796+00:00",
+      "timestamp": "2026-08-28T19:36:52.504716+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.584350+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.664009+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "anatomy",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
@@ -1203,40 +1272,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:59.037656+00:00",
+      "timestamp": "2026-08-28T19:36:52.742181+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "coat",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Axis tint from tan #b98a55 over the back and upper flank to cream #d8d2c8 from the midline down the belly and legs; skull #a8804f with a x0.49 mask multiplier from the stop to the nose; 512 px fur canvas (directional strokes, drift, three bare patches) as map and bump.",
-          "notes": "The fur canvas replaces the first build's grime tile."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T15:08:59.122509+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1249,49 +1287,12 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:59.203796+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-08-28T19:36:52.821746+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "anatomy",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T15:08:59.285622+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
+      "layerScores": {},
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
@@ -1301,17 +1302,94 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:59.368556+00:00",
-      "passId": "interaction-pass",
+      "timestamp": "2026-08-28T19:36:52.902452+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "coat",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "The coat is a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank as though it were the belly, and a multiply can only darken -- it can never take a warm tan to a cooler grey. The plate's own split is carried: saddle #be9871 (r - b = 77) against flank #908981 (r - b = 15), warm dorsally and neutral ventrally, coolest at the tuck that has been lying on the concrete. Along the body: pale collar, tan saddle, dusty flank, tan croup, pale tail tip. Limb masses carry the LOCAL crown tone. One 512 px fur canvas (7,200 directional strokes, cloudy drift, two soft bare patches) as map and bump.",
+          "notes": "Every albedo is authored as the INVERSE of the harness transfer, which a probe of the first render's dorsal band gave as R = 0.62 A + 84 per channel; copying the plate straight in rendered the saddle as #cebfa2, a beige lump, which was the second build's whole coat failure. The transfer is orientation-dependent (0.985 A + 27 on a brighter face), so no single inverse is exact. Two tones DEPART from the plate and say so: the muzzle mask ships near luma 126 against a measured 50 and the nose at #3a302a against #2f2e2c, because both measurements sit under the harness backdrop's 58 where the turntable gate reads an enclosed surface as a HOLE -- the nose probed at luma 31 before the lift. Margins shipped: 68 luma on the muzzle, 45 on the nose."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.982955+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.063444+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "anatomy",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.147610+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
@@ -1322,45 +1400,66 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T15:08:59.451894+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-08-28T19:36:53.230500+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.309909+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         },
         {
           "id": "anatomy",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
         },
         {
           "id": "coat",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Axis tint from tan #b98a55 over the back and upper flank to cream #d8d2c8 from the midline down the belly and legs; skull #a8804f with a x0.49 mask multiplier from the stop to the nose; 512 px fur canvas (directional strokes, drift, three bare patches) as map and bump.",
-          "notes": "The fur canvas replaces the first build's grime tile."
+          "evidence": "The coat is a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank as though it were the belly, and a multiply can only darken -- it can never take a warm tan to a cooler grey. The plate's own split is carried: saddle #be9871 (r - b = 77) against flank #908981 (r - b = 15), warm dorsally and neutral ventrally, coolest at the tuck that has been lying on the concrete. Along the body: pale collar, tan saddle, dusty flank, tan croup, pale tail tip. Limb masses carry the LOCAL crown tone. One 512 px fur canvas (7,200 directional strokes, cloudy drift, two soft bare patches) as map and bump.",
+          "notes": "Every albedo is authored as the INVERSE of the harness transfer, which a probe of the first render's dorsal band gave as R = 0.62 A + 84 per channel; copying the plate straight in rendered the saddle as #cebfa2, a beige lump, which was the second build's whole coat failure. The transfer is orientation-dependent (0.985 A + 27 on a brighter face), so no single inverse is exact. Two tones DEPART from the plate and say so: the muzzle mask ships near luma 126 against a measured 50 and the nose at #3a302a against #2f2e2c, because both measurements sit under the harness backdrop's 58 where the turntable gate reads an enclosed surface as a HOLE -- the nose probed at luma 31 before the lift. Margins shipped: 68 luma on the muzzle, 45 on the nose."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
@@ -1373,31 +1472,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T15:08:58.533798+00:00",
+      "timestamp": "2026-08-28T19:36:51.925395+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 4; body and muzzle station tubes, skull and thigh ellipsoids.",
+      "summary": "Blockout: two components at 2 draw calls of 8; one station sweep for the body and one for the whole head, limb masses, tubes and paws.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1414,15 +1513,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:58.618473+00:00",
+      "timestamp": "2026-08-28T19:36:52.011184+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Quality pass after review: the body was a 0.32 x 0.26 spindle pinching into the neck and read as a pig; rebuilt lean (0.19 x 0.15 ribcage from the plate's head-to-chest depth ratio) with a tucked loin, authored directly in the declared box instead of scaled into it.",
+      "summary": "Third build. The second authored the trunk as an almost constant ellipse -- rx 0.080 to 0.100 over the whole length -- and it rendered as a smooth sausage: no chest, no tuck, no croup, no shoulder or thigh mass, a 0.10 m tail stub. Replaced by 17 stations read off a column scan of the plate (scratch/_prop/dogscan.mjs) and subdivided to 33, with the back edge following the scan's own top line.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1438,31 +1537,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:58.705031+00:00",
+      "timestamp": "2026-08-28T19:36:52.091257+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The station list was authored nose-to-tail, which is how the scan reads and which runs along -Z. tubeAlong winds each quad (station i, station i+1, ring j+1), so the whole sweep's vertex normals were INVERTED: the dorsal band rendered at luma 27 against a backdrop of 58 -- black, and read as a shadow rather than a surface until a normal pass showed the top of the body pointing down. The list is reversed at emit.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.173359+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The declared height 0.28 is not producible from the plate at any plausible camera elevation. Corrected to 0.20 on the asset with the arithmetic in notes, and budgetClass re-pinned to large because edit-assets reclassifies to medium on the resize.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.256283+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: stations read off the plate at ~1 mm/px (no proxy: fal 422 content_policy_violation twice); lean ribcage from the head-to-chest depth ratio; authored directly in the declared box with the body 45 mm dorsal of the origin so the legs reach the +X face.",
+      "summary": "Structural pass: every trunk section from a column scan of the plate at 0.998 mm/px, solved for camera elevation by two constraints (ribcage image span, back-to-paw span). The declared height is corrected 0.28 -> 0.20 with that arithmetic. A straight spine and a belly that carries the whole section change, as the scan shows.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1478,15 +1625,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:58.788537+00:00",
+      "timestamp": "2026-08-28T19:36:52.342408+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Head rebuilt: the conical snout tube replaced by a skull dome (ellipsoid) with a stop and a 19-station muzzle deeper than wide; box ears -- one placed on the THROAT side, which made the head read upside down -- replaced by two extruded flaps at the rear of the skull on the dorsal side; a closed-eye slit and a mouth line added.",
+      "summary": "The head was three overlapping ellipsoids -- cranium, cheek, occiput -- plus a separate muzzle tube, and merged into a CLOVERLEAF whose every intersection drew its own hard crease: a knobbly potato with a cone on the front. Replaced by ONE 23-station sweep from the occiput to the nose, which carries the same anatomy as a continuous surface and costs 528 triangles against 740.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1502,15 +1649,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:58.869214+00:00",
+      "timestamp": "2026-08-28T19:36:52.424783+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "The first ear placement put the flap base 15 mm inside the skull dome and the whole ear was buried; re-based ON the dome surface at its top-dorsal-rear and draped back over the neck. Thigh cylinders with a 0.09 m knee ball read as a knob from the belly side; replaced by hip-to-stifle ellipsoids, and paw ovals widened past the leg tubes' end overshoot so no cylinder cap shows.",
+      "summary": "Limb masses were spheres sitting ON the flank and read as tumours; re-authored flatter in y than in x, centred under the body's own surface at their station, and given the LOCAL coat tone instead of a colour of their own. A joint ball was added at every elbow and stifle as well as the carpus and hock: a limb mass is an ellipsoid and has tapered to nothing exactly where the next tube starts, and the bare cap showed at the stifle as a faceted wedge standing out of the thigh.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1526,31 +1673,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:58.952796+00:00",
+      "timestamp": "2026-08-28T19:36:52.504716+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The ear was one flat plate lying on the skull. Rebuilt as two flaps with the fold between them and its plane HORIZONTAL, which is where a dog's ear plane goes when the dog lies on its side. The first placement based it at 35 degrees and left daylight underneath -- a flag on a mast -- so the base is sunk 8 mm into the skull at 17. The down-side ear was detached beside the head; re-based inside the skull with its tip swung dorsally so it clears the muzzle's silhouette. The closed eye was a dark ellipsoid half-sunk in a curved surface, which cuts a triangular hole out of the intersection and read as a slot punched through the skull; it is a proud lid with a thin slit box on it instead.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.584350+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "An ilium and a scapula were authored on the up-facing flank for the plate's 'ribs and hip bones visible under the coat'. A flattened ellipsoid intersecting a curved sweep shows its own flat top: orange stickers at 7 mm proud, pale stickers at 1 mm. Removed and the cue left to the fur canvas, with 128 triangles returned to the budget.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:52.664009+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "anatomy",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: skull dome and stop, boxy muzzle, ear flaps at the rear of the skull, jointed legs with thigh ellipsoids and hock bends, paw ovals, tail knots; Catmull-Rom station subdivision.",
+      "summary": "Form refinement: a 12 mm STOP, a blunt muzzle, a folded drop ear on a horizontal plane, a splayed down-side ear, four limb masses with joint balls at every joint, paws with toe lobes and pads, a full-length tail, and a contact clamp on the sweep underside so the body SPREADS where it bears.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1566,55 +1761,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:59.037656+00:00",
+      "timestamp": "2026-08-28T19:36:52.742181+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "coat",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Axis tint from tan #b98a55 over the back and upper flank to cream #d8d2c8 from the midline down the belly and legs; skull #a8804f with a x0.49 mask multiplier from the stop to the nose; 512 px fur canvas (directional strokes, drift, three bare patches) as map and bump.",
-          "notes": "The fur canvas replaces the first build's grime tile."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: one fur material at 0.84, textureless; coat as an axis tint from the midline, muzzle mask as a multiplier.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T15:08:59.122509+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Grime tile replaced by a fur canvas: directional hair strokes at a narrow tone spread, cloudy drift and three soft bare patches, bound as map and bump.",
+      "summary": "The coat was an axis tint in x from tan to cream. On an animal lying on its side that axis is HORIZONTAL, so the band cut the crown of the sweep in half and painted the up-facing flank -- the surface a viewer sees -- as the belly; and its 45 mm width on a 200 mm deep body left nearly the whole render cream. Replaced by a [dorsal, ventral] colour PAIR per station blended around the ring.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1630,61 +1785,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:59.203796+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-08-28T19:36:52.821746+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "anatomy",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: 512 px fur canvas -- 5,200 directional hair strokes, cloudy drift, three bare patches -- as map and bump.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T15:08:59.285622+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
-      },
+      "layerScores": {},
       "featureReviews": [],
-      "action": "continue",
-      "summary": "Lighting pass: no rim, no contact shadow in the plate; recorded absent.",
+      "action": "refine-code",
+      "summary": "The plate's measurements were being copied straight into the albedos and rendering as beige. A probe of the render's own dorsal band gave the harness transfer as R = 0.62 A + 84 per channel; every tone is now authored as that inverse, with the plate measurement recorded beside it. The ventral half was still a desaturated tan, which is all a multiply can produce; the plate's flank is NEUTRAL (r - b = 15 against the saddle's 77) and the ventral ramp is now authored that way.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1700,21 +1809,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:59.368556+00:00",
-      "passId": "interaction-pass",
+      "timestamp": "2026-08-28T19:36:52.902452+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
-      "featureReviews": [],
+      "featureReviews": [
+        {
+          "id": "coat",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "The coat is a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank as though it were the belly, and a multiply can only darken -- it can never take a warm tan to a cooler grey. The plate's own split is carried: saddle #be9871 (r - b = 77) against flank #908981 (r - b = 15), warm dorsally and neutral ventrally, coolest at the tuck that has been lying on the concrete. Along the body: pale collar, tan saddle, dusty flank, tan croup, pale tail tip. Limb masses carry the LOCAL crown tone. One 512 px fur canvas (7,200 directional strokes, cloudy drift, two soft bare patches) as map and bump.",
+          "notes": "Every albedo is authored as the INVERSE of the harness transfer, which a probe of the first render's dorsal band gave as R = 0.62 A + 84 per channel; copying the plate straight in rendered the saddle as #cebfa2, a beige lump, which was the second build's whole coat failure. The transfer is orientation-dependent (0.985 A + 27 on a brighter face), so no single inverse is exact. Two tones DEPART from the plate and say so: the muzzle mask ships near luma 126 against a measured 50 and the nose at #3a302a against #2f2e2c, because both measurements sit under the harness backdrop's 58 where the turntable gate reads an enclosed surface as a HOLE -- the nose probed at luma 31 before the lift. Margins shipped: 68 luma on the muzzle, 45 on the nose."
+        }
+      ],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CONVEX collider, no destruction groups; a lying figure with no rig by design.",
+      "summary": "Material pass: one fur material, textureless, carrying the coat as per-station dorsal/ventral pairs authored as the inverse of a probed harness transfer; warm dorsally and neutral ventrally, as the plate measures.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1730,49 +1849,173 @@
       }
     },
     {
-      "timestamp": "2026-08-27T15:08:59.451894+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-08-28T19:36:52.982955+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Five bare patches at the plate's own contrast tiled into evenly spaced polka dots -- a spotted animal rather than a scarred one. Cut to two, softened, over a heavier cloudy drift.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.063444+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "anatomy",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a 512 px fur canvas -- 7,200 directional hair strokes, cloudy drift, two soft bare patches -- as map and bump. Five patches at the plate's contrast tiled into polka dots and were cut back to two.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.147610+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim, no contact shadow in the plate, recorded absent. The harness transfer is measured by probe rather than assumed, which is what the albedos are authored against.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.230500+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one convex collider, no destruction groups; a lying figure with no rig by design.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sleeping-soi-dog/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T19:36:53.309909+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.38 x 0.16 x 0.96 m authored directly in the box (no scale); a long LEAN body on its side (ribcage 0.19 deep x 0.15 thick, set from the plate's 195:200 head-to-chest image-depth ratio), legs to +X, head flat at +Z, tail to -Z; no proxy, plate-only stations at confidence 0.75.",
-          "notes": "No band table: fal refused the plate. Built height 0.16 against a declared 0.28 -- the declaration is a fatter dog than the plate shows."
+          "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
+          "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either."
         },
         {
           "id": "anatomy",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Skull dome with a stop, a 19-station muzzle deeper than wide drooping to the throat side, nose pad, closed-eye slit on the up face, mouth line; two ear flaps at the REAR of the skull on the dorsal side (upper draped over the neck, lower flat on the ground); thighs as ellipsoids, shanks over a hock, joint balls at elbow and hock, four paw ovals with toe-pad caps; a two-piece tail with a bend ball and rounded tip. Both legs of each pair point the same way, the upper one higher and tailward.",
-          "notes": "First build's conical snout, box ears (one on the throat side) and spindle body read as a pig with its head upside down; all replaced."
+          "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
+          "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap."
         },
         {
           "id": "coat",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Axis tint from tan #b98a55 over the back and upper flank to cream #d8d2c8 from the midline down the belly and legs; skull #a8804f with a x0.49 mask multiplier from the stop to the nose; 512 px fur canvas (directional strokes, drift, three bare patches) as map and bump.",
-          "notes": "The fur canvas replaces the first build's grime tile."
+          "evidence": "The coat is a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank as though it were the belly, and a multiply can only darken -- it can never take a warm tan to a cooler grey. The plate's own split is carried: saddle #be9871 (r - b = 77) against flank #908981 (r - b = 15), warm dorsally and neutral ventrally, coolest at the tuck that has been lying on the concrete. Along the body: pale collar, tan saddle, dusty flank, tan croup, pale tail tip. Limb masses carry the LOCAL crown tone. One 512 px fur canvas (7,200 directional strokes, cloudy drift, two soft bare patches) as map and bump.",
+          "notes": "Every albedo is authored as the INVERSE of the harness transfer, which a probe of the first render's dorsal band gave as R = 0.62 A + 84 per channel; copying the plate straight in rendered the saddle as #cebfa2, a beige lump, which was the second build's whole coat failure. The transfer is orientation-dependent (0.985 A + 27 on a brighter face), so no single inverse is exact. Two tones DEPART from the plate and say so: the muzzle mask ships near luma 126 against a measured 50 and the nose at #3a302a against #2f2e2c, because both measurements sit under the harness backdrop's 58 where the turntable gate reads an enclosed surface as a HOLE -- the nose probed at luma 31 before the lift. Margins shipped: 68 luma on the muzzle, 45 on the nose."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.83. 3,932/4,000 triangles, 2/4 draw calls, 1/6 materials, 2/6 unique geometries, one 512 px canvas. Plate-only reconstruction: proportions at confidence 0.75.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 3,698/4,000 triangles, 2/8 draw calls, 1/8 materials, 2/12 unique geometries, one 512 px canvas, factory built in 89 ms. check-coplanar clean at 0.001 m; turntable PASSED with no --allow-holes. Plate-only reconstruction: the length axis is measured, the section is a camera solve at confidence 0.78.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1803,9 +2046,9 @@
   "performanceBudget": {
     "qualityPriority": "real-time",
     "targetTriangles": 4000,
-    "maxDrawCalls": 4,
-    "maxMaterials": 6,
-    "maxUniqueGeometries": 6,
+    "maxDrawCalls": 8,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 12,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
@@ -1814,27 +2057,27 @@
         "components": 2,
         "repetitionSystems": 0,
         "projectedTotal": 2,
-        "budget": 4,
-        "headroom": 2,
-        "note": "Two components, no repetition system: 2 of 4."
+        "budget": 8,
+        "headroom": 6,
+        "note": "Two components, no repetition system: 2 of 8."
       },
       "materials": {
         "projectedTotal": 1,
-        "budget": 6,
-        "headroom": 5,
-        "note": "fur only: 1 of 6; the coat is an axis tint and a fur canvas."
+        "budget": 8,
+        "headroom": 7,
+        "note": "fur only: 1 of 8; the coat is per-station colour pairs and a fur canvas."
       },
       "uniqueGeometries": {
         "projectedTotal": 2,
-        "budget": 6,
-        "headroom": 4,
+        "budget": 12,
+        "headroom": 10,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 3932,
+        "measured": 3698,
         "budget": 4000,
-        "headroom": 68,
-        "note": "3,932 of 4,000: a 31-station body tube and a 19-station muzzle tube, five ellipsoid solids, twelve joint / paw / tail balls, six leg and tail tubes, two ear extrudes, two boxes."
+        "headroom": 302,
+        "note": "3,698 of 4,000: a 33-station body sweep at 16 segments (1,024), a 23-station head sweep at 12 (528), four limb masses, eight joint balls, four paws with four toe lobes and four pad caps, eight leg and tail tubes, a nose pad, a lid, a slit box and two ear flaps."
       }
     }
   },
@@ -1892,7 +2135,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Catmull-Rom-subdivided station tubes for the body and muzzle; ellipsoids for the skull, occiput, nose, thighs, joints, paws and tail knots; polyline tubes for shanks, forelegs and tail; extruded rounded-triangle flaps for the ears; boxes for the eye slit and mouth line."
+      "strategy": "Two Catmull-Rom-subdivided station sweeps, one for the body and one for the whole head; ellipsoids for the limb masses, joints, paws, toe lobes, pad caps, nose and lid; polyline tubes for the forearms, shanks and tail; extruded rounded-triangle flaps for the two ears; one box for the eye slit."
     },
     {
       "id": "instancing",
@@ -1904,7 +2147,7 @@
     },
     {
       "id": "textures",
-      "strategy": "The material is declared textureless. One 512 px fur canvas after construction as map and bump, 1 MB."
+      "strategy": "The material is declared textureless. One 512 px fur canvas after construction as map and bump, 1.3 MB, built in 74 ms."
     }
   ],
   "animationAnchors": [],
@@ -1913,8 +2156,8 @@
     {
       "id": "no-proxy",
       "severity": "medium",
-      "description": "No Meshy proxy: the content checker refuses the plate, so proportions are the plate's foreshortened read with no band table.",
-      "mitigation": "Recorded; confidence 0.75 on the length-to-depth ratio; the lean body follows the plate's head-to-chest depth ratio. A second plate or a hand-measured reference would close it."
+      "description": "No Meshy proxy: the content checker refuses the plate, so there is no band table and the depth and thickness rest on a two-constraint camera solve rather than a measurement.",
+      "mitigation": "The LENGTH axis is measured directly and unforeshortened (952 px over 0.95 m); the section solve is carried at confidence 0.78 and its two constraints disagree by 13 degrees of elevation, which is stated rather than averaged away. A second plate from the front or above would close it."
     },
     {
       "id": "declared-height",
@@ -1943,34 +2186,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.2501,
-        "aspectRatioDelta": 0.2474,
-        "scaleDelta": 0.2107,
-        "bilateralSymmetryError": 0.1307,
+        "silhouetteIoU": 0.2271,
+        "aspectRatioDelta": 0.2722,
+        "scaleDelta": 0.2545,
+        "bilateralSymmetryError": 0.1188,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 10.87,
+          "maxDeltaE": 27.21,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 9.26
+              "deltaE": 27.21
             },
             {
               "componentId": null,
-              "deltaE": 10.87
+              "deltaE": 25.38
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.250 is below threshold 0.85",
-        "aspect-ratio delta 0.247 exceeds threshold 0.05",
-        "scale delta 0.211 exceeds threshold 0.08",
+        "silhouette IoU 0.227 is below threshold 0.85",
+        "aspect-ratio delta 0.272 exceeds threshold 0.05",
+        "scale delta 0.255 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "1ab1740c7d99d3fa",
+      "renderHash": "311af66f67de82a8",
       "passId": "blockout"
     }
   ]

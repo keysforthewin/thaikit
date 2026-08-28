@@ -71,11 +71,12 @@
       "primaryDomain": "object",
       "formLanguage": [
         "sheet-steel-cabinet",
-        "angle-frame",
+        "framed-elevations",
         "stainless-counter",
-        "broth-well",
+        "oval-broth-well",
         "push-handles",
-        "bicycle-wheels"
+        "open-bicycle-wheels",
+        "swivel-casters"
       ],
       "structureKind": [
         "assembled-solid",
@@ -87,10 +88,10 @@
       ],
       "materialFamilies": [
         "painted-sheet-steel",
-        "stainless-steel",
+        "brushed-stainless-steel",
         "rubber-tyre"
       ],
-      "notes": "An enclosed vendor cart on two bicycle wheels and two casters. The bicycle wheels are the mechanisms: each is a named pivot on its axle. The door is part of the cabinet shell at two draw calls, and nothing attaches, so there are no sockets. Every soi mouth at dusk. Rusting silver angle frame, dark green panels, a stainless top worn to brushed grey, a broth well with a ladle, chrome bicycle wheels on one end."
+      "notes": "An enclosed vendor cart on two open bicycle wheels and two swivel casters. The bicycle wheels are the mechanisms: each is a named pivot on its axle. Both doors are part of the cabinet shell at two draw calls, and nothing attaches, so there are no sockets. Every soi mouth at dusk. Rusting silver frame, dark slate panels, a stainless top worn to brushed grey, an oval broth well with a ladle, open chrome bicycle wheels on one end and casters on the other."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,13 +109,13 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 1,
+        "materialLayers": 2,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE cabinet merge -- the green sheet body, the silver angle frame 6 mm proud of it, the stainless counter, the broth well as two lathes, the door and handle, a divider bead, a rust line, two casters, the axle, two tube push handles and the ladle -- and ONE InstancedMesh of two bicycle wheels: TWO draw calls of 2.",
-        "One material of the two allowed: white steel with every tone a vertex colour -- silver, dark green (lifted to #4a504d for the hole gate), stainless, broth, tyre black, rust. The registry description's \"glazed side panel\" is the plate's dark painted panel; no transparent state is needed.",
-        "One repetition system: two bicycle wheels off one three-cylinder geometry, each a named pivot.",
+        "TWO merges and ONE InstancedMesh: THREE draw calls of 4. The PAINT merge is the dark sheet body, four framed elevations as extrusions with a real opening cut in each, a pierced deck, two door leaves with mouldings, pulls and strap hinges, the rust hem, reveal creep, corner blooms and hinge bleeds, the axle and two swivel casters. The STEEL merge is the two-plate counter with the basin cut out of it, the oval basin, the broth, the ladle bowl and handle, and the two push-handle tubes with their ferrules. The InstancedMesh is the two open bicycle wheels.",
+        "TWO materials of the three allowed, because one roughness cannot be both halves of this prop: paint at 0.80/0.03 for chalky worn sheet and steel at 0.34/0.55 for brushed stainless with real highlights. At a single 0.52/0.22 the counter read as another painted panel. Both are WHITE with every tone a vertex colour -- frame #9c948a, door leaf #a2a096 (the plate reads the leaves lighter than the frame, its clean door #9c9a94 at luma 155), panel #53686e, counter #a4a29b, well #a8a49a, broth #a4835b, rust #7a6248, stain #8f8371, tyre #3d3d3a, rim #c6c6c1. The registry description's \"glazed side panel\" is the plate's dark painted panel; no transparent state is needed.",
+        "One repetition system: two open bicycle wheels off one geometry of two ring lathes, twelve prism spokes, a hub and a dome cap, each a named pivot.",
         "Action readiness: two hinge pivots on the bicycle wheels, one box collider, zero sockets, not breakable."
       ]
     },
@@ -129,7 +130,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is an enclosed dark cabinet in a silver frame under a stainless counter with a round well and a ladle, on two big bicycle wheels; the wheels have to be real discs on the push axis or the cart reads as a cupboard."
+      "rationale": "The identity is a near-cubic dark cabinet in a broad worn frame under a stainless counter almost filled by an oval broth basin, on two open bicycle wheels; a well that does not fill its counter reads as a pot lid on a table, and closed wheel discs read as a cupboard on castors."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -198,7 +199,7 @@
           "zone": "front",
           "kind": "contour",
           "identityDefining": false,
-          "description": "hinged door with a handle on the front-right",
+          "description": "two hinged doors: a light leaf on the +X half of the long face and a dark one filling the -X end",
           "mapsTo": {
             "ref": "cabinet"
           },
@@ -233,26 +234,29 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
     "resolvedUnknowns": [
-      "The green panels are painted sheet, not glass: the plate shows opaque dark green; the description's glazed panel is not built.",
+      "The panels are painted sheet, not glass: the plate shows opaque dark slate; the description's glazed panel is not built.",
       "Both bicycle wheels are on the -X end with the axle along Z, so the cart is pushed along X by the handles.",
-      "The panel green is lifted from the measured #313433 (luma 50) to #4a504d (luma 79) for the silhouette gate."
+      "The panel is authored on CHROMA, not luma, and ships MORE saturated than the plate. The turntable gate calls a pixel background when it is within 24 of #3a3a3a AND at saturation <= 0.16; at a near-neutral #5b6260 the end elevations rendered #343a38 and #3b413f -- distance 5.7 and 9.1, saturation 0.10 -- and 38,612 px of solid panel was read as a hole punched through the cart at azimuth 90 and 270. Lifting to grey would need an authored luma of 134 (the render returns 0.58 of it), which is nothing like the plate. The plate's panel IS cool -- #2f3333 shaded and #737d7e lit, green and blue 4-11 levels over red in both -- so the same cast is pushed to #53686e at saturation 0.245 and luma 100. That drops the enclosed-background count at azimuth 90 from 38,612 px to 1,059 -- the handle loops alone. A near-neutral lift would have needed an authored luma of 143 to clear the distance test, which is the frame's own value and would erase the panel; a stronger #486661 passed too but rendered as a green teal nothing like the plate. Saturation 0.245 against the plate's measured 0.06-0.08 is the price of the pass, and it is what caps the material layer.",
+      "The basin is an OVAL, not a circle. Solving the rim ellipse's screen extents on the plate (283..670 px across, 215..340 px down) against the counter's projected plan vectors gives r/L 0.393 and r/D 0.456 -- 79% of the counter's length and 91% of its depth -- which a single revolution cannot be, so the lathe is revolved at the depth radius and stretched 1.35 along x.",
+      "The -Z long elevation and the +X end are NOT observed. Both are built as the mirror of what is: two openings on the long face, one on the end. Confidence 0.85.",
+      "The declared depth was corrected 0.75 -> 0.88 before building, on the proxy's 0.871."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 1.50 x 1.50 x 0.75 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Rendered model matches the reference silhouette, the 1.50 x 1.50 x 0.88 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=8 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 2 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 0,
       "microFeatureGroups": 3,
-      "materialLayers": 1,
+      "materialLayers": 2,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -263,14 +267,15 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 1.50 x 1.50 x 0.75 m",
-          "Cabinet, counter, handles, wheels at the proxy stations"
+          "Envelope 1.50 x 1.50 x 0.88 m",
+          "Cabinet, counter, handles, wheels and casters at the proxy stations"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "a cupboard",
+          "a squat long box",
+          "oversized wheel discs",
           "wheels across the push axis"
         ]
       },
@@ -280,14 +285,17 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Stainless top with a round well",
-          "Ladle rising from it"
+          "Stainless top nearly filled by an oval basin",
+          "The basin dished, not a lid",
+          "Ladle rising from the broth"
         ],
         "evidenceRefs": [
           "region-broth"
         ],
         "failureModes": [
-          "flat top"
+          "flat top",
+          "a small circular pot lid on a big table",
+          "a dark disc where the broth should be"
         ]
       },
       {
@@ -296,9 +304,9 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Silver frame proud of green panels",
-          "Door on the front",
-          "Bicycle wheels and casters"
+          "Broad frame with a real opening cut in each elevation",
+          "Two doors with hinges, pulls and a moulding",
+          "Open spoked wheels and swivel casters"
         ],
         "evidenceRefs": [
           "region-silver",
@@ -307,7 +315,9 @@
         ],
         "failureModes": [
           "no frame",
-          "no door"
+          "no door",
+          "wheels as solid discs",
+          "casters as bare prongs"
         ]
       }
     ],
@@ -333,7 +343,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -601,7 +611,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 3,
     "pivotInventory": [
       {
         "name": "root",
@@ -624,9 +634,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.42,
-          0.27,
-          0.36
+          -0.455,
+          0.175,
+          0.405
         ],
         "axis": [
           0,
@@ -640,9 +650,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.42,
-          0.27,
-          -0.36
+          -0.455,
+          0.175,
+          -0.405
         ],
         "axis": [
           0,
@@ -659,16 +669,19 @@
         "component": "cabinet",
         "shape": "box",
         "matchesAssetDeclaration": true,
-        "note": "Declared on the asset as box: the whole cart envelope."
+        "note": "Declared on the asset as box: the cabinet and counter, the part a player walks into."
       }
     ],
     "destructionGroups": [],
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The green panels are painted sheet, not glass: the plate shows opaque dark green; the description's glazed panel is not built.",
+    "The panels are painted sheet, not glass: the plate shows opaque dark slate; the description's glazed panel is not built.",
     "Both bicycle wheels are on the -X end with the axle along Z, so the cart is pushed along X by the handles.",
-    "The panel green is lifted from the measured #313433 (luma 50) to #4a504d (luma 79) for the silhouette gate."
+    "The panel is authored on CHROMA, not luma, and ships MORE saturated than the plate. The turntable gate calls a pixel background when it is within 24 of #3a3a3a AND at saturation <= 0.16; at a near-neutral #5b6260 the end elevations rendered #343a38 and #3b413f -- distance 5.7 and 9.1, saturation 0.10 -- and 38,612 px of solid panel was read as a hole punched through the cart at azimuth 90 and 270. Lifting to grey would need an authored luma of 134 (the render returns 0.58 of it), which is nothing like the plate. The plate's panel IS cool -- #2f3333 shaded and #737d7e lit, green and blue 4-11 levels over red in both -- so the same cast is pushed to #53686e at saturation 0.245 and luma 100. That drops the enclosed-background count at azimuth 90 from 38,612 px to 1,059 -- the handle loops alone. A near-neutral lift would have needed an authored luma of 143 to clear the distance test, which is the frame's own value and would erase the panel; a stronger #486661 passed too but rendered as a green teal nothing like the plate. Saturation 0.245 against the plate's measured 0.06-0.08 is the price of the pass, and it is what caps the material layer.",
+    "The basin is an OVAL, not a circle. Solving the rim ellipse's screen extents on the plate (283..670 px across, 215..340 px down) against the counter's projected plan vectors gives r/L 0.393 and r/D 0.456 -- 79% of the counter's length and 91% of its depth -- which a single revolution cannot be, so the lathe is revolved at the depth radius and stretched 1.35 along x.",
+    "The -Z long elevation and the +X end are NOT observed. Both are built as the mirror of what is: two openings on the long face, one on the end. Confidence 0.85.",
+    "The declared depth was corrected 0.75 -> 0.88 before building, on the proxy's 0.871."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -682,11 +695,11 @@
     "envelope": {
       "w": 1.5,
       "h": 1.5,
-      "d": 0.75
+      "d": 0.88
     },
-    "description": "A 1.10 x 0.68 x 0.66 m cabinet from 0.30 to 0.98 m under a 1.14 x 0.70 counter; a broth well r 0.22 sunk in the counter with a ladle rising to 1.40; U-handles reaching +-0.744; two r 0.27 wheels at x -0.42 outboard of the cabinet; two casters at x +0.48.",
-    "envelopeDerivation": "x +-0.744 at the push handles (declared 1.50); y 0 to 1.405 at the ladle handle (declared 1.50); z +-0.385 at the bicycle wheels (declared 0.75, the wheels 1 cm outboard each side). Proxy occupancy: wheels 0-0.14 H, cabinet 0.14-0.78 H at cols 10-66 of 80 with the handles beyond, ladle to 0.98 H; w:h:d 1:1.001:0.581 -- the ladle sets the height -- so the declared envelope governs and the proxy fixes the stations: cabinet 0.30-0.98, counter at 0.98, handles at 0.92.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:1.001:0.581, 1,957 triangles; stations as above; its wheel read (0-0.14 H) is the casters, the big wheel foreshortened out of the band."
+    "description": "A 1.06 x 0.945 x 0.76 m cabinet from 0.20 to 1.145 m under a 1.096 x 0.796 x 0.060 counter; an oval basin 0.864 x 0.640 at the rim sunk to 1.026 with broth at 1.116 and a ladle rising to 1.500; horizontal U handles at y 1.09 reaching +-0.745; two open r 0.175 wheels at x -0.455, z +-0.405; two r 0.052 casters at x +0.462, z +-0.26.",
+    "envelopeDerivation": "Built 1.520 x 1.508 x 0.884: x +-0.760 at the push handles (declared 1.50), y 0 to 1.508 at the ladle handle (declared 1.50), z +-0.442 at the bicycle wheels (declared 0.88, corrected from 0.75 on the proxy). The proxy, banded in metres at the declared 1.50 m height, is the whole station list: cabinet x -0.556..0.502 and z -0.393..0.370 over y 0.20..1.20, the dense 1.15-1.20 band its counter slab; the x +-0.745 lobes at y 1.05-1.15 its handles; r 0.175 wheels at x -0.455 and z +-0.405; casters at x +0.50; and above 1.20 the ladle alone. The FIRST build read those as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs -- and that single misreading is most of its 0.84.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:1.000:0.581, banded in metres at the declared height it gives every station above. Its ladle sits at x -0.22, z -0.40 above 1.20 -- a fused stick whose lean is noisy -- so the ladle angle is read off the plate and the rest off the proxy."
   },
   "viewEvidence": [
     {
@@ -730,19 +743,19 @@
   "componentTree": [
     {
       "id": "cabinet",
-      "name": "Cabinet, counter, well, handles, door and casters",
+      "name": "Cabinet, frame, doors, wear and casters",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Boxes, two lathes, two cylinders and three tubes merged on one material: one draw call.",
-      "materialId": "steel",
-      "material": "steel",
+      "topologyRationale": "Boxes, five extrusions and four cylinders merged on one material: one draw call.",
+      "materialId": "paint",
+      "material": "paint",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Cabinet 1.10 x 0.68 x 0.66 from 0.30 to 0.98; frame angles 6 mm proud; counter 1.14 x 0.70 x 0.024 at 0.98; well r 0.22 at 0.98 sunk 0.16; door 0.40 x 0.42 8 mm proud; handles r 0.014 at 0.92 to +-0.744; casters r 0.05 at x 0.48.",
+        "topologyIntent": "Cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145; each elevation an extrusion 15 mm proud of the body with its opening cut out, stiles 0.075; door leaf 0.435 x 0.825 standing 23 mm proud and overlapping its opening on all four sides; a pierced deck from 1.100 to 1.145; casters r 0.052 at x 0.462, z +-0.26.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -751,49 +764,39 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The frame angles stand 6 mm proud of the panel faces; the door 10 mm proud; the counter overhangs the cabinet top (opposed joint); the well lathe passes through the counter as an interpenetrating solid.",
-        "mergeNote": "One merged BufferGeometry with height UVs at 0.7 m."
+        "zFightingNote": "Every elevation stands 15 mm proud of the body it is laid on and each door leaf 23 mm proud of its frame, OVERLAPPING the opening on all four sides rather than meeting its reveal -- a leaf whose edge met the reveal would put four coincident faces in the model. check-coplanar is clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.7 m."
       },
       "localFeatures": [
         {
           "id": "d1-cabinet",
           "description": "cabinet",
-          "delivery": "boxes"
-        },
-        {
-          "id": "d2-well",
-          "description": "well",
-          "delivery": "lathes + tube ladle"
+          "delivery": "body box and four pierced elevations"
         },
         {
           "id": "d3-wheels",
           "description": "wheels",
-          "delivery": "InstancedMesh of two + caster cylinders"
-        },
-        {
-          "id": "d4-handles",
-          "description": "handles",
-          "delivery": "tubes"
+          "delivery": "InstancedMesh of two open wheels + caster cylinders"
         },
         {
           "id": "d5-rust",
           "description": "rust",
-          "delivery": "rust line + canvas"
+          "delivery": "hem line, reveal creep, corner blooms, hinge bleeds + canvas"
         },
         {
           "id": "d6-door",
           "description": "door",
-          "delivery": "proud boxes"
+          "delivery": "proud leaves, mouldings, pulls and strap hinges"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "steel",
-        "baseColor": "#a9a7a1",
+        "materialId": "paint",
+        "baseColor": "#9c948a",
         "recipe": "Every tone a vertex colour on white steel with a grime canvas.",
         "evidenceRef": "region-silver",
         "confidence": 0.88,
-        "dominantAlbedo": "rgba(169, 167, 161, 1.0)",
-        "secondaryAlbedo": "rgba(74, 80, 77, 1.0)",
+        "dominantAlbedo": "rgba(156, 148, 138, 1.0)",
+        "secondaryAlbedo": "rgba(83, 104, 110, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.88
       },
@@ -813,7 +816,7 @@
           ],
           "confidence": 0.95,
           "name": "root",
-          "notes": "base-center at the wheel contact, as the asset declares. The cabinet is the rigid root; the two bicycle wheels carry their own axle pivots."
+          "notes": "base-center at the wheel and caster contact, as the asset declares. The cabinet is the rigid root; the two bicycle wheels carry their own axle pivots."
         },
         "transformChannels": {
           "translate": true,
@@ -830,67 +833,182 @@
           "shape": "box",
           "localCenter": [
             0,
-            0.75,
+            0.6025,
             0
           ],
           "halfExtents": [
-            0.75,
-            0.75,
-            0.375
+            0.53,
+            0.6025,
+            0.38
           ],
-          "notes": "Declared on the asset as box: the whole cart envelope."
+          "notes": "Declared on the asset as box: the cabinet and counter, the part a player walks into."
         }
+      }
+    },
+    {
+      "id": "counter",
+      "name": "Counter, broth well, ladle and push handles",
+      "level": "macro",
+      "role": "identity",
+      "importance": 0.95,
+      "confidence": 0.84,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two pierced counter plates, one stretched lathe, a disc, an ellipsoid, four ferrules and three tubes merged on one material: one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Counter 1.096 x 0.796 as TWO stacked pierced plates, 1.145-1.192 at full plan and 1.192-1.205 inset 10 mm, for the bullnosed edge the plate shows; a pressed groove 30 mm in and three scoring lines; oval basin 0.864 x 0.640 at the rim with its floor at 1.026 and broth at 1.116; ladle bowl 0.180 x 0.072 with its handle to 1.500; U handles r 0.014 at y 1.090 reaching +-0.745 with ferrules at the end frames.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The basin passes through the counter as an interpenetrating solid and its rim rolls over and tucks back UNDER the counter top at 1.199, below the top face at 1.205, so no shell backside faces the camera and the opening cut wall stays buried in the basin collar all the way to the soffit. The counter overhangs the cabinet, an opposed joint. check-coplanar is clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.7 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d2-well",
+          "description": "oval basin, broth and ladle",
+          "delivery": "stretched lathe, broth disc, ellipsoid bowl and tube handle"
+        },
+        {
+          "id": "d4-handles",
+          "description": "push handles",
+          "delivery": "tubes with ferrule cylinders"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#a4a29b",
+        "recipe": "Every tone a vertex colour on white brushed stainless with a light grime canvas.",
+        "evidenceRef": "region-broth",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(164, 162, 155, 1.0)",
+        "secondaryAlbedo": "rgba(164, 131, 91, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
       }
     }
   ],
   "materials": [
     {
-      "id": "steel",
-      "name": "Painted and stainless steel",
+      "id": "paint",
+      "name": "Worn painted sheet steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#a9a7a1",
-      "color": "#a9a7a1",
+      "baseColor": "#9c948a",
+      "color": "#9c948a",
       "roughness": {
-        "base": 0.5,
+        "base": 0.8,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
-        "map": "material-evidence/steel_roughness.png"
+        "map": "material-evidence/paint_roughness.png"
       },
-      "metalness": 0.25,
+      "metalness": 0.03,
       "albedo": {
-        "dominant": "#a9a7a1",
+        "dominant": "#9c948a",
         "secondary": [
-          "#a9a7a1",
-          "#4a504d",
-          "#c4c2bc"
+          "#a2a096",
+          "#53686e",
+          "#7a6248"
         ],
         "samplingNotes": "Measured as the mean of crops/silver.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d5-rust",
-          "region": "frame edges and under the door",
+          "region": "bottom rails, panel reveals and the corner posts",
           "roughness": 0.7,
           "palette": [
-            "#8A5A30"
+            "#7A6248",
+            "#8F8371"
           ],
-          "evidence": "crops/silver.png -- rust along every angle edge; carried as a rust line box and the grime wash."
+          "evidence": "crops/silver.png -- rust along every rail and stile; carried as a hem line, a narrow creep at each panel reveal, blooms at the bottom corners, a bleed under each hinge knuckle, and the ochre grime wash. A BROAD patch across each stile was tried first and read as tan camouflage."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-silver (0.86) at #9c9a94 sd 11 and region-green (0.88) at #313433 sd 3; carried as vertex colours on a WHITE material: silver #a9a7a1, green LIFTED to #4a504d (luma 79 against the backdrop 58, a 21-level margin), stainless #c4c2bc, broth #a08a68 off region-broth #877762, tyre #2a2927, rust #8a5a30.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction. Double-sided so the broth well interior shades."
+          "Measured on the plate: clean door #9c9a94 sd 13 luma 155 and worn frame 134-218; panel lit #737d7e luma 123 against shaded #2f3333 luma 50; counter 139-184; well #9f998e / #a79986; broth #a4835b sat 0.45; caster #49443d. Carried as vertex colours on a WHITE material: frame #9c948a, door leaf #aaa79d, panel #5b6260, counter #a4a29b, well #a8a49a, broth #a4835b, rim #c6c6c1, hub #9a9a95, tyre #4a4a47 (luma 74), rust #7a6248, stain #8f8371.",
+          "Textureless as DECLARED: a 512 px grime canvas after construction, height-keyed at 1.7 m so a single pass covers the whole prop -- at 0.8 m its ground wash repeated at y 0.8 and drew a hard tide line across the door."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
       "materialEvidenceArchive": {
         "crop": "crops/silver.png",
-        "pbrReport": "material-evidence/steel.pbr.json",
+        "pbrReport": "material-evidence/paint.pbr.json",
         "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Brushed stainless steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a4a29b",
+      "color": "#a4a29b",
+      "roughness": {
+        "base": 0.34,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.55,
+      "albedo": {
+        "dominant": "#a4a29b",
+        "secondary": [
+          "#a8a49a",
+          "#a4835b",
+          "#c6c6c1"
+        ],
+        "samplingNotes": "Measured as the mean of crops/broth.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-rust",
+          "region": "body",
+          "roughness": 0.34,
+          "evidence": "crops/broth.png -- rust along the frame edges"
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on the plate: counter 139-184 with strong linear scoring; well wall #9f998e lit and #a79986 near; broth #a4835b sat 0.45. Carried as vertex colours on a WHITE material: counter #a4a29b, well #a8a49a, broth #a4835b, stain #8f8371 for the pressed groove and the scoring.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction at a light 0.30 wash -- a stainless top is scratched and dulled, not rusted.",
+          "Double-sided so the broth basin inner wall and the open wheels shade instead of culling to black. Metalness 0.55 is as high as the harness allows: it supplies no environment map, and a metal with nothing to reflect renders black."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/broth.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.84,
         "verdict": "pass"
       }
     }
@@ -903,10 +1021,10 @@
       "count": 2,
       "primitive": "cylinder",
       "materialId": "steel",
-      "placement": "two wheels at x -0.42, z +-0.36, r 0.27, axle along Z",
+      "placement": "two wheels at x -0.455, z +-0.405, r 0.175, axle along Z",
       "instanced": true,
       "pivotPerInstance": true,
-      "notes": "One InstancedMesh of tyre, rim and hub cylinders; each instance is a named pivot on its axle."
+      "notes": "One InstancedMesh of a tyre ring lathe, a rim ring lathe, twelve prism spokes, a hub and a dome cap -- open, with real air between rim and hub; each instance is a named pivot on its axle."
     }
   ],
   "buildPasses": [
@@ -1017,27 +1135,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T10:01:51.389760+00:00",
+      "timestamp": "2026-08-28T14:45:43.404260+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1048,9 +1166,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.472917+00:00",
+      "timestamp": "2026-08-28T14:45:43.485373+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1063,27 +1181,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.553552+00:00",
+      "timestamp": "2026-08-28T14:45:43.565026+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1094,27 +1212,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.632588+00:00",
+      "timestamp": "2026-08-28T14:45:43.648143+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T14:45:43.730129+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1125,27 +1258,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.715100+00:00",
+      "timestamp": "2026-08-28T14:45:43.812375+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T14:45:43.900995+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Silver angle frame 6 mm proud of lifted-green panels, door with handle and rust line, two instanced bicycle wheels with pivots, two casters.",
-          "notes": ""
+          "evidence": "Four elevations as extrusions with a real opening cut in each, 15 mm proud of the dark body on 0.075 stiles; two doors -- a light leaf on the +X half of the long face with a moulding, a pull and two strap hinges, and a dark one filling the -X end; two OPEN bicycle wheels of a tyre ring, a rim ring, twelve prism spokes, a hub and a chrome dome cap, instanced and each a named pivot; two swivel casters with a top plate, a fork and a rubber wheel; U handles with ferrules. Wear as a rust hem, a narrow creep at each panel reveal, blooms at the bottom corners and a bleed under each hinge.",
+          "notes": "A broad stain across each stile was tried first and read as tan camouflage."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1156,27 +1304,57 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.800053+00:00",
+      "timestamp": "2026-08-28T14:45:43.988410+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T14:45:44.074441+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T14:45:44.156010+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1187,17 +1365,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.884748+00:00",
+      "timestamp": "2026-08-28T14:45:44.237874+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1208,17 +1386,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:51.967506+00:00",
+      "timestamp": "2026-08-28T14:45:44.322011+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1229,45 +1407,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:01:52.049589+00:00",
+      "timestamp": "2026-08-28T14:45:44.406959+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         },
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Silver angle frame 6 mm proud of lifted-green panels, door with handle and rust line, two instanced bicycle wheels with pivots, two casters.",
-          "notes": ""
+          "evidence": "Four elevations as extrusions with a real opening cut in each, 15 mm proud of the dark body on 0.075 stiles; two doors -- a light leaf on the +X half of the long face with a moulding, a pull and two strap hinges, and a dark one filling the -X end; two OPEN bicycle wheels of a tyre ring, a rim ring, twelve prism spokes, a hub and a chrome dome cap, instanced and each a named pivot; two swivel casters with a top plate, a fork and a rubber wheel; U handles with ferrules. Wear as a rust hem, a narrow creep at each panel reveal, blooms at the bottom corners and a bleed under each hinge.",
+          "notes": "A broad stain across each stile was tried first and read as tan camouflage."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
@@ -1280,31 +1458,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T10:01:51.389760+00:00",
+      "timestamp": "2026-08-28T14:45:43.404260+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component and one InstancedMesh at 2 draw calls of 2.",
+      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4, every station off the proxy band table.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1321,15 +1499,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.472917+00:00",
+      "timestamp": "2026-08-28T14:45:43.485373+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Bicycle wheel discs were built across Z (rz) so the depth ran to 1.26 m; rotated onto a Z axle (rx), depth 0.77.",
+      "summary": "The cabinet was read from the proxy at 0.30-0.98 by 0.66 deep under r 0.27 wheels. Re-banded in metres: cabinet 0.20-1.145 by 0.76 deep, counter to 1.205, wheels r 0.175. Declared depth corrected 0.75 -> 0.88.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1345,31 +1523,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.553552+00:00",
+      "timestamp": "2026-08-28T14:45:43.565026+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: cabinet, counter, handles and wheels at the proxy stations; wheel discs turned onto the push axis after the first build ran the depth to 1.26 m.",
+      "summary": "Structural pass: near-cubic cabinet 0.20-1.145, counter to 1.205, handles at 1.090 to +-0.745, r 0.175 wheels at x -0.455 z +-0.405, casters at +0.462. The declared depth was corrected 0.75 -> 0.88 on the proxy before building.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1385,31 +1563,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.632588+00:00",
+      "timestamp": "2026-08-28T14:45:43.648143+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The basin was a circle at r 0.30 and read as a pot lid on a big table. Solved from the plate: an oval 79% of the counter length by 91% of its depth. Its own three follow-on defects -- the body box capping the bowl, a corner-split rim and a backfacing lip -- fixed with a pierced deck, sharp:false and a rim tucked under the counter.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T14:45:43.730129+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: well, ladle, door, handle, casters, divider bead.",
+      "summary": "Form refinement: deep 27 mm panel reveals, oval basin, rolled rim tucked under the counter, broth, ladle bowl and handle, pierced deck, bullnosed two-plate counter, doors with mouldings, pulls and strap hinges, open spoked wheels, swivel casters, handle ferrules, hinge pins and chipped-paint flakes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1425,31 +1627,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.715100+00:00",
+      "timestamp": "2026-08-28T14:45:43.812375+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "One material at 0.52/0.22 rendered the counter as another painted panel. Split into paint 0.80/0.03 and steel 0.34/0.55 at 3 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T14:45:43.900995+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Silver angle frame 6 mm proud of lifted-green panels, door with handle and rust line, two instanced bicycle wheels with pivots, two casters.",
-          "notes": ""
+          "evidence": "Four elevations as extrusions with a real opening cut in each, 15 mm proud of the dark body on 0.075 stiles; two doors -- a light leaf on the +X half of the long face with a moulding, a pull and two strap hinges, and a dark one filling the -X end; two OPEN bicycle wheels of a tyre ring, a rim ring, twelve prism spokes, a hub and a chrome dome cap, instanced and each a named pivot; two swivel casters with a top plate, a fork and a rubber wheel; U handles with ferrules. Wear as a rust hem, a narrow creep at each panel reveal, blooms at the bottom corners and a bleed under each hinge.",
+          "notes": "A broad stain across each stile was tried first and read as tan camouflage."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: one steel at 0.86, textureless; green lifted for the hole gate; double-sided for the well.",
+      "summary": "Material pass: TWO materials of three -- paint 0.80/0.03 and steel 0.34/0.55 -- because one roughness cannot be both chalky worn sheet and brushed stainless. Both textureless, all tones vertex colours off the plate; the door leaves read lighter than the frame.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1465,31 +1691,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.800053+00:00",
+      "timestamp": "2026-08-28T14:45:43.988410+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The grime tile at uvScale 0.8 repeated its ground wash at y 0.8 and drew a hard tide line across the door; re-keyed to 1.7 m so one pass covers the prop. A broad stain across each stile read as tan camouflage and was replaced with reveal-edge creep.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T14:45:44.074441+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "holeviz showed the whole end panel classified as background at azimuth 90 and 270 -- 38,612 px, distance 5.7 from the backdrop at saturation 0.10 -- so --allow-holes had been hiding a real failure. The panel was re-authored on chroma at #53686e rather than lifted to grey -- a neutral lift needs an authored luma of 143, the value of the frame itself -- and the flag now covers only the handle loops, the open wheels and a sliver of the basin wall.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/noodle-soup-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T14:45:44.156010+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: grime canvas; rust line under the door.",
+      "summary": "Surface pass: an ochre 512 px grime canvas on the paint height-keyed at 1.7 m, a light 256 px one on the steel; rust hem, reveal creep, corner blooms and hinge bleeds as geometry. The panel is authored on CHROMA at #53686e (saturation 0.245 against the 0.16 ceiling the gate applies): near-neutral at #5b6260, 38,612 px of it was read as a hole through the cart at azimuth 90 and 270, and holeviz now counts 1,059 there -- the handle loops alone.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1505,21 +1779,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.884748+00:00",
+      "timestamp": "2026-08-28T14:45:44.237874+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: white matte plate, soft light; no rim, no contact shadow recorded.",
+      "summary": "Lighting pass: white matte plate, soft light, no rim and no contact shadow recorded. The specular counter and chrome rims now catch light the way the plate does; metalness is capped at 0.55 because the harness supplies no environment map.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1535,17 +1809,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:51.967506+00:00",
+      "timestamp": "2026-08-28T14:45:44.322011+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
@@ -1565,49 +1839,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:01:52.049589+00:00",
+      "timestamp": "2026-08-28T14:45:44.406959+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.49 x 1.41 x 0.77 m; cabinet 0.30-0.98, counter, handles to +-0.744, r 0.27 wheels on the -X end -- the proxy stations; wheel plane corrected to the push axis.",
-          "notes": ""
+          "evidence": "Built 1.520 x 1.508 x 0.884 m against a declared 1.50 x 1.50 x 0.88 (depth corrected from 0.75 on the proxy's 0.871). Every station is the proxy band table's, read in metres at the declared height: near-cubic cabinet 1.06 x 0.945 x 0.76 from 0.20 to 1.145, counter 1.096 x 0.796 x 0.060 on top of it, horizontal U handles at y 1.090 out to +-0.745, r 0.175 open wheels at x -0.455 and z +-0.405, casters at x +0.462, the ladle alone above 1.205.",
+          "notes": "The previous build read the same proxy as a cabinet 0.30-0.98 by 0.66 deep on r 0.27 wheels -- a squat long box under two giant discs."
         },
         {
           "id": "counter",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Stainless counter with a r 0.22 well sunk 0.16 and a broth disc, ladle tube to 1.40; well interior shaded double-sided.",
-          "notes": ""
+          "evidence": "An OVAL basin 0.864 x 0.640 at the rim, 79% of the counter's length and 91% of its depth, solved from the rim ellipse's screen extents on the plate against the counter's projected plan vectors; a lathe revolved at the depth radius and stretched 1.35 in x. Floor at 1.026, broth at 1.116 (97 mm below the lip), a rolled rim that tucks back under the counter top, a ladle bowl half out of the broth with its handle to 1.500. The counter is two stacked pierced plates for its bullnose, with a pressed groove and three scoring lines.",
+          "notes": "Three defects fixed here in turn: the body box's own top face cut across the inside of the bowl and rendered as a flat dark disc; a rim that folded back under itself was corner-split into a gear; and a shell that stopped at its lip showed its own backside as a dark ring."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Silver angle frame 6 mm proud of lifted-green panels, door with handle and rust line, two instanced bicycle wheels with pivots, two casters.",
-          "notes": ""
+          "evidence": "Four elevations as extrusions with a real opening cut in each, 15 mm proud of the dark body on 0.075 stiles; two doors -- a light leaf on the +X half of the long face with a moulding, a pull and two strap hinges, and a dark one filling the -X end; two OPEN bicycle wheels of a tyre ring, a rim ring, twelve prism spokes, a hub and a chrome dome cap, instanced and each a named pivot; two swivel casters with a top plate, a fork and a rubber wheel; U handles with ferrules. Wear as a rust hem, a narrow creep at each panel reveal, blooms at the bottom corners and a bleed under each hinge.",
+          "notes": "A broad stain across each stile was tried first and read as tan camouflage."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 1,332/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 3,800/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/8 unique geometries, two grime canvases. Turntable with --allow-holes on the _holecc measurement, covering ONLY what is genuinely open -- the two handle loops, the wheels between rim and hub, and a thin arc of the basin inner wall -- painted with holeviz to confirm the panel is no longer classified at any azimuth.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1637,39 +1911,39 @@
   ],
   "performanceBudget": {
     "qualityPriority": "real-time",
-    "targetTriangles": 2000,
-    "maxDrawCalls": 2,
-    "maxMaterials": 2,
-    "maxUniqueGeometries": 4,
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 8,
     "textureSize": 1024,
     "fpsTarget": 60,
-    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 1,
+        "components": 2,
         "repetitionSystems": 1,
-        "projectedTotal": 2,
-        "budget": 2,
-        "headroom": 0,
-        "note": "One component and one repetition system: 2 of 2."
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Two components and one repetition system: 3 of 4."
       },
       "materials": {
-        "projectedTotal": 1,
-        "budget": 2,
+        "projectedTotal": 2,
+        "budget": 3,
         "headroom": 1,
-        "note": "steel only: 1 of 2; every tone a vertex colour."
+        "note": "paint and steel: 2 of 3; every tone within each is a vertex colour."
       },
       "uniqueGeometries": {
-        "projectedTotal": 2,
-        "budget": 4,
-        "headroom": 2,
+        "projectedTotal": 3,
+        "budget": 8,
+        "headroom": 5,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1332,
-        "budget": 2000,
-        "headroom": 668,
-        "note": "1,332 of 2,000: twenty-two boxes, two 20-segment lathes, two caster cylinders, three tubes, and a three-cylinder wheel instanced twice."
+        "measured": 3800,
+        "budget": 4000,
+        "headroom": 200,
+        "note": "3,800 of 4,000: seventy-odd boxes, seven extrusions (four pierced elevations, a pierced deck and two pierced counter plates), one 28-segment stretched lathe, an ellipsoid, thirteen cylinders, three tubes, and one open wheel instanced twice."
       }
     }
   },
@@ -1727,11 +2001,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes for the cabinet, frame, counter, door and casters; lathes for the well and broth; tubes for the handles and ladle; cylinders for the wheels."
+      "strategy": "Extrusions with holes for the framed elevations, the deck and the counter; boxes for the body, doors, hardware and wear; a stretched lathe for the basin; an ellipsoid for the ladle bowl; tubes for the handles and the ladle; ring lathes, prism spokes and cylinders for the wheels and casters."
     },
     {
       "id": "instancing",
-      "strategy": "One InstancedMesh: two bicycle wheels, each a named pivot with its instance index."
+      "strategy": "One InstancedMesh: two open bicycle wheels, each a named pivot with its instance index."
     },
     {
       "id": "determinism",
@@ -1739,7 +2013,7 @@
     },
     {
       "id": "textures",
-      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB."
+      "strategy": "Both materials are declared textureless. Two grime canvases after construction -- 512 px ochre on the paint, 256 px light on the steel -- 0.33 MB, the factory built in 136 ms."
     }
   ],
   "animationAnchors": [],
@@ -1747,15 +2021,27 @@
   "risks": [
     {
       "id": "dark-panels",
+      "severity": "medium",
+      "description": "The plate's panel is a near-neutral dark slate, and the turntable gate read 38,612 px of it as background at azimuth 90 and 270 -- a hole through the cart, not a dark surface.",
+      "mitigation": "Authored on chroma at #53686e, saturation 0.245, which clears the gate's 0.16 ceiling at every azimuth. --allow-holes then covers only what is genuinely open: the two handle loops, the wheels between rim and hub, and a thin arc of the basin's shaded inner wall, all confirmed on the _holecc measurement and painted with holeviz."
+    },
+    {
+      "id": "open-wheels",
       "severity": "low",
-      "description": "The measured panel green is luma 50, below the backdrop.",
-      "mitigation": "Lifted to luma 79; recorded on the material."
+      "description": "The wheels are genuinely open between rim and hub, so the turntable gate reads the gaps between the spokes as background punched through the model.",
+      "mitigation": "--allow-holes on the _holecc measurement, exactly as the som-tam cart's bicycle wheels. It was NOT used to get past the panel failure above: that was fixed in the albedo first, and holeviz confirms the panel is no longer classified at any azimuth."
+    },
+    {
+      "id": "well-through-body",
+      "severity": "low",
+      "description": "The basin reaches down to 1.026 and a body box carried to the counter put its own top face across the inside of the bowl, rendering as a flat dark disc where the broth should be.",
+      "mitigation": "The body stops at 1.100 and a pierced deck carries on to the counter soffit, its opening tighter than the counter's so the basin wall closes both."
     },
     {
       "id": "wheel-plane",
       "severity": "low",
-      "description": "The first build put the wheel discs across Z (rz) and the depth ran to 1.26 m.",
-      "mitigation": "Corrected to rx: discs in the XY plane on a Z axle, depth 0.77."
+      "description": "An earlier build put the wheel discs across Z (rz) and the depth ran to 1.26 m.",
+      "mitigation": "Corrected to rx: discs in the XY plane on a Z axle."
     }
   ],
   "localSpecSearch": {
@@ -1772,30 +2058,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.355,
-        "aspectRatioDelta": 0.1981,
-        "scaleDelta": 0.4258,
-        "bilateralSymmetryError": 0.2054,
+        "silhouetteIoU": 0.4859,
+        "aspectRatioDelta": 0.2488,
+        "scaleDelta": 0.4499,
+        "bilateralSymmetryError": 0.0715,
         "colorDelta": {
-          "checked": 1,
-          "maxDeltaE": 18.98,
+          "checked": 2,
+          "maxDeltaE": 11.24,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 18.98
+              "deltaE": 6.09
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.24
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.355 is below threshold 0.85",
-        "aspect-ratio delta 0.198 exceeds threshold 0.05",
-        "scale delta 0.426 exceeds threshold 0.08",
+        "silhouette IoU 0.486 is below threshold 0.85",
+        "aspect-ratio delta 0.249 exceeds threshold 0.05",
+        "scale delta 0.450 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "32073f0b34b7326a",
+      "renderHash": "d1cab8e3638ae275",
       "passId": "blockout"
     }
   ]

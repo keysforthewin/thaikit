@@ -71,9 +71,11 @@
       "primaryDomain": "object",
       "formLanguage": [
         "dished-round-seat",
-        "raised-rim",
-        "four-lugs",
-        "tapered-splayed-legs"
+        "rolled-rim",
+        "flared-apron",
+        "four-stacking-lugs",
+        "straight-tapered-legs",
+        "moulded-handholds"
       ],
       "structureKind": [
         "lathe",
@@ -107,10 +109,10 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE dished seat lathe with a raised rim (closed underneath), ONE worn-disc lathe 2 mm proud of the seat floor, four tapered wedge legs (trapezoids extruded 0.04 m and yawed to the diagonals) and four lugs at the rim: one merge on one material -- the ONE draw call the small class allows.",
-        "One material: red plastic as a vertex colour on white, the worn seat top a paler vertex colour, scratches as a light streak canvas.",
-        "No repetition system at one draw call: four legs are four extrusions in the merge.",
-        "Action readiness: one root pivot, zero sockets, one box collider, not breakable."
+        "ONE closed shell lathe -- underside pan, flared apron, rolled rim and dished seat in a single profile -- plus ONE thin worn-seat pan, four straight tapered leg cylinders, four lug pads and four handhold patches: one merge on one material, the ONE draw call the small class allows.",
+        "One material: red polypropylene as a vertex colour on a WHITE material, the worn seat a second vertex colour, the handholds a third, scuffing as one 256 px canvas bound after construction.",
+        "No repetition system at one draw call: four legs, four lugs and four handholds are twelve primitives inside the single merge.",
+        "Action readiness: one root pivot, zero sockets, one declared box collider, not breakable."
       ]
     },
     "specDepthDecision": {
@@ -124,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the round dished seat with its four lugs and legs that taper and splay; straight posts read as a bar stool, so the legs are wedges leaning outward."
+      "rationale": "The identity is a LOW stool: a deeply recessed dished seat inside a fat rolled rim, a flared apron, and short straight legs. The plate centre column puts the recessed disc minor axis at 430 px against the outer rim 536, so the seat floor is 0.80 of the rim radius and the rim ring is 29 mm wide in plan -- a thinner ring is what stopped two earlier builds from reading as recessed at all."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -137,7 +139,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "round dished seat with a raised rim",
+          "description": "dished seat recessed 25 mm inside a rolled rim",
           "mapsTo": {
             "ref": "stool"
           },
@@ -148,7 +150,7 @@
           "zone": "legs",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four tapered legs splayed from the lugs",
+          "description": "four straight tapered legs, plumb",
           "mapsTo": {
             "ref": "stool"
           },
@@ -159,18 +161,18 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four lugs at the rim",
+          "description": "four stacking lugs 8 mm proud of the rim",
           "mapsTo": {
             "ref": "stool"
           },
           "realization": "unreported"
         },
         {
-          "id": "d4-dish",
-          "zone": "top",
+          "id": "d4-apron",
+          "zone": "body",
           "kind": "contour",
-          "identityDefining": false,
-          "description": "dished seat floor",
+          "identityDefining": true,
+          "description": "flared apron, widest at 0.166",
           "mapsTo": {
             "ref": "stool"
           },
@@ -181,7 +183,7 @@
           "zone": "top",
           "kind": "stain",
           "identityDefining": true,
-          "description": "seat worn pale",
+          "description": "seat worn pale and scratched",
           "mapsTo": {
             "ref": "d5-wear"
           },
@@ -189,11 +191,11 @@
           "realization": "unreported"
         },
         {
-          "id": "d6-feet",
-          "zone": "legs",
+          "id": "d6-handhold",
+          "zone": "body",
           "kind": "contour",
           "identityDefining": false,
-          "description": "splayed feet",
+          "description": "four moulded handholds in the apron",
           "mapsTo": {
             "ref": "stool"
           },
@@ -228,16 +230,16 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
     "resolvedUnknowns": [
-      "Height is the declared 0.43 m; the plate cannot show it.",
-      "The seat underside is closed (the lathe profile returns to the axis); the plate does not show it.",
-      "Scratches are a seeded streak canvas, not the plate's pattern."
+      "The seat underside is closed (the shell profile returns to the axis); neither the plate nor the proxy shows it.",
+      "Scuffing is a seeded streak canvas, not the plate pattern traced.",
+      "The handholds are moulded as raised dark patches following the apron curve rather than as openings: a real slot cannot be cut through a lathe inside 800 triangles, and at prop distance the shadowed patch carries the read."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.32 x 0.43 x 0.32 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "Rendered model matches the reference silhouette, the 0.34 x 0.20 x 0.34 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
       "All four scene-budget ceilings hold: <=800 triangles, <=1 draw calls, <=1 materials, <=2 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
@@ -258,26 +260,29 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.32 x 0.43 m",
-          "Round seat on four splayed legs"
+          "Envelope 0.335 x 0.200 m, w/h 1.675",
+          "Squat: seat+apron the top 30 percent",
+          "Round seat on four straight legs"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "square seat",
-          "straight posts"
+          "bar-stool proportions",
+          "splayed legs",
+          "square seat"
         ]
       },
       {
         "id": "seat",
-        "name": "Dished seat and lugs",
+        "name": "Dished seat, rim and lugs",
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Raised rim",
+          "Seat floor 0.80 of the rim radius",
+          "25 mm recess",
           "Four lugs",
-          "Worn pale top"
+          "Worn pale scratched top"
         ],
         "evidenceRefs": [
           "region-seat",
@@ -285,22 +290,26 @@
         ],
         "failureModes": [
           "flat disc",
+          "thin rim ring",
           "no lugs"
         ]
       },
       {
         "id": "legs",
-        "name": "Tapered legs",
+        "name": "Straight tapered legs",
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Taper from lug to foot",
-          "Outward splay"
+          "Plumb, not splayed",
+          "Draft taper 0.035 to 0.032",
+          "Feet at 0.812 of height"
         ],
         "evidenceRefs": [
           "region-red"
         ],
         "failureModes": [
+          "splay",
+          "dowel section",
           "bar-stool posts"
         ]
       }
@@ -465,7 +474,7 @@
     },
     {
       "id": "seat",
-      "name": "Dished seat and lugs",
+      "name": "Dished seat, rim and lugs",
       "tier": "critical",
       "passIds": [
         "form-refinement",
@@ -483,7 +492,7 @@
     },
     {
       "id": "legs",
-      "name": "Tapered legs",
+      "name": "Straight tapered legs",
       "tier": "critical",
       "passIds": [
         "material-pass"
@@ -620,16 +629,16 @@
         "component": "stool",
         "shape": "box",
         "matchesAssetDeclaration": true,
-        "note": "Declared on the asset as box: the stool envelope."
+        "note": "Declared on the asset as box: the stool envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
       }
     ],
     "destructionGroups": [],
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "Height is the declared 0.43 m; the plate cannot show it.",
-    "The seat underside is closed (the lathe profile returns to the axis); the plate does not show it.",
-    "Scratches are a seeded streak canvas, not the plate's pattern."
+    "The seat underside is closed (the shell profile returns to the axis); neither the plate nor the proxy shows it.",
+    "Scuffing is a seeded streak canvas, not the plate pattern traced.",
+    "The handholds are moulded as raised dark patches following the apron curve rather than as openings: a real slot cannot be cut through a lathe inside 800 triangles, and at prop distance the shadowed patch carries the read."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -641,13 +650,13 @@
   },
   "silhouette": {
     "envelope": {
-      "w": 0.32,
-      "h": 0.43,
-      "d": 0.32
+      "w": 0.335,
+      "h": 0.2,
+      "d": 0.335
     },
-    "description": "A 0.28 m dished disc 0.035 m thick at 0.43 m with a 12 mm rim and four lugs, on four wedge legs 0.07 m wide at the top tapering to 0.04 m at splayed feet.",
-    "envelopeDerivation": "x and z +-0.14 at the seat rim and lugs, +-0.152 at the splayed feet (declared 0.32); y 0 to 0.43 (declared). The plate is a from-above view on a white matte and the proxy normalises to w:h:d 1:0.598:1.001 -- its height is foreshortened -- so only its plan is used: seat disc 0.94 W, legs at the four lugs between the axes, 0.03-0.10 W wide from rim to foot. Height is the declared 0.43.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:0.598:1.001, 816 triangles -- a from-above plate, so its height is not evidence; its plan places the legs on the diagonals at the rim, as built. No band table for the same reason."
+    "description": "A 0.335 m disc 0.06 m thick at 0.200 m -- a flared apron under a rolled rim around a 0.234 m dished seat recessed 25 mm -- carrying four stacking lugs 8 mm proud and standing on four straight tapered legs 0.164 m long whose feet reach 0.1624 from the axis.",
+    "envelopeDerivation": "x and z +-0.1675 at the apron and its handhold patches, +-0.1624 at the feet, +-0.146 at the rim; y 0 to 0.200 at the lug crowns. The LIST-TIME declaration of 0.32 x 0.43 x 0.32 was wrong and the previous build inherited it: w/h 0.74 is a BAR stool, and it shipped a thin flat seat on four long posts. Two independent measurements say the prop is squat. The Meshy proxy bbox is 1.899 x 1.135 x 1.900, w/h 1.674. The plate solves to the same family: the seat-top ellipse minor/major gives a camera elevation of 43.4 deg, and the 843 x 881 px silhouette with the near-foot / far-lug depth term (2r sin th = 550 px) removed leaves h 456 px against w 843, w/h 1.85. The declaration is now 0.335 / 0.200 = 1.675, the proxy figure. The vertical split is measured as well: proxy voxel occupancy over a 64 x 48 x 64 grid collapses from 1955 to 310 shell cells at y/H 0.94 (the seat lid ends and the apron ring begins) and from 256 to 121 at y/H 0.76 (the apron ends and four legs remain), so seat+apron is the top 24.5 percent and the legs the bottom 75.5. The plate agrees at 28 percent, its apron front wall measuring 94 px of the solved 456. Built at 30 percent -- apron bottom 0.140 of 0.200 -- the fuller of the two, because the plate shows a rolled band whose bottom curve the proxy 20 mm voxel cannot resolve. Radii follow the proxy rmax/H: rim 0.749 -> 0.150 built 0.146, apron 0.775 -> 0.155 built 0.166, feet 0.829 -> 0.166 built 0.162.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.899 x 1.135 x 1.900, w/h 1.674, which is what condemned the previous build. Band table after the rebuild: mean |delta width| 0.0712 and |delta depth| 0.0729 of height, down from 1.018 / 1.017 against the old envelope. Eight of ten bands are inside 0.10. Band 9 remains +0.31 because the proxy fills the seat concavity -- it carries a solid lid where the plate measures a 25 mm recess -- and band 0 is -0.10, the proxy standing its feet 2 percent of height further out than the apron will let a straight leg reach."
   },
   "viewEvidence": [
     {
@@ -678,8 +687,8 @@
       "id": "region-side",
       "viewpoint": "front",
       "path": null,
-      "confidence": 0.75,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the plate looks down on the seat; leg taper and splay are read from the leg fragments visible at the rim and from the class."
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED as an elevation. Confidence 0.80: the plate looks down at 43.4 deg, so the apron height and leg length are solved from the centre-column scan (apron front wall 94 px, silhouette 881 px) rather than read off, and cross-checked against the proxy voxel split."
     }
   ],
   "componentTree": [
@@ -692,12 +701,12 @@
       "confidence": 0.86,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Two lathes, four extruded wedges and four lug boxes merged into one geometry on one material: one draw call.",
+      "topologyRationale": "One closed shell lathe, one worn-seat pan, four leg cylinders, four lug pads and four handhold patches merged into one geometry on one material: one draw call.",
       "materialId": "plastic",
       "material": "plastic",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Seat lathe r 0.14 from 0.395 to 0.43 with a 12 mm rim; worn disc r 0.116 at 0.4175-0.4195; legs 0.07 to 0.04 wide from the rim to feet at r 0.152; lugs 0.045 x 0.026 x 0.036 at the rim.",
+        "topologyIntent": "Shell profile 0.000/0.142 -> 0.150/0.140 -> 0.166/0.168 (apron widest) -> 0.146/0.192 (rim outer top) -> 0.117/0.170 (dish floor edge) -> 0.000/0.164, at 18 segments. Worn pan 0.114 radius at 0.1716 falling to 0.1655 at the axis, 1.5 mm proud of the dish. Legs 0.164 tall at radius 0.140, radii 0.035 to 0.032 flattened 0.70 radially. Lugs 0.024 tall at radius 0.141, crowning at 0.200. Handholds 45 mm of arc at radius 0.1675.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -706,49 +715,49 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The worn disc stands 2 mm proud of the seat floor; legs enter the seat underside as interpenetrating solids; lugs stand 4 mm proud of the rim.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.3 m."
+        "zFightingNote": "The worn pan is 1.5 mm PROUD of the dish and parallel to it, never flush. The handhold patches are partial cylinders on the apron own radius plus 1.5 mm, so a flat patch cannot sink into the barrel at its edges. Legs and lugs enter the apron and rim as interpenetrating solids. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.30 m and a world-space y tint for the dust at the feet."
       },
       "localFeatures": [
         {
           "id": "d1-seat",
-          "description": "seat",
-          "delivery": "lathe"
+          "description": "dished seat",
+          "delivery": "shell lathe profile"
         },
         {
           "id": "d2-legs",
           "description": "legs",
-          "delivery": "extruded wedges"
+          "delivery": "flattened tapered cylinders"
         },
         {
           "id": "d3-lugs",
           "description": "lugs",
-          "delivery": "boxes"
+          "delivery": "tapered pads"
         },
         {
-          "id": "d4-dish",
-          "description": "dish",
-          "delivery": "lathe profile"
+          "id": "d4-apron",
+          "description": "apron",
+          "delivery": "shell lathe profile"
         },
         {
           "id": "d5-wear",
           "description": "wear",
-          "delivery": "worn disc + canvas"
+          "delivery": "worn pan + streak canvas"
         },
         {
-          "id": "d6-feet",
-          "description": "feet",
-          "delivery": "wedge taper"
+          "id": "d6-handhold",
+          "description": "handholds",
+          "delivery": "partial open cylinders"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "plastic",
-        "baseColor": "#b03a2e",
-        "recipe": "Red as vertex colour on white with a light streak canvas; worn disc #c8837a.",
+        "baseColor": "#dc4e3e",
+        "recipe": "Red as a vertex colour on a white material with a light streak canvas; worn seat #8f4b3d, handholds #a8382a.",
         "evidenceRef": "region-red",
         "confidence": 0.86,
-        "dominantAlbedo": "rgba(176, 58, 46, 1.0)",
-        "secondaryAlbedo": "rgba(200, 131, 122, 1.0)",
+        "dominantAlbedo": "rgba(220, 78, 62, 1.0)",
+        "secondaryAlbedo": "rgba(143, 75, 61, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.86
       },
@@ -785,15 +794,15 @@
           "shape": "box",
           "localCenter": [
             0,
-            0.215,
+            0.1,
             0
           ],
           "halfExtents": [
-            0.16,
-            0.215,
-            0.16
+            0.1675,
+            0.1,
+            0.1675
           ],
-          "notes": "Declared on the asset as box: the stool envelope."
+          "notes": "Declared on the asset as box: the stool envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
         }
       }
     }
@@ -804,40 +813,42 @@
       "name": "Red polypropylene",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#b03a2e",
-      "color": "#b03a2e",
+      "baseColor": "#dc4e3e",
+      "color": "#dc4e3e",
       "roughness": {
-        "base": 0.55,
+        "base": 0.58,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/plastic_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#b03a2e",
+        "dominant": "#dc4e3e",
         "secondary": [
-          "#b03a2e",
-          "#c8837a"
+          "#dc4e3e",
+          "#8f4b3d",
+          "#a8382a"
         ],
         "samplingNotes": "Measured as the mean of crops/red.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d5-wear",
-          "region": "seat top",
-          "roughness": 0.65,
+          "region": "seat floor",
+          "roughness": 0.62,
           "palette": [
-            "#C8837A"
+            "#8F4B3D"
           ],
-          "evidence": "crops/seat.png -- #c4776d sd 20, pale scratches over red; a worn disc 2 mm proud plus a streak canvas."
+          "evidence": "crops/seat.png -- #c4776d sd 20, pale scratches over red. An up-facing face renders at ~1.05a + 60, so #8f4b3d lands at (210, 139, 124) against the plate (200, 130, 118); a colour probe of the render reads (211, 154, 135)."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-red (0.84) at #964f4e (a leg in shade on a WHITE matte) and region-rim at #bf5149; carried at #b03a2e as a vertex colour on a WHITE material, the worn seat disc at #c8837a off region-seat #c4776d.",
-          "Textureless as DECLARED: a 256 px light streak canvas after construction."
+          "Measured on viewEvidence region-red (0.84) at #964f4e (a leg in shade on a WHITE matte) and region-rim at #bf5149. Authored for the harness key light rather than for the eye: a vertical face renders at ~0.8a + 22, so #dc4e3e lands at (198, 84, 72) against the plate lit apron (200, 80, 70).",
+          "Lifted from #b03a2e/#d04436 after a per-azimuth hole probe: a BACK-LIT face at azimuth 180 renders at ~0.55 of the painted luma, which put the rear legs at 60 -- on the silhouette gate backdrop luma of 58. At luma 120 authored they land at 66 and the flagged fraction of the 180 frame falls from 27 percent to 8.5, the remainder being genuine occlusion under the apron.",
+          "Textureless as DECLARED: one 256 px streak canvas bound after construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -958,27 +969,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:58:14.960591+00:00",
+      "timestamp": "2026-08-28T18:47:10.830534+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -989,9 +1000,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.043847+00:00",
+      "timestamp": "2026-08-28T18:47:10.912307+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1004,27 +1015,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.125570+00:00",
+      "timestamp": "2026-08-28T18:47:10.993535+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.076870+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1035,26 +1061,56 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.206103+00:00",
+      "timestamp": "2026-08-28T18:47:11.164003+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.246471+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.330501+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         }
       ],
@@ -1066,27 +1122,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.286595+00:00",
+      "timestamp": "2026-08-28T18:47:11.412881+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.495622+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wedges 0.07 to 0.04 m leaning outward; the first build's straight posts corrected.",
-          "notes": ""
+          "evidence": "Four STRAIGHT plumb legs, 0.164 m, flattened 0.70 radially to a D section, draft taper 0.035 to 0.032. Feet reach 0.812 of height against the proxy 0.829; band 0 delta -0.100.",
+          "notes": "The previous build's long splayed posts are gone."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1097,26 +1168,41 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.365880+00:00",
+      "timestamp": "2026-08-28T18:47:11.576176+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.665293+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         }
       ],
@@ -1128,17 +1214,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.443477+00:00",
+      "timestamp": "2026-08-28T18:47:11.748977+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1149,17 +1235,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.521932+00:00",
+      "timestamp": "2026-08-28T18:47:11.831565+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1170,45 +1256,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:58:15.598872+00:00",
+      "timestamp": "2026-08-28T18:47:11.914353+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         },
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         },
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wedges 0.07 to 0.04 m leaning outward; the first build's straight posts corrected.",
-          "notes": ""
+          "evidence": "Four STRAIGHT plumb legs, 0.164 m, flattened 0.70 radially to a D section, draft taper 0.035 to 0.032. Feet reach 0.812 of height against the proxy 0.829; band 0 delta -0.100.",
+          "notes": "The previous build's long splayed posts are gone."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1221,31 +1307,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:58:14.960591+00:00",
+      "timestamp": "2026-08-28T18:47:10.830534+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component at 1 draw call of 1; seat lathe and four legs.",
+      "summary": "Blockout: one component at 1 draw call of 1; a closed shell lathe, a worn-seat pan, four legs, four lugs and four handholds.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1262,15 +1348,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.043847+00:00",
+      "timestamp": "2026-08-28T18:47:10.912307+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Legs built as straight posts read as a bar stool; replaced by tapered wedges leaning outward from the lugs.",
+      "summary": "The list-time envelope 0.32 x 0.43 x 0.32 is w/h 0.74, a bar stool, and the build honoured it: a thin flat seat on four long posts. Proxy bbox w/h 1.674 and the plate solve 1.85 both say LOW; rebuilt at 0.335 x 0.200.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1286,31 +1372,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.125570+00:00",
+      "timestamp": "2026-08-28T18:47:10.993535+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Legs were splayed 12.7 degrees; rebuilt plumb, and the whole frame turned 45 degrees so legs and lugs sit on the proxy axes -- the leg bands read 1.22 against the reference 1.60, which was cos 45 of a frame offset and not a proportion error.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.076870+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: seat r 0.14 at 0.43, legs to feet at r 0.152; straight posts replaced by tapered splayed wedges.",
+      "summary": "Structural pass: envelope corrected from the list-time 0.32 x 0.43 x 0.32 (w/h 0.74, a BAR stool) to 0.335 x 0.200, the proxy w/h of 1.674; legs straightened and the frame turned 45 degrees onto the proxy axes. Band table mean |delta width| 1.018 -> 0.0712.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1326,31 +1436,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.206103+00:00",
+      "timestamp": "2026-08-28T18:47:11.164003+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The seat did not read as recessed: the rim ring was 14 mm wide in plan and the dish 18 mm deep. The plate centre column puts the recessed disc minor axis at 430 px against the outer rim 536, so the floor is 0.80 of the rim radius -- ring widened to 29 mm, dish deepened to 25 mm.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.246471+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The stacking lug failed twice: as each leg own top cap it was a TILTED cap and read as a slanted flange, and as an ellipsoid centred on the rim it hung its lower half over the dish roll and read as a broken tab. Rebuilt as a short tapered pad whose base is sunk inside the rim.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.330501+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: rim, lugs, worn disc.",
+      "summary": "Form refinement: rim ring widened to the plate 0.80 seat-floor ratio and the dish deepened to 25 mm, which is what made the seat read as recessed; lug reshaped to a tapered pad standing on the rim.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1366,31 +1524,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.286595+00:00",
+      "timestamp": "2026-08-28T18:47:11.412881+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "A back-lit face at azimuth 180 renders at ~0.55 of the painted luma, which put the rear legs at 60 -- on the silhouette gate backdrop luma of 58. Albedo lifted #d04436 -> #dc4e3e (luma 110 -> 120) and the foot dust tint softened; the flagged fraction of the 180 frame fell 27 percent -> 8.5.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.495622+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wedges 0.07 to 0.04 m leaning outward; the first build's straight posts corrected.",
-          "notes": ""
+          "evidence": "Four STRAIGHT plumb legs, 0.164 m, flattened 0.70 radially to a D section, draft taper 0.035 to 0.032. Feet reach 0.812 of height against the proxy 0.829; band 0 delta -0.100.",
+          "notes": "The previous build's long splayed posts are gone."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: one plastic at PBR confidence 0.84, textureless; worn top as a vertex colour.",
+      "summary": "Material pass: one plastic at PBR confidence 0.84, textureless; albedo lifted to #dc4e3e after a per-azimuth hole probe put the back-lit legs at luma 60 on the gate backdrop of 58.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1406,31 +1588,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.365880+00:00",
+      "timestamp": "2026-08-28T18:47:11.576176+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The worn seat pan rendered as plain red: its lathe profile ran the top face OUTWARD, the opposite of the shell own seat floor, so the normals pointed DOWN and it was backface culled. A colour probe read (236, 96, 73) where the pale pan should have put (211, 154, 135). Re-wound.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:47:11.665293+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: light streak canvas for the scratches.",
+      "summary": "Surface pass: streak canvas at 130 streaks and bump 0.35 for the scuffing; the worn seat pan re-wound so its top face points UP.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1446,21 +1652,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.443477+00:00",
+      "timestamp": "2026-08-28T18:47:11.748977+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: white matte plate, soft light; no rim, no contact shadow recorded.",
+      "summary": "Lighting pass: white matte plate, soft light; no rim, no contact shadow recorded. Albedo solved through the harness response (up-facing 1.05a + 60, vertical 0.8a + 22).",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1476,21 +1682,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.521932+00:00",
+      "timestamp": "2026-08-28T18:47:11.831565+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider, no destruction groups.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one declared BOX collider, no destruction groups.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1506,49 +1712,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:58:15.598872+00:00",
+      "timestamp": "2026-08-28T18:47:11.914353+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.86,
-        "formDetail": 0.82,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.30 m; round seat on four splayed wedge legs at the diagonals as the proxy plan reads.",
-          "notes": "Height is declared, not observed."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674 and the plate solve 1.85. Band table mean |delta width| 0.0712 of height (was 1.018 against the old 0.32 x 0.43 declaration), eight of ten bands inside 0.10. Seat+apron the top 30 percent against the proxy voxel split 24.5 and the plate 28.",
+          "notes": "Band 9 is +0.31: the proxy carries a solid seat lid where the plate measures a 25 mm recess."
         },
         {
           "id": "seat",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished lathe with a 12 mm rim, four lugs, worn disc #c8837a 2 mm proud.",
+          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius from the plate centre-column scan (recessed disc minor 430 px against the outer rim 536), so the rim ring is 29 mm wide in plan. Four stacking lugs 8 mm proud. Worn pan probed in the render at (211, 154, 135) against the plate seat (200, 130, 118).",
           "notes": ""
         },
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wedges 0.07 to 0.04 m leaning outward; the first build's straight posts corrected.",
-          "notes": ""
+          "evidence": "Four STRAIGHT plumb legs, 0.164 m, flattened 0.70 radially to a D section, draft taper 0.035 to 0.032. Feet reach 0.812 of height against the proxy 0.829; band 0 delta -0.100.",
+          "notes": "The previous build's long splayed posts are gone."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.83. 576/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 756/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1598,7 +1804,7 @@
         "projectedTotal": 1,
         "budget": 1,
         "headroom": 0,
-        "note": "plastic only: 1 of 1; the worn top is a vertex colour."
+        "note": "plastic only: 1 of 1; the worn seat and the handholds are vertex colours on it."
       },
       "uniqueGeometries": {
         "projectedTotal": 1,
@@ -1607,10 +1813,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 576,
+        "measured": 756,
         "budget": 800,
-        "headroom": 224,
-        "note": "576 of 800: two 24-segment lathes, four wedge extrusions, four boxes."
+        "headroom": 44,
+        "note": "756 of 800: an 18-segment shell lathe of 10 profile points, an 18-segment worn pan, four 8-segment leg cylinders, four 8-segment lug pads and four 4-segment handhold arcs."
       }
     }
   },
@@ -1668,7 +1874,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "A lathe for the dished seat, a thin lathe for the worn disc, extruded trapezoids for the legs, boxes for the lugs."
+      "strategy": "One closed lathe for the whole shell, a thin lathe for the worn seat, flattened tapered cylinders for the legs and lugs, partial open cylinders for the handholds."
     },
     {
       "id": "instancing",
@@ -1687,16 +1893,22 @@
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "height-unobserved",
+      "id": "seat-concavity-vs-proxy",
       "severity": "low",
-      "description": "The plate cannot show the height; 0.43 m is the declaration.",
-      "mitigation": "Built to the declaration and recorded."
+      "description": "Band 9 sits +0.31 against the proxy because the proxy carries a solid seat lid where the plate measures a 25 mm recess.",
+      "mitigation": "The plate centre-column scan is the stronger evidence for a concavity a generative reconstruction routinely fills; recorded rather than chased."
+    },
+    {
+      "id": "handhold-not-an-opening",
+      "severity": "low",
+      "description": "The apron handholds are raised dark patches, not holes through the moulding.",
+      "mitigation": "A real slot cannot be cut through a lathe inside 800 triangles; the patch carries the read at prop distance and the substitution is declared."
     },
     {
       "id": "white-plate",
       "severity": "low",
       "description": "White product matte: crop means run bright and shadowed at once.",
-      "mitigation": "Albedo taken from the rim crop and the leg crop together."
+      "mitigation": "Albedo taken from the rim crop and the leg crop together, then solved through the harness light response."
     }
   ],
   "localSpecSearch": {
@@ -1738,30 +1950,30 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.4294,
-        "aspectRatioDelta": 0.2445,
-        "scaleDelta": 0.1642,
-        "bilateralSymmetryError": 0.0195,
+        "silhouetteIoU": 0.4673,
+        "aspectRatioDelta": 0.3165,
+        "scaleDelta": 0.4389,
+        "bilateralSymmetryError": 0.0072,
         "colorDelta": {
           "checked": 1,
-          "maxDeltaE": 7.7,
+          "maxDeltaE": 11.5,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 7.7
+              "deltaE": 11.5
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.429 is below threshold 0.85",
-        "aspect-ratio delta 0.244 exceeds threshold 0.05",
-        "scale delta 0.164 exceeds threshold 0.08",
+        "silhouette IoU 0.467 is below threshold 0.85",
+        "aspect-ratio delta 0.317 exceeds threshold 0.05",
+        "scale delta 0.439 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "71b3b4b360abb5a3",
+      "renderHash": "f9a11456ad181849",
       "passId": "blockout"
     }
   ]

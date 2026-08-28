@@ -72,10 +72,11 @@
       "formLanguage": [
         "angle-steel-frame",
         "glazed-case",
+        "stainless-tray",
         "banked-ice-bed",
         "cut-fruit-rows",
         "folded-cover",
-        "four-wheels"
+        "four-castors"
       ],
       "structureKind": [
         "post-and-rail",
@@ -88,7 +89,7 @@
       ],
       "materialFamilies": [
         "stainless-angle-steel",
-        "window-glass",
+        "streaked-window-glass",
         "wet-fruit-and-ice"
       ],
       "notes": "A glazed display cart on four wheels. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches -- the cover, jar and bag roll are dressing -- so there are no sockets. Sidewalk fruit vendors, temple fairs, office soi corners. A dented stainless frame, glass running with condensation, pineapple, mango and watermelon banked on shaved ice, a jar of bamboo skewers, a folded canvas cover on the rail, a roll of bags."
@@ -113,10 +114,10 @@
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE angle-steel frame merge -- four posts, twelve rails, the chassis deck, axles, the folded cover, the skewer jar, the bag roll and its bracket; ONE glazing component of four panes; ONE bed component of ice mass, banked ice and eighteen fruit blocks; ONE InstancedMesh of four wheels: FOUR draw calls of 4 (proxy occupancy above).",
-        "Three materials: steel (vertex colours: stainless, black axles, canvas, glass jar), real TRANSPARENT glass at opacity 0.30 both-sided, and a wet material for ice and fruit -- the registry notes say the glazing is a separate render state that cannot share with the opaque parts.",
-        "One repetition system: four wheels off one two-cylinder geometry, each a named pivot.",
-        "Action readiness: four hinge pivots on the wheels, one box collider on the root, zero sockets, not breakable."
+        "ONE angle-steel frame merge -- four posts, sixteen rails, two back mullions, the ice tray, the chassis deck, the axle spine, four castor forks, the push handle, the bag-roll hangers, five folds of canvas with their rounded fold edges and seventeen bamboo skewers; ONE glazing component of four transparent panes; ONE bed component of the ice bank, its chips and crest, sixteen pineapple slices, eight mango slices, seven watermelon wedges with rind and pith, the skewer jar and the bag roll; ONE InstancedMesh of four castors: FOUR draw calls of 4.",
+        "Three materials of the four allowed: steel (vertex colours carry stainless, the dark axles and castor forks, and the canvas), real TRANSPARENT glass at opacity 0.26 both-sided, and a wet material for ice, fruit, jar and bag roll -- the glazing is a separate render state that cannot share with the opaque parts.",
+        "One repetition system: four castors off one two-cylinder geometry, each a named pivot.",
+        "Action readiness: four hinge pivots on the castors, one box collider on the root, zero sockets, not breakable."
       ]
     },
     "specDepthDecision": {
@@ -165,7 +166,7 @@
           "zone": "base",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four small wheels",
+          "description": "four small castors",
           "mapsTo": {
             "ref": "frame"
           },
@@ -199,7 +200,7 @@
           "zone": "body",
           "kind": "gloss",
           "identityDefining": true,
-          "description": "transparent glazing",
+          "description": "transparent glazing streaked with meltwater",
           "mapsTo": {
             "ref": "glazing"
           },
@@ -245,17 +246,18 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
     "resolvedUnknowns": [
-      "The case is 1.52 m wide inside the declared 1.70 so the bag roll on the side bracket stays inside the envelope.",
-      "Fruit is eighteen tinted blocks in three rows, not the plate's individual wedges; identity is the three colours on white ice.",
-      "The glazing is four flat panes; the plate's condensation is not carried."
+      "The back face carries two mid mullions: the plate shows two steel verticals above the ice line and both are occluded below it, which places them on the far face rather than on the front pane, and the front pane is left clear.",
+      "The skewer jar is built on the OPAQUE wet material rather than the glazing. At the 0.26 opacity the panes need, a jam-jar-sized cylinder renders as nothing at all, and the plate's jar is packed solid with sticks.",
+      "Albedo is authored for this harness key light, not for the eye: an up-facing slice renders at roughly 1.05x its albedo plus a 60-count ambient, and the plate is lit flat and shadowless, so the plate's #d8bd69 pineapple is carried as #c79412 and lands at #cfbf7c behind the pane against the plate's measured #d8bd69.",
+      "The bag roll length is read off the plate as running along the cart depth on the +X side; its stand-off from the side face is the one dimension the single view cannot fix, and it is set so the bbox closes at the declared 1.43."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 1.70 x 1.50 x 0.75 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Rendered model matches the reference silhouette, the 1.43 x 1.50 x 0.76 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=4 materials, <=6 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 4 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
       "Every material declares textureless with named evidence."
@@ -275,8 +277,8 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 1.70 x 1.50 x 0.75 m",
-          "Case, wheels and cover at the proxy stations"
+          "Envelope 1.43 x 1.50 x 0.76 m",
+          "Case, castors, tray and cover at the stations the plate solve fixes"
         ],
         "evidenceRefs": [
           "view-full"
@@ -292,7 +294,7 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Pineapple, mango, watermelon rows visible through the glass"
+          "Pineapple, mango and watermelon as cut slices, not blocks, in two ranks on a banked ice bed visible through the glass"
         ],
         "evidenceRefs": [
           "region-pineapple",
@@ -640,8 +642,8 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          0.62,
-          0.11,
+          0.48,
+          0.105,
           0.26
         ],
         "axis": [
@@ -656,8 +658,8 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.62,
-          0.11,
+          -0.48,
+          0.105,
           0.26
         ],
         "axis": [
@@ -672,8 +674,8 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          0.62,
-          0.11,
+          0.48,
+          0.105,
           -0.26
         ],
         "axis": [
@@ -688,8 +690,8 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.62,
-          0.11,
+          -0.48,
+          0.105,
           -0.26
         ],
         "axis": [
@@ -714,9 +716,10 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The case is 1.52 m wide inside the declared 1.70 so the bag roll on the side bracket stays inside the envelope.",
-    "Fruit is eighteen tinted blocks in three rows, not the plate's individual wedges; identity is the three colours on white ice.",
-    "The glazing is four flat panes; the plate's condensation is not carried."
+    "The back face carries two mid mullions: the plate shows two steel verticals above the ice line and both are occluded below it, which places them on the far face rather than on the front pane, and the front pane is left clear.",
+    "The skewer jar is built on the OPAQUE wet material rather than the glazing. At the 0.26 opacity the panes need, a jam-jar-sized cylinder renders as nothing at all, and the plate's jar is packed solid with sticks.",
+    "Albedo is authored for this harness key light, not for the eye: an up-facing slice renders at roughly 1.05x its albedo plus a 60-count ambient, and the plate is lit flat and shadowless, so the plate's #d8bd69 pineapple is carried as #c79412 and lands at #cfbf7c behind the pane against the plate's measured #d8bd69.",
+    "The bag roll length is read off the plate as running along the cart depth on the +X side; its stand-off from the side face is the one dimension the single view cannot fix, and it is set so the bbox closes at the declared 1.43."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -728,13 +731,13 @@
   },
   "silhouette": {
     "envelope": {
-      "w": 1.7,
+      "w": 1.43,
       "h": 1.5,
-      "d": 0.75
+      "d": 0.76
     },
-    "description": "A 1.52 x 0.71 m glazed case from 0.30 to 1.18 m on a chassis over four r 0.11 wheels at +-0.62, +-0.26; ice to 0.78 m with fruit rows to 0.88; a folded cover 0.80 x 0.14 on the top rail; a jar 0.10 x 0.14 on the front-left corner to 1.41; a bag roll r 0.04 on the +X side.",
-    "envelopeDerivation": "x +-0.81 at the frame (case 1.52 wide) with the bag roll on the +X bracket reaching +0.85, the declared 1.70; y 0 at the wheel contact to 1.41 at the skewer jar (declared 1.50); z +-0.37 (declared 0.75). Proxy occupancy: wheels 0-0.18 H, case 0.18-0.94 H, cover to 0.98 H; its w:h:d 1:1.135:0.750 is bloated by the jar and the folded cover (1.93 m tall at 1.70 wide), so the DECLARED envelope governs and the proxy fixes the stations: case bottom 0.30, bed 0.78, top rail 1.18.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:1.135:0.750, 3,520 triangles. Occupancy map: wheels 0-0.18 H, case 0.18-0.94 H, cover 0.94-0.98 H; the plate is a three-quarter view so the widths foreshorten and the declared envelope is built."
+    "description": "A 1.28 x 0.73 m glazed case from 0.23 to 1.30 m on a chassis over four r 0.105 castors at +-0.48, +-0.26; a stainless tray at 0.85 carrying an ice bank that ramps from 0.955 at the front lip to 1.262 at the back crest, two ranks of pineapple, mango and watermelon lying on it; a folded canvas 1.04 x 0.15 on the back half of the top rail; a jar of skewers on the back-left corner to 1.52; a bag roll r 0.056 x 0.35 on the +X hangers with a sheet hanging off it; a push handle over the +X rail.",
+    "envelopeDerivation": "Solved off the PLATE, not estimated. Picking the three case bottom corners in the reference -- front-left (175,703), front-right (620,870), back-right (838,762) px -- gives a width edge of (445,167) and a depth edge of (218,-108), so tan(t)sin(p)=167/445=0.375 and sin(p)/tan(t)=108/218=0.495: elevation 25.5 deg, yaw 41.0 deg. Unforeshortened the case is 590 x 489 x 332 world-px inside a total 685 from the castor contact to the skewer tips, i.e. w/H 0.861, d/H 0.485, case 0.714 H, castors and chassis 0.153 H, jar and cover 0.133 H. At the declared h 1.50 that is a case 1.28 x 0.73 from y 0.23 to 1.30, a mid rail and tray at 0.85, castors r 0.105 at +-0.48, +-0.26, and the bag roll on the +X side carrying the bbox to 1.43 wide. Built 1.416 x 1.541 x 0.742. The Meshy proxy independently agrees on width (bbox w/H 0.881) and case height (0.70 H) and reads 36 per cent deep (d/H 0.659), which is what a single-view reconstruction does to depth; the plate solve governs. The first build declared 1.70 x 1.50 x 0.75, which made the case w/h 1.73 against the plate 1.21 and is why it read long and low.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox w/H 0.881, d/H 0.659, H 1.902 m normalised. Per height band at the 1-99 percentile the case body alone is w/H 0.79 and d/H 0.60, and the occupancy is castors 0-0.19 H, case 0.19-0.93 H, cover to 0.97 H. It agrees with the plate solve on width and on case height and disagrees on depth by 36 per cent, which is the known single-view depth inflation, so the plate solve governs the depth and the proxy corroborates the stations."
   },
   "viewEvidence": [
     {
@@ -797,12 +800,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Posts, rails, deck, axles, cover, bracket and three cylinders in one merge on one material: one draw call.",
+      "topologyRationale": "Posts, rails, mullions, tray, deck, forks, handle, hangers, five canvas folds and their fold cylinders and seventeen skewers in one merge on one material: one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts 0.03 angle at +-0.76, +-0.355 from 0.30 to 1.18; rails at 0.30, 0.76 and 1.18; deck 0.024 under the case; cover on the rail; jar at the front-left corner.",
+        "topologyIntent": "Posts 0.030 angle at +-0.625, +-0.350 from 0.23 to 1.30; rails at 0.23, 0.85 and 1.30 on all four sides; two back mullions at +-0.215; the ice tray at 0.838; the chassis deck at 0.205; castor forks over each wheel; the push handle over the +X rail to 1.44; the bag-roll hangers to 1.10; the canvas on the back half of the top rail.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -811,7 +814,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Rails meet posts as interpenetrating solids; the cover sits on the rail top (opposed); the deck is under the case bottom rail (opposed). No co-facing pair.",
+        "zFightingNote": "Rails meet posts as interpenetrating solids; the canvas folds stack with opposed faces and each is offset in x and z from the one below; the tray and the deck are horizontal slabs inside the case with nothing coplanar above or below them. No co-facing pair.",
         "mergeNote": "One merged BufferGeometry with height UVs at 0.6 m."
       },
       "localFeatures": [
@@ -844,7 +847,7 @@
       "colorMaterialRecipe": {
         "materialId": "steel",
         "baseColor": "#9a9c9a",
-        "recipe": "Stainless as vertex colour on white with a grime canvas; cover, axles, jar and roll tinted.",
+        "recipe": "Stainless as vertex colour on white with a grime canvas; cover, axles and castor forks tinted.",
         "evidenceRef": "region-rail",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(154, 156, 154, 1.0)",
@@ -868,7 +871,7 @@
           ],
           "confidence": 0.95,
           "name": "root",
-          "notes": "base-center at the wheel contact, as the asset declares. The frame is the rigid root; the four wheels carry their own axle pivots."
+          "notes": "base-center at the castor contact, as the asset declares. The frame is the rigid root; the four castors carry their own axle pivots."
         },
         "transformChannels": {
           "translate": true,
@@ -889,9 +892,9 @@
             0
           ],
           "halfExtents": [
-            0.85,
+            0.715,
             0.75,
-            0.375
+            0.38
           ],
           "notes": "Declared on the asset as box: the whole cart envelope."
         }
@@ -906,12 +909,12 @@
       "confidence": 0.85,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four 4 mm panes on the transparent material: one merge, one draw call.",
+      "topologyRationale": "Four 6 mm panes on the transparent material: one merge, one draw call.",
       "materialId": "glass",
       "material": "glass",
       "parent": "frame",
       "geometryDescriptor": {
-        "topologyIntent": "Each pane 18 mm inside its frame plane, 3 cm short of the posts on every edge.",
+        "topologyIntent": "Each pane centred in its own frame plane, inside the 30 mm post and rail sections, and 2.5 cm short of the posts on every edge.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -920,7 +923,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Panes are inset 18 mm from the frame faces; no pane shares a plane with a rail.",
+        "zFightingNote": "Each pane sits INSIDE the post and rail volume it fills, 12 mm clear of either face of it, so no pane shares a plane with a rail.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -967,12 +970,12 @@
       "confidence": 0.85,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Ice mass, banked ice and eighteen fruit blocks in one merge on the wet material: one draw call.",
+      "topologyRationale": "The ice bank, its chips and crest, thirty-one fruit pieces, the jar and the bag roll in one merge on the wet material: one draw call.",
       "materialId": "wet",
       "material": "wet",
       "parent": "frame",
       "geometryDescriptor": {
-        "topologyIntent": "Ice 1.56 x 0.48 x 0.65 from 0.30 to 0.78; fruit rows tilted on the bed top from x -0.60 to +0.63.",
+        "topologyIntent": "The bank is a solid profile swept along x carrying a jittered 16x9 height grid as its surface -- front lip z +0.31 at 0.955, back crest z -0.31 at 1.262, both dropping to the tray at 0.838 -- with loose chips on it, a crumbled front lip and a heaped crest. Two ranks of fruit lie on it at z 0.26 and 0.17: pineapple x -0.58 to -0.14, mango -0.10 to 0.13, watermelon 0.25 to 0.50.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -981,7 +984,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Fruit blocks are rotated and sit into the ice top; the banked ice stands 0.03 above the bed. Nothing co-facing.",
+        "zFightingNote": "Every fruit piece is rotated on three axes and sunk into the bank; the chips are individually rotated; the bank meets the tray as an opposed butt. Nothing co-facing.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -1026,8 +1029,8 @@
       "name": "Stainless angle steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#9a9c9a",
-      "color": "#9a9c9a",
+      "baseColor": "#7c7e7c",
+      "color": "#7c7e7c",
       "roughness": {
         "base": 0.45,
         "variation": 0.05,
@@ -1036,11 +1039,11 @@
       },
       "metalness": 0.35,
       "albedo": {
-        "dominant": "#9a9c9a",
+        "dominant": "#7c7e7c",
         "secondary": [
-          "#9a9c9a",
-          "#c9b48c",
-          "#3a3a3a"
+          "#7c7e7c",
+          "#cfb896",
+          "#3a3934"
         ],
         "samplingNotes": "Measured as the mean of crops/rail.png. extract_pbr_evidence confidence 0.820. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1052,14 +1055,14 @@
           "palette": [
             "#C9B48C"
           ],
-          "evidence": "crops/tarp.png -- #cdb599; two stacked tinted boxes."
+          "evidence": "crops/tarp.png -- #d8c3a8 at luma 198; five tinted folds with rounded fold edges, carried at #cfb896."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-rail (0.82) at #9a9a94; carried at #9a9c9a as a vertex colour on a WHITE material with the canvas cover #c9b48c (region-tarp #cdb599) and the black axles.",
+          "Measured on viewEvidence region-rail (0.82): the plate top rail is #939794 at luma 150 and the shadowed side rails #787368 at 115. Carried at #7c7e7c as a vertex colour on a WHITE material, which the harness renders at luma 120-165 across the frame; #9a9c9a rendered the deck at 176 and read chrome-bright.",
           "Metalness 0.35 for a harness with no environment map.",
           "Textureless as DECLARED: a 256 px grime canvas after construction."
         ],
@@ -1074,11 +1077,11 @@
     },
     {
       "id": "glass",
-      "name": "Window glass",
+      "name": "Streaked window glass",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#cfe0da",
-      "color": "#cfe0da",
+      "baseColor": "#c9dfc9",
+      "color": "#c9dfc9",
       "roughness": {
         "base": 0.08,
         "variation": 0.05,
@@ -1087,9 +1090,9 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#cfe0da",
+        "dominant": "#c9dfc9",
         "secondary": [
-          "#cfe0da"
+          "#c9dfc9"
         ],
         "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.780. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1098,8 +1101,9 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-glass (0.78) at #767c79 -- glass over the dark interior; carried as a transparent pane at opacity 0.30 with a green cast #cfe0da, both faces.",
-          "Textureless as DECLARED: bare glass carries no texture."
+          "Measured on region-glass (0.78): the empty lower case reads #7a827f at luma 127 and the side pane #848a84 at 136. Carried as a transparent pane at opacity 0.26 with the plate's green cast, both faces, which composites the empty lower case at luma 131 over the backdrop -- the plate's own value, and clear of the hole gate's grey band.",
+          "Opacity was 0.36 first and washed the fruit behind it out by more than a third; 0.26 keeps the pane readable and lets the three fruit colours through.",
+          "Textureless as DECLARED: the pane carries no procedural texture set. A 256 px meltwater canvas is bound AFTER construction -- streaks from the top and a clouded foot, which is the plate's single most distinctive surface."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1115,21 +1119,21 @@
       "name": "Wet fruit and ice",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d8dde0",
-      "color": "#d8dde0",
+      "baseColor": "#a4acb0",
+      "color": "#a4acb0",
       "roughness": {
-        "base": 0.25,
+        "base": 0.82,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/wet_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#d8dde0",
+        "dominant": "#a4acb0",
         "secondary": [
-          "#d8dde0",
-          "#e8c23a",
-          "#d94a4a"
+          "#a4acb0",
+          "#c79412",
+          "#c4211c"
         ],
         "samplingNotes": "Measured as the mean of crops/ice.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1138,8 +1142,11 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-ice (0.80) at #95938b (ice behind glass), region-pineapple at #d6bb66, region-melon at #986d63; carried as vertex colours #d8dde0, #e8c23a, #f0b040, #d94a4a and rind #4f8a3a on one WHITE low-roughness material.",
-          "Textureless as DECLARED: the fruit reads by colour and block form at prop distance."
+          "Measured behind the glass on region-ice (0.80) at #98968d luma 149, region-pineapple #d8bd69, mango #e0b53a, melon flesh #b0695a, rind #9f6c5d. Carried as vertex colours #a4acb0 and #b8c0c3 for the ice, #c79412 and #d8b64a for pineapple, #c86a04 for mango, #c4211c flesh over #44802c rind and a #d8e0c0 pith line, all on one WHITE material.",
+          "Rendered behind the pane those land at #cfbf7c pineapple, #d2ba77 mango and #ad595d melon against the plate's #d8bd69, #e0b53a and #b0695a.",
+          "Roughness 0.82, not the 0.25 the first build used: at 0.5 and below the broad specular lobe under this key light added a white wash that read as a blue cast, putting the mango at #d2ba7b with a blue channel of 123 against the plate's 58.",
+          "A y-axis vertex ramp from #d2d5d6 at the tray to white at 1.12 m carries the plate's dirty grey ice at the bottom of the bank and the white crest above it, and shades the underside of everything lying on it.",
+          "Textureless as DECLARED: the fruit reads by colour and cut form at prop distance."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1159,7 +1166,7 @@
       "count": 4,
       "primitive": "cylinder",
       "materialId": "steel",
-      "placement": "four wheels at x +-0.62, z +-0.26, r 0.11",
+      "placement": "four castors at x +-0.48, z +-0.26, r 0.105",
       "instanced": true,
       "pivotPerInstance": true,
       "notes": "One InstancedMesh of a tyre and hub cylinder pair; each instance is a named pivot on its axle."
@@ -1273,261 +1280,306 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T10:04:40.924873+00:00",
+      "timestamp": "2026-08-28T18:13:22.517611+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:04:41.003710+00:00",
+      "timestamp": "2026-08-28T18:13:22.602030+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:04:41.084917+00:00",
+      "timestamp": "2026-08-28T18:13:22.685777+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:04:41.163292+00:00",
+      "timestamp": "2026-08-28T18:13:22.767454+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "fruit",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.240922+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "frame",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.320434+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "fruit",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.396119+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
+      "layerScores": {},
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:04:41.473990+00:00",
-      "passId": "interaction-pass",
+      "timestamp": "2026-08-28T18:13:22.849515+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:22.930903+00:00",
+      "passId": "form-refinement",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
-      "featureReviews": [],
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
+        }
+      ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:04:41.550468+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "timestamp": "2026-08-28T18:13:23.014683+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.102384+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Angle frame at #7c7e7c (the plate's top rail is #939794 at luma 150, the shadowed rails 115) with four posts, rails at 0.23, 0.85 and 1.30 on all four faces, two back mullions where the plate shows steel above the ice line, the ice tray, the chassis deck, four castor forks, a push handle, bag-roll hangers with the roll and a sheet hanging off it, five canvas folds with rounded fold edges and a lip over the rail, and a jar of seventeen skewers on the back-left bracket, and the cross member the plate shows spanning the open top front to back. The 256 px frame grime runs at a 0.36 m height UV so the thin members are mottled and spotted rather than chrome-clean. The panes are transparent at opacity 0.26 with a green cast and a meltwater canvas, compositing the empty lower case at luma 131 against the plate's 127.",
+          "notes": "Opacity was 0.36 first and washed the fruit out; the glazing carries the plate's streaking, which is its most distinctive surface."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.191990+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.278118+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.360146+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.443224+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
         },
         {
           "id": "fruit",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
         },
         {
           "id": "frame",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
-          "notes": ""
+          "evidence": "Angle frame at #7c7e7c (the plate's top rail is #939794 at luma 150, the shadowed rails 115) with four posts, rails at 0.23, 0.85 and 1.30 on all four faces, two back mullions where the plate shows steel above the ice line, the ice tray, the chassis deck, four castor forks, a push handle, bag-roll hangers with the roll and a sheet hanging off it, five canvas folds with rounded fold edges and a lip over the rail, and a jar of seventeen skewers on the back-left bracket, and the cross member the plate shows spanning the open top front to back. The 256 px frame grime runs at a 0.36 m height UV so the thin members are mottled and spotted rather than chrome-clean. The panes are transparent at opacity 0.26 with a green cast and a meltwater canvas, compositing the empty lower case at luma 131 against the plate's 127.",
+          "notes": "Opacity was 0.36 first and washed the fruit out; the glazing carries the plate's streaking, which is its most distinctive surface."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
       "cameraView": "",
       "notes": "",
@@ -1536,40 +1588,40 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T10:04:40.924873+00:00",
+      "timestamp": "2026-08-28T18:13:22.517611+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4; case, wheels and bed at the proxy stations.",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4; case, tray, ice bank, castors and cover at the stations the plate solve fixes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/clay/clay-315.png",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/clay/clay-45.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1577,15 +1629,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:04:41.003710+00:00",
+      "timestamp": "2026-08-28T18:13:22.602030+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Bag roll on the +X bracket overran the declared 1.70 m width (built 1.89); the case was narrowed to 1.52 m and the roll brought inside the envelope.",
+      "summary": "The declared envelope was wrong, not the build. Solving the plate projectively off three picked case corners gave elevation 25.5 and yaw 41.0 degrees and a case of 1.28 x 0.73 x 1.07 m inside a 1.50 m total, against the declared 1.70 x 1.50 x 0.75 that made the case w/h 1.73. The asset was resized to 1.43 x 1.50 x 0.76 and the case, tray, castor and cover stations rebuilt to it.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1593,7 +1645,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1601,31 +1653,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:04:41.084917+00:00",
+      "timestamp": "2026-08-28T18:13:22.685777+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: case 1.52 x 0.71 from 0.30 to 1.18, bed at 0.78, wheels r 0.11; case narrowed from 1.62 after the bag roll overran the declared width.",
+      "summary": "Structural pass: case 1.28 x 0.73 from 0.23 to 1.30, tray and mid rail at 0.85, ice bank 0.955 to 1.262, castors r 0.105 at +-0.48, +-0.26, bbox 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1633,7 +1685,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1641,141 +1693,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:04:41.163292+00:00",
+      "timestamp": "2026-08-28T18:13:22.767454+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "fruit",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: fruit rows, banked ice, folded cover, jar, bag roll, glazing beads.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.240922+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "frame",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: steel 0.82, glass 0.78, wet 0.80, all textureless; glass a real transparent render state as the registry notes require.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.320434+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "fruit",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: grime canvas on the steel; fruit and ice as vertex colours.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:04:41.396119+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
+      "layerScores": {},
       "featureReviews": [],
-      "action": "continue",
-      "summary": "Lighting pass: no rim and no contact shadow in the plate; both recorded absent.",
+      "action": "refine-code",
+      "summary": "The ice was one solid slab filling the lower two thirds of the case and the fruit eighteen tinted blocks lying on it. Rebuilt as a stainless tray at mid height carrying a banked ice ramp, with two ranks of cut pineapple, mango and watermelon slices sunk into it and the lower case left empty and glazed, as the plate has it.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1783,7 +1709,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1791,21 +1717,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:04:41.473990+00:00",
-      "passId": "interaction-pass",
+      "timestamp": "2026-08-28T18:13:22.849515+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The ice bank was still a flat ramp with loose cubes scattered on it and read as polystyrene. The surface is now a 16x9 height grid jittered by up to 25 mm and ridged along the fall line, sitting on the solid wedge, which is what the plate's shaved ice does.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:22.930903+00:00",
+      "passId": "form-refinement",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
-      "featureReviews": [],
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
+        }
+      ],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot plus FOUR wheel pivots (wheel-front-l/r, wheel-rear-l/r) on the wheel InstancedMesh, ZERO sockets, one BOX collider on the frame root, no destruction groups.",
+      "summary": "Form refinement: the bank surface as a jittered 16x9 height grid over a solid wedge, two ranks of pineapple, mango and watermelon as cut slices sunk into it, loose chips and a heaped crest, five canvas folds with rounded fold edges and a lip over the rail, the skewer jar, the bag roll with a sheet hanging off it, the push handle and the top cross member.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1813,7 +1773,7 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1821,49 +1781,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:04:41.550468+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "timestamp": "2026-08-28T18:13:23.014683+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.82,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 1.66 x 1.41 x 0.74 m inside the declared 1.70 x 1.50 x 0.75; case 0.30-1.18, wheels r 0.11 at +-0.62/+-0.26, cover on the rail, jar to 1.41 -- the proxy's stations.",
-          "notes": "The first build's bag roll overran the width to 1.89 m; the case was narrowed to 1.52."
-        },
-        {
-          "id": "fruit",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Pineapple, mango and watermelon rows as tinted blocks on white ice, visible through 0.30-opacity panes in the hero and at 0 and 180.",
-          "notes": "Blocks, not wedges."
-        },
-        {
-          "id": "frame",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Stainless angle frame #9a9c9a (0.82), transparent panes, folded canvas #c9b48c, jar, bag roll on the +X bracket; four wheel pivots on sculptRuntime.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 1,072/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, one 256 px canvas.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Glazing opacity 0.36 washed the fruit behind the pane out by more than a third; taken to 0.26, which still composites the empty lower case at luma 131 against the plate 127. The wet material went from roughness 0.25 to 0.82 because the broad specular lobe was adding a blue cast to the fruit.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1871,7 +1797,205 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.102384+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Angle frame at #7c7e7c (the plate's top rail is #939794 at luma 150, the shadowed rails 115) with four posts, rails at 0.23, 0.85 and 1.30 on all four faces, two back mullions where the plate shows steel above the ice line, the ice tray, the chassis deck, four castor forks, a push handle, bag-roll hangers with the roll and a sheet hanging off it, five canvas folds with rounded fold edges and a lip over the rail, and a jar of seventeen skewers on the back-left bracket, and the cross member the plate shows spanning the open top front to back. The 256 px frame grime runs at a 0.36 m height UV so the thin members are mottled and spotted rather than chrome-clean. The panes are transparent at opacity 0.26 with a green cast and a meltwater canvas, compositing the empty lower case at luma 131 against the plate's 127.",
+          "notes": "Opacity was 0.36 first and washed the fruit out; the glazing carries the plate's streaking, which is its most distinctive surface."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: steel #7c7e7c, transparent glazing at 0.26 with the plate green cast, wet at roughness 0.82 -- a glossier wet material added a specular wash that read as a blue cast on the fruit. All three textureless.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.191990+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: three post-construction 256 px canvases -- frame grime, pane meltwater, and a 0.10 m speck tile carrying pineapple eyes, melon seeds and ice grain -- plus a y-axis vertex ramp for the dirty grey ice at the tray and white at the crest.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.278118+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; both recorded absent. Albedo is authored for this key light -- an up-facing slice renders at about 1.05x its albedo plus a 60-count ambient.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.360146+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus FOUR castor pivots (wheel-front-l/r, wheel-rear-l/r) on the castor InstancedMesh, ZERO sockets, one BOX collider on the frame root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T18:13:23.443224+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope solved off the plate rather than estimated: the three case bottom corners (175,703), (620,870), (838,762) give a width edge (445,167) and a depth edge (218,-108), hence elevation 25.5 and yaw 41.0 degrees, and unforeshortened a case 590 x 489 x 332 world-px in a total 685. Built 1.416 x 1.541 x 0.742 against the declared 1.43 x 1.50 x 0.76; case 1.28 x 0.73 from 0.23 to 1.30 (w/h 1.20 against the plate's 1.21), tray and mid rail at 0.85, castors r 0.105, jar to 1.52. The Meshy proxy corroborates width (0.881 H) and case height (0.70 H).",
+          "notes": "The previous build declared 1.70 x 1.50 x 0.75, making the case w/h 1.73, and read long and low; the size was corrected on the asset before rebuilding."
+        },
+        {
+          "id": "fruit",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A stainless tray at 0.85 carries an ice bank ramping 0.955 at the front lip to 1.262 at the back crest, whose SURFACE is a 16x9 height grid jittered by up to 25 mm over a solid wedge, not a plane -- shaved ice packs into ridges and that is most of what the plate's bed is. Two ranks of cut slices lie on it: sixteen pineapple wedges, eight mango ovals and nine watermelon triangles with rind and pith, each rotated on three axes and sunk into the bank, plus 24 loose chips and a heaped crest. Behind the pane they render #cfbf7c, #d2ba77 and #ad595d against the plate's measured #d8bd69, #e0b53a and #b0695a. A 0.10 m speck canvas on the shared wet material carries the pineapple's eyes, the melon's seeds and the grain of shaved ice.",
+          "notes": "Cut slices now, not blocks. The first build filled the lower two thirds of the case with one white ice slab and laid eighteen tinted boxes on it."
+        },
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Angle frame at #7c7e7c (the plate's top rail is #939794 at luma 150, the shadowed rails 115) with four posts, rails at 0.23, 0.85 and 1.30 on all four faces, two back mullions where the plate shows steel above the ice line, the ice tray, the chassis deck, four castor forks, a push handle, bag-roll hangers with the roll and a sheet hanging off it, five canvas folds with rounded fold edges and a lip over the rail, and a jar of seventeen skewers on the back-left bracket, and the cross member the plate shows spanning the open top front to back. The 256 px frame grime runs at a 0.36 m height UV so the thin members are mottled and spotted rather than chrome-clean. The panes are transparent at opacity 0.26 with a green cast and a meltwater canvas, compositing the empty lower case at luma 131 against the plate's 127.",
+          "notes": "Opacity was 0.36 first and washed the fruit out; the glazing carries the plate's streaking, which is its most distinctive surface."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 3,796/4,000 triangles, 4/4 draw calls, 3/4 materials, 4/6 unique geometries, three 256 px canvases, factory built in 65 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/beauty-45.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/iced-fruit-cart/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -1895,7 +2019,7 @@
     "qualityPriority": "real-time",
     "targetTriangles": 4000,
     "maxDrawCalls": 4,
-    "maxMaterials": 3,
+    "maxMaterials": 4,
     "maxUniqueGeometries": 6,
     "textureSize": 1024,
     "fpsTarget": 60,
@@ -1911,9 +2035,9 @@
       },
       "materials": {
         "projectedTotal": 3,
-        "budget": 3,
-        "headroom": 0,
-        "note": "steel, glass and wet: 3 of 3, the glass a separate render state by the registry notes."
+        "budget": 4,
+        "headroom": 1,
+        "note": "steel, glass and wet: 3 of the 4 allowed, the glass a separate render state by the registry notes."
       },
       "uniqueGeometries": {
         "projectedTotal": 4,
@@ -1922,10 +2046,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1072,
+        "measured": 3796,
         "budget": 4000,
-        "headroom": 2928,
-        "note": "1,072 of 4,000: forty boxes, three cylinders, and a two-cylinder wheel instanced four times."
+        "headroom": 204,
+        "note": "3,796 of 4,000: the frame and its dressing, four panes, the ice bank with thirty-one fruit pieces and fifty-six chips, and a two-cylinder castor instanced four times."
       }
     }
   },
@@ -1983,7 +2107,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes for the frame, deck, cover, panes, ice and fruit; cylinders for the jar, skewers, bag roll and wheels."
+      "strategy": "Boxes for the frame, tray, deck, cover, panes, ice chips and pineapple; a swept profile for the ice bank and for each watermelon wedge with its rind and pith; scaled spheres for the mango slices; cylinders for the fold edges, jar, skewers, bag roll and castors."
     },
     {
       "id": "instancing",
@@ -1995,7 +2119,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 256 px grime canvas after construction, 0.25 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. Two 256 px canvases after construction -- frame grime and pane meltwater -- 0.5 MB of texture VRAM, and the factory builds in 82 ms."
     }
   ],
   "animationAnchors": [],
@@ -2005,13 +2129,19 @@
       "id": "transparent-sorting",
       "severity": "low",
       "description": "Four transparent panes in one mesh sort as one; the far pane can draw over the near one at some angles.",
-      "mitigation": "Opacity 0.30 and a pale cast make the order invisible at prop distance; depthWrite stays on."
+      "mitigation": "Opacity 0.26 and a pale green cast make the order invisible at prop distance; depthWrite stays on."
     },
     {
-      "id": "proxy-bloat",
+      "id": "see-through-lower-case",
       "severity": "low",
-      "description": "The proxy reads 1.93 m tall at 1.70 wide because of the jar and cover.",
-      "mitigation": "The declared 1.50 m governs; built to 1.41."
+      "description": "The lower half of the case is empty now that the ice sits on a tray at mid height, so the backdrop is visible through two panes inside the silhouette.",
+      "mitigation": "The pane composites that region at luma 131 over the backdrop 58 -- the plate's own measured 127 -- well clear of the hole gate's grey band."
+    },
+    {
+      "id": "proxy-depth",
+      "severity": "low",
+      "description": "The Meshy proxy reads d/H 0.659 against the plate solve's 0.485.",
+      "mitigation": "Single-view reconstructions inflate depth; the projective solve off three picked corners governs, and the proxy corroborates width and case height to within 3 per cent."
     }
   ],
   "localSpecSearch": {
@@ -2023,43 +2153,5 @@
       "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
     },
     "matches": []
-  },
-  "tier1Results": [
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.561,
-        "aspectRatioDelta": 0.1863,
-        "scaleDelta": 0.0543,
-        "bilateralSymmetryError": 0.1902,
-        "colorDelta": {
-          "checked": 3,
-          "maxDeltaE": 14.58,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 14.58
-            },
-            {
-              "componentId": null,
-              "deltaE": 10.73
-            },
-            {
-              "componentId": null,
-              "deltaE": 9.3
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [
-        "silhouette IoU 0.561 is below threshold 0.85",
-        "aspect-ratio delta 0.186 exceeds threshold 0.05",
-        "blockout requires --map-stripped-render evidence"
-      ],
-      "maskWarnings": [],
-      "renderHash": "683bbdaa0c4801fe",
-      "passId": "blockout"
-    }
-  ]
+  }
 }

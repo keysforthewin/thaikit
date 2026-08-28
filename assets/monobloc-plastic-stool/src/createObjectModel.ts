@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 0.32 x 0.43 x 0.32 m, origin base-center, +Y up.
+ * Envelope 0.335 x 0.2 x 0.335 m, origin base-center, +Y up.
  * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.
  *
  * This is one of thaikit's STREET AND VENDOR PROPS -- a cone, a barrier, a cart, a stool. The
@@ -40,12 +40,12 @@ const CONFIG = {
     "id": "monobloc-plastic-stool",
     "name": "Monobloc Plastic Stool",
     "exportName": "MonoblocPlasticStool",
-    "envelope": "Envelope 0.32 x 0.43 x 0.32 m, origin base-center, +Y up.\n * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.",
+    "envelope": "Envelope 0.335 x 0.2 x 0.335 m, origin base-center, +Y up.\n * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.",
     "materials": [
       {
         "id": "plastic",
         "color": 16777215,
-        "roughness": 0.55,
+        "roughness": 0.58,
         "metalness": 0,
         "vertexColors": true
       }
@@ -57,14 +57,15 @@ const CONFIG = {
         "size": 256,
         "seed": 121,
         "wash": [
-          0.92,
-          0.8,
-          0.78
+          0.72,
+          0.66,
+          0.63
         ],
-        "washAlpha": 0.35,
-        "coverage": 0.5,
-        "streaks": 40,
-        "blotches": 10
+        "washAlpha": 0.45,
+        "coverage": 0,
+        "streaks": 130,
+        "blotches": 64,
+        "bump": 0.35
       }
     ],
     "geometry": {
@@ -75,239 +76,309 @@ const CONFIG = {
           "material": "plastic",
           "uv": "world",
           "uvScale": 0.3,
+          "tint": {
+            "axis": "y",
+            "from": 0,
+            "to": 0.06,
+            "c0": 14472909,
+            "c1": 16777215,
+            "keep": true
+          },
           "collider": {
             "shape": "box",
             "localCenter": [
               0,
-              0.215,
+              0.1,
               0
             ],
             "halfExtents": [
-              0.16,
-              0.215,
-              0.16
+              0.1675,
+              0.1,
+              0.1675
             ],
-            "notes": "Declared on the asset as box: the stool envelope."
+            "notes": "The stool envelope; the shipped compound is derived from the geometry."
           },
           "lathes": [
             {
               "pts": [
                 [
                   0,
-                  0.395
+                  0.142
                 ],
                 [
-                  0.12000000000000001,
-                  0.395
+                  0.15,
+                  0.14
                 ],
                 [
-                  0.14,
-                  0.40700000000000003
+                  0.163,
+                  0.154
                 ],
                 [
-                  0.14,
-                  0.43
+                  0.166,
+                  0.168
                 ],
                 [
-                  0.126,
-                  0.43
+                  0.159,
+                  0.183
                 ],
                 [
-                  0.12000000000000001,
-                  0.42
+                  0.146,
+                  0.192
                 ],
                 [
-                  0.02,
-                  0.418
+                  0.136,
+                  0.191
+                ],
+                [
+                  0.122,
+                  0.18
+                ],
+                [
+                  0.117,
+                  0.17
                 ],
                 [
                   0,
-                  0.418
+                  0.164
                 ]
               ],
-              "seg": 24,
+              "seg": 18,
               "at": [
                 0,
                 0,
                 0
               ],
-              "hex": 11549230
+              "hex": 14437950
             },
             {
               "pts": [
                 [
-                  0,
-                  0.4175
+                  0.109,
+                  0.1675
                 ],
                 [
-                  0.11600000000000002,
-                  0.4175
-                ],
-                [
-                  0.11600000000000002,
-                  0.4195
+                  0.114,
+                  0.1716
                 ],
                 [
                   0,
-                  0.4195
+                  0.1655
                 ]
               ],
-              "seg": 24,
+              "seg": 18,
               "at": [
                 0,
                 0,
                 0
               ],
-              "hex": 13140858
+              "hex": 9390909
             }
           ],
-          "extrudes": [
+          "cyls": [
             {
-              "poly": [
-                [
-                  0.06500000000000002,
-                  0.401
-                ],
-                [
-                  0.135,
-                  0.401
-                ],
-                [
-                  0.15200000000000002,
-                  0
-                ],
-                [
-                  0.11200000000000002,
-                  0
-                ]
+              "rt": 0.035,
+              "rb": 0.032,
+              "h": 0.164,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.7,
+                1,
+                1
               ],
-              "z0": -0.02,
-              "z1": 0.02,
-              "ry": -0.7853981633974483,
-              "hex": 11549230
+              "ry": 0,
+              "at": [
+                0.14,
+                0.082,
+                0
+              ]
             },
             {
-              "poly": [
-                [
-                  0.06500000000000002,
-                  0.401
-                ],
-                [
-                  0.135,
-                  0.401
-                ],
-                [
-                  0.15200000000000002,
-                  0
-                ],
-                [
-                  0.11200000000000002,
-                  0
-                ]
+              "rt": 0.035,
+              "rb": 0.032,
+              "h": 0.164,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.7,
+                1,
+                1
               ],
-              "z0": -0.02,
-              "z1": 0.02,
-              "ry": -2.356194490192345,
-              "hex": 11549230
+              "ry": -1.5707963267948966,
+              "at": [
+                8.572527594031473e-18,
+                0.082,
+                0.14
+              ]
             },
             {
-              "poly": [
-                [
-                  0.06500000000000002,
-                  0.401
-                ],
-                [
-                  0.135,
-                  0.401
-                ],
-                [
-                  0.15200000000000002,
-                  0
-                ],
-                [
-                  0.11200000000000002,
-                  0
-                ]
+              "rt": 0.035,
+              "rb": 0.032,
+              "h": 0.164,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.7,
+                1,
+                1
               ],
-              "z0": -0.02,
-              "z1": 0.02,
-              "ry": -3.9269908169872414,
-              "hex": 11549230
+              "ry": -3.141592653589793,
+              "at": [
+                -0.14,
+                0.082,
+                1.7145055188062947e-17
+              ]
             },
             {
-              "poly": [
-                [
-                  0.06500000000000002,
-                  0.401
-                ],
-                [
-                  0.135,
-                  0.401
-                ],
-                [
-                  0.15200000000000002,
-                  0
-                ],
-                [
-                  0.11200000000000002,
-                  0
-                ]
+              "rt": 0.035,
+              "rb": 0.032,
+              "h": 0.164,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.7,
+                1,
+                1
               ],
-              "z0": -0.02,
-              "z1": 0.02,
-              "ry": -5.497787143782138,
-              "hex": 11549230
+              "ry": -4.71238898038469,
+              "at": [
+                -2.571758278209442e-17,
+                0.082,
+                -0.14
+              ]
+            },
+            {
+              "rt": 0.017,
+              "rb": 0.028,
+              "h": 0.024,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.62,
+                1,
+                1
+              ],
+              "ry": 0,
+              "at": [
+                0.141,
+                0.188,
+                0
+              ]
+            },
+            {
+              "rt": 0.017,
+              "rb": 0.028,
+              "h": 0.024,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.62,
+                1,
+                1
+              ],
+              "ry": -1.5707963267948966,
+              "at": [
+                8.63375993398884e-18,
+                0.188,
+                0.141
+              ]
+            },
+            {
+              "rt": 0.017,
+              "rb": 0.028,
+              "h": 0.024,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.62,
+                1,
+                1
+              ],
+              "ry": -3.141592653589793,
+              "at": [
+                -0.141,
+                0.188,
+                1.726751986797768e-17
+              ]
+            },
+            {
+              "rt": 0.017,
+              "rb": 0.028,
+              "h": 0.024,
+              "seg": 8,
+              "hex": 14437950,
+              "scale": [
+                0.62,
+                1,
+                1
+              ],
+              "ry": -4.71238898038469,
+              "at": [
+                -2.5901279801966515e-17,
+                0.188,
+                -0.141
+              ]
+            },
+            {
+              "rt": 0.1675,
+              "rb": 0.1675,
+              "h": 0.024,
+              "seg": 4,
+              "open": true,
+              "hex": 11024426,
+              "th0": 0.6510698051884931,
+              "thLen": 0.26865671641791045,
+              "at": [
+                0,
+                0.168,
+                0
+              ]
+            },
+            {
+              "rt": 0.1675,
+              "rb": 0.1675,
+              "h": 0.024,
+              "seg": 4,
+              "open": true,
+              "hex": 11024426,
+              "th0": -0.9197265216064034,
+              "thLen": 0.26865671641791045,
+              "at": [
+                0,
+                0.168,
+                0
+              ]
+            },
+            {
+              "rt": 0.1675,
+              "rb": 0.1675,
+              "h": 0.024,
+              "seg": 4,
+              "open": true,
+              "hex": 11024426,
+              "th0": -2.4905228484013002,
+              "thLen": 0.26865671641791045,
+              "at": [
+                0,
+                0.168,
+                0
+              ]
+            },
+            {
+              "rt": 0.1675,
+              "rb": 0.1675,
+              "h": 0.024,
+              "seg": 4,
+              "open": true,
+              "hex": 11024426,
+              "th0": -4.061319175196196,
+              "thLen": 0.26865671641791045,
+              "at": [
+                0,
+                0.168,
+                0
+              ]
             }
-          ],
-          "boxes": [
-            [
-              11549230,
-              0.10182337649086286,
-              0.416,
-              0.10182337649086284,
-              0.045,
-              0.026,
-              0.036,
-              0,
-              -0.7853981633974483,
-              0
-            ],
-            [
-              11549230,
-              -0.10182337649086284,
-              0.416,
-              0.10182337649086286,
-              0.045,
-              0.026,
-              0.036,
-              0,
-              -2.356194490192345,
-              0
-            ],
-            [
-              11549230,
-              -0.10182337649086289,
-              0.416,
-              -0.10182337649086284,
-              0.045,
-              0.026,
-              0.036,
-              0,
-              -3.9269908169872414,
-              0
-            ],
-            [
-              11549230,
-              0.10182337649086283,
-              0.416,
-              -0.10182337649086289,
-              0.045,
-              0.026,
-              0.036,
-              0,
-              -5.497787143782138,
-              0
-            ]
           ]
         }
       ]
@@ -382,8 +453,30 @@ function cylAt(cx: number, cy: number, cz: number, rTop: number, rBot: number, h
  *   n points at s segments is 2*(n-1)*s triangles. A 24-ring spire at 32 segments is 1,472
  *   triangles on its own, which is why the low-relief rings are a profile rather than 24 rings.
  */
-function lathe(pts: number[][], seg: number, yOffset = 0): THREE.BufferGeometry {
-  const v = pts.map((p) => new THREE.Vector2(Math.max(p[0], 0), p[1] + yOffset));
+/** LatheGeometry shares the corner vertex between an end disc and the side wall, so
+ *  computeVertexNormals tilts the wall's first ring 45 degrees toward the disc and the harness shades
+ *  a dark gradient there -- a ring the turntable gate read as a HOLE under the stainless bin's cap.
+ *  Inserting a point 0.8 mm past every sharp corner (> 70 degrees) confines the averaged normal to that
+ *  sliver. Costs one ring per corner; pass `sharp = false` where the budget cannot carry it. */
+function splitCorners(pts: number[][], minDeg = 70, eps = 0.0008): number[][] {
+  const out: number[][] = [];
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i], a = pts[i - 1], b = pts[i + 1];
+    let sharp = false;
+    if (a && b) {
+      const ux = p[0] - a[0], uy = p[1] - a[1], vx = b[0] - p[0], vy = b[1] - p[1];
+      const lu = Math.hypot(ux, uy), lv = Math.hypot(vx, vy);
+      if (lu > 0 && lv > 0) sharp = Math.acos(Math.max(-1, Math.min(1, (ux * vx + uy * vy) / (lu * lv)))) > minDeg * Math.PI / 180;
+      if (sharp && lu > 3 * eps) out.push([p[0] - ux / lu * eps, p[1] - uy / lu * eps]);
+      out.push(p);
+      if (sharp && lv > 3 * eps) out.push([p[0] + vx / lv * eps, p[1] + vy / lv * eps]);
+    } else out.push(p);
+  }
+  return out;
+}
+
+function lathe(pts: number[][], seg: number, yOffset = 0, sharp = true): THREE.BufferGeometry {
+  const v = (sharp ? splitCorners(pts) : pts).map((p) => new THREE.Vector2(Math.max(p[0], 0), p[1] + yOffset));
   const g = new THREE.LatheGeometry(v, seg);
   g.computeVertexNormals();
   return g;
@@ -909,13 +1002,16 @@ function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
  *  side of the rim so they cross the way real spokes do. Merged into the wheel geometry so the
  *  wheel stays ONE instanced geometry. */
-function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006): THREE.BufferGeometry {
+function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006, prism = false): THREE.BufferGeometry {
   const segs: THREE.BufferGeometry[] = [];
   for (let i = 0; i < n; i++) {
     const a = i * Math.PI * 2 / n;
     const side = (i % 2 === 0 ? 1 : -1) * halfW * 0.35;
     const len = rRim - rHub;
-    const g = new THREE.BoxGeometry(t, len, t);
+    // `prism`: an open three-sided prism at six triangles where the box costs twelve -- a wire
+    // spoke has no resolvable section at prop distance, and 28 of them on three wheels is the
+    // difference between a large prop inside its triangle ceiling and one over it
+    const g = prism ? new THREE.CylinderGeometry(t * 0.62, t * 0.62, len, 3, 1, true) : new THREE.BoxGeometry(t, len, t);
     g.translate(0, rHub + len / 2, 0);
     g.rotateX(Math.atan2(side, len) * 0.6);
     g.rotateX(0); g.translate(0, 0, side * 0.5);
@@ -973,7 +1069,9 @@ function mirrorX(list: number[][]): number[][] {
 function canvasTile(size: number, draw: (ctx: CanvasRenderingContext2D, s: number) => void): THREE.CanvasTexture | null {
   if (typeof document === 'undefined') return null;
   const cv = document.createElement('canvas'); cv.width = size; cv.height = size;
-  const ctx = cv.getContext('2d'); if (!ctx) return null;
+  // willReadFrequently keeps the tile on the CPU raster path: a GPU-backed canvas costs seconds per
+  // thousand path fills where the software path takes tens of milliseconds.
+  const ctx = cv.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D | null; if (!ctx) return null;
   draw(ctx, size);
   const tex = new THREE.CanvasTexture(cv);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -1113,6 +1211,56 @@ function rustTile(size: number, ratio: number[], seed: number, density = 90): TH
 /** Height-keyed UVs: v is world HEIGHT over `scale` metres, u runs along the dominant horizontal
  *  axis. A mud tile bound this way darkens the sills and stays clean on the roof -- a plain box
  *  projection would repeat the tile's dirty band across the roof as stripes. */
+/**
+ * SHORT FUR: a seamless tile of dense, short, directional hair strokes over a cloudy tone drift, as a
+ * multiply map (and bump) on a white vertex-coloured coat. The strokes run along v with a jittered
+ * lean and a narrow tone spread -- a wide spread reads as scales, a perfect lay reads as combed
+ * plastic. `patches` adds a few soft pink-grey bare patches, the mange marks of a street dog.
+ */
+function furTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
+    const tone = o.tone ?? [0.72, 0.66, 0.58], m = s * 0.06;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+    // cloudy drift underneath so the coat is not one flat value
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < (o.clouds ?? 26); i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.08 + rnd() * 0.18), a = 0.04 + rnd() * 0.10;
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(${rgb(tone)},${a})`); g2.addColorStop(1, `rgba(${rgb(tone)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // bare patches: soft, sparse, warm grey-pink
+    for (let i = 0; i < (o.patches ?? 0); i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.04 + rnd() * 0.05), pc = o.patchTone ?? [0.72, 0.56, 0.52];
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(${rgb(pc)},0.55)`); g2.addColorStop(0.6, `rgba(${rgb(pc)},0.3)`); g2.addColorStop(1, `rgba(${rgb(pc)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r * 1.3, r, rnd() * Math.PI, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // hair strokes: dark and light, short, leaning within +-22 degrees of v
+    const strokes = o.strokes ?? 5000, len = s * (o.length ?? 0.022);
+    const drawStroke = (x: number, y: number, dx: number, dy: number, w: number) => {
+      ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dx, y + dy); ctx.stroke();
+      if (x < m) { ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + dx, y + dy); ctx.stroke(); }
+      if (x > s - m) { ctx.beginPath(); ctx.moveTo(x - s, y); ctx.lineTo(x - s + dx, y + dy); ctx.stroke(); }
+      if (y < m) { ctx.beginPath(); ctx.moveTo(x, y + s); ctx.lineTo(x + dx, y + s + dy); ctx.stroke(); }
+      if (y > s - m) { ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + dx, y - s + dy); ctx.stroke(); }
+    };
+    ctx.lineCap = 'round';
+    for (let i = 0; i < strokes; i++) {
+      const x = rnd() * s, y = rnd() * s, th = (rnd() - 0.5) * 0.78, l = len * (0.6 + rnd() * 0.8);
+      const light = rnd() < 0.42;
+      ctx.globalCompositeOperation = light ? 'screen' : 'multiply';
+      ctx.strokeStyle = light ? `rgba(255,250,240,${0.05 + rnd() * 0.10})` : `rgba(${rgb(tone)},${0.06 + rnd() * 0.14})`;
+      drawStroke(x, y, Math.sin(th) * l, Math.cos(th) * l, 0.6 + rnd() * 1.2);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
 function heightUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry {
   const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
   const uv = new Float32Array(p.count * 2);
@@ -1174,6 +1322,52 @@ function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | nu
   mat.needsUpdate = true;
 }
 
+
+/**
+ * A DRAPED SHEET: `heights[j][i]` is the top surface at x = x0..x1 (i over nx) and z = z0..z1 (j over
+ * nz); the sheet is `t` thick. Top and underside are smooth-shaded grids, the four edges are flat
+ * strips wound outward. A tarp canopy is a ridge line minus the sag between its poles minus the
+ * droop of its free edges -- cloth, where a slab reads as a painted box.
+ */
+function sheet(s: any): THREE.BufferGeometry {
+  const nx: number = s.nx, nz: number = s.nz, Hh: number[][] = s.heights, t: number = s.t ?? 0.012;
+  const X = (i: number) => s.x0 + (s.x1 - s.x0) * i / nx;
+  const Z = (j: number) => s.z0 + (s.z1 - s.z0) * j / nz;
+  const grid = (yOff: number, flip: boolean) => {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { pos.push(X(i), Hh[j][i] + yOff, Z(j)); uv.push(i / nx, j / nz); }
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      if (flip) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  const parts = [grid(0, false), grid(-t, true)];
+  // edge strips: each quad from the top edge down to the underside, wound so its normal faces `out`
+  const strip = (pts: number[][][], out: number[]) => {
+    const pos: number[] = [], uv: number[] = [];
+    for (const [p0, p1] of pts) {
+      const q0 = p0, q1 = p1, q2 = [p1[0], p1[1] - t, p1[2]], q3 = [p0[0], p0[1] - t, p0[2]];
+      const e1 = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]], e2 = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+      const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      const tri = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? [q0, q1, q2, q0, q2, q3] : [q0, q2, q1, q0, q3, q2];
+      for (const q of tri) { pos.push(q[0], q[1], q[2]); uv.push(0, 0); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.computeVertexNormals(); return g;
+  };
+  const top = (i: number, j: number) => [X(i), Hh[j][i], Z(j)];
+  const e0: number[][][] = [], e1: number[][][] = [], e2: number[][][] = [], e3: number[][][] = [];
+  for (let i = 0; i < nx; i++) { e0.push([top(i, 0), top(i + 1, 0)]); e1.push([top(i, nz), top(i + 1, nz)]); }
+  for (let j = 0; j < nz; j++) { e2.push([top(0, j), top(0, j + 1)]); e3.push([top(nx, j), top(nx, j + 1)]); }
+  parts.push(strip(e0, [0, 0, -1]), strip(e1, [0, 0, 1]), strip(e2, [-1, 0, 0]), strip(e3, [1, 0, 0]));
+  return mergeGeos(parts);
+}
 
 /* ------------------------------------------------------------------ fence helpers */
 
@@ -1348,6 +1542,163 @@ function posterTile(size: number, seed: number, lines: string[]): THREE.CanvasTe
     }
   });
 }
+
+/** STRIPE tile: alternating colour bands along u (an awning), with a soft grime multiply so the cloth
+ *  reads worn rather than printed. `a`/`b` are the two band colours as [r,g,b] 0-1. Bound as map on a
+ *  WHITE material so the bands carry the whole albedo. */
+function stripeTile(size: number, bands: number, a: number[], b: number[], seed: number): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `rgb(${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])})`;
+    const w = s / bands;
+    for (let i = 0; i < bands; i++) { ctx.fillStyle = rgb(i % 2 ? b : a); ctx.fillRect(Math.floor(i * w), 0, Math.ceil(w) + 1, s); }
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < 40; i++) {
+      const x = rnd() * s, y = rnd() * s, r = 4 + rnd() * s * 0.08, al = 0.06 + rnd() * 0.18;
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(150,140,125,${al})`); g2.addColorStop(1, 'rgba(150,140,125,0)');
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    for (let i = 0; i < 1200; i++) { const v = 200 + Math.round(rnd() * 55); ctx.fillStyle = `rgba(${v},${v},${v},0.10)`; ctx.fillRect(rnd() * s, rnd() * s, 1.5, 1.5); }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
+/** Seamless around-by-up UVs for a LatheGeometry: u from the SEGMENT index (the lathe orders its
+ *  vertices segment-major, index = seg * pointCount + point), so the duplicated seam column reads
+ *  u = repeats exactly and RepeatWrapping closes it. `scale` is the tile size in metres; the
+ *  around-repeat count is rounded so the tile meets itself, from the profile's widest radius. */
+function latheUV(g: THREE.BufferGeometry, pointCount: number, seg: number, scale: number, vScale = scale, v0 = 0): void {
+  const p = g.getAttribute('position');
+  let rMax = 0;
+  for (let i = 0; i < p.count; i++) rMax = Math.max(rMax, Math.hypot(p.getX(i), p.getZ(i)));
+  const rep = Math.max(1, Math.round(2 * Math.PI * rMax / scale));
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const s = Math.floor(i / pointCount);
+    uv[i * 2] = (s / seg) * rep; uv[i * 2 + 1] = (p.getY(i) - v0) / vScale;
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+/** EXPOSED-AGGREGATE tile: a dark mortar ground packed with rounded pebbles in a measured palette,
+ *  each drawn at nine wrapped offsets so the tile is seamless. `o.palette` is a list of [r,g,b]
+ *  ratios against the material colour, `o.ground` the mortar ratio, `o.count` the pebble count. */
+function pebbleTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `rgb(${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])})`;
+    ctx.fillStyle = rgb(o.ground ?? [0.45, 0.42, 0.38]); ctx.fillRect(0, 0, s, s);
+    const pal: number[][] = o.palette ?? [[0.85, 0.78, 0.66], [0.72, 0.62, 0.50], [0.60, 0.58, 0.55], [0.90, 0.86, 0.80]];
+    const n = o.count ?? 900, rMin = s * (o.rMin ?? 0.012), rMax = s * (o.rMax ?? 0.028);
+    for (let i = 0; i < n; i++) {
+      const x = rnd() * s, y = rnd() * s, rx = rMin + rnd() * (rMax - rMin), ry = rx * (0.6 + rnd() * 0.5), a = rnd() * Math.PI;
+      const c = pal[Math.floor(rnd() * pal.length)], k = 0.85 + rnd() * 0.3;
+      ctx.fillStyle = rgb(c.map((v) => Math.min(1, v * k)));
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, rx, ry, a, 0, Math.PI * 2); ctx.fill(); }
+      // a highlight crescent on the lit side so each stone reads as a bump
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx - rx * 0.2, y + dy - ry * 0.25, rx * 0.5, ry * 0.4, a, 0, Math.PI * 2); ctx.fill(); }
+    }
+  });
+}
+
+/** TYRE TREAD tile for a lathe carrying `cylUV`: u runs AROUND the tyre and v UP it, so tread slots are
+ *  bars at constant u and the circumferential grooves are lines at constant v. Drawn as ratios on white
+ *  and multiplied into the (lifted) rubber colour; `o.groove` is the darkest ratio, kept above the
+ *  luma-58 hole band by the caller. `o.slots` bars per tile, `o.rings` circumferential lines. */
+function treadTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const groove = o.groove ?? 0.80, slots = o.slots ?? 2, rings = o.rings ?? 2;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+    ctx.globalCompositeOperation = 'multiply';
+    const gv = Math.round(255 * groove);
+    ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+    const pitch = s / slots, w = pitch * (o.slotWidth ?? 0.16);
+    // tread slots span the band between the two edge shoulders (v 0.12..0.88 of the tile)
+    for (let i = 0; i < slots; i++) { const x = i * pitch + pitch * 0.4 + (rnd() - 0.5) * pitch * 0.1; ctx.fillRect(x, s * 0.12, w, s * 0.76); ctx.fillRect(x - s, s * 0.12, w, s * 0.76); }
+    for (let i = 0; i < rings; i++) { const y = s * (0.2 + 0.6 * (i + 0.5) / rings); ctx.fillRect(0, y - 1.5, s, 3); }
+    // sidewall sheen: a soft lighter wash so the rubber is not one flat value
+    for (let i = 0; i < 24; i++) { const x = rnd() * s, y = rnd() * s, r = s * (0.05 + rnd() * 0.12), v = 235 + Math.round(rnd() * 20);
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+      ctx.fillStyle = g2; for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); } }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
+/** OLD TYRE tile: TWO tyre heights tall by `o.pitch` metres around (cylUV). The upper half (v 0.5-1)
+ *  is a treaded tyre, the lower half (v 0-0.5) a worn SLICK with circumferential grooves and short
+ *  shoulder sipes only, so a stack mixes bald and treaded tyres off one canvas by v0. Drawn as RATIOS
+ *  against the vertex-coloured rubber at `base` (200/255 -> vertex tones are authored 1.275x the
+ *  intended albedo so dust and scuffs can go BRIGHTER than the rubber under a multiply canvas).
+ *  Rows are heights: lower sidewall, tread band (v `o.band[0]`..`o.band[1]` of the strip), upper
+ *  sidewall with bead rings and mould lines. Wear: a warm dust wash on the lower shoulder, grey scuffs
+ *  on both shoulders, dust caught in the cuts, grain over everything. */
+function tyreTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const base = o.base ?? 200, band = o.band ?? [0.24, 0.76], groove = o.groove ?? 0.45;
+    const gv = Math.round(base * groove), rv = Math.round(base * 0.7), mv = Math.round(base * 0.9);
+    const dust = o.dust ?? [232, 214, 190];
+    ctx.fillStyle = `rgb(${base},${base},${base})`; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s * s / 6; i++) { const v = base + Math.round((rnd() - 0.5) * 22); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(rnd() * s, rnd() * s, 2, 2); }
+    // one tyre strip between canvas rows ya (top) and yb (bottom); canvas y grows DOWN, v grows UP
+    const strip = (ya: number, yb: number, treaded: boolean) => {
+      const h = yb - ya, b0 = ya + h * (1 - band[1]), b1 = ya + h * (1 - band[0]);
+      const ng = o.grooves ?? 3, gw = h * 0.024;
+      ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+      for (let i = 0; i < ng; i++) { const y = b0 + (b1 - b0) * (i + 1) / (ng + 1); ctx.fillRect(0, y - gw / 2, s, gw); }
+      const ns = o.sipes ?? 2, w = s * (o.sipeWidth ?? 0.05);
+      for (let k = 0; k <= ng; k++) {
+        const y0 = k === 0 ? b0 : b0 + (b1 - b0) * k / (ng + 1) + gw / 2, y1 = k === ng ? b1 : b0 + (b1 - b0) * (k + 1) / (ng + 1) - gw / 2;
+        // a slick keeps only SHORT sipes at the two shoulder rows, cut in from the band edge
+        const outer = k === 0 || k === ng;
+        if (!treaded && !outer) continue;
+        const ys0 = treaded ? y0 : (k === 0 ? y0 : y1 - (y1 - y0) * 0.45), ys1 = treaded ? y1 : (k === 0 ? y0 + (y1 - y0) * 0.45 : y1);
+        for (let i = 0; i < ns; i++) {
+          const x = ((i + 0.5) / ns + (k % 2) * 0.5 / ns) * s + (rnd() - 0.5) * s * 0.06, sl = (rnd() - 0.5) * s * 0.08;
+          for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, ys0); ctx.lineTo(x + dx + w, ys0); ctx.lineTo(x + dx + w + sl, ys1); ctx.lineTo(x + dx + sl, ys1); ctx.closePath(); ctx.fill(); }
+        }
+      }
+      // shoulder step at the top of the band, bead rings and mould lines on the sidewalls
+      const sh = ctx.createLinearGradient(0, b0 - h * 0.03, 0, b0 + h * 0.02); sh.addColorStop(0, `rgba(${gv},${gv},${gv},0)`); sh.addColorStop(1, `rgba(${gv},${gv},${gv},0.45)`);
+      ctx.fillStyle = sh; ctx.fillRect(0, b0 - h * 0.03, s, h * 0.05);
+      ctx.fillStyle = `rgb(${rv},${rv},${rv})`; ctx.fillRect(0, ya + h * 0.045, s, h * 0.012); ctx.fillRect(0, ya + h * 0.94, s, h * 0.012);
+      ctx.fillStyle = `rgb(${mv},${mv},${mv})`; ctx.fillRect(0, ya + h * 0.11, s, 2); ctx.fillRect(0, ya + h * 0.88, s, 2);
+      // wear: warm road dust on the lower shoulder and sidewall, grey scuffs on both shoulders
+      const dg = ctx.createLinearGradient(0, yb, 0, ya + h * 0.6); dg.addColorStop(0, `rgba(${dust[0]},${dust[1]},${dust[2]},${o.dustAlpha ?? 0.35})`); dg.addColorStop(1, `rgba(${dust[0]},${dust[1]},${dust[2]},0)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, ya + h * 0.6, s, h * 0.4);
+      for (let i = 0; i < (o.scuffs ?? 14); i++) {
+        const x = rnd() * s, y = rnd() < 0.5 ? b0 + (rnd() - 0.3) * h * 0.08 : b1 + (rnd() - 0.7) * h * 0.08, r = s * (0.02 + rnd() * 0.05), v = 225 + Math.round(rnd() * 25);
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+        ctx.fillStyle = g2; for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, r * 2.2, r * 0.6, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 60; i++) { const x = rnd() * s, y = b0 + rnd() * (b1 - b0), v = 6 + Math.round(rnd() * 14); ctx.fillStyle = `rgb(${v},${Math.round(v * 0.9)},${Math.round(v * 0.75)})`; ctx.fillRect(x, y, 2 + rnd() * 6, 2 + rnd() * 3); }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+    strip(0, s / 2, true);      // v 0.5..1: treaded
+    strip(s / 2, s, false);     // v 0..0.5: slick
+  });
+}
+
+/** A tapered box: BoxGeometry(1, h, 1) whose x/z are scaled per vertex by the footprint interpolated
+ *  from (w0, d0) at the bottom to (w1, d1) at the top. Normals recomputed so the slanted faces shade
+ *  flat. `b` = [cx, yBottom, cz, w0, d0, w1, d1, h]. */
+function frustum(b: number[]): THREE.BufferGeometry {
+  const [cx, y0, cz, w0, d0, w1, d1, h] = b;
+  const g = new THREE.BoxGeometry(1, h, 1);
+  const p = g.getAttribute('position');
+  for (let i = 0; i < p.count; i++) {
+    const t = (p.getY(i) + h / 2) / h;
+    p.setX(i, p.getX(i) * (w0 + (w1 - w0) * t)); p.setZ(i, p.getZ(i) * (d0 + (d1 - d0) * t));
+  }
+  g.computeVertexNormals();
+  g.translate(cx, y0 + h / 2, cz);
+  return g;
+}
 /* ------------------------------------------------------------------ materials */
 
 /**
@@ -1471,14 +1822,29 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
     for (const b of mirrorX((c.boxesMirrored ?? []) as number[][])) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const t of (c.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     for (const cy of (c.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
-      if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
+      // `th0`/`thLen` make a PARTIAL cylinder (a curved sticker patch wrapped on a round body) and
+      // `open` drops the caps; the side UVs then run 0..1 across the arc and up the height, which is
+      // what a baked graphic wants. `uvRep` multiplies them for a repeating tile.
+      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, cy.open ?? false, cy.th0 ?? 0, cy.thLen ?? Math.PI * 2);
+      if (cy.uvRep) { const uv = g.getAttribute('uv'); for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * cy.uvRep[0], uv.getY(i) * cy.uvRep[1]); }
+      // `sideUV` pins the SIDE wall's UVs to one texel so a disc carrying a baked top-down image shows
+      // that image on its cap alone, with its rim in whatever the pinned texel holds (a bag tone).
+      if (cy.sideUV) { const uv = g.getAttribute('uv'), n = ((cy.seg ?? 12) + 1) * 2; for (let i = 0; i < n; i++) uv.setXY(i, cy.sideUV[0], cy.sideUV[1]); }
+      // `scale` before the rotations: an OVAL basin or disc, which a lathe or a cylinder cannot
+      // revolve on its own. Normals are recomputed because a non-uniform scale skews them.
+      if (cy.scale) { g.scale(cy.scale[0], cy.scale[1], cy.scale[2]); g.computeVertexNormals(); }
+      if (cy.rx) g.rotateX(cy.rx); if (cy.ry) g.rotateY(cy.ry); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
     for (const l of (c.lathes ?? []) as any[]) {
       // `ry` yaws the revolution: a 4-segment lathe turned 45 degrees is a chamfered SQUARE slab in one
       // geometry (a cone's rubber base), where two stacked boxes would cost two and a coplanar pair.
-      const g = lathe(l.pts, l.seg ?? 12); if (l.ry) g.rotateY(l.ry); g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
+      // `cylUV` (a tile size in metres) writes a seamless around-by-up UV from the lathe's own segment
+      // index -- atan2 would fold a whole tile into the seam column -- for tread, fluting and grain.
+      const g = lathe(l.pts, l.seg ?? 12, 0, l.sharp !== false);
+      if (l.cylUV) { const cu = Array.isArray(l.cylUV) ? l.cylUV : [l.cylUV, l.cylUV, 0]; latheUV(g, (g.getAttribute('position').count / ((l.seg ?? 12) + 1)) | 0, l.seg ?? 12, cu[0], cu[1], cu[2] ?? 0); }
+      if (l.scale) { g.scale(l.scale[0], l.scale[1], l.scale[2]); g.computeVertexNormals(); }
+      if (l.ry) g.rotateY(l.ry); g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
     }
     for (const p of (c.planes ?? []) as any[]) {
       // A PANE: a single quad in the XY plane at depth z, double-sided by its material. Its UVs run
@@ -1504,11 +1870,55 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
       const g = extrudeAlongZ(shape, e.z0, e.z1);
       if (e.rx) g.rotateX(e.rx);
       if (e.ry) g.rotateY(e.ry);
+      if (e.rz) g.rotateZ(e.rz);
       if (e.at) g.translate(e.at[0], e.at[1], e.at[2]);
       gs.push(tintGeo(g, e.hex));
     }
+    // ELLIPSOIDS: [hex, cx, cy, cz, rx, ry, rz, rotX?, rotY?, rotZ?] -- a unit sphere scaled per axis
+    // and turned about its own centre. A skull dome, a paw, a nose pad: the rounded solids of an
+    // animal that a box or a station tube cannot give, sharing smooth normals through the merge.
+    for (const e of (c.ellipsoids ?? []) as number[][]) {
+      const g = new THREE.SphereGeometry(1, e[10] ?? 16, e[11] ?? 12);
+      g.scale(e[4], e[5], e[6]);
+      if (e[7]) g.rotateX(e[7]); if (e[8]) g.rotateY(e[8]); if (e[9]) g.rotateZ(e[9]);
+      g.translate(e[1], e[2], e[3]);
+      gs.push(tintGeo(g, e[0]));
+    }
+    // FRUSTA: [hex, cx, yBottom, cz, w0, d0, w1, d1, h] -- a box whose footprint changes from (w0, d0) at
+    // the bottom to (w1, d1) at the top: the tapered body of a wheelie bin or a steel container.
+    for (const f of (c.frusta ?? []) as number[][]) gs.push(tintGeo(frustum(f.slice(1)), f[0]));
     for (const s of (c.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
+    // DRAPED SHEETS: a tarp or awning as a height grid with thickness -- a ridge, the sag between
+    // its poles and the droop of its free edges are numbers in the grid, computed at emit time.
+    for (const s of (c.sheets ?? []) as any[]) gs.push(tintGeo(sheet(s), s.hex));
+    // ORGANIC station tubes: [z, cx, cy, rx, ry] stations swept along Z -- the only soft form in the
+    // kit, a lying animal. Lit smooth by the helper's shared ring vertices.
+    for (const t of (c.tubesAlong ?? []) as any[]) {
+      const g = tubeAlong(t.stations, t.seg ?? 12);
+      if (t.ry) g.rotateY(t.ry); if (t.at) g.translate(t.at[0], t.at[1], t.at[2]);
+      gs.push(tintGeo(g, t.hex ?? 0xffffff));
+    }
     let g = mergeGeos(gs);
+    // a per-component scale, applied to the merge before tinting: how a lying animal authored at
+    // its own proportions is fitted into the declared envelope without re-reading every station
+    if (c.scale) g.scale(c.scale[0], c.scale[1], c.scale[2]);
+    // AXIS TINT: a per-vertex blend from c0 at `from` to c1 at `to` along one axis, over the whole
+    // merge -- a tan back fading to a white belly costs an attribute, not a second material. Applied
+    // in LINEAR space through THREE.Color. `keep` multiplies the blend into the existing tint instead
+    // of replacing it, so a dark nose stays dark.
+    if (c.tint) {
+      const a = new THREE.Color(c.tint.c0), b = new THREE.Color(c.tint.c1);
+      const p = g.getAttribute('position'); let col = g.getAttribute('color') as THREE.BufferAttribute | null;
+      if (!col) { col = new THREE.BufferAttribute(new Float32Array(p.count * 3).fill(1), 3); g.setAttribute('color', col); }
+      const ax = c.tint.axis === 'x' ? 0 : c.tint.axis === 'y' ? 1 : 2;
+      for (let i = 0; i < p.count; i++) {
+        const v = ax === 0 ? p.getX(i) : ax === 1 ? p.getY(i) : p.getZ(i);
+        const t = Math.min(1, Math.max(0, (v - c.tint.from) / (c.tint.to - c.tint.from)));
+        const r = a.r + (b.r - a.r) * t, gg = a.g + (b.g - a.g) * t, bb = a.b + (b.b - a.b) * t;
+        if (c.tint.keep) col.setXYZ(i, col.getX(i) * r, col.getY(i) * gg, col.getZ(i) * bb); else col.setXYZ(i, r, gg, bb);
+      }
+      col.needsUpdate = true;
+    }
     if (c.uv === 'world') g = worldUV(g, c.uvScale ?? 1);
     if (c.uv === 'height') g = heightUV(g, c.uvScale ?? 1);
     if (c.uv === 'panel') g = panelUV(g, c.uvScale ?? 1);
@@ -1523,11 +1933,27 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
     const gs: THREE.BufferGeometry[] = [];
     for (const b of (r.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const s of (r.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
+    for (const f of (r.frusta ?? []) as number[][]) gs.push(tintGeo(frustum(f.slice(1)), f[0]));
     for (const cy of (r.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
-      if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
+      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, cy.open ?? false);
+      if (cy.rx) g.rotateX(cy.rx); if (cy.ry) g.rotateY(cy.ry); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
+    // An OPEN wheel -- tyre and rim as closed ring lathes, a hub, and wire spokes -- for a bicycle
+    // whose wheels read as bicycle wheels rather than discs. Lathes revolve about Y (`rx` lays the
+    // axle where the placement wants it); `spokes` radiate about X by the helper's convention, so an
+    // axle on Z takes `ry: PI/2`.
+    for (const l of (r.lathes ?? []) as any[]) {
+      const g = lathe(l.pts, l.seg ?? 12, 0, l.sharp !== false);
+      if (l.rx) g.rotateX(l.rx); if (l.ry) g.rotateY(l.ry); if (l.rz) g.rotateZ(l.rz);
+      if (l.at) g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
+    }
+    for (const s of (r.spokes ?? []) as any[]) {
+      const g = spokes(s.rHub, s.rRim, s.halfW, s.n, s.hex, s.t ?? 0.006, s.prism ?? false);
+      if (s.rx) g.rotateX(s.rx); if (s.ry) g.rotateY(s.ry); if (s.rz) g.rotateZ(s.rz);
+      if (s.at) g.translate(s.at[0], s.at[1], s.at[2]); gs.push(g);
+    }
+    for (const t of (r.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     let g = mergeGeos(gs);
     if (r.uv === 'world') g = worldUV(g, r.uvScale ?? 1);
     if (r.uv === 'height') g = heightUV(g, r.uvScale ?? 1);
@@ -1545,6 +1971,20 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
   for (const t of (CONFIG.tiles ?? []) as any[]) {
     const mat = materials[t.material];
     if (!mat) continue;
+    // A BAKED graphic (a printed sign face): one WebP data URI composed offline from the plate's own
+    // printed region and vector marks, loaded through TextureLoader. Assigned synchronously so the
+    // harness waits on the decode. It beats fillText, which draws a different wordmark per machine.
+    if (t.kind === 'baked') {
+      // Under plain Node (the coplanar check, the runtime probe) there is no document for ImageLoader:
+      // keep the white fallback rather than throw, exactly as the retail glazing does.
+      if (typeof document === 'undefined') continue;
+      const baked = new THREE.TextureLoader().load(t.uri);
+      const srgb = (THREE as any).SRGBColorSpace;
+      if (srgb) baked.colorSpace = srgb;
+      baked.anisotropy = 4;
+      mat.map = baked; mat.needsUpdate = true;
+      continue;
+    }
     let tex: THREE.CanvasTexture | null = null;
     if (t.kind === 'mud') tex = mudTile(t.size ?? 512, t.base, t.seed ?? 1, t.coverage ?? 0.33);
     if (t.kind === 'dust') tex = dustTile(t.size ?? 512, t.dust, t.seed ?? 1, t.coverage ?? 0.30);
@@ -1552,9 +1992,14 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
     if (t.kind === 'rust') tex = rustTile(t.size ?? 512, t.ratio, t.seed ?? 7, t.density ?? 90);
     if (t.kind === 'corrugation') tex = corrugationTile(t.size ?? 512, t.pitch ?? 12, t.low ?? 0.7, t.seed ?? 3);
     if (t.kind === 'grime') tex = grimeTile(t.size ?? 512, t.seed ?? 11, t);
+    if (t.kind === 'fur') tex = furTile(t.size ?? 512, t.seed ?? 13, t);
     if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4);
     if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6);
+    if (t.kind === 'stripes') tex = stripeTile(t.size ?? 256, t.bands ?? 8, t.a, t.b, t.seed ?? 9);
     if (t.kind === 'poster') tex = posterTile(t.size ?? 512, t.seed ?? 8, t.lines ?? []);
+    if (t.kind === 'pebble') tex = pebbleTile(t.size ?? 512, t.seed ?? 21, t);
+    if (t.kind === 'tread') tex = treadTile(t.size ?? 256, t.seed ?? 23, t);
+    if (t.kind === 'tyre') tex = tyreTile(t.size ?? 256, t.seed ?? 29, t);
     bindTile(mat, tex, t.bump ?? 0);
   }
 

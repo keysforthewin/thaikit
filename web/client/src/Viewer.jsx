@@ -316,27 +316,18 @@ const SELECTED = 0x7ee787;
  * One frame for the whole compound is what lets a consumer build a compound body
  * from the file without walking the scene graph at all.
  */
-function ColliderEditor({ parts, selected, onSelect, onCommit, mode, editable }) {
+function ColliderEditor({ parts, selected, onSelect, onTarget, editable }) {
   const refs = useRef([]);
   const geoms = useMemo(() => parts.map((p) => unitGeometry(p.type)), [parts]);
   useEffect(() => () => { for (const g of geoms) g.dispose(); }, [geoms]);
 
-  const target = refs.current[selected] ?? null;
-
-  // Read the gizmo's result back into the record. Yaw only: a walkable proxy has
-  // no use for pitch or roll, and constraining it keeps the record cheap for a
-  // consumer -- and honest, since nothing downstream reads two more angles.
-  const commit = () => {
-    const obj = refs.current[selected];
-    if (!obj) return;
-    onCommit(selected, {
-      offset: [obj.position.x, obj.position.y, obj.position.z].map((n) => +n.toFixed(4)),
-      scale: [obj.scale.x / 2, obj.scale.y / 2, obj.scale.z / 2].map((n) =>
-        +Math.max(0.005, n).toFixed(4),
-      ),
-      yaw: +obj.rotation.y.toFixed(4),
-    });
-  };
+  // Hand the selected proxy UP rather than driving a gizmo from here. The gizmo
+  // itself is mounted at the scene root, outside this subtree, for two reasons
+  // it cannot be inside for -- see the comment on <ColliderGizmo>.
+  useEffect(() => {
+    onTarget(selected === null ? null : refs.current[selected] ?? null);
+    return () => onTarget(null);
+  }, [onTarget, selected, parts]);
 
   return (
     <group>
@@ -368,20 +359,60 @@ function ColliderEditor({ parts, selected, onSelect, onCommit, mode, editable })
           />
         </mesh>
       ))}
-      {editable && target && (
-        <TransformControls
-          object={target}
-          mode={mode}
-          // OrbitControls is makeDefault, so the gizmo suspends orbiting for the
-          // length of a drag on its own. Without that, dragging a face spins the
-          // camera at the same time and neither gesture does what you meant.
-          onMouseUp={commit}
-          showX
-          showY
-          showZ
-        />
-      )}
     </group>
+  );
+}
+
+/**
+ * The drag gizmo, mounted at the SCENE ROOT and never inside the framing groups.
+ *
+ * TransformControls is an Object3D carrying a 100,000-unit picker plane and
+ * axis lines a million units long, and it sits wherever it is rendered. Both
+ * facts bite if it is mounted next to the proxies it drags:
+ *
+ * - `<Bounds observe>` refits by measuring the bounding box of everything under
+ *   it. With the gizmo inside, that box is a million metres wide, so the next
+ *   refit -- a window resize, the drawer opening -- flies the camera off and
+ *   sets near/far to match. The prop, the grid and the proxies all vanish and
+ *   the gizmo, which is scaled to a fixed size on screen, is the only thing
+ *   left. That is the bug this arrangement exists to prevent.
+ * - `<Center>` translates its children to put the model on the origin. The
+ *   gizmo copies its target's WORLD position into its own LOCAL one, so under
+ *   Center it lands offset by however far the model was moved -- for the oil
+ *   drum, half a metre below the part it is supposed to be holding.
+ *
+ * The target is a mesh deep inside both groups, which is fine: the controls read
+ * `object.matrixWorld` and write back through the parent's inverse, so a gizmo
+ * at the root drives a nested object correctly.
+ */
+function ColliderGizmo({ target, mode, onCommit }) {
+  // Yaw only: a walkable proxy has no use for pitch or roll, and constraining it
+  // keeps the record cheap for a consumer -- and honest, since nothing
+  // downstream reads two more angles.
+  const commit = () => {
+    if (!target) return;
+    onCommit({
+      offset: [target.position.x, target.position.y, target.position.z].map((n) => +n.toFixed(4)),
+      scale: [target.scale.x / 2, target.scale.y / 2, target.scale.z / 2].map((n) =>
+        +Math.max(0.005, n).toFixed(4),
+      ),
+      yaw: +target.rotation.y.toFixed(4),
+    });
+  };
+
+  if (!target) return null;
+  return (
+    <TransformControls
+      object={target}
+      mode={mode}
+      // OrbitControls is makeDefault, so the gizmo suspends orbiting for the
+      // length of a drag on its own. Without that, dragging a face spins the
+      // camera at the same time and neither gesture does what you meant.
+      onMouseUp={commit}
+      showX
+      showY
+      showZ
+    />
   );
 }
 
@@ -514,8 +545,7 @@ function Model({
           parts={collider.parts}
           selected={collider.selected}
           onSelect={collider.onSelect}
-          onCommit={collider.onCommit}
-          mode={collider.mode}
+          onTarget={collider.onTarget}
           editable={collider.editable}
         />
       )}
@@ -534,6 +564,9 @@ export function Viewer({ url, version, exportName, colliders: parts, onColliders
   const [runtime, setRuntime] = useState(null);
   const [selected, setSelected] = useState(null);
   const [mode, setMode] = useState('translate');
+  // The Object3D the gizmo drags, reported up from the proxies so the gizmo can
+  // live at the scene root instead of beside them.
+  const [target, setTarget] = useState(null);
 
   const editable = typeof onCollidersChange === 'function';
   const list = parts ?? [];
@@ -666,13 +699,19 @@ export function Viewer({ url, version, exportName, colliders: parts, onColliders
                 parts: list,
                 selected,
                 onSelect: setSelected,
-                onCommit: commitPart,
-                mode,
+                onTarget: setTarget,
                 editable,
               }}
             />
           </Bounds>
         </Stage>
+        {colliders && editable && (
+          <ColliderGizmo
+            target={target}
+            mode={mode}
+            onCommit={(patch) => commitPart(selected, patch)}
+          />
+        )}
         {grid && (
           <Grid
             args={[10, 10]}
