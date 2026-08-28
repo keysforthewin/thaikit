@@ -389,6 +389,16 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   only honours `budgetClass` when it CHANGES in the same edit, so the `small` pin is a second edit.
 - **The render harness's clip planes follow the camera fit.** They were a fixed 0.01..100 m, which
   clipped a 300 m tower out of the frame entirely and read as a SwiftShader blank-render fault.
+- **Compose's anonymous `node_modules` volume is seeded ONCE and survives `docker compose
+  build`.** Adding a dependency to package.json and rebuilding the image changes nothing inside the
+  dev container -- the volume from the first `up` still masks `/app/node_modules`. That is how
+  `tar` was present on the host and missing at `/app`, and the pack manager's delete button died on
+  `ERR_MODULE_NOT_FOUND: Cannot find package 'tar' imported from /app/scripts/lib/packs/fetch.mjs`.
+  After any dependency change: `docker compose up -d --force-recreate --renew-anon-volumes web`.
+- **`install-pack.mjs` loads its download/bundle stack lazily.** `source.mjs` needs semver,
+  `fetch.mjs` needs tar, `wrap.mjs` needs esbuild -- and `--remove` needs none of them, being a
+  filesystem delete plus a `packs/index.json` rewrite. Static imports made removal fail on a
+  runtime that could not install; keep them behind `loadInstallDeps()`.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

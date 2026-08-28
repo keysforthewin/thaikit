@@ -26,16 +26,36 @@ import os from 'node:os';
 import { PACKS_DIR } from '@thaikit/registry-core';
 
 import { ok, fail, parseArgs } from './lib/out.mjs';
-import { parseSource, resolveNpm } from './lib/packs/source.mjs';
-import { fetchTarball } from './lib/packs/fetch.mjs';
-import { materialise, targetToPath } from './lib/packs/materialise.mjs';
-import { pickEntry, wrapperSource, bundleItem } from './lib/packs/wrap.mjs';
 import { readIndex, writeIndex } from './lib/packs/index.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATES = path.join(here, 'lib/packs/templates');
 const MAX_PARTS = 8;
 const MAX_TRIANGLES = 200_000;
+
+/**
+ * The download-and-bundle stack, loaded on demand.
+ *
+ * source.mjs needs semver, fetch.mjs needs tar and wrap.mjs needs esbuild --
+ * three third-party dependencies that only INSTALLING a pack has any use for.
+ * Removing one is a filesystem operation, so it must not be able to fail on a
+ * runtime whose node_modules predates any of them. That is exactly how
+ * `--remove @medieval-kit` died inside the container:
+ * ERR_MODULE_NOT_FOUND: Cannot find package 'tar'.
+ */
+let installDeps = null;
+async function loadInstallDeps() {
+  if (!installDeps) {
+    const [source, fetchMod, materialiseMod, wrap] = await Promise.all([
+      import('./lib/packs/source.mjs'),
+      import('./lib/packs/fetch.mjs'),
+      import('./lib/packs/materialise.mjs'),
+      import('./lib/packs/wrap.mjs'),
+    ]);
+    installDeps = { ...source, ...fetchMod, ...materialiseMod, ...wrap };
+  }
+  return installDeps;
+}
 
 const progress = (phase, message, extra = {}) => {
   process.stderr.write(`${JSON.stringify({ phase, message, ...extra })}\n`);
@@ -44,6 +64,7 @@ const progress = (phase, message, extra = {}) => {
 const posix = (p) => p.split(path.sep).join('/');
 
 async function loadRegistry(source, cacheDir) {
+  const { resolveNpm, fetchTarball } = await loadInstallDeps();
   if (source.kind === 'npm') {
     progress('resolve', `resolving ${source.name}@${source.range} on npm`);
     const r = await resolveNpm(source.name, source.range);
@@ -111,6 +132,7 @@ async function pool(items, limit, fn) {
 }
 
 async function install({ source, refresh, packId }) {
+  const { materialise, targetToPath, pickEntry, wrapperSource, bundleItem } = await loadInstallDeps();
   const cacheDir = path.join(PACKS_DIR, '.cache');
   const { registry, version, pkgDir, license, description, homepage } = await loadRegistry(source, cacheDir);
   validateRegistry(registry);
@@ -249,6 +271,7 @@ async function main() {
   const args = parseArgs();
   if (args.remove) return ok(await remove(String(args.remove)));
   if (!args.source) return fail('need --source <npm name | npm:name@range | https://…json | file:…> or --remove <id>');
+  const { parseSource } = await loadInstallDeps();
   const source = parseSource(String(args.source));
   return ok(await install({ source, refresh: Boolean(args.refresh), packId: args.pack ? String(args.pack) : null }));
 }
