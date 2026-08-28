@@ -276,6 +276,19 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   (`cannot record submitted pass ... current unlocked pass is 'complete'`). Regenerate the spec
   from the facts first, then run with `rebuild=True`; and a facts script must exit non-zero on a
   strict-quality FAIL, or a `&&` chain promotes a prop whose spec never validated.
+- **Skyline imposters do not go through img2threejs.** `scripts/skylinekit/author-imposter.mjs --id <id>`
+  keys `assets/<id>/imposter.png` to alpha and writes the spec and factory for ONE unlit, yaw-billboarded
+  quad (2 tris, 1 draw, 1 material, 1 geometry, one RGBA `maps/albedo.webp`); then the normal build →
+  render → promote chain. Three things it learned: the key is a flood fill through SOLID backdrop only
+  (≤10 levels off the measured border colour) with the anti-aliased rim added as a 2 px dilation
+  afterwards — a flood that walks the soft band keyed the twin towers' whole light-grey podium into
+  speckle; enclosed flat pockets ≥0.25% of the frame are keyed too (the elephant's belly is sky, at mean
+  distance 1.0, where the mall's blank LED screen measures 63 and stays); and the quad's WIDTH follows
+  the plate (height × keyed aspect) because a quad at the listed width stretches the texture — eight of
+  fifteen declarations were 11–51% off and were corrected with the arithmetic in `notes`. `edit-assets`
+  only honours `budgetClass` when it CHANGES in the same edit, so the `small` pin is a second edit.
+- **The render harness's clip planes follow the camera fit.** They were a fixed 0.01..100 m, which
+  clipped a 300 m tower out of the frame entirely and read as a SwiftShader blank-render fault.
 - A schema migration cannot use `updateRegistry`: it re-reads through the
   CURRENT schema, so it can never open a file written by an older one. That is
   what `migrateRegistry` is for — raw in, validated out, same lock.

@@ -1,0 +1,2891 @@
+{
+  "targetName": "Low-Rise Condominium",
+  "targetId": "low-rise-condominium",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-residential-condominium-block",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "rectilinear",
+        "fin-articulated-facade",
+        "recessed-balcony-bays",
+        "roof-deck-screen"
+      ],
+      "structureKind": [
+        "shell-volume",
+        "perforated-facade",
+        "repeated-module",
+        "applied-fins"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "painted-cement-render",
+        "powder-coated-steel",
+        "tinted-plate-glass",
+        "frosted-glass",
+        "anodised-aluminium",
+        "timber",
+        "brushed-stainless",
+        "roof-screed",
+        "precast-concrete",
+        "foliage"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The developer-built white condo of the last fifteen years: a six-storey white render box with a deep white coping cap, dark vertical fins and two vertical louvre boxes dividing six bays, glass-balustrade balconies in bays B, C and E and grid windows in A, D and F on every floor, a taller glazed ground floor with a white-framed lobby portal under a flat canopy on two stainless posts, a BAAN JAI CONDO board, planters with a hedge and fan palms, and a timber batten screen enclosing a roof deck with a lift head inside it."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 3,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 11,
+        "repetitionSystems": 7
+      },
+      "reasoning": [
+        "The silhouette is a white box under a coping cap, and the identity is the RHYTHM across it: dark vertical fins and two louvre boxes dividing six bays, three of which are recessed balconies with frosted balustrades and three grid windows, on every one of five floors.",
+        "The roof carries a 3.15 m timber batten screen over most of the deck with a lift head inside it -- the second identity feature, read from the elevated plate and placed against it, not against the proxy, which pushed it to the rear 40 percent of the roof.",
+        "The -X flank has its own grammar: a rear wall, a pair of dark louvre boxes with a glazed gap and white ledges between them, a strip of narrow windows, and a plain front wall.",
+        "Action readiness is minimal: static exterior shell, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Thirty bays at four or five parts each plus 30 side panes, 580 screen battens and 132 louvre slats are over a thousand discrete parts; seven InstancedMesh systems carry all of them at one submission each, three of them scaling ONE unit box per instance (every pane, mullion, rail and fin body), so the whole prop is 13 draw calls."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-fin-rhythm",
+          "zone": "facade",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "dark vertical fins and two vertical louvre boxes dividing six bays, light returns, full height from the first slab band to the coping",
+          "mapsTo": {
+            "ref": "fins"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-balcony-columns",
+          "zone": "facade",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "recessed balconies 1.5 m deep with frosted balustrades in bays B, C and E on every floor",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-grid-windows",
+          "zone": "facade",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "three-pane grid windows with a transom in bays A, D and F on every floor",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-roof-screen",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "timber batten screen 3.15 m tall over the roof deck with two partitions and a lift head inside",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-coping-cap",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "deep white coping cap 1.1 m tall standing 0.35 m proud all round",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-entrance",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "white-framed lobby portal with a flat canopy on two stainless posts and a paved step",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-planters",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "precast planters with a hedge and fan palms along the front",
+          "mapsTo": {
+            "ref": "planters"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-name-board",
+          "zone": "base",
+          "kind": "decal",
+          "identityDefining": false,
+          "description": "BAAN JAI CONDO board left of the portal",
+          "mapsTo": {
+            "ref": "sign"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-side-louvres",
+          "zone": "side",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "pair of dark louvre boxes on each flank with a glazed gap, white ledges and a strip of narrow windows",
+          "mapsTo": {
+            "ref": "fins"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-glazing-graphic",
+          "zone": "facade",
+          "kind": "decal",
+          "identityDefining": false,
+          "description": "faint curtain stripes and a reflection band on every tinted pane",
+          "mapsTo": {
+            "ref": "d10-glazing-graphic"
+          },
+          "onMaterial": "glass",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+    "resolvedUnknowns": [
+      "Bays A, D and F are grid windows and B, C and E balconies on EVERY floor: the plate's per-bay zoom shows a balustrade in the same three bays on all five floors, so the list-time note describing a checkerboard stagger was wrong and is corrected on the asset.",
+      "The roof screen is placed against the plate (front run 4.5 m behind the facade, rear run 0.5 m off the rear parapet, 9 m deep) rather than the proxy, for the reasons in meshyCrossCheck.",
+      "The -Z elevation repeats the +Z bay grammar over a plain ground floor; +X mirrors -X.",
+      "The lift head is one box behind the screen's front run at x -5.9..-2.35 (plate x 333..480 over the run's 255..740 span); the proxy's two symmetric blocks are its symmetry mode.",
+      "Fins and louvre boxes are authored at #445A5C, luma 85 / saturation 0.26, above the plate's #404C49 / #353C41 so the turntable segmenter holds them on chroma at every azimuth; the returns are light aluminium as the plate shows them.",
+      "Planting is a hedge of instanced shrubs and six fan palms in the plate's greens, not the plate's exact plants; the entrance mat and the sign lettering are the only ground-level graphics."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 21.80 x 21.00 x 17.30 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 2,
+      "microFeatureGroups": 2,
+      "materialLayers": 11,
+      "repetitionSystems": 7,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "facade-rhythm",
+        "name": "Fin and bay rhythm",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Six bays divided by three narrow fins, two louvre boxes and two corner fins at the proxy's positions",
+          "Dark fin faces with light returns, louvre slats proud of a dark plate",
+          "Five floors of 2.85 m over a 3.05 m ground floor with a 0.45 m white slab band at each"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-fin",
+          "region-louvre"
+        ],
+        "failureModes": [
+          "fins read as painted stripes",
+          "a checkerboard balcony stagger",
+          "fins so dark they read as holes"
+        ]
+      },
+      {
+        "id": "balcony-columns",
+        "name": "Balcony and window columns",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Bays B, C and E as real 1.5 m recesses with a frosted balustrade on every floor",
+          "Bays A, D and F as three-pane grid windows with a transom on every floor",
+          "Recess interiors and panes rendering above the backdrop band"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-glass",
+          "region-balglass"
+        ],
+        "failureModes": [
+          "balconies painted flat on the facade",
+          "opaque white balustrades",
+          "windows read as holes"
+        ]
+      },
+      {
+        "id": "roof-and-screen",
+        "name": "Coping cap and roof screen",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "A 1.1 m coping cap proud of the walls with the deck inside it",
+          "A timber batten screen 3.15 m tall over most of the deck with partitions and a lift head behind the front run",
+          "Screen placed as the plate shows it, not at the rear of the roof"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-timber",
+          "region-deck"
+        ],
+        "failureModes": [
+          "a screen pushed to the rear 40 percent of the roof",
+          "battens so sparse the roof reads as open"
+        ]
+      },
+      {
+        "id": "entrance-and-flank",
+        "name": "Entrance, planting and flank",
+        "required": false,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "White-framed portal with canopy, posts and step; glazing runs either side",
+          "Planters with a hedge and palms; the name board left of the portal",
+          "Louvre pair, glazed gap with ledges and window strip on -X"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-steel",
+          "region-plant",
+          "region-side"
+        ],
+        "failureModes": [
+          "a solid ground floor",
+          "topiary balls for a hedge",
+          "a blank flank"
+        ]
+      },
+      {
+        "id": "condo-palette",
+        "name": "Condo palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "White render, charcoal fins, teal glass, frosted balustrades, timber screen",
+          "Fin faces dark against light returns"
+        ],
+        "evidenceRefs": [
+          "region-white",
+          "region-fin",
+          "region-glass",
+          "region-timber"
+        ],
+        "failureModes": [
+          "the render rendered mid-grey by a texture set",
+          "navy fins"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "facade-rhythm",
+      "name": "Fin and bay rhythm",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "shell",
+        "fins"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-fin"
+      ]
+    },
+    {
+      "id": "balcony-columns",
+      "name": "Balcony and window columns",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-glass"
+      ]
+    },
+    {
+      "id": "roof-and-screen",
+      "name": "Coping cap and roof screen",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shell",
+        "deck"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-timber"
+      ]
+    },
+    {
+      "id": "entrance-and-flank",
+      "name": "Entrance, planting and flank",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "shell",
+        "planters",
+        "steel",
+        "sign"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-steel"
+      ]
+    },
+    {
+      "id": "condo-palette",
+      "name": "Condo palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "shell",
+        "fins"
+      ],
+      "evidenceRefs": [
+        "region-white",
+        "region-fin",
+        "region-glass"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 13,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope including the canopy and planters; a level builder collides with the block, not the fins."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Bays A, D and F are grid windows and B, C and E balconies on EVERY floor: the plate's per-bay zoom shows a balustrade in the same three bays on all five floors, so the list-time note describing a checkerboard stagger was wrong and is corrected on the asset.",
+    "The roof screen is placed against the plate (front run 4.5 m behind the facade, rear run 0.5 m off the rear parapet, 9 m deep) rather than the proxy, for the reasons in meshyCrossCheck.",
+    "The -Z elevation repeats the +Z bay grammar over a plain ground floor; +X mirrors -X.",
+    "The lift head is one box behind the screen's front run at x -5.9..-2.35 (plate x 333..480 over the run's 255..740 span); the proxy's two symmetric blocks are its symmetry mode.",
+    "Fins and louvre boxes are authored at #445A5C, luma 85 / saturation 0.26, above the plate's #404C49 / #353C41 so the turntable segmenter holds them on chroma at every azimuth; the returns are light aluminium as the plate shows them.",
+    "Planting is a hedge of instanced shrubs and six fan palms in the plate's greens, not the plate's exact plants; the entrance mat and the sign lettering are the only ground-level graphics."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up, entrance facade on +Z. The louvre pair and window strip are on -X at z -3.0..-1.2 / 0.2..2.0 and 2.0..2.45 (proxy -X map x 235..320, 390..480 and 480..500 at 47 px/m from the rear face at x=40). The roof screen spans x -8.7..8.7, z -6.5..2.5. The ground floor is inset 0.30 on -X, +X and -Z and flush on +Z; the planters project 1.2 m and the canopy 2.5 m from the +Z face."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 21.8,
+      "h": 21.0,
+      "d": 17.3
+    },
+    "description": "A 20.5 x 14.0 m body from the ground to a 17.75 m roof slab under a 1.1 m coping cap standing 0.35 m proud (17.4..18.5); fins and louvre boxes 0.3..0.6 m proud of the +Z and -Z faces, louvre boxes 0.67 m proud of the flanks; a 3.15 m batten screen over the deck to 21.0 with a lift head to 20.7 inside it; a canopy 2.5 m out at 2.4..2.6 and 0.5 m planters 1.2 m out at the base. The silhouette events are the coping cap, the screen, the fin returns and the canopy.",
+    "envelopeDerivation": "Height is the primary axis at the declared 21.00 m: the top rail of the roof screen. The Meshy v7 proxy of the plate normalises to w:h:d = 1.036 : 1 : 0.842, so the bounding box is 21.8 x 21.0 x 17.7; on its +Z depth map at 47.06 px/m the BODY reads 965 px = 20.5 m wide and on the -X map 13.95 m deep, the side louvre boxes 0.65 m proud on each flank (21.8) and the canopy 2.1 m in front. The list-time 24 x 16 was a six-bay-at-4 m estimate: the proxy and the plate agree on six bays of 2.5 m between 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins (0.9 + 15.0 + 0.9 + 3.7 = 20.5), and the declaration was corrected on the asset with this arithmetic before the build. Built box: x -10.92..10.92 (side louvre slats), y 0..21.0, z -7.72 (rear louvre slats, mirrored from the front) ..+9.6 (entrance paving under the 2.5 m canopy) = 17.32, declared 17.3. Origin base-center of the BODY footprint, so the box is 0.94 m off-centre in z.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1.036 : 1 : 0.842 against the corrected declaration 1.038 : 1 : 0.824. Area-weighted band comparison over ten bands: mean |delta width| 0.031 and |delta depth| 0.030 of height. Three residuals are explained rather than built to: (1) bands 2-7 width +0.042, where the candidate 95th percentile lands on the flank louvre bodies at x=10.75 and the proxy's on its wall at 10.25 -- the two bounding boxes agree (21.84 vs 21.76); (2) band 9 depth +0.149, the roof screen, which the proxy places on the rear 40 percent of the roof (front run 7.7 m behind the facade) and the plate does not: the plate shows the front run's full base with a 13 px deck strip in front of it at 39 px/m, where the proxy's placement would show ~80 px, and the lift head directly behind that run seen through the battens; (3) band 1 depth -0.081, a 5-95 percentile artefact of a thin canopy (28 m2 in a 300 m2 band) that the proxy fused with the planting. Floor pitch 2.85 m and ground floor 3.05 m from the proxy's slab lines at y 165/300/435/570/700/835 px."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-white",
+      "viewpoint": "front",
+      "path": "crops/coping.png",
+      "confidence": 0.781
+    },
+    {
+      "id": "region-fin",
+      "viewpoint": "front",
+      "path": "crops/fin.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-louvre",
+      "viewpoint": "front",
+      "path": "crops/louvre.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-glass",
+      "viewpoint": "front",
+      "path": "crops/glass.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-balglass",
+      "viewpoint": "front",
+      "path": "crops/balustrade.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-alu",
+      "viewpoint": "front",
+      "path": "crops/mullion.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-timber",
+      "viewpoint": "top",
+      "path": "crops/timber.png",
+      "confidence": 0.826
+    },
+    {
+      "id": "region-steel",
+      "viewpoint": "front",
+      "path": "crops/steel.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-deck",
+      "viewpoint": "top",
+      "path": "crops/deck.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-plinth",
+      "viewpoint": "front",
+      "path": "crops/plinth.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-plant",
+      "viewpoint": "front",
+      "path": "crops/plants.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-sign",
+      "viewpoint": "front",
+      "path": "crops/signboard.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-side",
+      "viewpoint": "side",
+      "path": "crops/wall.png",
+      "confidence": 0.734
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.6,
+      "note": "NOT DIRECTLY OBSERVED. The registry notes specify a double-loaded corridor with units both sides and the proxy's -Z map repeats the front grammar, so the -Z elevation is authored as the same six-bay fin-and-balcony facade over a plain ground floor, with no portal, canopy or planting. Confidence 0.60."
+    },
+    {
+      "id": "region-plusx",
+      "viewpoint": "right",
+      "path": null,
+      "confidence": 0.6,
+      "note": "NOT DIRECTLY OBSERVED. The proxy (symmetry auto) mirrors the -X flank, and the plan is symmetric about x, so +X is authored as a mirror of -X: louvre pair, glazed gap with ledges, window strip, ground-floor window. Confidence 0.60."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "shell",
+      "name": "White rendered shell",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.86,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two facade extrusions with the sixty bay openings as REAL holes 1.5 m deep, two side walls extruded in the YZ plane with their window-strip and gap holes, the body between, the ground floor as a notched plan extrusion with its own front slabs, the portal surround, the coping ring, the canopy slab, the lift head and the side ledges -- one render, ONE component and ONE draw call.",
+      "materialId": "white",
+      "material": "white",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 20.5 x 14.0 m shell 0..17.75 with a coping ring 17.4..18.5 standing 0.35 proud; five rows of six 2.5 x 2.4 m holes 1.5 m deep on +Z and -Z; ten holes per flank; a 5.0 m portal recessed 1.0 m on +Z.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Facades butt the side walls' inner faces, the body butts the facades' backs, the ground floor top butts the body and facade bottoms, the coping ring encloses the wall tops, the deck butts the body top and the ring's inner faces, the lift head and ledges stand on opposed faces. check-coplanar clean.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d2-balcony-columns",
+          "description": "thirty recessed balconies",
+          "delivery": "holes in two ExtrudeGeometry facades + repetitionSystems.balustrades"
+        },
+        {
+          "id": "d3-grid-windows",
+          "description": "thirty grid windows",
+          "delivery": "holes in the facades + repetitionSystems.glass + mullions"
+        },
+        {
+          "id": "d5-coping-cap",
+          "description": "coping ring",
+          "delivery": "extruded plan ring"
+        },
+        {
+          "id": "d6-entrance",
+          "description": "portal, surround and canopy slab",
+          "delivery": "notched plan extrusion + surround boxes + slab; posts and trim in steel"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "white",
+        "baseColor": "#ececec",
+        "recipe": "White painted render, roughness 0.88, no texture set.",
+        "evidenceRef": "region-white",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(236, 236, 236, 1.0)",
+        "secondaryAlbedo": "rgba(236, 236, 236, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            10.5,
+            0.94
+          ],
+          "halfExtents": [
+            10.92,
+            10.5,
+            8.66
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope including the canopy and planters; a level builder collides with the block, not the fins."
+        }
+      }
+    },
+    {
+      "id": "fins",
+      "name": "Fin and louvre face plates",
+      "level": "macro",
+      "role": "identity",
+      "importance": 0.95,
+      "confidence": 0.83,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The dark faces of every fin and louvre box on all four elevations plus the entrance mat, merged: one material, one draw. The light bodies behind them are instances of the aluminium unit box, so the dark-face / light-return contrast costs no extra draw.",
+      "materialId": "fin",
+      "material": "fin",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "0.05 m plates on the faces of three narrow fins, two corner fins and two louvre boxes per long elevation and two louvre boxes per flank, 3.05..17.4, each 0.02 m wider than its body.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every plate's back butts its body's front (opposed); plates overlap the bodies by 0.02 m each side and 0.02 m top and bottom so no two share a bounding plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-fin-rhythm",
+          "description": "fin and louvre faces",
+          "delivery": "merged plates + repetitionSystems.louvre-slats + mullions (bodies)"
+        },
+        {
+          "id": "d9-side-louvres",
+          "description": "flank louvre pairs",
+          "delivery": "merged plates + repetitionSystems.louvre-slats"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "fin",
+        "baseColor": "#445a5c",
+        "recipe": "Dark powder-coated steel, roughness 0.62, metalness 0.20.",
+        "evidenceRef": "region-fin",
+        "confidence": 0.83,
+        "dominantAlbedo": "rgba(68, 90, 92, 1.0)",
+        "secondaryAlbedo": "rgba(68, 90, 92, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.83
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Roof deck",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.6,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because the plate reads the deck as a distinct grey inside the white coping and this prop is seen from above in every hero shot.",
+      "materialId": "deck",
+      "material": "deck",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.10 m slab inside the coping ring, 17.75..17.85.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Butts the body top (opposed) and the ring's inner faces (opposed); the battens, posts and lift head stand on its top face.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-roof-screen",
+          "description": "batten screen",
+          "delivery": "repetitionSystems.battens + the steel component's rails and posts"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "deck",
+        "baseColor": "#b5afa8",
+        "recipe": "Roof screed, roughness 0.95.",
+        "evidenceRef": "region-deck",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(181, 175, 168, 1.0)",
+        "secondaryAlbedo": "rgba(181, 175, 168, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "planters",
+      "name": "Planters and entrance paving",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.5,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two 0.5 m planter boxes 1.2 m out from the +Z face and the 0.15 m entrance paving, in the plate's pale precast grey.",
+      "materialId": "plinth",
+      "material": "plinth",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Planters x -10.25..-3.0 and 3.0..10.25; paving x -3.0..3.0, z 6.0..9.6.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Backs butt the ground-floor front (opposed); the shrubs and palms stand on the planter tops.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d7-planters",
+          "description": "hedge and palms",
+          "delivery": "repetitionSystems.bushes + palms"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "plinth",
+        "baseColor": "#cfcdc5",
+        "recipe": "Precast concrete, roughness 0.90.",
+        "evidenceRef": "region-plinth",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(207, 205, 197, 1.0)",
+        "secondaryAlbedo": "rgba(207, 205, 197, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Stainless posts, rails and canopy trim",
+      "level": "micro",
+      "role": "detail",
+      "importance": 0.5,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Everything stainless merged: three rails per screen run, the screen posts, the two canopy posts and the canopy edge trim -- one material, one draw.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "0.05 m rails at 17.95 / 19.45 / 20.92, 0.08 m posts every 2.9 m, 0.15 m canopy posts 0.15..2.4, a 0.08 m trim proud of the canopy slab edge.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Rails pass through the battens rather than sitting on them; canopy posts are sunk 0.02 m into the paving; the trim stands 0.02 m proud of the slab edge.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#8f8a80",
+        "recipe": "Brushed stainless, roughness 0.38, metalness 0.35.",
+        "evidenceRef": "region-steel",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(143, 138, 128, 1.0)",
+        "secondaryAlbedo": "rgba(143, 138, 128, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "sign",
+      "name": "Name board",
+      "level": "micro",
+      "role": "identity",
+      "importance": 0.5,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A 1.7 x 0.6 m board carrying the name canvas on its +Z face, every other face sampling a plain corner of the same canvas.",
+      "materialId": "sign",
+      "material": "sign",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Centred at x=-5.75, y=1.95 on the bay-B ground-floor wall, as the plate places it.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "0.03 m proud of the wall face at z=7.0..7.03.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d8-name-board",
+          "description": "BAAN JAI CONDO lettering",
+          "delivery": "CanvasTexture on the +Z face, pale ground, dark bold sans"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "sign",
+        "baseColor": "#ffffff",
+        "recipe": "White base; the BAAN JAI / CONDO canvas is assigned after construction.",
+        "evidenceRef": "region-sign",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(255, 255, 255, 1.0)",
+        "secondaryAlbedo": "rgba(255, 255, 255, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "white",
+      "name": "White painted render",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ececec",
+      "color": "#ececec",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/white_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ececec",
+        "secondary": [
+          "#F5F5F5",
+          "#BEBEBE",
+          "#F9F9F9"
+        ],
+        "samplingNotes": "Measured as the mean of crops/coping.png. extract_pbr_evidence confidence 0.781. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-white (PBR confidence 0.781): the lit coping #F1F1F1, the canopy #EFEFEF (crops/canopy.png); the -X wall reads #A3A4A6 in the plate because it is in the lightbox's shade, not because the paint differs.",
+          "Shared by the facades, side walls, body, slab bands, coping cap, ground floor, portal surround, canopy slab, lift head and side ledges -- one render, one material.",
+          "Textureless: flat paint. vertexColors carries a 0.70 linear multiplier on the recess back walls so thirty balconies read as recesses under the harness's flat light."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/coping.png",
+        "pbrReport": "material-evidence/white.pbr.json",
+        "confidence": 0.781,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "fin",
+      "name": "Dark powder-coated fins and louvres",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#445a5c",
+      "color": "#445a5c",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/fin_roughness.png"
+      },
+      "metalness": 0.2,
+      "albedo": {
+        "dominant": "#445a5c",
+        "secondary": [
+          "#33403C",
+          "#202A26",
+          "#53605C"
+        ],
+        "samplingNotes": "Measured as the mean of crops/fin.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-fin (PBR confidence 0.829): fin face #404C49, louvre #353C41 (region-louvre, 0.831), both inside the turntable backdrop band (luma 73 and 59).",
+          "Authored #445A5C, luma 85 and saturation 0.26 -- teal-grey between the plate's two hues -- so the segmenter's chroma test (>0.16 rendered, ~0.75 of authored) holds every fin as foreground at every azimuth. Each fin is a 0.05 m face plate on a light aluminium body, the plate's own dark-face / light-return contrast."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/fin.png",
+        "pbrReport": "material-evidence/fin.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "glass",
+      "name": "Tinted glazing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4c6b68",
+      "color": "#4c6b68",
+      "roughness": {
+        "base": 0.12,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/glass_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4c6b68",
+        "secondary": [
+          "#485B57",
+          "#384543",
+          "#556965"
+        ],
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d10-glazing-graphic",
+          "region": "facade",
+          "roughness": 0.12,
+          "evidence": "crops/glass.png -- faint curtain stripes and a reflection band on every tinted pane"
+        }
+      ],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-glass (PBR confidence 0.860): #485B57, palette #384543 / #556965. Authored #4C6B68, luma 100 and saturation 0.29, above the measured tone: thirty window panes and thirty recessed balcony panes enclosed by white would otherwise be read as holes.",
+          "An exterior shell has nothing behind it, so the pane is a near-opaque tinted slab (opacity 0.92). In the browser a 256^2 canvas of faint curtain stripes and a top reflection band is assigned after construction -- the documented printed-graphic route, unaffected by textureless. Under Node the pane ships in its flat authored tone."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/glass.png",
+        "pbrReport": "material-evidence/glass.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "balglass",
+      "name": "Frosted balustrade glass",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c6d4d0",
+      "color": "#c6d4d0",
+      "roughness": {
+        "base": 0.25,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/balglass_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c6d4d0",
+        "secondary": [
+          "#868A8A",
+          "#C8D4D0",
+          "#313A3C"
+        ],
+        "samplingNotes": "Measured as the mean of crops/balustrade.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "viewEvidence region-balglass (PBR confidence 0.831): the crop straddles the pane and the recess behind it (median #283232); the pane itself is the lit entry #868A8A and reads #C8D4D0 on the bay zoom. Authored #C6D4D0 at opacity 0.62 so the recess shows through it as the plate's does."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/balustrade.png",
+        "pbrReport": "material-evidence/balglass.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "alu",
+      "name": "Anodised aluminium mullions and fin bodies",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9aa0a1",
+      "color": "#9aa0a1",
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/alu_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#9aa0a1",
+        "secondary": [
+          "#8C9394",
+          "#949D9D",
+          "#A5AAA9"
+        ],
+        "samplingNotes": "Measured as the mean of crops/mullion.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-alu (PBR confidence 0.860): #848A8C, palette #8C9394 / #949D9D; the fin returns read #A5AAA9 on crops/fin.png. Mullions, transoms, rails, jambs and every fin and louvre body -- one instanced unit box.",
+          "Metalness 0.30, below physical: the harness supplies no environment map."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/mullion.png",
+        "pbrReport": "material-evidence/alu.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "timber",
+      "name": "Timber screen battens",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b39b7f",
+      "color": "#b39b7f",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/timber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b39b7f",
+        "secondary": [
+          "#9E856B",
+          "#B9A48A",
+          "#D5C0A8"
+        ],
+        "samplingNotes": "Measured as the mean of crops/timber.png. extract_pbr_evidence confidence 0.826. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-timber (PBR confidence 0.826): median #A0886F, lit #C7B299, palette #9E856B / #B9A48A. Authored between the median and the lit reading."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/timber.png",
+        "pbrReport": "material-evidence/timber.pbr.json",
+        "confidence": 0.826,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Brushed stainless posts and rails",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8f8a80",
+      "color": "#8f8a80",
+      "roughness": {
+        "base": 0.38,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.35,
+      "albedo": {
+        "dominant": "#8f8a80",
+        "secondary": [
+          "#7F786C",
+          "#8C8174",
+          "#777266"
+        ],
+        "samplingNotes": "Measured as the mean of crops/steel.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-steel (PBR confidence 0.860): #857D72, palette #8C8174. The canopy posts and edge trim and the screen's rails and posts."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/steel.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Roof screed",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b5afa8",
+      "color": "#b5afa8",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/deck_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b5afa8",
+        "secondary": [
+          "#A48E76",
+          "#C1AA91",
+          "#D8C1A8"
+        ],
+        "samplingNotes": "Measured as the mean of crops/deck.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-deck (PBR confidence 0.860): median #B8B2AC."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/deck.png",
+        "pbrReport": "material-evidence/deck.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "plinth",
+      "name": "Precast planters and paving",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cfcdc5",
+      "color": "#cfcdc5",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/plinth_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cfcdc5",
+        "secondary": [
+          "#C8C7C0",
+          "#D7D5CD",
+          "#93925C"
+        ],
+        "samplingNotes": "Measured as the mean of crops/plinth.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-plinth (PBR confidence 0.860): palette #C8C7C0 / #D7D5CD."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/plinth.png",
+        "pbrReport": "material-evidence/plinth.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "plant",
+      "name": "Planting",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/plant_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#5C6340",
+          "#757C55",
+          "#95996E"
+        ],
+        "samplingNotes": "Measured as the mean of crops/plants.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "viewEvidence region-plant (PBR confidence 0.860): #5C6340 / #757C55 / #95996E. White base so per-instance tints ship un-darkened -- setColorAt multiplies with material.color; the shrubs carry four greens and the palms two."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/plants.png",
+        "pbrReport": "material-evidence/plant.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "sign",
+      "name": "Name board",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/sign_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#B3B2AE",
+          "#3F3C38",
+          "#797672"
+        ],
+        "samplingNotes": "Measured as the mean of crops/signboard.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "viewEvidence region-sign (PBR confidence 0.860): pale #B3B2AE board with dark #3F3C38 lettering. White base; the canvas carries the pale ground and BAAN JAI / CONDO and is assigned after construction. Under Node the board ships in the pale ground."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/signboard.png",
+        "pbrReport": "material-evidence/sign.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "louvre-slats",
+      "name": "Louvre slats",
+      "instanceCount": 132,
+      "sourceComponent": "fins",
+      "material": "fin",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "unit-height-slat",
+      "placement": {
+        "mode": "linear",
+        "axis": "X",
+        "note": "0.11 m pitch across the four long-elevation boxes and along the four flank boxes, scaled to each box's height."
+      },
+      "instanceDimensions": {
+        "width": 0.06,
+        "height": 14.3,
+        "depth": 0.12
+      },
+      "rationale": "One slat box, 100 instances, one draw.",
+      "zFightingNote": "Backs butt the face plates (opposed)."
+    },
+    {
+      "id": "glass",
+      "name": "Tinted glazing",
+      "instanceCount": 85,
+      "sourceComponent": "shell",
+      "material": "glass",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "unit-box",
+      "placement": {
+        "mode": "explicit",
+        "note": "Window panes 0.15 inside the facade plane, balcony panes 0.05 off the recess back, flank strips, ground runs, portal glazing and flank windows -- each a scaled unit box."
+      },
+      "instanceDimensions": {
+        "width": 2.46,
+        "height": 2.36,
+        "depth": 0.02
+      },
+      "rationale": "Every tinted pane on the prop from ONE unit geometry, so pane sizes are free.",
+      "zFightingNote": "Panes sit inside their holes off every reveal; the flank ground windows stand 0.01 proud of the inset wall."
+    },
+    {
+      "id": "mullions",
+      "name": "Aluminium mullions, rails and fin bodies",
+      "instanceCount": 332,
+      "sourceComponent": "shell",
+      "material": "alu",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "unit-box",
+      "placement": {
+        "mode": "explicit",
+        "note": "Two mullions, a transom and a sill per window; a centre mullion, two jambs, a sill and a balustrade top rail per balcony; flank, ground and portal frames; and the eighteen fin and louvre bodies."
+      },
+      "instanceDimensions": {
+        "width": 0.06,
+        "height": 2.36,
+        "depth": 0.06
+      },
+      "rationale": "One unit box scaled per instance carries every aluminium part and the fin bodies at one draw.",
+      "zFightingNote": "Mullions stand proud of their panes; fin bodies butt the wall (opposed) and their face plates (opposed)."
+    },
+    {
+      "id": "balustrades",
+      "name": "Frosted balustrade panes",
+      "instanceCount": 30,
+      "sourceComponent": "shell",
+      "material": "balglass",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "unit-box",
+      "placement": {
+        "mode": "grid",
+        "note": "Bays B, C and E on five floors, +Z and -Z."
+      },
+      "instanceDimensions": {
+        "width": 2.4,
+        "height": 1.03,
+        "depth": 0.03
+      },
+      "rationale": "One pane geometry, thirty instances.",
+      "zFightingNote": "0.10 m inside the facade plane, standing 0.02 above the slab."
+    },
+    {
+      "id": "battens",
+      "name": "Timber screen battens",
+      "instanceCount": 580,
+      "sourceComponent": "deck",
+      "material": "timber",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "batten",
+      "placement": {
+        "mode": "linear",
+        "axis": "X",
+        "note": "0.12 m pitch along the four runs and two partitions, x -8.7..8.7, z -6.5..2.5."
+      },
+      "instanceDimensions": {
+        "width": 0.075,
+        "height": 3.15,
+        "depth": 0.05
+      },
+      "rationale": "Five hundred and eighty battens at one geometry and one submission; 62 percent coverage so the backdrop through the gaps stays under the turntable gate's 1 percent.",
+      "zFightingNote": "Stand on the deck top (opposed); the rails pass through them."
+    },
+    {
+      "id": "bushes",
+      "name": "Planter shrubs",
+      "instanceCount": 20,
+      "sourceComponent": "planters",
+      "material": "plant",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "icosahedron-shrub",
+      "placement": {
+        "mode": "linear",
+        "axis": "X",
+        "note": "0.7 m pitch along both planters, per-instance scale, yaw, z jitter and one of four greens."
+      },
+      "instanceDimensions": {
+        "width": 1.16,
+        "height": 0.66,
+        "depth": 1.04
+      },
+      "rationale": "One 80-triangle shrub, twenty instances, four tints: a hedge at one draw.",
+      "zFightingNote": "Sunk into the planter tops by 0.4 of their height."
+    },
+    {
+      "id": "palms",
+      "name": "Planter fan palms",
+      "instanceCount": 6,
+      "sourceComponent": "planters",
+      "material": "plant",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "eleven-blade-fan",
+      "placement": {
+        "mode": "explicit",
+        "note": "Six along the planters at distinct yaws, y staggered 6 mm per instance."
+      },
+      "instanceDimensions": {
+        "width": 2.2,
+        "height": 1.25,
+        "depth": 1.2
+      },
+      "rationale": "Eleven blades merged once, six instances, two tints.",
+      "zFightingNote": "Bases sunk 0.02 into the planter top and staggered so no two share a plane."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-28T01:37:01.713987+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.795452+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        },
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.877088+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "entrance-and-flank",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "White-framed 5.0 m portal recessed 1.0 m with full-height glazing and a door line, a 5.6 x 2.5 m canopy at 2.4 m on two stainless posts with an edge trim, paved step, glazing runs in bays A and E-F, the BAAN JAI CONDO board on bay B, planters with a twenty-shrub hedge and six fan palms; on -X the louvre pair at z -3.0..-1.2 and 0.2..2.0 with a glazed gap, five ledges and a five-window strip.",
+          "notes": "Flank positions from the proxy's -X map (x 235/320/390/480/500 px from the rear face at 40). The planting is the plate's greens on generic shrubs, not its species. The rear and +X elevations are authored, not observed, at 0.60 confidence."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.960276+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "condo-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eleven materials, all measured off the plate at PBR confidence 0.734-0.860; white #ECECEC render, #445A5C fins, #4C6B68 glass, #C6D4D0 frosted balustrades, #B39B7F timber, #8F8A80 stainless.",
+          "notes": "The fins ship lifted and teal-grey rather than the plate's charcoal (#404C49 / #353C41) because both measured tones sit inside the turntable backdrop band; the lift is recorded on the material. The glass ships at #4C6B68 above its measured #485B57 for the same reason."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.044737+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.128134+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.213418+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.296041+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        },
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        },
+        {
+          "id": "entrance-and-flank",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "White-framed 5.0 m portal recessed 1.0 m with full-height glazing and a door line, a 5.6 x 2.5 m canopy at 2.4 m on two stainless posts with an edge trim, paved step, glazing runs in bays A and E-F, the BAAN JAI CONDO board on bay B, planters with a twenty-shrub hedge and six fan palms; on -X the louvre pair at z -3.0..-1.2 and 0.2..2.0 with a glazed gap, five ledges and a five-window strip.",
+          "notes": "Flank positions from the proxy's -X map (x 235/320/390/480/500 px from the rear face at 40). The planting is the plate's greens on generic shrubs, not its species. The rear and +X elevations are authored, not observed, at 0.60 confidence."
+        },
+        {
+          "id": "condo-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eleven materials, all measured off the plate at PBR confidence 0.734-0.860; white #ECECEC render, #445A5C fins, #4C6B68 glass, #C6D4D0 frosted balustrades, #B39B7F timber, #8F8A80 stainless.",
+          "notes": "The fins ship lifted and teal-grey rather than the plate's charcoal (#404C49 / #353C41) because both measured tones sit inside the turntable backdrop band; the lift is recorded on the material. The glass ships at #4C6B68 above its measured #485B57 for the same reason."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-28T01:37:01.713987+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: six components and seven InstancedMesh systems at 13 draw calls of 24. Envelope corrected on the asset first -- the proxy reads the plate at w:h:d 1.036 : 1 : 0.842 with a 20.5 x 14.0 m body, so 21.8 x 21.0 x 17.3 replaced the six-bay-at-4 m 24 x 16 estimate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/clay/clay-330.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.795452+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        },
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: sixty bay openings as real holes through two facade extrusions; flank walls extruded in the YZ plane with their window and gap holes; ground floor as a notched plan extrusion; coping as an extruded plan ring; roof screen placed to the plate, not the proxy.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.877088+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "entrance-and-flank",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "White-framed 5.0 m portal recessed 1.0 m with full-height glazing and a door line, a 5.6 x 2.5 m canopy at 2.4 m on two stainless posts with an edge trim, paved step, glazing runs in bays A and E-F, the BAAN JAI CONDO board on bay B, planters with a twenty-shrub hedge and six fan palms; on -X the louvre pair at z -3.0..-1.2 and 0.2..2.0 with a glazed gap, five ledges and a five-window strip.",
+          "notes": "Flank positions from the proxy's -X map (x 235/320/390/480/500 px from the rear face at 40). The planting is the plate's greens on generic shrubs, not its species. The rear and +X elevations are authored, not observed, at 0.60 confidence."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: fins rebuilt as dark face plates on light aluminium bodies after the first build read as stripes; lift head moved from the proxy's rear position to behind the screen's front run; canopy enlarged; hedge in place of topiary; check-coplanar clean after two bbox-face fixes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:01.960276+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "condo-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eleven materials, all measured off the plate at PBR confidence 0.734-0.860; white #ECECEC render, #445A5C fins, #4C6B68 glass, #C6D4D0 frosted balustrades, #B39B7F timber, #8F8A80 stainless.",
+          "notes": "The fins ship lifted and teal-grey rather than the plate's charcoal (#404C49 / #353C41) because both measured tones sit inside the turntable backdrop band; the lift is recorded on the material. The glass ships at #4C6B68 above its measured #485B57 for the same reason."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 11 materials at PBR confidence 0.734-0.860. Fins and glass lifted above their measured tones with the margin recorded; balustrades translucent at 0.62; recess back walls carry a 0.70 linear vertex tint.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.044737+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: two post-construction canvases in the browser only -- the BAAN JAI / CONDO board and the curtain-and-reflection stripes on the shared glass, darkened after the first pass. Every material textureless; nothing synthesises the five-canvas set.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.128134+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Aluminium and stainless below physical metalness because the harness supplies no environment map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.213418+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T01:37:02.296041+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "facade-rhythm",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six bays of 2.5 m between three 0.3 m fins, two 1.85 m louvre boxes and 0.45 m corner fins at the proxy's +Z depth-map positions (x 40/170/300/385/510/630/720/850/985 px at 47.06 px/m), five floors at 2.85 m over a 3.05 m ground floor from its slab lines; fin faces dark on light aluminium returns, louvre slats proud of a dark plate. Band table: mean |delta width| 0.031 of height, all of it the flank louvre bodies' 95th-percentile face.",
+          "notes": "The list-time note called the balconies a checkerboard; the plate's per-bay zoom shows the balustrade in bays B, C and E on all five floors and grid windows in A, D and F, and that is what is built. The first build's fins were dark all round and read as stripes; the plate's light returns are now aluminium bodies under 0.05 m dark face plates. Fins authored at luma 85 / sat 0.26 against the plate's 59-73 so the segmenter holds them on chroma."
+        },
+        {
+          "id": "balcony-columns",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Thirty balconies as real 1.5 m holes through two facade extrusions with a frosted balustrade (opacity 0.62) at the front plane and recessed glazing at the back, thirty grid windows with two mullions, a transom and a sill 0.15 m inside the plane. Turntable gate passes at every azimuth with 0.4-0.6 percent enclosed background, all of it batten gaps on the roof.",
+          "notes": "The recess back walls carry a 0.70 linear vertex tint so the grid reads as recesses under the harness's flat light. The first glazing canvas was too pale and made the windows read as frosted; the stripes are now at 0.22-0.30 alpha over the teal ground, which is what the plate's dark panes with faint curtains look like at prop distance."
+        },
+        {
+          "id": "roof-and-screen",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 1.1 m coping cap 0.35 m proud (the plate's band reads 46-51 px at 39 px/m), the deck inside it, and a 580-batten timber screen 3.15 m tall spanning x -8.7..8.7 and z -6.5..2.5 with two partitions and a 3.55 x 2.4 m lift head directly behind the front run, its top 0.3 m under the rail.",
+          "notes": "The proxy puts the screen on the rear 40 percent of the roof (front run 7.7 m behind the facade, band 9 depth 0.282 H); the plate shows the front run's full base with a 13 px deck strip in front of it where that placement would show ~80 px, and the lift head seen through the front battens, so the screen is built to the plate and carries a +0.149 band-9 residual against the proxy. The battens were widened from 0.06 to 0.075 at a 0.12 m pitch after the first turntable run measured 0.94-0.96 percent enclosed background through the gaps."
+        },
+        {
+          "id": "entrance-and-flank",
+          "tier": "important",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "White-framed 5.0 m portal recessed 1.0 m with full-height glazing and a door line, a 5.6 x 2.5 m canopy at 2.4 m on two stainless posts with an edge trim, paved step, glazing runs in bays A and E-F, the BAAN JAI CONDO board on bay B, planters with a twenty-shrub hedge and six fan palms; on -X the louvre pair at z -3.0..-1.2 and 0.2..2.0 with a glazed gap, five ledges and a five-window strip.",
+          "notes": "Flank positions from the proxy's -X map (x 235/320/390/480/500 px from the rear face at 40). The planting is the plate's greens on generic shrubs, not its species. The rear and +X elevations are authored, not observed, at 0.60 confidence."
+        },
+        {
+          "id": "condo-palette",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eleven materials, all measured off the plate at PBR confidence 0.734-0.860; white #ECECEC render, #445A5C fins, #4C6B68 glass, #C6D4D0 frosted balustrades, #B39B7F timber, #8F8A80 stainless.",
+          "notes": "The fins ship lifted and teal-grey rather than the plate's charcoal (#404C49 / #353C41) because both measured tones sit inside the turntable backdrop band; the lift is recorded on the material. The glass ships at #4C6B68 above its measured #485B57 for the same reason."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90: silhouette 0.94 on a band table at 0.031 / 0.030 of height with every residual traced to the flank bodies' percentile, the screen placement and a thin canopy; structure 0.93 with every identity feature present at the plate's count and position; form 0.88, material 0.85 and lighting 0.86 held down by the lifted fin tone, generic planting and the invented -Z / +X elevations. 18844/32,000 triangles, 13/24 draw calls, 11/16 materials, 13/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/beauty-330.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/low-rise-condominium/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 6,
+        "repetitionSystems": 7,
+        "projectedTotal": 13,
+        "budget": 24,
+        "headroom": 11,
+        "note": "Six components and seven repetition systems: 13 of 24. Three of the systems scale ONE unit box per instance, which is what lets every pane, every mullion and every fin body ride one draw each regardless of size."
+      },
+      "materials": {
+        "projectedTotal": 11,
+        "budget": 16,
+        "headroom": 5,
+        "note": "white covers every rendered surface; alu covers the mullions AND the fin bodies; eleven of sixteen, two of them (plant, sign) white bases carrying per-instance tints or a canvas."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 13,
+        "budget": 32,
+        "headroom": 19,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 18844,
+        "budget": 32000,
+        "headroom": 13156,
+        "note": "18844 of 32,000. The battens are 6,960 of it (580 x 12) and the mullion instances 3,984; the facade extrusions with thirty holes each are ~2,500 and the shrubs 1,600. Instancing means the battens upload once."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Extrusions with holes for the facades and flanks, an extrusion in the YZ plane for the side walls, a notched plan extrusion for the ground floor, a plan ring for the coping, boxes, an icosahedron for the shrubs. The bay openings are holes in a Shape, not panels applied, so the reveals are real and the shell has no interior coincidence."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Seven InstancedMesh systems carry 1,185 of the prop's 1,191 discrete parts: 580 battens, 332 aluminium parts and fin bodies, 85 panes, 132 slats, 30 balustrades, 20 shrubs, 6 palms."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Two post-construction canvases are assigned in the browser only: the BAAN JAI / CONDO lettering and the curtain-and-reflection stripes on the shared glass -- the documented printed-graphic route, neither the five-canvas procedural set. Under Node the sign is its pale ground and the glass flat."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "proxy-screen-placement",
+      "severity": "medium",
+      "description": "The Meshy proxy places the roof screen on the rear 40 percent of the roof; the plate places its front run 4.5 m behind the facade.",
+      "mitigation": "Built to the plate (deck strip 13 px, lift head behind the front run) and the band-9 depth residual of +0.149 recorded in meshyCrossCheck rather than built out."
+    },
+    {
+      "id": "fin-tone",
+      "severity": "low",
+      "description": "Fins authored at luma 85 / sat 0.26 against the plate's luma 59-73 so the turntable gate holds them.",
+      "mitigation": "Teal-grey between the plate's two fin hues; turntable holes 0.4-0.6 percent, all of them batten gaps."
+    },
+    {
+      "id": "unseen-elevations",
+      "severity": "medium",
+      "description": "The -Z and +X elevations are not in the plate.",
+      "mitigation": "Authored from the registry notes (units both sides) and the proxy's mirrored maps; recorded at 0.60 confidence in viewEvidence."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Low-Rise Condominium",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7836,
+        "aspectRatioDelta": 0.0168,
+        "scaleDelta": 0.0371,
+        "bilateralSymmetryError": 0.0517,
+        "colorDelta": {
+          "checked": 6,
+          "maxDeltaE": 14.05,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 7.46
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.14
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.13
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.05
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.784 is below threshold 0.85",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "e447a72aa51621d0",
+      "passId": "blockout"
+    }
+  ]
+}

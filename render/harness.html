@@ -239,6 +239,13 @@ window.__thaikit = {
     // at 0.62. Stay just inside the tangent fit so every prop is whole, with a
     // little margin, and framed identically pass to pass.
     const dist = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(35) / 2)) * 0.92;
+    // The clip planes follow the fit. They were a fixed 0.01..100, which is fine
+    // for a 20 m building and clips a 300 m skyline imposter (dist ~480 m) out of
+    // the frame entirely -- a blank render that the coverage gate then reports
+    // as a SwiftShader fault. Near scales with distance so depth precision on a
+    // large prop is not spent on the centimetre in front of the lens.
+    camera.near = Math.max(0.01, dist * 0.001);
+    camera.far = Math.max(100, dist + sphere.radius * 4);
     camera.position.set(
       sphere.center.x + dist * Math.cos(el) * Math.sin(az),
       sphere.center.y + dist * Math.sin(el),

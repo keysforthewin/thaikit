@@ -67,27 +67,31 @@
   },
   "preSpecAssessment": {
     "objectClass": {
-      "primaryType": "glazed-front-box-tricycle-cart",
+      "primaryType": "glazed-case-front-box-tricycle-cart",
       "primaryDomain": "object",
       "formLanguage": [
         "front-box-tricycle",
+        "ladder-chassis-rails",
         "glazed-case",
-        "tarp-canopy",
-        "bicycle-frame",
-        "three-wheels"
+        "sheet-steel-cabinet",
+        "folded-tarp-roll",
+        "bicycle-rear-half",
+        "spoked-wheels"
       ],
       "structureKind": [
         "assembled-solid",
-        "post-and-rail"
+        "post-and-rail",
+        "instanced-wheels"
       ],
       "motionPotential": [
-        "static-prop"
+        "rigid-body-cart",
+        "wheels-roll-about-axle"
       ],
       "materialFamilies": [
-        "painted-sheet-and-chrome-steel",
+        "weathered-stainless-and-chrome-steel",
         "window-glass"
       ],
-      "notes": "A front-box tricycle cart. Its wheels turn in life, but at TWO draw calls -- one merge and one transparent glazing -- there is no third submission for an InstancedMesh of wheels, so the wheels ride the body merge and get NO pivot: a pivot on a part that cannot be driven independently is a promise the prop cannot keep. One root pivot, zero sockets. Papaya-salad vendors on every soi. A pale and dark cabinet with rusting trim, a chrome-framed glass case, a folded blue tarp, a red bicycle with a chrome rack."
+      "notes": "A FRONT-BOX TRICYCLE cart: the rear half of a bicycle carries a two-wheeled box in line ahead of it on a ladder chassis -- an upper rail pair clamped at the head tube and a lower pair at the bottom bracket, both running forward along the box sides. Both pairs are clamped to the fixed frame, so nothing steers: the three spoked wheels are the only mechanisms, each a named pivot on its Z axle driving one instance of the wheel InstancedMesh. Zero sockets. Papaya-salad vendors on every soi. A weathered stainless cabinet under a chrome-framed glass case, a folded blue tarp on four chrome poles, the rear half of a steel bicycle behind it on two long rails."
     },
     "complexity": {
       "tier": "moderate",
@@ -106,13 +110,13 @@
         "mesoComponents": 5,
         "microFeatureGroups": 3,
         "materialLayers": 2,
-        "repetitionSystems": 0
+        "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE merge -- the sheet cabinet with a pale end panel and rust trim, the chrome angle case frame with floor and roof, the tarp canopy on its frame, the red bicycle frame as nine tubes, saddle, rack, handlebar, and three bicycle wheels of three cylinders each -- and ONE glazing component of four panes: TWO draw calls of 2.",
-        "Two materials: steel (vertex colours: pale and dark cabinet, chrome, red frame, tarp blue, tyre black, rim) and real transparent glass at opacity 0.32 both-sided, since the case is glazed on all four sides.",
-        "No repetition system: at two draw calls the three wheels are cylinders in the merge.",
-        "Action readiness: one root pivot, zero sockets, one box collider, not breakable; wheels static by budget."
+        "ONE body merge -- the sheet cabinet with chrome corner angles, rib and bottom rail, the chrome angle case frame with mullions and tray, four chrome poles, the folded tarp roll with its rounded long edges and rope ties, the bicycle rear half (head, top, down and seat tubes, stays, steerer stub, seat post, saddle, rack with stays, mudguard, cranks, pedals, chainring, cassette, chain), the swept handlebar with grips, and the ladder chassis of four rails with cross members and end caps -- ONE glazing merge of five panes, and ONE InstancedMesh of three spoked wheels: THREE draw calls of 4.",
+        "Two materials of the four allowed: steel (vertex colours: weathered stainless, chrome, tarp blue, tyre, rim, saddle black, chain) and real transparent glass at opacity 0.34 both-sided, since the case is glazed on four sides and the top.",
+        "One repetition system: three wheels off one geometry of two closed ring lathes (tyre, rim), a hub cylinder and 28 three-sided prism spokes -- every instance a named pivot.",
+        "Action readiness: three wheel pivots, one box collider, zero sockets, not breakable; nothing steers because both rail pairs are clamped to the fixed frame."
       ]
     },
     "specDepthDecision": {
@@ -126,7 +130,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is a tall glazed box under a tarp on a tricycle -- the case above the cabinet, the bicycle behind; the glass has to be real transparency or the case is a steel box, and the bike has to be tubes or it is a plank."
+      "rationale": "The identity is a bicycle pushing a glazed steel box on two chassis rails a side: the rails have to be real tubes running from the head tube and bottom bracket along the box, the case has to be real transparency over a cabinet, the wheels have to be open spoked wheels or the bicycle reads as a toy, and the bicycle rear half has to be a coherent frame closing on the bottom bracket and hub or it reads as broken."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -139,7 +143,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "glazed case on the cabinet",
+          "description": "glazed case with a glass top on the cabinet",
           "mapsTo": {
             "ref": "glazing"
           },
@@ -150,7 +154,7 @@
           "zone": "rear",
           "kind": "contour",
           "identityDefining": true,
-          "description": "red bicycle frame, saddle, rack and handlebar",
+          "description": "bicycle rear half: frame, cranks, chain, saddle, rack, mudguard, head tube and handlebar",
           "mapsTo": {
             "ref": "cart"
           },
@@ -161,7 +165,7 @@
           "zone": "base",
           "kind": "contour",
           "identityDefining": true,
-          "description": "three bicycle wheels",
+          "description": "three spoked bicycle wheels",
           "mapsTo": {
             "ref": "cart"
           },
@@ -172,7 +176,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "blue tarp canopy on the case roof",
+          "description": "folded blue tarp roll on four chrome poles",
           "mapsTo": {
             "ref": "cart"
           },
@@ -183,7 +187,7 @@
           "zone": "body",
           "kind": "stain",
           "identityDefining": false,
-          "description": "rust along the cabinet trim",
+          "description": "rust streaks and mottling on the cabinet",
           "mapsTo": {
             "ref": "d5-rust"
           },
@@ -191,11 +195,11 @@
           "realization": "unreported"
         },
         {
-          "id": "d6-cabinet",
+          "id": "d6-rails",
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "pale end panel and dark sides",
+          "description": "two chassis rails a side from the head tube and bottom bracket along the box",
           "mapsTo": {
             "ref": "cart"
           },
@@ -230,19 +234,20 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
     "resolvedUnknowns": [
-      "Wheels are static: two draw calls leave no submission for an instanced wheel set.",
-      "The tarp is one flat sheet with a folded roll; the plate's sag is not carried.",
-      "The bicycle drivetrain is a bottom bracket cylinder; chain and sprockets are below the resolvable band."
+      "The layout is a front-box tricycle: the proxy side view puts the box in line ahead of the head tube and its end view puts two cart wheels either side of the bicycle centreline; the plate hides the far wheel behind the cabinet.",
+      "Nothing steers: both rail pairs are clamped to fixed frame members (head tube and bottom bracket), so the box cannot turn on the head tube, and no steering pivot is declared.",
+      "The tarp is a folded roll resting on the four poles with air under it; its finer creases are carried as two fold slabs and two rounded long edges.",
+      "The far side of the bicycle and box mirrors the near side."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 1.60 x 1.45 x 0.80 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Rendered model matches the reference silhouette, the 1.80 x 1.52 x 0.60 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=4 materials, <=8 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
-      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Exactly one root pivot plus 3 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
@@ -250,7 +255,7 @@
       "mesoComponents": 1,
       "microFeatureGroups": 3,
       "materialLayers": 2,
-      "repetitionSystems": 0,
+      "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -260,15 +265,16 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 1.60 x 1.45 x 0.80 m",
-          "Box at one end, bicycle at the other, at the proxy stations"
+          "Envelope 1.80 x 1.52 x 0.60 m",
+          "Box in line ahead of the bicycle at the proxy band stations"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "a four-wheel cart",
-          "no case"
+          "a sidecar",
+          "no case",
+          "wheels out of proportion"
         ]
       },
       {
@@ -277,31 +283,37 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Transparent panes in a chrome frame",
-          "Tarp on the roof"
+          "Transparent panes and top in a chrome frame over the cabinet",
+          "Tarp roll on poles with air under it"
         ],
         "evidenceRefs": [
           "region-glass",
           "region-tarp"
         ],
         "failureModes": [
-          "opaque case"
+          "opaque case",
+          "tarp fused to the case"
         ]
       },
       {
         "id": "bike",
-        "name": "Bicycle and wheels",
+        "name": "Bicycle, rails and wheels",
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Red tube frame",
-          "Three wheels"
+          "Coherent tube frame with drivetrain, saddle and rack",
+          "Two rails a side from the head tube and bottom bracket to the box front",
+          "Three open spoked wheels"
         ],
         "evidenceRefs": [
-          "region-frame"
+          "region-frame",
+          "region-bar",
+          "region-wheel"
         ],
         "failureModes": [
-          "no bicycle"
+          "disc wheels",
+          "rails missing",
+          "disconnected tubes"
         ]
       }
     ],
@@ -327,7 +339,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -484,7 +496,7 @@
     },
     {
       "id": "bike",
-      "name": "Bicycle and wheels",
+      "name": "Bicycle, rails and wheels",
       "tier": "critical",
       "passIds": [
         "material-pass"
@@ -495,7 +507,9 @@
         "cart"
       ],
       "evidenceRefs": [
-        "region-frame"
+        "region-frame",
+        "region-bar",
+        "region-wheel"
       ]
     }
   ],
@@ -595,7 +609,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 3,
     "pivotInventory": [
       {
         "name": "root",
@@ -611,7 +625,55 @@
           1,
           0
         ],
-        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+        "justification": "The rigid body of bicycle and box at base-center."
+      },
+      {
+        "name": "wheel-rear",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          -0.62,
+          0.259,
+          0.0
+        ],
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "justification": "bicycle rear wheel, rolls about its Z axle"
+      },
+      {
+        "name": "wheel-cart-l",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.53,
+          0.259,
+          -0.265
+        ],
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "justification": "cart wheel at -Z on the fixed cart axle, rolls about Z"
+      },
+      {
+        "name": "wheel-cart-r",
+        "component": "wheels",
+        "type": "hinge",
+        "localPosition": [
+          0.53,
+          0.259,
+          0.265
+        ],
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "justification": "cart wheel at +Z on the fixed cart axle, rolls about Z"
       }
     ],
     "socketInventory": [],
@@ -621,16 +683,17 @@
         "component": "cart",
         "shape": "box",
         "matchesAssetDeclaration": true,
-        "note": "Declared on the asset as box: the whole tricycle envelope."
+        "note": "Declared on the asset as box: bicycle rear half and front box together."
       }
     ],
     "destructionGroups": [],
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "Wheels are static: two draw calls leave no submission for an instanced wheel set.",
-    "The tarp is one flat sheet with a folded roll; the plate's sag is not carried.",
-    "The bicycle drivetrain is a bottom bracket cylinder; chain and sprockets are below the resolvable band."
+    "The layout is a front-box tricycle: the proxy side view puts the box in line ahead of the head tube and its end view puts two cart wheels either side of the bicycle centreline; the plate hides the far wheel behind the cabinet.",
+    "Nothing steers: both rail pairs are clamped to fixed frame members (head tube and bottom bracket), so the box cannot turn on the head tube, and no steering pivot is declared.",
+    "The tarp is a folded roll resting on the four poles with air under it; its finer creases are carried as two fold slabs and two rounded long edges.",
+    "The far side of the bicycle and box mirrors the near side."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -638,17 +701,17 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+    "notes": "Origin base-center at ground, +Y up, +X the bicycle's FRONT (the box end); the plate looks at the +Z (drive) side from the rear three-quarter, azimuth 20 elevation 28 in the harness."
   },
   "silhouette": {
     "envelope": {
-      "w": 1.6,
-      "h": 1.45,
-      "d": 0.8
+      "w": 1.8,
+      "h": 1.52,
+      "d": 0.6
     },
-    "description": "A 0.76 x 0.72 cabinet from 0.36 to 0.78 under a 0.76 x 0.72 glass case to 1.30 and a tarp to 1.43; two r 0.30 wheels at x -0.42, z +-0.40; a red frame from the box to a saddle at 0.92 and a rear wheel at x 0.52; a handlebar at 0.98.",
-    "envelopeDerivation": "x -0.90 (the canopy overhang at the box end) to +0.82 (the rear wheel), 1.72 against the declared 1.60 -- the overhang is the plate's and is recorded; y 0 to 1.43 (declared 1.45); z +-0.45 at the front wheels (declared 0.80, the wheels 5 cm outboard each side). Proxy occupancy (w:h:d 1:0.989:0.511): canopy 0.90-0.98 H, glass case 0.54-0.90 H at cols 32-70 of 80, cabinet 0.22-0.50 H, wheels 0.02-0.18 H, the bicycle at cols 0-30 -- the box is 0.48 of the length and the bike 0.40; built as box x -0.78..-0.02 and the bike to +0.82.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:0.989:0.511, 1,623 triangles; stations as above. The white-matte plate is a level side view, so the stations are direct."
+    "description": "A 0.58 x 0.39 cabinet from 0.30 to 1.05 under a 0.58 x 0.39 glass case to 1.31, four poles to 1.52 carrying a 0.80 x 0.47 tarp roll from 1.37 to 1.49 that overhangs the case toward the bicycle; bicycle rear half from the rear hub (-0.62, 0.26) through the bottom bracket (-0.50, 0.29) to the head tube at x 0.02, saddle top 0.86, handlebar 0.85; rails at y 0.71 (from x -0.25) and 0.26 (from -0.48) to the box front at 0.90, z +-0.215; cart wheels at x 0.53, z +-0.265.",
+    "envelopeDerivation": "The plate has no absolute scale, so the size is anchored on the bicycle wheel: 300 of 882 plate px = 0.34 H, and the proxy reads its wheels at 0.34 H too; a 20-inch (0.518 m) wheel gives H = 1.52 m. Proxy w:h:d 1.215:1:0.389 gives 1.85 x 1.52 x 0.59; declared 1.80 x 1.52 x 0.60 (the previous 1.85 x 1.95 x 0.90 was the sidecar reading of the first plate). Proxy stations in H units, +X the front: rear hub -0.41 at 0.17; saddle top 0.55 at -0.28; head tube 0.0..0.03 from 0.33 to 0.53; upper rails at 0.47 from -0.04 to 0.56, lower rails at 0.17 the whole length; box 0.195..0.56 long and 0.27 wide, cabinet 0.17..0.73, case 0.73..0.91; tarp 0.0..0.60 long, 0.34 wide, 0.91..1.0; cart wheels at x 0.377, z +-0.16. Built: rear tyre -0.879 to box front 0.89 (1.77 of the declared 1.80); y 0 to 1.52 at the pole tips; z +-0.32 at the cart tyres and handlebar grips (0.64 against the declared 0.60, the grip ends recorded). Band table of the build against the proxy: mean |delta w| 0.059, |delta d| 0.016; case bands 6-7 within 0.015; band 5 (+0.27) is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 (-0.11) is the open rear wheel sampled thinner than the proxy disc.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1.215:1:0.389, 3,622 triangles. Its side view puts the box in line ahead of the head tube and its end view puts two cart wheels at z +-0.16 H with the bicycle wheel on the centreline, which is what settled the layout as a front-box tricycle. It fused the tarp onto the case top; the plate shows a gap of air under the roll and the poles proud of it, and the build follows the plate there."
   },
   "viewEvidence": [
     {
@@ -661,25 +724,19 @@
       "id": "region-glass",
       "viewpoint": "front",
       "path": "crops/glass.png",
-      "confidence": 0.84
+      "confidence": 0.77
     },
     {
       "id": "region-cabinet",
       "viewpoint": "front",
       "path": "crops/cabinet.png",
-      "confidence": 0.86
-    },
-    {
-      "id": "region-dark",
-      "viewpoint": "front",
-      "path": "crops/dark.png",
-      "confidence": 0.86
+      "confidence": 0.75
     },
     {
       "id": "region-tarp",
       "viewpoint": "top",
       "path": "crops/tarp.png",
-      "confidence": 0.8
+      "confidence": 0.86
     },
     {
       "id": "region-frame",
@@ -688,29 +745,47 @@
       "confidence": 0.78
     },
     {
+      "id": "region-bar",
+      "viewpoint": "front",
+      "path": "crops/bar.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-wheel",
+      "viewpoint": "front",
+      "path": "crops/wheel.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-tyre",
+      "viewpoint": "front",
+      "path": "crops/tyre.png",
+      "confidence": 0.82
+    },
+    {
       "id": "region-far",
       "viewpoint": "left",
       "path": null,
-      "confidence": 0.85,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: the far side mirrors the near side; the pale panel is on the box end."
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the -Z side mirrors the +Z side (rails, cart wheel, cabinet face); the proxy end view shows the second cart wheel and the far rail ends."
     }
   ],
   "componentTree": [
     {
       "id": "cart",
-      "name": "Cabinet, case frame, canopy, bicycle and wheels",
+      "name": "Box, case frame, chassis rails, poles, tarp and bicycle rear half",
       "level": "macro",
       "role": "structure",
       "importance": 1.0,
-      "confidence": 0.86,
+      "confidence": 0.754,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Boxes, nine cylinders and nine tubes merged on one material: one draw call.",
+      "topologyRationale": "Boxes, cylinders, an ellipsoid and thirty tubes merged on one material: one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Cabinet x -0.78..-0.02, 0.36-0.78, z +-0.36; case frame to 1.30; tarp to 1.43; wheels r 0.30 at (-0.42, +-0.40) and (0.52, 0); frame tubes r 0.015-0.02; saddle at 0.92; handlebar at 0.98.",
+        "topologyIntent": "Cabinet x 0.30..0.88, 0.30-1.05, z +-0.195 with chrome corner angles; case frame to 1.31 with mullions; poles to 1.52 at the case corners; tarp roll 0.10..0.90 x 1.37..1.49 x +-0.235; bicycle: rear hub (-0.62, 0.26), bottom bracket (-0.50, 0.29), seat cluster (-0.44, 0.74), head tube (0.02, 0.80)-(0.05, 0.50), saddle 0.86, handlebar 0.85 across +-0.27; rails at y 0.71 and 0.26, z +-0.215, to x 0.90; cart axle at x 0.53.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -719,46 +794,46 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The pale end panel stands 4 mm proud of the cabinet; frame angles sit on the cabinet top (opposed); the tarp sits on the case roof (opposed); tubes meet as interpenetrating cylinders.",
+        "zFightingNote": "Corner angles wrap the cabinet edges 4 mm proud; the lower band and rib stand 4-6 mm proud of the faces; the counter lip overlaps the cabinet top (opposed faces); the case posts sit on the counter lip; poles interpenetrate the roll; rails clear the cabinet sides by 3 mm; tubes meet as interpenetrating cylinders. check-coplanar clean.",
         "mergeNote": "One merged BufferGeometry with height UVs at 0.7 m."
       },
       "localFeatures": [
         {
           "id": "d2-bike",
-          "description": "bicycle",
-          "delivery": "tubes + boxes"
+          "description": "bicycle rear half",
+          "delivery": "tubes + boxes + cylinders + ellipsoid saddle"
         },
         {
           "id": "d3-wheels",
           "description": "wheels",
-          "delivery": "cylinders"
+          "delivery": "InstancedMesh of three spoked wheels"
         },
         {
           "id": "d4-tarp",
-          "description": "tarp",
-          "delivery": "boxes"
+          "description": "tarp roll",
+          "delivery": "boxes + rounded-edge cylinders + rope ties"
         },
         {
           "id": "d5-rust",
           "description": "rust",
-          "delivery": "edge boxes + canvas"
+          "delivery": "grime canvas"
         },
         {
-          "id": "d6-cabinet",
-          "description": "cabinet",
-          "delivery": "boxes"
+          "id": "d6-rails",
+          "description": "rails",
+          "delivery": "four tubes with cross members and end caps"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#d8d6d0",
+        "baseColor": "#8c8b86",
         "recipe": "Every tone a vertex colour on white steel with a grime canvas.",
         "evidenceRef": "region-cabinet",
-        "confidence": 0.86,
-        "dominantAlbedo": "rgba(216, 214, 208, 1.0)",
-        "secondaryAlbedo": "rgba(90, 93, 94, 1.0)",
+        "confidence": 0.754,
+        "dominantAlbedo": "rgba(140, 139, 134, 1.0)",
+        "secondaryAlbedo": "rgba(126, 125, 120, 1.0)",
         "materialClass": "metal",
-        "materialClassConfidence": 0.86
+        "materialClassConfidence": 0.754
       },
       "actionProfile": {
         "animationRole": "root",
@@ -776,7 +851,7 @@
           ],
           "confidence": 0.95,
           "name": "root",
-          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+          "notes": "base-center at the wheel contact, as the asset declares. The cart body is the rigid root; the three wheels carry their own axle pivots by instance index."
         },
         "transformChannels": {
           "translate": true,
@@ -792,16 +867,16 @@
         "collider": {
           "shape": "box",
           "localCenter": [
-            0,
-            0.725,
-            0
+            0.0,
+            0.76,
+            0.0
           ],
           "halfExtents": [
-            0.8,
-            0.725,
-            0.4
+            0.9,
+            0.76,
+            0.3
           ],
-          "notes": "Declared on the asset as box: the whole tricycle envelope."
+          "notes": "Declared on the asset as box: bicycle rear half and front box together."
         }
       }
     },
@@ -811,15 +886,15 @@
       "level": "meso",
       "role": "identity",
       "importance": 1.0,
-      "confidence": 0.84,
+      "confidence": 0.773,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four 4 mm panes on the transparent material: one merge, one draw call.",
+      "topologyRationale": "Five 4 mm panes on the transparent material: one merge, one draw call.",
       "materialId": "glass",
       "material": "glass",
       "parent": "cart",
       "geometryDescriptor": {
-        "topologyIntent": "Panes 16 mm inside the frame planes, 3 cm short of the posts.",
+        "topologyIntent": "Four side panes 14 mm inside the frame planes and a top pane 30 mm under the top rails, each 25 mm short of the posts.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -828,7 +903,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Panes are inset 16 mm from the frame faces; none shares a plane with an angle.",
+        "zFightingNote": "Panes are inset from the frame faces; none shares a plane with an angle or a mullion.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -840,14 +915,14 @@
       ],
       "colorMaterialRecipe": {
         "materialId": "glass",
-        "baseColor": "#d4e2dc",
+        "baseColor": "#d4dedc",
         "recipe": "Transparent green-cast glass.",
         "evidenceRef": "region-glass",
-        "confidence": 0.84,
-        "dominantAlbedo": "rgba(212, 226, 220, 1.0)",
-        "secondaryAlbedo": "rgba(212, 226, 220, 1.0)",
+        "confidence": 0.773,
+        "dominantAlbedo": "rgba(212, 222, 220, 1.0)",
+        "secondaryAlbedo": "rgba(212, 222, 220, 1.0)",
         "materialClass": "glass",
-        "materialClassConfidence": 0.84
+        "materialClassConfidence": 0.773
       },
       "actionProfile": {
         "animationRole": "child",
@@ -870,51 +945,51 @@
   "materials": [
     {
       "id": "steel",
-      "name": "Painted sheet and chrome steel",
+      "name": "Weathered stainless and chrome steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d8d6d0",
-      "color": "#d8d6d0",
+      "baseColor": "#8c8b86",
+      "color": "#8c8b86",
       "roughness": {
-        "base": 0.5,
+        "base": 0.52,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/steel_roughness.png"
       },
       "metalness": 0.25,
       "albedo": {
-        "dominant": "#d8d6d0",
+        "dominant": "#8c8b86",
         "secondary": [
-          "#d8d6d0",
-          "#5a5d5e",
-          "#b8322a"
+          "#8c8b86",
+          "#7e7d78",
+          "#b9bcbf"
         ],
-        "samplingNotes": "Measured as the mean of crops/cabinet.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+        "samplingNotes": "Measured as the mean of crops/cabinet.png. extract_pbr_evidence confidence 0.754. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d5-rust",
-          "region": "cabinet edges",
+          "region": "cabinet faces",
           "roughness": 0.7,
           "palette": [
             "#8A6A4A"
           ],
-          "evidence": "crops/cabinet.png -- rust along the trim; two brown edge boxes plus the canvas."
+          "evidence": "crops/cabinet.png -- rust streaks and mottling on the cabinet; the grime canvas."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-cabinet (0.86) at #d1d0c5 and region-dark at #4a4f52; carried as vertex colours on a WHITE material: pale #d8d6d0, dark #5a5d5e (lifted 10 levels for the hole gate), chrome #b9bcbf off region-frame, red #b8322a, tarp #3a4a6a off region-tarp #5c6872, tyre #2a2927, rim #c8c8c4.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction."
+          "Measured on viewEvidence region-cabinet (0.754) at #6e6d68 and region-bar at #7f7e7a; carried as vertex colours on a WHITE material: cabinet #8c8b86 (lifted 30 levels so side-lit faces stay above the turntable backdrop luma of 58), lower band #7e7d78, chrome #b9bcbf off region-frame, tarp #6f829a off region-tarp #65778a, tyre #6a6a68 off region-tyre #464440 (lifted for the hole gate), rim #c4c4c0, spokes #d4d4d0 off region-wheel, saddle #4a4a48.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction carries the mottling and rust streaks the plate shows on the cabinet."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
       "materialEvidenceArchive": {
         "crop": "crops/cabinet.png",
         "pbrReport": "material-evidence/steel.pbr.json",
-        "confidence": 0.86,
+        "confidence": 0.754,
         "verdict": "pass"
       }
     },
@@ -923,8 +998,8 @@
       "name": "Window glass",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d4e2dc",
-      "color": "#d4e2dc",
+      "baseColor": "#d4dedc",
+      "color": "#d4dedc",
       "roughness": {
         "base": 0.08,
         "variation": 0.05,
@@ -933,18 +1008,18 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#d4e2dc",
+        "dominant": "#d4dedc",
         "secondary": [
-          "#d4e2dc"
+          "#d4dedc"
         ],
-        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+        "samplingNotes": "Measured as the mean of crops/glass.png. extract_pbr_evidence confidence 0.773. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
       "finishClass": "glass",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-glass (0.84) at #bcc4c1 sd 33 (glass over the white matte); carried transparent at opacity 0.32 with a green cast #d4e2dc, both faces.",
+          "Measured on region-glass (0.773) at #9b9d9b sd 36 (glass over the grey matte); carried transparent at opacity 0.34 with a faint green cast #d4dedc, both faces.",
           "Textureless as DECLARED: bare glass carries no texture."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -952,12 +1027,25 @@
       "materialEvidenceArchive": {
         "crop": "crops/glass.png",
         "pbrReport": "material-evidence/glass.pbr.json",
-        "confidence": 0.84,
+        "confidence": 0.773,
         "verdict": "pass"
       }
     }
   ],
-  "repetitionSystems": [],
+  "repetitionSystems": [
+    {
+      "id": "wheels",
+      "name": "Spoked bicycle wheels",
+      "componentRef": "cart",
+      "count": 3,
+      "primitive": "cylinder",
+      "materialId": "steel",
+      "placement": "rear (-0.62, 0.259, 0), cart (0.53, 0.259, -0.265) and (0.53, 0.259, 0.265); r 0.259, axle along Z",
+      "instanced": true,
+      "pivotPerInstance": true,
+      "notes": "One InstancedMesh of tyre and rim ring lathes, a hub and 28 prism spokes; each instance is a named pivot on its axle."
+    }
+  ],
   "buildPasses": [
     {
       "id": "blockout",
@@ -1066,27 +1154,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T10:17:45.588892+00:00",
+      "timestamp": "2026-08-27T19:14:38.381943+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
@@ -1097,40 +1185,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:17:45.664428+00:00",
+      "timestamp": "2026-08-27T19:14:38.467219+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.742048+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1143,180 +1200,241 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T10:17:45.819749+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-08-27T19:14:38.546611+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "case",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.897909+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "bike",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Red tube frame, saddle, chrome rack and handlebar, three wheels of tyre, rim and hub.",
-          "notes": "Wheels static by budget."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.975331+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "case",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.057845+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.140713+00:00",
-      "passId": "interaction-pass",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.224700+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.631420+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.710433+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "case",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.792030+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "bike",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Coherent frame: head, top, down and seat tubes closing on the bottom bracket, paired stays to the rear hub, seat post and sprung-saddle ellipsoid, rack with stays, mudguard, cranks and pedals a half turn apart, chainring, cassette and two chain runs, stem to a swept bar with grips. Ladder chassis: upper rails clamped at the head tube with end caps 0.25 m behind it, lower rails from the bottom bracket, both pairs along the box sides to its front, cross members at the clamps and the front. Three open wheels of tyre and rim ring lathes, hub and 28 prism spokes, instanced, each a named pivot.",
+          "notes": "Nothing steers; both rail pairs are clamped to the fixed frame, recorded in assumptions."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.877313+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.962138+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "case",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.046300+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.134635+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.219285+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
         },
         {
           "id": "case",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
         },
         {
           "id": "bike",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Red tube frame, saddle, chrome rack and handlebar, three wheels of tyre, rim and hub.",
-          "notes": "Wheels static by budget."
+          "evidence": "Coherent frame: head, top, down and seat tubes closing on the bottom bracket, paired stays to the rear hub, seat post and sprung-saddle ellipsoid, rack with stays, mudguard, cranks and pedals a half turn apart, chainring, cassette and two chain runs, stem to a swept bar with grips. Ladder chassis: upper rails clamped at the head tube with end caps 0.25 m behind it, lower rails from the bottom bracket, both pairs along the box sides to its front, cross members at the clamps and the front. Three open wheels of tyre and rim ring lathes, hub and 28 prism spokes, instanced, each a named pivot.",
+          "notes": "Nothing steers; both rail pairs are clamped to the fixed frame, recorded in assumptions."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
@@ -1329,31 +1447,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T10:17:45.588892+00:00",
+      "timestamp": "2026-08-27T19:14:38.381943+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 2; cabinet, case, bicycle and wheels in one merge, glazing apart.",
+      "summary": "Blockout: read as a FRONT-BOX TRICYCLE on the proxy side and end views -- box in line ahead of the head tube, two cart wheels at z +-0.16 H; three components at 3 draw calls of 4: body merge, glazing, an InstancedMesh of three wheels.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1370,55 +1488,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:17:45.664428+00:00",
+      "timestamp": "2026-08-27T19:14:38.467219+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Structural pass: box and bicycle at the proxy stations; wheels r 0.30.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.742048+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "The tarp canopy built as two thick slabs read as a blue box; replaced by a 12 mm sheet with a folded roll and edge battens.",
+      "summary": "Case bands 6-8 read 0.03 H short of the reference: box lengthened from 0.56 to 0.58 and widened to 0.39; the slab saddle replaced by an ellipsoid.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1434,229 +1512,317 @@
       }
     },
     {
-      "timestamp": "2026-08-27T10:17:45.819749+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-08-27T19:14:38.546611+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "case",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: tarp thinned to a sheet with a roll; rack, saddle, handlebar, bottom bracket, rust trim.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.897909+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "bike",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Red tube frame, saddle, chrome rack and handlebar, three wheels of tyre, rim and hub.",
-          "notes": "Wheels static by budget."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: steel 0.86 and glass 0.84, textureless; dark cabinet lifted for the hole gate.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:45.975331+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "case",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: grime canvas on the steel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.057845+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "action": "continue",
-      "summary": "Lighting pass: white matte plate, soft light; no rim, no contact shadow recorded.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.140713+00:00",
-      "passId": "interaction-pass",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider, no destruction groups; wheels static by the two-draw-call budget, recorded as a risk.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T10:17:46.224700+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.85,
-        "componentStructure": 0.84,
-        "formDetail": 0.8,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Box x -0.78..-0.02 under a case to 1.30 and a tarp to 1.43, bicycle to x 0.82, wheels r 0.30 -- the proxy stations; 1.72 m overall against the declared 1.60 (overhang recorded).",
-          "notes": ""
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: band table mean |delta w| 0.059, |delta d| 0.016; case bands within 0.015; wheels r 0.259 (0.34 H) at the proxy hubs; box lengthened 0.02 to the case bands.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.631420+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The cabinet read as a plain box against the plate's framed panels: chrome corner angles, a bottom rail, mid mullions on the case and a third tarp fold added.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.710433+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "case",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: tarp roll with rounded edges, folds and rope ties on four poles; coherent bicycle rear half with drivetrain, rack, mudguard, swept bar; ladder chassis with end caps; case mullions, corner angles, tray, latch knob.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.792030+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "bike",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Coherent frame: head, top, down and seat tubes closing on the bottom bracket, paired stays to the rear hub, seat post and sprung-saddle ellipsoid, rack with stays, mudguard, cranks and pedals a half turn apart, chainring, cassette and two chain runs, stem to a swept bar with grips. Ladder chassis: upper rails clamped at the head tube with end caps 0.25 m behind it, lower rails from the bottom bracket, both pairs along the box sides to its front, cross members at the clamps and the front. Three open wheels of tyre and rim ring lathes, hub and 28 prism spokes, instanced, each a named pivot.",
+          "notes": "Nothing steers; both rail pairs are clamped to the fixed frame, recorded in assumptions."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: steel 0.754 and glass 0.773, textureless; cabinet lifted to #8c8b86 and tyres to #6a6a68 for the hole gate; spokes off region-wheel; tarp off region-tarp.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.877313+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The grime wash was too light against the plate's mottled cabinet: coverage raised to 0.42 with a browner wash.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:38.962138+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "case",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: grime canvas on the steel with a brown wash for the plate's rust streaks and mottling.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.046300+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: grey matte plate, soft light; no rim, no contact shadow recorded.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.134635+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus THREE wheel pivots on their Z axles by instance index, ZERO sockets, one BOX collider, no destruction groups; nothing steers.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/som-tam-cart/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T19:14:39.219285+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Proxy band table: mean |delta w| 0.059, |delta d| 0.016. Case bands 6-7 within 0.015 of the reference (0.379/0.255 against 0.381/0.255); tarp band 0.492/0.283 against 0.508/0.243. Residuals: band 5 +0.27 is the 5-95 percentile catching the saddle and handlebar that the proxy trimmed; band 2 -0.11 is the open rear wheel sampled thinner than the proxy's disc.",
+          "notes": "Declared size re-derived to 1.80 x 1.52 x 0.60 on the 20-inch-wheel anchor; layout settled as a front-box tricycle on the proxy's side and end views."
         },
         {
           "id": "case",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Four 0.32-opacity panes in a chrome angle frame; blue tarp sheet with a folded roll, thinned after the first build read as a blue box.",
-          "notes": ""
+          "evidence": "Five 0.34-opacity panes (four sides and the top) in a chrome angle frame with mid mullions and a tray, 0.26 m tall over a 0.75 m cabinet with chrome corner angles; four chrome poles proud of a folded tarp roll with rounded long edges, two fold slabs and rope ties, with air under the roll as the plate shows.",
+          "notes": "The plate's finer creases and the papaya inside the case are not carried."
         },
         {
           "id": "bike",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Red tube frame, saddle, chrome rack and handlebar, three wheels of tyre, rim and hub.",
-          "notes": "Wheels static by budget."
+          "evidence": "Coherent frame: head, top, down and seat tubes closing on the bottom bracket, paired stays to the rear hub, seat post and sprung-saddle ellipsoid, rack with stays, mudguard, cranks and pedals a half turn apart, chainring, cassette and two chain runs, stem to a swept bar with grips. Ladder chassis: upper rails clamped at the head tube with end caps 0.25 m behind it, lower rails from the bottom bracket, both pairs along the box sides to its front, cross members at the clamps and the front. Three open wheels of tyre and rim ring lathes, hub and 28 prism spokes, instanced, each a named pivot.",
+          "notes": "Nothing steers; both rail pairs are clamped to the fixed frame, recorded in assumptions."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.82. 1,292/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one 256 px canvas. Open bicycle: turntable with --allow-holes on the _holecc measurement.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 3,836/4,000 triangles, 3/4 draw calls, 2/4 materials, 3/8 unique geometries, one 256 px canvas. Open bicycle: turntable with --allow-holes on the _holecc measurement (the openings in the frame, under the box and between spokes are real air).",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1686,39 +1852,39 @@
   ],
   "performanceBudget": {
     "qualityPriority": "real-time",
-    "targetTriangles": 2000,
-    "maxDrawCalls": 2,
-    "maxMaterials": 2,
-    "maxUniqueGeometries": 4,
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
     "textureSize": 1024,
     "fpsTarget": 60,
-    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
         "components": 2,
-        "repetitionSystems": 0,
-        "projectedTotal": 2,
-        "budget": 2,
-        "headroom": 0,
-        "note": "Two components, no repetition system: 2 of 2."
+        "repetitionSystems": 1,
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Two components and one repetition system: 3 of 4."
       },
       "materials": {
         "projectedTotal": 2,
-        "budget": 2,
-        "headroom": 0,
-        "note": "steel and glass: 2 of 2."
-      },
-      "uniqueGeometries": {
-        "projectedTotal": 2,
         "budget": 4,
         "headroom": 2,
+        "note": "steel and glass: 2 of 4."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 8,
+        "headroom": 5,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1292,
-        "budget": 2000,
-        "headroom": 708,
-        "note": "1,292 of 2,000: twenty-six boxes, nine cylinders, nine tubes."
+        "measured": 3836,
+        "budget": 4000,
+        "headroom": 164,
+        "note": "3,836 of 4,000: thirty-seven boxes, a saddle ellipsoid, sixteen cylinders, thirty-eight tubes, and a 576-triangle spoked wheel instanced three times."
       }
     }
   },
@@ -1776,11 +1942,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes for the cabinet, case frame, tarp, saddle and rack; cylinders for the wheels; tubes for the bicycle frame, handlebar and rack stays."
+      "strategy": "Boxes for the cabinet, case frame, tarp folds, rack, cranks and chain; cylinders for the poles, roll edges, chainring, hubs and mudguard; tubes for the frame, bar, rails and axles; an ellipsoid saddle; ring lathes and prism spokes for the wheels."
     },
     {
       "id": "instancing",
-      "strategy": "No InstancedMesh at two draw calls: the wheels are cylinders in the merge and carry no pivot."
+      "strategy": "One InstancedMesh: three spoked wheels, each a named pivot with its instance index."
     },
     {
       "id": "determinism",
@@ -1795,16 +1961,22 @@
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "static-wheels",
-      "severity": "medium",
-      "description": "The wheels cannot turn: the medium budget has no third draw call for an instanced wheel set.",
-      "mitigation": "Recorded; a host that needs rolling wheels can raise maxDrawCalls to 3 and rebuild with the wheels instanced as on the noodle cart."
+      "id": "far-side",
+      "severity": "low",
+      "description": "The -Z cart wheel and far rails are not in the plate.",
+      "mitigation": "Mirrored from the near side on the proxy end view, which shows both wheels."
     },
     {
-      "id": "length-overrun",
+      "id": "declared-size",
       "severity": "low",
-      "description": "The canopy overhang and rear wheel span 1.72 m against the declared 1.60.",
-      "mitigation": "The collider stays at the declared length; the overhang is the plate's."
+      "description": "The previous 1.85 x 1.95 x 0.90 was a sidecar reading of a different plate.",
+      "mitigation": "Re-anchored on the 20-inch wheel with the arithmetic in notes; 1.80 x 1.52 x 0.60."
+    },
+    {
+      "id": "grip-overhang",
+      "severity": "low",
+      "description": "The handlebar grips and cart tyres reach z +-0.32 against the declared half-depth 0.30.",
+      "mitigation": "The collider stays at the declared depth; a grip end is not a collision surface."
     }
   ],
   "localSpecSearch": {
@@ -1870,34 +2042,37 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.4097,
-        "aspectRatioDelta": 0.0802,
-        "scaleDelta": 0.4172,
-        "bilateralSymmetryError": 0.2491,
+        "silhouetteIoU": 0.3277,
+        "aspectRatioDelta": 0.1093,
+        "scaleDelta": 0.309,
+        "bilateralSymmetryError": 0.3118,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 23.59,
+          "maxDeltaE": 23.88,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 19.97
+              "deltaE": 7.02
             },
             {
               "componentId": null,
-              "deltaE": 23.59
+              "deltaE": 23.88
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.410 is below threshold 0.85",
-        "aspect-ratio delta 0.080 exceeds threshold 0.05",
-        "scale delta 0.417 exceeds threshold 0.08",
+        "silhouette IoU 0.328 is below threshold 0.85",
+        "aspect-ratio delta 0.109 exceeds threshold 0.05",
+        "scale delta 0.309 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
-      "maskWarnings": [],
-      "renderHash": "d6a065ab9c884cbd",
+      "maskWarnings": [
+        "reference: 4.2% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured",
+        "render: 2.1% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "66cc3f2eee4e46da",
       "passId": "blockout"
     }
   ]

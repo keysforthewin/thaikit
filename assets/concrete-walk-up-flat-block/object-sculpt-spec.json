@@ -1,0 +1,2597 @@
+{
+  "targetName": "Concrete Walk-Up Flat Block",
+  "targetId": "concrete-walk-up-flat-block",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural-residential-walk-up-flat-block",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "rectilinear",
+        "slab-block",
+        "open-gallery",
+        "end-towers",
+        "gable-roof"
+      ],
+      "structureKind": [
+        "shell-volume",
+        "recessed-gallery",
+        "repeated-module",
+        "stair-cavity"
+      ],
+      "motionPotential": [
+        "static-exterior-shell"
+      ],
+      "materialFamilies": [
+        "fair-faced-concrete",
+        "painted-render",
+        "corrugated-cement-sheet",
+        "stained-plywood",
+        "glass-louvre",
+        "concrete-breeze-block",
+        "painted-concrete",
+        "foliage",
+        "textile"
+      ],
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The Din Daeng / National Housing Authority single-loaded slab flat: six identical open-corridor floors on +Z between two breeze-block-screened stair towers that stand proud of the corridor line, a dog-leg stair seen through a full-height slot in each tower's end wall, a low gable of corrugated cement sheet inside a parapet over the rear 7.7 m of the depth with the tower tops flat below it, and a plain rear elevation carrying a grid of small louvre windows."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 3,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 9,
+        "repetitionSystems": 7
+      },
+      "reasoning": [
+        "The silhouette is a long slab with two solid end towers standing 2.8 m proud of a recessed open corridor and a low gable roof inside a parapet -- three events (tower step, corridor recess, gable) that every three-quarter view shows and a plain box would lose.",
+        "The identity is in the REPEATED corridor floor: six identical rows of ochre spandrel over a shaded opening with a door and a louvre window per bay, which the plate shows on one elevation and the registry notes say must be instanced per bay per floor.",
+        "Four surfaces carry the rest of the identity -- faded stained ochre, streaked concrete, breeze-block screens, corrugated cement sheet -- and each is a post-construction canvas on a textureless material rather than geometry.",
+        "Action readiness is minimal: static exterior shell, box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Forty-two doors, one hundred and twenty-six windows, twelve screens, thirty stair parts and six small details are two hundred and sixteen discrete parts; without instancing they are two hundred submissions against a ceiling of 24. Seven InstancedMesh systems carry all of them at one submission each, beside three merged components."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-corridor-grid",
+          "zone": "facade",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "six open corridor floors: an ochre spandrel with a concrete coping over a 1.5 m shaded opening, recessed 2.8 m behind the tower fronts",
+          "mapsTo": {
+            "ref": "corridor"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-spandrel-grime",
+          "zone": "facade",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "black mould along every coping line and rust runs down the spandrels",
+          "mapsTo": {
+            "ref": "d2-spandrel-grime"
+          },
+          "onMaterial": "ochre",
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-breeze-screens",
+          "zone": "towers",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "a breeze-block screen per floor on each tower front, 2.5 x 1.75 m of slotted blocks",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-stair-slot",
+          "zone": "towers",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a full-height slot in each tower end wall showing the dog-leg stair zigzag",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-corrugated-roof",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "low gable of corrugated cement sheet with rust blooms inside a parapet, gable-end parapets over flat tower tops",
+          "mapsTo": {
+            "ref": "roof"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-doors-and-windows",
+          "zone": "facade",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "a dark unit door and a louvre window per bay on the corridor back wall",
+          "mapsTo": {
+            "ref": "corridor"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-rear-window-grid",
+          "zone": "rear",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "two small louvre windows per bay per floor on the plain rear wall",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-concrete-streaks",
+          "zone": "walls",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "rain streaks hanging from the panel grooves and soft mottle on every concrete face",
+          "mapsTo": {
+            "ref": "d8-concrete-streaks"
+          },
+          "onMaterial": "concrete",
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-plants-and-laundry",
+          "zone": "facade",
+          "kind": "decal",
+          "identityDefining": false,
+          "description": "potted plants on four copings and laundry on two bays",
+          "mapsTo": {
+            "ref": "corridor"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-gable-parapets",
+          "zone": "roof",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "sloped gable-end parapets 0.3 m thick at each end of the roofed body, the tower tops flat in front of them",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+    "resolvedUnknowns": [
+      "The -X end mirrors the +X end: a stair slot at the front corner of the tower and plain panelled concrete behind it. The plate shows only the -X tower's front and inner side.",
+      "The rear elevation is plain concrete with two small louvre windows per bay per floor, as the registry notes describe; nothing in the plate shows it.",
+      "The corridor is an exterior recess 1.5 m deep with a flat back wall carrying doors and windows as relief -- no walkable gallery, no interior. This prop is an exterior shell.",
+      "Seven bays of 2.84 m across the 19.9 m corridor, from the door spacing on the plate (65-72 px per bay along the facade); the plate does not resolve the count beyond +-1.",
+      "The stair inside each slot is a dog-leg of two flights per floor with a half landing at the front end, five floors of flights below the roof level; the plate shows the zigzag but not the landing side.",
+      "Stains are carried as seeded canvases (spandrel grime and rust, concrete streaks and panel grooves, corrugation and rust on the roof), not as the plate's exact marks.",
+      "Plants on four spandrel copings and laundry on two bays, on a fixed index schedule where the plate shows them on the lower right of the facade."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 26.50 x 17.50 x 10.50 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot and zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 1,
+      "microFeatureGroups": 0,
+      "materialLayers": 9,
+      "repetitionSystems": 7,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "corridor-grid",
+        "name": "Open corridor grid",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Six identical corridor rows at the plate's pitch, ground floor included",
+          "An ochre spandrel with a coping over a shaded opening in every row, recessed behind the towers",
+          "A door and a louvre window per bay on the back wall",
+          "Spandrel grime and rust; recess and doors rendering above the backdrop luma"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-ochre",
+          "region-backwall",
+          "region-door"
+        ],
+        "failureModes": [
+          "five rows",
+          "a flat facade with painted bands",
+          "the recess read as one hole"
+        ]
+      },
+      {
+        "id": "towers-and-stair",
+        "name": "Stair towers, screens and slot",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "3.3 m towers at both ends standing proud of the corridor line, tops flat below the roof",
+          "A breeze-block screen per floor on each tower front",
+          "A full-height slot on each end face showing a dog-leg zigzag of flights"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-breeze",
+          "region-stair"
+        ],
+        "failureModes": [
+          "towers flush with the spandrels",
+          "screens read as windows",
+          "the slot read as a hole"
+        ]
+      },
+      {
+        "id": "roof-and-silhouette",
+        "name": "Roof and silhouette",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "A low corrugated gable over the rear of the depth inside a parapet, gable-end parapets",
+          "Envelope 26.5 x 17.5 x 10.5 within 0.03 of height per band against the proxy",
+          "Panel-grooved plain end and rear walls"
+        ],
+        "evidenceRefs": [
+          "view-full",
+          "region-roof",
+          "region-concrete"
+        ],
+        "failureModes": [
+          "a flat roof",
+          "the gable running the wrong way",
+          "blank walls without the groove rhythm"
+        ]
+      },
+      {
+        "id": "flat-palette",
+        "name": "Flat palette",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Weathered grey concrete, faded stained ochre, grey corrugated sheet, dark doors",
+          "Streaked concrete rather than a clean render"
+        ],
+        "evidenceRefs": [
+          "region-concrete",
+          "region-ochre",
+          "region-roof"
+        ],
+        "failureModes": [
+          "a clean cream render",
+          "a bright saturated yellow",
+          "spotted camouflage grime"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "corridor-grid",
+      "name": "Open corridor grid",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "corridor"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-ochre"
+      ]
+    },
+    {
+      "id": "towers-and-stair",
+      "name": "Stair towers, screens and slot",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "view-full",
+        "region-breeze",
+        "region-stair"
+      ]
+    },
+    {
+      "id": "roof-and-silhouette",
+      "name": "Roof and silhouette",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shell",
+        "roof"
+      ],
+      "evidenceRefs": [
+        "region-roof",
+        "region-concrete"
+      ]
+    },
+    {
+      "id": "flat-palette",
+      "name": "Flat palette",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "shell",
+        "corridor"
+      ],
+      "evidenceRefs": [
+        "region-concrete",
+        "region-ochre",
+        "region-roof"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 10,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The ONLY mechanism this prop has. Static landmark geometry: nothing opens, turns or swings, so every part is fixed and gets no axis. A named pivot is a promise that a part turns on it."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the block, not with the corridor recess or the stair slots separately."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The -X end mirrors the +X end: a stair slot at the front corner of the tower and plain panelled concrete behind it. The plate shows only the -X tower's front and inner side.",
+    "The rear elevation is plain concrete with two small louvre windows per bay per floor, as the registry notes describe; nothing in the plate shows it.",
+    "The corridor is an exterior recess 1.5 m deep with a flat back wall carrying doors and windows as relief -- no walkable gallery, no interior. This prop is an exterior shell.",
+    "Seven bays of 2.84 m across the 19.9 m corridor, from the door spacing on the plate (65-72 px per bay along the facade); the plate does not resolve the count beyond +-1.",
+    "The stair inside each slot is a dog-leg of two flights per floor with a half landing at the front end, five floors of flights below the roof level; the plate shows the zigzag but not the landing side.",
+    "Stains are carried as seeded canvases (spandrel grime and rust, concrete streaks and panel grooves, corrugation and rust on the roof), not as the plate's exact marks.",
+    "Plants on four spandrel copings and laundry on two bays, on a fixed index schedule where the plate shows them on the lower right of the facade."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center as the asset declares, +Y up, the open corridor on +Z. Towers occupy the outer 3.3 m of each end at full depth; the spandrel line sits at z = +2.45, the corridor back wall at z = +0.95, the tower fronts at z = +5.25. The stair slot is cut into each tower's end wall (+X and -X) at z 2.6..4.8 from 0.5 to 15.4 m, over a 2.4 m deep cavity. The roof gable spans z -5.25..+2.45 with its ridge at z = -1.4."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 26.5,
+      "h": 17.5,
+      "d": 10.5
+    },
+    "description": "A 26.5 x 10.5 m slab from a 0.2 m plinth: towers to 16.0 m, the roof parapet to 16.7 m, the gable-end parapets to 17.5 m over a corrugated sheet whose eaves sit at 16.35 and ridge at 17.3. Six corridor rows at a 2.633 m pitch -- 0.98 m of spandrel plus coping over a 1.5 m opening -- recessed 2.8 m behind the tower fronts across the 19.9 m between them. The silhouette events are the tower step at each end, the corridor recess, the flat tower tops below the gable, and the stair slot on each end face.",
+    "envelopeDerivation": "Height is the primary axis at the declared 17.50 m: the gable-end parapet ridge. The Meshy v7 proxy of the plate normalises to w:h:d = 1.514 : 1 : 0.597, so w = 17.5 x 1.514 = 26.5 and d = 17.5 x 0.597 = 10.4 -> 10.50. The plate agrees: its +X end face and its front face foreshorten almost equally at the ~45-degree three-quarter (237 px of depth against 615 px of width). The list-time 28 x 12 was an eight-bay estimate and was corrected on the asset before the build, with the arithmetic in its notes. x spans -13.35..+13.35 (walls at 13.25 plus the 0.10 m plinth step), z spans -5.35..+5.35 the same way, y 0.00..17.50.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1.514 : 1 : 0.597 against the corrected declaration 1.514 : 1 : 0.600. Area-weighted band comparison against the built candidate gives mean |delta width| 0.025 and |delta depth| 0.030 of height across ten bands, the largest single residuals being band 0 (the plinth step, +0.051 depth) and band 9 (the roof, -0.039 width, where the proxy fuses the gable parapets into a wider cap). The proxy DROPPED a corridor row -- it shows five slab bands at a 0.18 H pitch where the plate shows six spandrel rows at 73 px -- so the row count is taken from the plate and the tower width, the spandrel recess and the roof profile from the proxy's +Z and +X depth maps."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-concrete",
+      "viewpoint": "right",
+      "path": "crops/concrete.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-ochre",
+      "viewpoint": "front",
+      "path": "crops/spandrel.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-backwall",
+      "viewpoint": "front",
+      "path": "crops/backwall.png",
+      "confidence": 0.767
+    },
+    {
+      "id": "region-door",
+      "viewpoint": "front",
+      "path": "crops/door.png",
+      "confidence": 0.803
+    },
+    {
+      "id": "region-louvre",
+      "viewpoint": "front",
+      "path": "crops/louvre.png",
+      "confidence": 0.734
+    },
+    {
+      "id": "region-breeze",
+      "viewpoint": "front",
+      "path": "crops/breeze.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-roof",
+      "viewpoint": "top",
+      "path": "crops/roof.png",
+      "confidence": 0.839
+    },
+    {
+      "id": "region-stair",
+      "viewpoint": "right",
+      "path": "crops/flight.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-cavity",
+      "viewpoint": "right",
+      "path": "crops/cavity.png",
+      "confidence": 0.831
+    },
+    {
+      "id": "region-foliage",
+      "viewpoint": "front",
+      "path": "crops/foliage.png",
+      "confidence": 0.829
+    },
+    {
+      "id": "region-cloth",
+      "viewpoint": "front",
+      "path": "crops/cloth.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rear",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.6,
+      "note": "NOT DIRECTLY OBSERVED. The registry notes specify a plain rear elevation with a grid of small louvred windows; authored as two 1.0 x 0.6 m louvre windows per bay per floor on a streaked concrete wall with the same panel grooves as the ends. Confidence 0.60."
+    },
+    {
+      "id": "region-minusx",
+      "viewpoint": "left",
+      "path": null,
+      "confidence": 0.65,
+      "note": "NOT DIRECTLY OBSERVED beyond the -X tower's front and its inner side. Authored as the mirror of the +X end -- stair slot at the front corner, panel grooves behind it -- because both towers carry the same breeze screens and the plan is symmetric."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "shell",
+      "name": "Concrete shell",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Plinth, the body behind the corridor, each tower as five boxes so the stair slot is a real cavity with the tower's own faces as its walls, the corridor slabs and copings, the roof deck, both parapets and the two gable-end extrusions -- one concrete, ONE component and ONE draw call with world-planar UVs so the tile lands without a seam per box.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 26.5 x 10.5 m shell from the 0.2 m plinth: towers to 16.0, parapet to 16.7, gable ends to 17.5; the corridor slabs at 2.633 m from z 0.95 to 2.45 between the towers; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every joint is an opposed butt: body against tower inner faces, slabs against the back wall and towers, deck on the body and tower tops, parapets on the deck, gable ends on the tower tops against the deck ends. Co-facing faces on the end-wall plane (front strip, head, sill) meet only at edges, never over an area. check-coplanar clean.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d3-breeze-screens",
+          "description": "twelve breeze-block screens on the tower fronts",
+          "delivery": "repetitionSystems.breeze"
+        },
+        {
+          "id": "d4-stair-slot",
+          "description": "stair slot and cavity in each tower",
+          "delivery": "five boxes per tower; flights and landings in repetitionSystems.flights + landings"
+        },
+        {
+          "id": "d7-rear-window-grid",
+          "description": "eighty-four rear louvre windows",
+          "delivery": "repetitionSystems.windows (yawed instances)"
+        },
+        {
+          "id": "d10-gable-parapets",
+          "description": "sloped gable-end parapets",
+          "delivery": "two YZ-plane extrusions merged into the shell"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#a49f97",
+        "recipe": "Weathered concrete, roughness 0.95, no texture set; streak canvas assigned after construction.",
+        "evidenceRef": "region-concrete",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(164, 159, 151, 1.0)",
+        "secondaryAlbedo": "rgba(164, 159, 151, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center, as the asset declares. A STATIC exterior shell: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            8.75,
+            0
+          ],
+          "halfExtents": [
+            13.35,
+            8.75,
+            5.35
+          ],
+          "notes": "Declared on the asset as box. One convex proxy over the whole envelope; a level builder collides with the block, not with the corridor recess or the stair slots separately."
+        }
+      }
+    },
+    {
+      "id": "corridor",
+      "name": "Corridor spandrels and back wall",
+      "level": "macro",
+      "role": "identity",
+      "importance": 0.95,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The six spandrels and the full-height back wall share one paint, so they are one merged component and one draw; the recess shade is a vertex tint on the same material rather than a second material, and the canvas UVs place the spandrel strip and the wall in separate halves of one texture.",
+      "materialId": "ochre",
+      "material": "ochre",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "Six 19.9 x 0.98 x 0.15 m spandrels at z 2.30..2.45 on the slab tops, and a 19.9 x 15.8 x 0.15 m back wall at z 0.80..0.95.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Spandrel backs butt the slab fronts (opposed); the back wall's rear face butts the body's front face (opposed); door and window backs sit ON the wall face as opposed pairs; the ground-floor doors start 0.02 m above the wall foot so no bottom face shares the plinth plane.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d1-corridor-grid",
+          "description": "six spandrel rows over shaded openings",
+          "delivery": "merged boxes with the back wall"
+        },
+        {
+          "id": "d6-doors-and-windows",
+          "description": "door and window per bay",
+          "delivery": "repetitionSystems.doors + windows"
+        },
+        {
+          "id": "d9-plants-and-laundry",
+          "description": "plants and laundry",
+          "delivery": "repetitionSystems.plants + laundry"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "ochre",
+        "baseColor": "#b09668",
+        "recipe": "Faded ochre paint, roughness 0.90; the back wall a 0.40 linear vertex tint; grime canvas after construction.",
+        "evidenceRef": "region-ochre",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(176, 150, 104, 1.0)",
+        "secondaryAlbedo": "rgba(116, 97, 67, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "roof",
+      "name": "Corrugated roof sheet",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.8,
+      "confidence": 0.86,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Its own component because it is the one surface with its own material and its own UV scale: a 0.10 m thick gable prism extruded in the YZ plane between the gable-end parapets, eaves at 16.35 and ridge at 17.3.",
+      "materialId": "roof",
+      "material": "roof",
+      "parent": "shell",
+      "geometryDescriptor": {
+        "topologyIntent": "A 25.9 x 7.0 m gable prism, ridge at z = -1.4, over the deck inside the parapets.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Ends butt the gable parapets' inner faces (opposed); the eaves stop 0.35 m inside the parapets and 0.2 m above the deck, so nothing shares the deck or parapet planes.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d5-corrugated-roof",
+          "description": "corrugations and rust",
+          "delivery": "seeded 512^2 canvas, map and bumpMap"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "roof",
+        "baseColor": "#9c9891",
+        "recipe": "Corrugated cement sheet, roughness 0.85; corrugation canvas as map and bump after construction.",
+        "evidenceRef": "region-roof",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(156, 152, 145, 1.0)",
+        "secondaryAlbedo": "rgba(156, 152, 145, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "concrete",
+      "name": "Weathered fair-faced concrete",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a49f97",
+      "color": "#a49f97",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a49f97",
+        "secondary": [
+          "#706C66",
+          "#6B6861",
+          "#65625B"
+        ],
+        "samplingNotes": "Measured as the mean of crops/concrete.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d8-concrete-streaks",
+          "region": "every concrete face: rain streaks under the panel grooves, soft mottle",
+          "roughness": 0.95,
+          "palette": [
+            "#79756C",
+            "#A39F95"
+          ],
+          "evidence": "crops/concrete.png measures #85827C with streak troughs at #6B6861 against the lit #A39F95 -- rain wash hanging from the panel grooves. Delivered as a seeded 512^2 canvas: 120 soft mottle clouds, 80 streaks per two-pitch tile, grooves at floor level and one vertical per tile."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-concrete (PBR confidence 0.831): the crop mean on the lit +X end wall is #85827C and the hue-binned mean of the light greys over the whole facade crop is #A39F95; the shaded tower fronts read #79756C. Authored at the lit tone: the harness renders a front-lit face at ~0.76 of the authored luma and a side-lit one at ~0.55, and the grime canvas takes a further 10-25 percent, so #A49F97 lands the lit end wall near the plate's 130.",
+          "Shared by the plinth, body, towers, corridor slabs and copings, roof deck, parapets and gable ends -- one concrete, one component.",
+          "Textureless: the streaks, mottle and panel grooves are a 512^2 seeded canvas assigned after construction with world-planar UVs at 5.27 m per tile, drawn in multiplier space over white so the authored colour stays the mean under Node and in the browser."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/concrete.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "ochre",
+      "name": "Faded ochre paint",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b09668",
+      "color": "#b09668",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/ochre_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b09668",
+        "secondary": [
+          "#51432E",
+          "#403725",
+          "#5B4B35"
+        ],
+        "samplingNotes": "Measured as the mean of crops/spandrel.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d2-spandrel-grime",
+          "region": "coping line and foot of every spandrel",
+          "roughness": 0.9,
+          "palette": [
+            "#4A3C27",
+            "#963E12",
+            "#AD946A"
+          ],
+          "evidence": "crops/spandrel.png: black mould along the coping line (#4A3C27 as the hue-binned dark ochre, 23 percent of the facade crop) and rust runs from the fixings. Delivered as the ochre canvas: a 40 px mould gradient, 34 soft clouds, 22 rust streaks per 1024 px strip."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-ochre (PBR confidence 0.860): the crop mixes clean paint with grime, so the clean tone is the hue-binned mean of the bright ochre pixels (hue 25-55, saturation >= 0.3, value >= 0.6) across the facade crop: #AD946A, luma 151, 9.3 percent of the crop. Authored #B09668.",
+          "vertexColors: the corridor back wall carries a 0.40 linear multiplier -- the plate measures it at #746143 (luma 99) in the corridor shade against the lit spandrel, a 0.66 sRGB ratio -- so the recess reads as a recess and still renders at luma 104 in the azimuth-0 frame, well above the backdrop's 58 (measured on the render).",
+          "Textureless: the coping-line mould, rust bleeds and grime are one 1024 x 256 seeded canvas assigned after construction -- spandrel strip in the top half, back wall in the bottom -- with u shifted 0.137 per floor so no two spandrels repeat."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/spandrel.png",
+        "pbrReport": "material-evidence/ochre.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "roof",
+      "name": "Corrugated cement sheet",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9c9891",
+      "color": "#9c9891",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/roof_roughness.png"
+      },
+      "metalness": 0.05,
+      "albedo": {
+        "dominant": "#9c9891",
+        "secondary": [
+          "#635F51",
+          "#6E6B5B",
+          "#7B7866"
+        ],
+        "samplingNotes": "Measured as the mean of crops/roof.png. extract_pbr_evidence confidence 0.839. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roof (PBR confidence 0.839): crop mean #8B867D, palette #635F51..#7B7866 in the corrugation troughs, rust blooms at #83695A. Authored #9C9891 for the sheet crown; the canvas carries the troughs.",
+          "Textureless: 32 corrugations per 3.2 m tile at a 0.10 m pitch running down the slope, three rust blooms and lichen freckles, as a seeded 512^2 canvas assigned after construction and bound as map and bumpMap (bumpScale 0.02)."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/roof.png",
+        "pbrReport": "material-evidence/roof.pbr.json",
+        "confidence": 0.839,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "door",
+      "name": "Stained plywood unit door",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6e5a44",
+      "color": "#6e5a44",
+      "roughness": {
+        "base": 0.75,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/door_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#6e5a44",
+        "secondary": [
+          "#292219",
+          "#322B22",
+          "#76715E"
+        ],
+        "samplingNotes": "Measured as the mean of crops/door.png. extract_pbr_evidence confidence 0.803. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-door (PBR confidence 0.803): palette #292219 / #322B22 with #5C5744 highlights. Authored #6E5A44 (luma 93, saturation 0.38): lifted from the measured tone so forty-two doors deep in the shaded corridor never render in the backdrop band, and kept saturated rather than greyed for the same gate.",
+          "Textureless: flat stained sheet at prop distance."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/door.png",
+        "pbrReport": "material-evidence/door.pbr.json",
+        "confidence": 0.803,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "louvre",
+      "name": "Glass louvre window",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a9a598",
+      "color": "#a9a598",
+      "roughness": {
+        "base": 0.5,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/louvre_roughness.png"
+      },
+      "metalness": 0.1,
+      "albedo": {
+        "dominant": "#a9a598",
+        "secondary": [
+          "#86837A",
+          "#939087",
+          "#726F65"
+        ],
+        "samplingNotes": "Measured as the mean of crops/louvre.png. extract_pbr_evidence confidence 0.734. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "glass",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-louvre (PBR confidence 0.734): crop #87847A, palette #A3A196 for the slats. Authored #A9A598 with a 64^2 slat canvas (six dark slat shadows and a frame line) assigned after construction on the +Z face only; every other face samples a plain corner.",
+          "An exterior shell has nothing behind it, so the pane is an opaque slab."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/louvre.png",
+        "pbrReport": "material-evidence/louvre.pbr.json",
+        "confidence": 0.734,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "breeze",
+      "name": "Concrete breeze-block screen",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9d9a93",
+      "color": "#9d9a93",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/breeze_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#9d9a93",
+        "secondary": [
+          "#373329",
+          "#2C281F",
+          "#444036"
+        ],
+        "samplingNotes": "Measured as the mean of crops/breeze.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-breeze (PBR confidence 0.840): crop #7D796F, block faces at #7D796F..#8F8C84 and slot floors at #373329. Authored #9D9A93 with a 256^2 slot canvas (12 x 9 slots at a 0.40 black multiplier, so the slot floors render near luma 90 rather than the measured 55 the silhouette gate would read as holes) assigned after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/breeze.png",
+        "pbrReport": "material-evidence/breeze.pbr.json",
+        "confidence": 0.84,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "stair",
+      "name": "Cream-painted stair",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d6cfc0",
+      "color": "#d6cfc0",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stair_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#d6cfc0",
+        "secondary": [
+          "#2C2824",
+          "#26221F",
+          "#181510"
+        ],
+        "samplingNotes": "Measured as the mean of crops/flight.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-stair (PBR confidence 0.831): the lit flight nosing reads #807D77 and the cavity #45433E (region-cavity). Authored #D6CFC0: a flight's sloped soffit in the concrete tone rendered at luma 83 in the 270 frame and was flagged as backdrop by the turntable gate; the stair carries its own lighter, warmer paint so the soffits render near 110. Recorded here as a gate-driven lift from the measured tone.",
+          "Textureless: flat paint; the inner flight is an instance tint of 0.82 into the cavity shade."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/flight.png",
+        "pbrReport": "material-evidence/stair.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "foliage",
+      "name": "Potted plants",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#587040",
+      "color": "#587040",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/foliage_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#587040",
+        "secondary": [
+          "#463921",
+          "#5A5038",
+          "#A89C83"
+        ],
+        "samplingNotes": "Measured as the mean of crops/foliage.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "fabric",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "viewEvidence region-foliage (PBR confidence 0.829): leaf greens over the spandrel coping. Base #587040 with per-vertex tints between 0.55 and 1.0 across four leaf blocks."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/foliage.png",
+        "pbrReport": "material-evidence/foliage.pbr.json",
+        "confidence": 0.829,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "cloth",
+      "name": "Hanging laundry",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/cloth_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#AC9061",
+          "#B19668",
+          "#413D34"
+        ],
+        "samplingNotes": "Measured as the mean of crops/cloth.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "fabric",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "viewEvidence region-cloth (PBR confidence 0.860): white, pale blue and grey garments on a line inside the corridor. White base so per-vertex garment colours and per-instance tints ship un-darkened -- setColorAt multiplies with material.color."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/cloth.png",
+        "pbrReport": "material-evidence/cloth.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "doors",
+      "name": "Unit doors",
+      "instanceCount": 42,
+      "sourceComponent": "corridor",
+      "material": "door",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "door-slab",
+      "placement": {
+        "mode": "grid",
+        "note": "Seven bays x six floors on the corridor back wall, left of each bay centre."
+      },
+      "instanceDimensions": {
+        "width": 0.9,
+        "height": 2.05,
+        "depth": 0.05
+      },
+      "rationale": "One door slab, forty-two instances, one draw.",
+      "zFightingNote": "Back face on the wall face as an opposed pair; foot 0.02 m above the wall foot."
+    },
+    {
+      "id": "windows",
+      "name": "Louvre windows",
+      "instanceCount": 126,
+      "sourceComponent": "shell",
+      "material": "louvre",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "louvre-pane",
+      "placement": {
+        "mode": "grid",
+        "note": "One per bay per floor on the corridor back wall (42) and two per bay per floor on the rear wall, yawed a half turn (84)."
+      },
+      "instanceDimensions": {
+        "width": 1.0,
+        "height": 0.6,
+        "depth": 0.05
+      },
+      "rationale": "One pane geometry with a slat canvas on its outward face, 126 instances.",
+      "zFightingNote": "Back face on the wall face as an opposed pair."
+    },
+    {
+      "id": "breeze",
+      "name": "Breeze-block screens",
+      "instanceCount": 12,
+      "sourceComponent": "shell",
+      "material": "breeze",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "screen-panel",
+      "placement": {
+        "mode": "grid",
+        "note": "One per floor on each tower front."
+      },
+      "instanceDimensions": {
+        "width": 2.5,
+        "height": 1.75,
+        "depth": 0.04
+      },
+      "rationale": "One panel with the slot canvas on its +Z face, twelve instances.",
+      "zFightingNote": "Back face on the tower front as an opposed pair, 0.04 m proud."
+    },
+    {
+      "id": "flights",
+      "name": "Stair flights",
+      "instanceCount": 20,
+      "sourceComponent": "shell",
+      "material": "stair",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "sloped-flight",
+      "placement": {
+        "mode": "explicit",
+        "note": "Two per floor for five floors in each cavity: the outer against the slot rising toward +Z, the inner behind it rising toward -Z."
+      },
+      "instanceDimensions": {
+        "width": 1.08,
+        "height": 0.6,
+        "depth": 2.48
+      },
+      "rationale": "One box rotated about X by +-31 degrees; the inner flight tinted 0.82.",
+      "zFightingNote": "Rotated, so no face lies on a cavity plane; outer and inner flights are 0.02 m apart in x."
+    },
+    {
+      "id": "landings",
+      "name": "Stair landings",
+      "instanceCount": 10,
+      "sourceComponent": "shell",
+      "material": "stair",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "half-landing",
+      "placement": {
+        "mode": "explicit",
+        "note": "At the +Z end of each cavity where the flights turn, one per floor for five floors."
+      },
+      "instanceDimensions": {
+        "width": 2.3,
+        "height": 0.65,
+        "depth": 0.9
+      },
+      "rationale": "One box, ten instances; the lit top faces cover the cavity back wall behind the turn.",
+      "zFightingNote": "0.05 m clear of the cavity walls on every side."
+    },
+    {
+      "id": "plants",
+      "name": "Potted plants",
+      "instanceCount": 4,
+      "sourceComponent": "corridor",
+      "material": "foliage",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "four-leaf-blocks",
+      "placement": {
+        "mode": "explicit",
+        "note": "On the copings of bays 4, 5, 3, 5 at floors 0..3."
+      },
+      "instanceDimensions": {
+        "width": 1.1,
+        "height": 0.72,
+        "depth": 0.46
+      },
+      "rationale": "Four leaf blocks with per-vertex tints merged once, four instances.",
+      "zFightingNote": "Stand on the coping top; 0.22 m inside the spandrel face."
+    },
+    {
+      "id": "laundry",
+      "name": "Hanging laundry",
+      "instanceCount": 2,
+      "sourceComponent": "corridor",
+      "material": "cloth",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "four-garments",
+      "placement": {
+        "mode": "explicit",
+        "note": "Bays 2 and 4 at floors 3 and 1, hung 0.45 m in front of the back wall."
+      },
+      "instanceDimensions": {
+        "width": 1.45,
+        "height": 0.62,
+        "depth": 0.07
+      },
+      "rationale": "Four garments of differing width and height with per-vertex colours; per-instance tints.",
+      "zFightingNote": "Each garment jittered in z by up to 0.03 m; none share a plane."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-28T00:55:38.240027+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.322503+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        },
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.405099+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.488665+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "flat-palette",
+          "tier": "important",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Nine materials, nine measured off the plate at PBR confidence 0.734-0.860; weathered #A49F97 concrete, faded #B09668 ochre (hue-binned clean mean #AD946A), #9C9891 corrugated sheet, #6E5A44 doors; five seeded canvases carry streaks, grime, rust, corrugation, slats and slots.",
+          "notes": "The ochre crop mixes paint with grime, so the clean tone was measured as the mean of the bright ochre-hued pixels across the facade crop rather than the crop mean; the door and stair tones are lifted from their measurements for the hole gate and say so on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.574605+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.661839+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.747720+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.831404+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        },
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        },
+        {
+          "id": "flat-palette",
+          "tier": "important",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Nine materials, nine measured off the plate at PBR confidence 0.734-0.860; weathered #A49F97 concrete, faded #B09668 ochre (hue-binned clean mean #AD946A), #9C9891 corrugated sheet, #6E5A44 doors; five seeded canvases carry streaks, grime, rust, corrugation, slats and slots.",
+          "notes": "The ochre crop mixes paint with grime, so the clean tone was measured as the mean of the bright ochre-hued pixels across the facade crop rather than the crop mean; the door and stair tones are lifted from their measurements for the hole gate and say so on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-28T00:55:38.240027+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: three components and seven InstancedMesh systems at 10 draw calls of 24. Envelope corrected on the asset first -- the proxy reads the plate at w:h:d 1.514 : 1 : 0.597, so 26.5 x 17.5 x 10.5 replaced the eight-bay 28 x 12 estimate; six corridor rows from the plate over the proxy's five.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/clay/clay-40.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.322503+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        },
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: towers as five boxes each so the stair slot is a real cavity walled by the tower's own faces; corridor slabs, copings and spandrels between them; roof deck, parapets and YZ-plane gable-end extrusions with the corrugated prism between; dog-leg flights and half landings instanced into the cavities.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.405099+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: flights thickened from 0.16 to 0.60 m so the zigzag reads as the plate's solid-balustraded bands and limited to the five floors below the roof; half landings added at the turn; ground-floor doors lifted 0.02 m off the plinth plane after check-coplanar found seven shared bottom faces; check-coplanar clean.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.488665+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "flat-palette",
+          "tier": "important",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Nine materials, nine measured off the plate at PBR confidence 0.734-0.860; weathered #A49F97 concrete, faded #B09668 ochre (hue-binned clean mean #AD946A), #9C9891 corrugated sheet, #6E5A44 doors; five seeded canvases carry streaks, grime, rust, corrugation, slats and slots.",
+          "notes": "The ochre crop mixes paint with grime, so the clean tone was measured as the mean of the bright ochre-hued pixels across the facade crop rather than the crop mean; the door and stair tones are lifted from their measurements for the hole gate and say so on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: nine materials, nine measured at PBR confidence 0.734-0.860. The clean ochre is the hue-binned bright mean of the facade (#AD946A), the back wall its measured 0.66 shade ratio as a 0.40 linear vertex tint; concrete at the plate's lit tone; door and stair tones lifted for the hole gate and recorded as such.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.574605+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: five seeded post-construction canvases in the browser only -- concrete streaks, mottle and panel grooves on world-planar UVs; spandrel mould and rust with a per-floor u shift; roof corrugation as map and bump; louvre slats; breeze slots at a 0.40 multiplier. Every material is textureless; nothing synthesises the five-canvas set. The first grime pass read as camouflage and was redrawn as soft continuous bands.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.661839+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. Rendered luma measured per azimuth: front concrete 119, end walls 80-92, rear 96, back wall 104, corridor spandrel 133 -- every enclosed surface above the backdrop's 58 and the turntable gate passing at 0 / 90 / 180 / 270 without --allow-holes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.747720+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T00:55:38.831404+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corridor-grid",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Six corridor rows at a 2.633 m pitch from the 0.2 m plinth, ground floor included, each a 0.98 m ochre spandrel with a concrete coping over a 1.5 m opening onto a back wall 1.5 m behind the spandrel line and 2.8 m behind the tower fronts; a door left and a louvre window right of every one of seven bays; mould along the coping line and rust runs on every spandrel, shifted per floor. Band table against the proxy: mean |delta width| 0.025 of height.",
+          "notes": "Row count from the plate's six spandrel rows (the proxy dropped one, exactly as the apartment proxy did); the tower width (10/80 of the proxy width), the spandrel recess (0.13 H behind the tower front on the +Z depth map) and the tower inner side face visible on the plate (65 px against a 60 px front at equal foreshortening) agree on the 2.8 m step. The back wall's 0.40 linear tint is the plate's own 0.66 sRGB ratio of shaded wall to lit spandrel, and the recess renders at luma 104 front-on. The first build's grime was 90 hard blotches per strip and read as leopard spots; it is now a continuous mould gradient with 34 soft elliptical clouds and 22 rust streaks."
+        },
+        {
+          "id": "towers-and-stair",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "3.3 m towers at both ends, full depth, tops flat at 16.0 m below the 16.7 m parapet; a 2.5 x 1.75 m breeze screen per floor on each tower front with 12 x 9 slots; a 2.2 x 14.9 m slot in each end wall over a 2.4 m cavity holding two flights per floor and a half landing for five floors, so the 0 / 90 / 270 frames show the plate's zigzag.",
+          "notes": "The plate shows the stair only through the +X slot; the -X end is mirrored at 0.65 confidence. The flights are cream-painted rather than the plate's grey because a grey soffit at luma 83 in the 270 frame was flagged as backdrop by the turntable gate; the plate's own cavity measures luma 67, below the gate's band, so the lift is recorded on the material as gate-driven. The tower-top lip the plate hints at is not built."
+        },
+        {
+          "id": "roof-and-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Corrugated gable over the rear 7.7 m of the depth with eaves at 16.35 and ridge at 17.3 inside 16.7 m parapets, gable-end parapets to the declared 17.5 with the tower tops flat in front of them -- the +X depth map's profile; 32 corrugations per 3.2 m running down the slope with rust blooms. Envelope 26.5 x 17.5 x 10.5 corrected on the asset from the proxy's 1.514 : 1 : 0.597; band table mean |delta depth| 0.030 of height, largest residual the plinth step at +0.051.",
+          "notes": "Panel grooves at floor level and one vertical per 5.27 m tile on every concrete face, with rain streaks hanging from them. The first grooved tile at a 0.62 minimum multiplier pushed the back-lit rear wall's streak clusters into the backdrop band at 180 and 270; the streaks now bottom out near 0.78 and the concrete is authored at the plate's lit tone (#A49F97), which the harness renders at 119 front-on and 80-96 side- and back-lit."
+        },
+        {
+          "id": "flat-palette",
+          "tier": "important",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Nine materials, nine measured off the plate at PBR confidence 0.734-0.860; weathered #A49F97 concrete, faded #B09668 ochre (hue-binned clean mean #AD946A), #9C9891 corrugated sheet, #6E5A44 doors; five seeded canvases carry streaks, grime, rust, corrugation, slats and slots.",
+          "notes": "The ochre crop mixes paint with grime, so the clean tone was measured as the mean of the bright ochre-hued pixels across the facade crop rather than the crop mean; the door and stair tones are lifted from their measurements for the hole gate and say so on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90: silhouette 0.95 on a band table at 0.025 / 0.030 of height, structure 0.92 with every identity feature present at the plate's count and position (the tower-top lip and the landing side of the stair the plate does not show are the residue), form 0.88, material 0.87 and lighting 0.86 held down by the flat harness light, the gate-driven stair lift and the invented rear and -X elevations. 3,256/32,000 triangles, 10/24 draw calls, 9/16 materials, 10/32 unique geometries.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/beauty-40.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-walk-up-flat-block/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 7,
+        "projectedTotal": 10,
+        "budget": 24,
+        "headroom": 14,
+        "note": "Three components and seven repetition systems: 10 of 24. Everything concrete is one draw, everything ochre one draw, and the 216 repeated parts ride seven InstancedMesh systems."
+      },
+      "materials": {
+        "projectedTotal": 9,
+        "budget": 16,
+        "headroom": 7,
+        "note": "Nine of sixteen. concrete covers the shell entire; ochre the spandrels and back wall with a vertex tint; stair is a gate-driven separate paint for the flights and landings; foliage and cloth are tinted bases for the two small detail systems."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 10,
+        "budget": 32,
+        "headroom": 22,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 3256,
+        "budget": 32000,
+        "headroom": 28744,
+        "note": "3,256 of 32,000. The shell is thirty-three boxes and two extrusions, the corridor seven boxes; every instanced part is a single box. A slab block earns its identity from surfaces, not tessellation, and the headroom is deliberate for a prop a level builder places by the dozen."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Axis-aligned boxes for the shell, corridor, doors, windows, screens and stair parts; two extrusions in the YZ plane for the gable-end parapets and one for the roof prism. The stair slot is a cavity bounded by the tower's own boxes, not a subtraction, so the shell has no interior coincidence."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Seven InstancedMesh systems carry 216 of the prop's 219 discrete parts: 42 doors, 126 windows, 12 screens, 20 flights, 10 landings, 4 plants and 2 laundry racks."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Five post-construction canvases are assigned in the browser only -- concrete streaks and grooves, spandrel grime and rust, roof corrugation, louvre slats and breeze slots -- all seeded, all drawn in multiplier space over white so the authored albedo stays the mean; none is the five-canvas procedural set. Under Node every material renders flat at its authored colour."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "proxy-dropped-row",
+      "severity": "low",
+      "description": "The Meshy proxy shows five corridor rows where the plate shows six.",
+      "mitigation": "Row count from the plate (six spandrel rows at 73 px), envelope and recess depths from the proxy; the band table agrees to 0.025 of height."
+    },
+    {
+      "id": "unseen-elevations",
+      "severity": "medium",
+      "description": "The rear and the -X end beyond the tower are not in the plate.",
+      "mitigation": "Authored from the registry notes (plain rear with small louvre windows) and by mirroring the +X end; recorded at 0.60 / 0.65 confidence in viewEvidence."
+    },
+    {
+      "id": "dark-recess-gate",
+      "severity": "low",
+      "description": "A 1.5 m corridor recess and a stair cavity are shaded surfaces enclosed by the silhouette.",
+      "mitigation": "Back wall tint measured at 0.66 sRGB and authored at 0.40 linear so it renders at luma 104 front-on; the stair paint lifted so soffits render near 110; turntable gate passes at all four azimuths without --allow-holes."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Concrete Walk-Up Flat Block",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.description-pbr-vocabulary-caption-calibration",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[7]",
+        "score": 2.994852144769,
+        "snippets": [
+          "Embedding a technical material-attribute block (Albedo, Metalness, Roughness, Normals) with measured reflectance ranges directly into the structured description, not just prose. Nhúng một khối thuộc tính vật liệu kỹ thuật (Albedo, Metalness, ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.shader-mapping-srgb-linear-color-space-assignment",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[12]",
+        "score": 2.572344637905,
+        "snippets": [
+          "... vật liệu. Recognition cues: Any imported texture that looks like a natural photo → sRGB; any texture that looks like flat gray/colored data noise → NoColorSpace Dấu hiệu nhận diện: Bất kỳ texture nhập vào trông như ảnh tự nhiên → sRGB; ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[12]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-color-space-srgb-vs-linearnocolorspace",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[11]",
+        "score": 2.369087273981,
+        "snippets": [
+          "... the only ones that should look like natural photographic color; Normal, roughness, metalness, and AO textures look like flat/desaturated data patterns and must never be gamma-corrected Dấu hiệu nhận diện: Chỉ có base color/albedo và ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[11]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1882 @@
+{
+  "targetName": "Fire Escape Ladder Segment",
+  "targetId": "fire-escape-ladder-segment",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "wall-ladder-segment",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "flat-bar-stiles",
+        "round-rungs",
+        "standoff-brackets",
+        "bolted-wall-plates",
+        "stackable-module"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "painted-steel",
+        "galvanised-steel"
+      ],
+      "notes": "One 3.0 m module of a plain uncaged steel escape ladder (no hoops, no cage bars -- rebuilt 2026-08-28 with the cage removed), cut flat at both ends so a builder stacks N of them up a wall. Nothing on it turns, opens or swings; nothing attaches to it -- the next segment is placed at +3.0 m, not socketed. One root pivot at back-center on the wall plane, zero sockets. Back and side walls of Bangkok shophouses, walk-ups and small office blocks; stacks in 3.0 m steps to any parapet. Pale grey paint dulled and chalking, rust at every weld and nut, galvanised bolt plates cleaner than the ladder."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 1,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE frame merge on one material -- two flat-bar stiles and one bracket pair (two standoff arms, two gussets, two galvanised wall plates, six bolt heads) -- plus ONE InstancedMesh of ten rungs (rod, two rust weld sleeves, two brass nuts): TWO draw calls of 4.",
+        "One material: painted steel as vertex colours on white -- pale blue-grey paint, galvanised plate, silver bolt, brass nut, rust-brown sleeve -- with a sparse rust-bloom multiply canvas.",
+        "Repetition system: the rung is the one part repeated at a fixed pitch (ten at 0.30 m), so it is a single instanced geometry.",
+        "Action readiness: one root pivot, zero sockets, one box collider on the root, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the module contract -- stile spacing, rung pitch, bracket at the bottom edge only -- read off the registry notes, dressed in the plate's detail: chunky flat-bar stiles, round rungs with brass nuts on the stile faces, galvanised plates with three bolts, blue-grey paint rusting at the welds."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-stiles",
+          "zone": "ladder",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two flat-bar stiles the full 3.0 m, cut flat",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-rungs",
+          "zone": "ladder",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "ten round rungs at 0.30 m pitch through the stiles",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-nuts",
+          "zone": "ladder",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a brass hex nut on the outer stile face at every rung end (twenty)",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-bolts",
+          "zone": "wall",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "three bolt heads standing proud of each galvanised wall plate",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-brackets",
+          "zone": "wall",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "one bracket pair: arms back to galvanised wall plates with three bolts each",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-rust",
+          "zone": "ladder",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rust at the welds and blooming on the paint",
+          "mapsTo": {
+            "ref": "d6-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+    "resolvedUnknowns": [
+      "The plate is a stand-in for a short section: the module is built to the notes (3.0 m, ten rungs at 0.30, one bracket pair at the bottom edge, no cage) and the plate supplies detail and materials only.",
+      "The bracket pair sits at y 0.30 (plate 0.19-0.41), between the first two rungs, on the bottom edge as the notes ask; the top of a segment is held by the bracket of the one above.",
+      "The wall plates are 100 x 220 x 12 mm and stand on the wall plane (z 0-0.012); the wall itself is not modelled."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.70 x 3.00 x 0.26 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=4 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 1,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.70 x 3.00 x 0.26 m from the wall plane",
+          "Stiles 0.45 m apart 0.20 m off the wall, ten rungs at 0.30 from 0.15, cut flat both ends, no cage"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "wrong rung pitch (breaks the stack)",
+          "end plates",
+          "brackets at both ends",
+          "any hoop or cage bar"
+        ]
+      },
+      {
+        "id": "ladder-core",
+        "name": "Stiles, rungs and nuts",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Chunky flat-bar stiles as the plate shows",
+          "Round rungs with brass nuts on the outer stile faces",
+          "Rust at the rung welds"
+        ],
+        "evidenceRefs": [
+          "region-paint",
+          "region-rung",
+          "region-nut"
+        ],
+        "failureModes": [
+          "tube stiles",
+          "square rungs",
+          "no nuts"
+        ]
+      },
+      {
+        "id": "brackets-and-materials",
+        "name": "Brackets, plates and paint",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Galvanised plates outboard of the stiles with three bolts",
+          "Paint at the measured #b2c2c7",
+          "Rust confined to welds and blooms"
+        ],
+        "evidenceRefs": [
+          "region-plate",
+          "region-bolt",
+          "region-rust"
+        ],
+        "failureModes": [
+          "plates behind the stiles",
+          "uniform rust",
+          "grey paint too dark for the hole gate"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "ladder-core",
+      "name": "Stiles, rungs and nuts",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-paint",
+        "region-rung",
+        "region-nut"
+      ]
+    },
+    {
+      "id": "brackets-and-materials",
+      "name": "Brackets, plates and paint",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-plate",
+        "region-bolt",
+        "region-rust"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "frame",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the ladder envelope from the wall plane to the stile fronts, which is what a stacked run collides as."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The plate is a stand-in for a short section: the module is built to the notes (3.0 m, ten rungs at 0.30, one bracket pair at the bottom edge, no cage) and the plate supplies detail and materials only.",
+    "The bracket pair sits at y 0.30 (plate 0.19-0.41), between the first two rungs, on the bottom edge as the notes ask; the top of a segment is held by the bracket of the one above.",
+    "The wall plates are 100 x 220 x 12 mm and stand on the wall plane (z 0-0.012); the wall itself is not modelled."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin back-center on the WALL PLANE at the bottom edge, +Y up, +Z away from the wall (the climbing face). The next segment sits at +3.0 m on Y with the same wall alignment."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.7,
+      "h": 3.0,
+      "d": 0.26
+    },
+    "description": "A 0.70 m wide, 3.00 m tall, 0.26 m deep flat ladder: two flat-bar stiles 0.45 m apart standing 0.20 m off the wall, ten round rungs at 0.30 m pitch from 0.15 m, and at the bottom edge one bracket pair reaching back to two bolt plates on the wall plane, outboard of the stiles. No cage.",
+    "envelopeDerivation": "x spans -0.340..+0.340 at the outer edges of the 100 mm wall plates centred at +-0.29 (0.68 m built against 0.70 declared, 3% inside the 5% tolerance); y 0.00 to 3.00, the stiles cut flat at both ends; z 0.000 at the wall-plate backs to 0.260 at the stile fronts (stiles stand 0.20 m off the wall on the brackets, 60 mm deep). Depth was 0.85 m to the outside of a safety cage until 2026-08-28, when the registry dropped the cage; with no cage the deepest element is the stile. The plate is a two-rung stand-in of a short section (its prompt asked for stiles, rungs and bolt plates and no lattice), and the proxy reads it at w/h 0.614, d/h 0.113 with plates at both ends: scaled by the 0.45 m stile spacing (61 of 80 columns = 0.76 W) that is a 0.65 x 1.06 x 0.12 m section with rungs at a 0.49 m pitch -- the plate's proportions are a stand-in, not the asset. The DECLARED 0.70 x 3.00 x 0.26 with ten rungs at 0.30 m is the registry's stacking contract and is what is built, so the band table's width residual (0.614 vs 0.233 H) is the declared aspect, not a build error.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: 1,742 triangles, bbox w/h 0.614 d/h 0.113, occupancy map (scratch/_mon/occupancy.mjs) reading two rungs at 0.26-0.30 H and 0.72-0.76 H, stiles 4 of 80 columns wide, bolt plates at both ends 0.80-0.98 H and 0.00-0.14 H, 10 columns wide. Used for the stile section, rung diameter and plate proportions; NOT for length or counts, which the notes fix. The band table's width residual is the declared aspect (arithmetic in envelopeDerivation), not a build error; with the cage gone the candidate is wider than deep, like the plate, and the depth row agrees."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-paint",
+      "viewpoint": "front",
+      "path": "crops/paint.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-rung",
+      "viewpoint": "front",
+      "path": "crops/rung.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-plate",
+      "viewpoint": "front",
+      "path": "crops/plate.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rust",
+      "viewpoint": "front",
+      "path": "crops/rust.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-bolt",
+      "viewpoint": "front",
+      "path": "crops/bolt.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-nut",
+      "viewpoint": "front",
+      "path": "crops/nut.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.9,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.90: the wall side is the bracket arms and plate backs, which the notes fix; the plate shows the plates from the front with their bolts."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Stiles, brackets and bolts",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two stiles, two arms, two gussets, two plates and six bolt heads: one merge, one draw call, and the root every rung instance sits on.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Stiles 45 x 60 mm at x +-0.225, z 0.20-0.26, y 0-3.0; bracket row y 0.30: arms z 0.011-0.211, gussets along the wall, plates 100 x 220 x 12 mm at x +-0.29 on z 0-0.012, bolts r 0.011 proud at z 0.016.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Arms enter the stile and plate as solids; gussets sit inside the arm; bolt heads stand 4 mm proud of the plate face. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.0 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-stiles",
+          "description": "stiles",
+          "delivery": "boxes"
+        },
+        {
+          "id": "d2-rungs",
+          "description": "rungs",
+          "delivery": "the rungs InstancedMesh hung off this root"
+        },
+        {
+          "id": "d3-nuts",
+          "description": "brass nuts",
+          "delivery": "two 6-seg cylinders per rung instance"
+        },
+        {
+          "id": "d4-bolts",
+          "description": "bolt heads",
+          "delivery": "six 6-seg cylinders proud of the plates"
+        },
+        {
+          "id": "d5-brackets",
+          "description": "brackets and plates",
+          "delivery": "boxes and bolt cylinders"
+        },
+        {
+          "id": "d6-rust",
+          "description": "rust",
+          "delivery": "bloom tile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#b2c2c7",
+        "recipe": "Pale blue-grey paint as vertex colour on white steel with a rust-bloom tile; wall plates #d0d4d2; bolt heads #c4c6c8.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(178, 194, 199, 1.0)",
+        "secondaryAlbedo": "rgba(178, 194, 199, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            1.5,
+            0.13
+          ],
+          "halfExtents": [
+            0.35,
+            1.5,
+            0.13
+          ],
+          "notes": "Declared on the asset as box: the ladder envelope from the wall plane to the stile fronts, which is what a stacked run collides as."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Painted steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b2c2c7",
+      "color": "#b2c2c7",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.25,
+      "albedo": {
+        "dominant": "#b2c2c7",
+        "secondary": [
+          "#b2c2c7",
+          "#d0d4d2",
+          "#c4c6c8",
+          "#b08a3c",
+          "#8c5228"
+        ],
+        "samplingNotes": "Measured as the mean of crops/paint.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d6-rust",
+          "region": "rung-to-stile welds and the bolt plates",
+          "roughness": 0.7,
+          "palette": [
+            "#8C5228"
+          ],
+          "evidence": "crops/rust.png -- orange rust at the welds and streaking below the plates; carried as sleeves at the rung ends plus a sparse bloom tile."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-paint (0.88) at #b2c2c7 sd 21 (pale blue-grey paint) and region-rung at #bdbeb7; carried at #b2c2c7 as vertex colour on a WHITE material; wall plates #d0d4d2 off region-plate #cfd3d0; bolt heads #c4c6c8 off region-bolt; nuts #b08a3c off region-nut; weld sleeves #8c5228 off region-rust.",
+          "Metalness 0.25, not physical: the thaikit harness has no environment map and a full metal renders black.",
+          "Textureless as DECLARED: a 256 px rust-bloom multiply canvas after construction (34 blooms per tile, ratio of #8c5228 over #b2c2c7 in linear space), one tile per metre of height, bump 0.02."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/paint.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "rungs",
+      "name": "Rungs",
+      "componentRef": "frame",
+      "count": 10,
+      "primitive": "cylinder",
+      "materialId": "steel",
+      "placement": "ten instances at y 0.15 + 0.30 k, z 0.23, spanning x +-0.24 through the stiles; each instance is a rod r 0.018, two rust weld sleeves r 0.0205 at the stile faces and two brass nuts r 0.014 on the outer stile faces",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "One InstancedMesh: the rung is the only part repeated at a fixed pitch, and the pitch continuing across the joint is the stacking contract."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-28T11:24:33.401223+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.479522+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.562892+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.645168+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.730027+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.812014+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "ladder-core",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Flat-bar stiles 45 x 60 mm read chunky as the plate's; round rungs r 0.018 with brass nuts on the outer stile faces (region-nut) and rust sleeves at the welds (region-rust); paint #b2c2c7 off region-paint at 0.88.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.897593+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.980085+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.063057+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.151701+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.234545+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        },
+        {
+          "id": "ladder-core",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Flat-bar stiles 45 x 60 mm read chunky as the plate's; round rungs r 0.018 with brass nuts on the outer stile faces (region-nut) and rust sleeves at the welds (region-rust); paint #b2c2c7 off region-paint at 0.88.",
+          "notes": ""
+        },
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-28T11:24:33.401223+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: one frame merge plus one rung InstancedMesh at 2 draw calls of 4; every station from the registry notes, the plate as the detail and material authority.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.479522+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild 2026-08-28: the registry entry dropped the safety cage (depth 0.85 -> 0.26 m); three C-band hoops, five cage bars and six straps removed from the frame merge, collider re-sized to the ladder envelope.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.562892+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: stiles +-0.225 at z 0.20-0.26, bracket row y 0.30 with plates on the wall plane; envelope 0.680 x 3.000 x 0.260 against 0.70 x 3.00 x 0.26 declared. Rebuilt 2026-08-28 with the cage (three hoops, five bars, six straps) removed after the registry dropped it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.645168+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "First build had the cage bars 0.365 out (0.73 m wide, 0.857 deep against the declared 0.70 x 0.85) and the hoop straps poking past the hoop legs; hoop radius set to 0.343 with the bars 7 mm proud and the straps ended inside the legs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.730027+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rust read as random blooms where the plate has it at the rung welds; rust-brown weld sleeves added to the instanced rung at both stile faces.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.812014+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "ladder-core",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Flat-bar stiles 45 x 60 mm read chunky as the plate's; round rungs r 0.018 with brass nuts on the outer stile faces (region-nut) and rust sleeves at the welds (region-rust); paint #b2c2c7 off region-paint at 0.88.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: rung nuts and rust weld sleeves in the instanced rung, gussets and bolt heads on the plates.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.897593+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: one painted steel at PBR confidence 0.86, textureless with measured albedo; plate, bolt, nut and rust as vertex colours; metalness held at 0.25 for a harness with no environment map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:33.980085+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: sparse rust-bloom multiply tile (34 blooms per metre tile) with bump 0.02; rust concentrated at the rung welds by the sleeves rather than by the tile.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.063057+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.151701+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot at back-center on the wall plane, ZERO sockets, one BOX collider on the frame root over the declared envelope, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-28T11:24:34.234545+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.680 x 3.000 x 0.260 m from the wall plane against 0.70 x 3.00 x 0.26 declared (width 3% inside tolerance, at the outer edges of the wall plates); stiles at +-0.225 (0.45 m) 0.20 m off the wall; ten rungs at 0.15 + 0.30 k; no hoops and no cage bars; one bracket pair at y 0.30; stiles cut flat at both ends with no end plate. The plate is a two-rung stand-in (proxy w/h 0.614): the residual is the declared aspect, arithmetic in the spec.",
+          "notes": "Module contract checked station by station against the registry notes."
+        },
+        {
+          "id": "ladder-core",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Flat-bar stiles 45 x 60 mm read chunky as the plate's; round rungs r 0.018 with brass nuts on the outer stile faces (region-nut) and rust sleeves at the welds (region-rust); paint #b2c2c7 off region-paint at 0.88.",
+          "notes": ""
+        },
+        {
+          "id": "brackets-and-materials",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Galvanised 100 x 220 mm plates at x +-0.29 on the wall plane with three bolt heads each, outboard of the stiles as the plate shows; plate #d0d4d2 off region-plate (0.86), bolts #c4c6c8, nuts #b08a3c, rust sleeves #8c5228; rust-bloom tile sparse over clean paint.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90. 1,120/2,000 triangles, 2/4 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas at 0.25 MB. Open frame: turntable run with --allow-holes (the bays between rungs are real open bays, not tears).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fire-escape-ladder-segment/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One component plus one repetition system: 2 of 4."
+      },
+      "materials": {
+        "projectedTotal": 1,
+        "budget": 2,
+        "headroom": 1,
+        "note": "steel only: 1 of 2; plate, bolt, nut and rust are vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1120,
+        "budget": 2000,
+        "headroom": 880,
+        "note": "1,120 of 2,000: eight boxes and six 6-seg bolt heads in the frame merge, and ten rung instances at 88 each (8-seg open rod, two 6-seg open sleeves, two 6-seg nuts)."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes for stiles, arms, gussets and plates; cylinders for rungs, sleeves, nuts and bolt heads."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh of ten rungs. In a scene the HOST stacks the whole segment at 3.0 m steps."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "The material is declared textureless. One 256 px rust-bloom canvas after construction, 0.25 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "plate-is-a-stand-in",
+      "severity": "medium",
+      "description": "The plate shows a two-rung short section; the proxy reads w/h 0.614 against the declared 0.233.",
+      "mitigation": "Built to the registry notes, which fix every station of the stacking contract; the plate supplies section, detail and materials. Residual and arithmetic recorded in envelopeDerivation and meshyNote."
+    },
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "Every bay between rungs and stiles is background enclosed by the silhouette.",
+      "mitigation": "The turntable gate is run with --allow-holes on the _holecc measurement (enclosed components tens of px thick at every azimuth: real open bays, not tears)."
+    },
+    {
+      "id": "tall-thin-framing",
+      "severity": "low",
+      "description": "At 3.0 m tall and 0.70 wide the harness fit by bounding sphere crops the top and bottom of the turntable frames.",
+      "mitigation": "The crop is symmetric across azimuths, so the silhouette ratios the gate compares are unaffected; the hero is framed the same way for every tall prop in the kit."
+    },
+    {
+      "id": "edge-on-unsegmentable",
+      "severity": "low",
+      "description": "With the cage gone the ladder is a 0.26 m deep plane: edge-on at azimuth 90 and 270 its foreground covers 2.73% of the frame (measured on renders/beauty-090.png and -270.png against the #3a3a3a backdrop), under the turntable segmenter's 3.5% floor, so those two frames score 0.000 even with the declared collapse ratio 0.37 passed. Azimuth 0 and 180 cover 5.43% and 5.17% and score 1.000 and 0.947.",
+      "mitigation": "The same floor the 3 m fence panels sit under, and a genuine collapse would also fail 0/180, which pass; the 90/270 frames are read by eye instead (stile edge, two brackets at y 0.30, nothing else) and the FAIL is recorded here rather than worked around."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Fire Escape Ladder Segment",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.0211,
+        "aspectRatioDelta": 0.6598,
+        "scaleDelta": 0.5752,
+        "bilateralSymmetryError": 0.1023,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 17.44,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.44
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.021 is below threshold 0.85",
+        "aspect-ratio delta 0.660 exceeds threshold 0.05",
+        "scale delta 0.575 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "e49279eb97b71f0b",
+      "passId": "blockout"
+    }
+  ]
+}

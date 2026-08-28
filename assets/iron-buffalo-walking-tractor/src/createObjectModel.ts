@@ -341,19 +341,34 @@ const CONFIG = {
         {
           "pts": [
             [
-              0.2,
               0.3,
-              2.05
+              0.5,
+              1.86
             ],
             [
-              0.6,
-              0.3,
+              0.44,
+              0.28,
               2.02
             ],
             [
-              0.6,
-              0.56,
-              1.9
+              0.2,
+              0.28,
+              2.08
+            ],
+            [
+              -0.2,
+              0.28,
+              2.08
+            ],
+            [
+              -0.44,
+              0.28,
+              2.02
+            ],
+            [
+              -0.3,
+              0.5,
+              1.86
             ]
           ],
           "r": 0.02,
@@ -515,37 +530,13 @@ const CONFIG = {
             0.06
           ],
           [
-            5326137,
+            4867906,
             0,
-            0.46,
-            0.55,
-            0.14,
-            0.1,
-            1.3
-          ],
-          [
-            5326137,
-            0.3,
-            0.46,
-            -0.05,
-            0.1,
+            0.52,
+            0.68,
+            0.12,
             0.08,
-            0.6,
-            0,
-            0.55,
-            0
-          ],
-          [
-            5326137,
-            -0.3,
-            0.46,
-            -0.05,
-            0.1,
-            0.08,
-            0.6,
-            0,
-            -0.55,
-            0
+            0.8
           ]
         ],
         "tubes": [],
@@ -575,6 +566,18 @@ const CONFIG = {
             "rz": 1.5707963267948966,
             "seg": 16,
             "hex": 5920850
+          },
+          {
+            "at": [
+              0,
+              0.55,
+              0.3
+            ],
+            "rt": 0.02,
+            "rb": 0.02,
+            "h": 0.18,
+            "seg": 8,
+            "hex": 4867906
           }
         ]
       },
@@ -666,6 +669,48 @@ const CONFIG = {
               0.08,
               0.06,
               1.8
+            ],
+            [
+              5326137,
+              0.26,
+              0.57,
+              0,
+              0.08,
+              0.08,
+              0.86,
+              0.175,
+              -0.716,
+              0
+            ],
+            [
+              5326137,
+              -0.26,
+              0.57,
+              0,
+              0.08,
+              0.08,
+              0.86,
+              0.175,
+              0.716,
+              0
+            ],
+            [
+              5326137,
+              0,
+              0.59,
+              -0.1,
+              0.72,
+              0.06,
+              0.06
+            ],
+            [
+              5326137,
+              0,
+              0.5,
+              0.3,
+              0.1,
+              0.1,
+              0.14
             ],
             [
               5326137,
@@ -1230,49 +1275,208 @@ function worldUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry
  * world z, and the translate re-centres the slab on x = 0. Any shaping is applied AFTER that, and
  * normals are recomputed last so the shaded faces follow the shaped surface.
  */
-function sideExtrude(profile: number[][], width: number,
-                     opts: { tumble?: { belt: number, roof: number, k: number },
-                             plan?: number[][], curveSegments?: number } = {}): THREE.BufferGeometry {
+function sideExtrude(profile: number[][], width: number, opts: ShapeOpts = {}): THREE.BufferGeometry {
   const shape = new THREE.Shape();
   shape.moveTo(profile[0][0], profile[0][1]);
   for (let i = 1; i < profile.length; i++) shape.lineTo(profile[i][0], profile[i][1]);
   shape.closePath();
   const g = new THREE.ExtrudeGeometry(shape, { depth: width, bevelEnabled: false,
-                                                curveSegments: opts.curveSegments ?? 6 });
+                                                curveSegments: opts.curveSegments ?? 6, steps: opts.steps ?? 1 });
   g.rotateY(-Math.PI / 2);
   g.translate(width / 2, 0, 0);
-  shapeWidth(g, opts);
+  if (opts.edgeBias && (opts.steps ?? 1) > 1) {
+    // Pull the width columns toward the two edges (|t|^p, p < 1) so a shoulder fillet gets four
+    // real segments instead of one chamfer at the outermost column; the flat middle needs none.
+    const q = g.getAttribute('position'), hw = width / 2;
+    for (let i = 0; i < q.count; i++) {
+      const t = Math.max(-1, Math.min(1, q.getX(i) / hw));
+      q.setX(i, hw * Math.sign(t) * Math.pow(Math.abs(t), opts.edgeBias));
+    }
+  }
+  shapeWidth(g, opts, width);
+  if (opts.smooth) smoothNormals(g, opts.smooth);
   return g;
+}
+
+/** Shaping options shared by a body and everything swept proud of it (glass band, pillars).
+ *  `shoulder`, `nose` and `tail` are ROUNDINGS -- see shapeWidth -- and need `steps` > 1 so the
+ *  swept faces carry vertices across the width to bend; `baseWidth` is the body's width, so a
+ *  band swept wider than it is rounded about the SAME centres at a larger radius and stays
+ *  exactly as proud as it was authored; `topOf` is the body's own profile, which is where the
+ *  roof line every shoulder hangs off is read. All optional: unset, the sweep is the old slab. */
+type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: number[][],
+                   curveSegments?: number, steps?: number,
+                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
+                   nose?: { r: number }, tail?: { r: number },
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+
+/** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
+ *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
+function profileTop(profile: number[][], z: number, tol = 0): number {
+  let top = -Infinity;
+  const n = profile.length;
+  for (let i = 0; i < n; i++) {
+    const a = profile[i], b = profile[(i + 1) % n];
+    const lo = Math.min(a[0], b[0]), hi = Math.max(a[0], b[0]);
+    if (z < lo - tol - 1e-6 || z > hi + tol + 1e-6) continue;
+    // `tol` lets a band standing a few mm proud of a vertical face (a rear pane, a C-pillar strip
+    // behind the cab back) read the roof line of the face it stands on, not the bed floor behind it
+    const zc = Math.max(lo, Math.min(hi, z));
+    const y = hi - lo < 1e-6 ? Math.max(a[1], b[1]) : a[1] + (b[1] - a[1]) * (zc - a[0]) / (b[0] - a[0]);
+    if (y > top) top = y;
+  }
+  return top;
 }
 
 /** The per-vertex x shaping shared by the body and its glass band, so a pane offset 5 mm proud of
  *  the body stays 5 mm proud after both are narrowed by the same function. */
-function shapeWidth(g: THREE.BufferGeometry,
-                    opts: { tumble?: { belt: number, roof: number, k: number }, plan?: number[][] }): void {
+function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
   const p = g.getAttribute('position');
-  for (let i = 0; i < p.count; i++) {
-    let x = p.getX(i); const y = p.getY(i), z = p.getZ(i);
-    if (opts.tumble) {
-      const t = Math.min(1, Math.max(0, (y - opts.tumble.belt) / (opts.tumble.roof - opts.tumble.belt)));
-      x *= 1 - opts.tumble.k * t;
+  const tumbleAt = (y: number) => {
+    if (!opts.tumble) return 1;
+    const t = Math.min(1, Math.max(0, (y - opts.tumble.belt) / (opts.tumble.roof - opts.tumble.belt)));
+    return 1 - opts.tumble.k * t;
+  };
+  const planAt = (z: number) => {
+    if (!opts.plan || opts.plan.length < 2) return 1;
+    const st = opts.plan;
+    if (z <= st[0][0]) return st[0][1];
+    if (z >= st[st.length - 1][0]) return st[st.length - 1][1];
+    for (let k = 0; k < st.length - 1; k++) {
+      if (z >= st[k][0] && z <= st[k + 1][0]) {
+        const u = (z - st[k][0]) / (st[k + 1][0] - st[k][0]);
+        return st[k][1] + (st[k + 1][1] - st[k][1]) * u;
+      }
     }
-    if (opts.plan && opts.plan.length > 1) {
-      const st = opts.plan;
-      let s = st[0][1];
-      if (z <= st[0][0]) s = st[0][1];
-      else if (z >= st[st.length - 1][0]) s = st[st.length - 1][1];
-      else for (let k = 0; k < st.length - 1; k++) {
-        if (z >= st[k][0] && z <= st[k + 1][0]) {
-          const u = (z - st[k][0]) / (st[k + 1][0] - st[k][0]);
-          s = st[k][1] + (st[k + 1][1] - st[k][1]) * u; break;
+    return 1;
+  };
+  // ROUNDINGS. A sweep is a slab: its roof meets its side at a hard edge, and its nose meets both
+  // sides at two more. Real sheet metal crowns over the fender and wraps round the nose, so any
+  // vertex inside a corner quadrant (within r of the top AND within r of the side) is projected
+  // onto the circle of radius r about that corner's centre -- a fillet, in x/y for the shoulder
+  // and in x/z at the two ends. The centres are placed off the BODY's width (`baseWidth`) and
+  // roof line (`topOf`), so a glass band swept `e` wider is filleted at r + e about the same
+  // centre and stays `e` proud all the way round the corner.
+  const extra = opts.baseWidth ? (width - opts.baseWidth) / 2 : 0;
+  const baseHalf = (opts.baseWidth ?? width) / 2;
+  const top = opts.topOf ?? null;
+  let zMax = -Infinity, zMin = Infinity;
+  if (top) for (const q of top) { if (q[0] > zMax) zMax = q[0]; if (q[0] < zMin) zMin = q[0]; }
+  for (let i = 0; i < p.count; i++) {
+    let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    const tf = tumbleAt(y), pf = planAt(z);
+    x *= tf * pf;
+    if (opts.shoulder && top) {
+      const sh = opts.shoulder;
+      // The fillet lives on a z-range: hard at zMin (the cab back), faded over `fade` metres at
+      // zMax (the top of the windscreen rake -- a rake is a plane, its edge a crease, and a fade
+      // keyed on the roof line's SLOPE varied inside the rear corner and folded it).
+      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0;
+      const w = z < zLo || z > zHi ? 0 : fd > 0 ? Math.min(1, (zHi - z) / fd) : 1;
+      const yt = profileTop(top, z, 0.03);
+      if (w > 0 && isFinite(yt)) {
+        const r = sh.r + extra, cy = yt - sh.r;
+        const hw = baseHalf * tumbleAt(cy) * pf, cx = hw - sh.r;
+        const ax = Math.abs(x);
+        if (y > cy && ax > cx && r > 1e-6) {
+          const dx = ax - cx, dy = y - cy, d = Math.hypot(dx, dy) || 1;
+          let nx = ax, ny = y, hit = false;
+          if (dx >= r - 1e-4) {
+            // the EDGE column, shared with the side: the arc's foot, tangent to the side at cy
+            nx = cx + r; ny = cy; hit = true;
+          } else if (dy >= sh.r - 1e-4 && dx <= r + 1e-6) {
+            // a top-row vertex: its column position picks its angle on the arc
+            const th = Math.PI / 2 * (1 - dx / r);
+            nx = cx + Math.cos(th) * r; ny = cy + Math.sin(th) * r; hit = true;
+          } else if (dx <= r + 1e-6 && dy <= r + 1e-6 && d >= r - 1e-4) {
+            // a proud band's outer vertex below the top: onto its own circle; inside it, leave
+            nx = cx + dx / d * r; ny = cy + dy / d * r; hit = true;
+          }
+          if (hit) { x = Math.sign(x || 1) * (ax + (nx - ax) * w); y = y + (ny - y) * w; }
         }
       }
-      x *= s;
     }
-    p.setX(i, x);
+    for (const end of [opts.nose ? { r: opts.nose.r, zc: zMax - opts.nose.r, s: 1 } : null,
+                       opts.tail ? { r: opts.tail.r, zc: zMin + opts.tail.r, s: -1 } : null]) {
+      if (!end || !top) continue;
+      const r = end.r + extra;
+      const hw = baseHalf * tumbleAt(y) * planAt(end.zc), cx = hw - end.r;
+      const ax = Math.abs(x), dz = (z - end.zc) * end.s;
+      if (dz > 0 && ax > cx && r > 1e-6) {
+        const dx = ax - cx, d = Math.hypot(dx, dz) || 1;
+        // Only a vertex OUTSIDE the circle is projected onto it (the shoulder's rule): a side
+        // strip's inner face lies inside, and projecting it too lands it on the outer face,
+        // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
+        if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
+      }
+    }
+    p.setXYZ(i, x, y, z);
   }
   p.needsUpdate = true;
   g.computeVertexNormals();
+}
+
+/** Angle-limited SMOOTH NORMALS on a non-indexed geometry. Every vertex sharing a position
+ *  averages the face normals of its neighbours that lie within `maxDeg` of its own face, so a
+ *  filleted shoulder, a plan-rounded nose and the tumblehome kink at the belt shade as one
+ *  continuous surface, while a 90-degree edge -- the arch cut, the nose against the bumper --
+ *  stays a crease. Without this every quad the roundings bend splits into two differently lit
+ *  triangles, which is the "blocky" a viewer sees before any silhouette. */
+function smoothNormals(geo: THREE.BufferGeometry, maxDeg: number): THREE.BufferGeometry {
+  const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
+  if (!nrm || geo.getIndex()) return geo;
+  const n = p.count, cosLim = Math.cos(maxDeg * Math.PI / 180);
+  const groups = new Map<string, number[]>();
+  for (let i = 0; i < n; i++) {
+    const k = `${Math.round(p.getX(i) * 2000)},${Math.round(p.getY(i) * 2000)},${Math.round(p.getZ(i) * 2000)}`;
+    const g = groups.get(k); if (g) g.push(i); else groups.set(k, [i]);
+  }
+  const face = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { face[i * 3] = nrm.getX(i); face[i * 3 + 1] = nrm.getY(i); face[i * 3 + 2] = nrm.getZ(i); }
+  const out = new Float32Array(n * 3);
+  for (const g of groups.values()) {
+    for (const i of g) {
+      let sx = 0, sy = 0, sz = 0;
+      const ax = face[i * 3], ay = face[i * 3 + 1], az = face[i * 3 + 2];
+      for (const j of g) {
+        const bx = face[j * 3], by = face[j * 3 + 1], bz = face[j * 3 + 2];
+        if (ax * bx + ay * by + az * bz >= cosLim) { sx += bx; sy += by; sz += bz; }
+      }
+      const l = Math.hypot(sx, sy, sz) || 1;
+      out[i * 3] = sx / l; out[i * 3 + 1] = sy / l; out[i * 3 + 2] = sz / l;
+    }
+  }
+  geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
+  return geo;
+}
+
+/** A PILLAR STRIP: the pillar polygon swept only `stripW` deep at each outer edge of `width`,
+ *  mirrored, and shaped exactly as the body. The old full-width sweep put a slab across the
+ *  windscreen wherever the A-pillar polygon lay on the rake -- a pillar is at the side of the
+ *  glass, not through it. The mirrored half has its winding restored. */
+function sideStrip(profile: number[][], width: number, stripW: number, opts: ShapeOpts = {}): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  shape.moveTo(profile[0][0], profile[0][1]);
+  for (let i = 1; i < profile.length; i++) shape.lineTo(profile[i][0], profile[i][1]);
+  shape.closePath();
+  const mk = (sx: number) => {
+    const g = new THREE.ExtrudeGeometry(shape, { depth: stripW, bevelEnabled: false, steps: 2 });
+    g.rotateY(-Math.PI / 2);                 // depth now runs along -x from x = 0
+    g.translate(width / 2, 0, 0);            // outer face at +width/2, inner at width/2 - stripW
+    if (sx < 0) {
+      g.scale(-1, 1, 1);
+      const q = g.getAttribute('position');
+      for (let i = 0; i < q.count; i += 3) {
+        const x1 = q.getX(i + 1), y1 = q.getY(i + 1), z1 = q.getZ(i + 1);
+        q.setXYZ(i + 1, q.getX(i + 2), q.getY(i + 2), q.getZ(i + 2)); q.setXYZ(i + 2, x1, y1, z1);
+      }
+    }
+    g.computeVertexNormals();
+    shapeWidth(g, opts, width);
+    if (opts.smooth) smoothNormals(g, opts.smooth);
+    return g;
+  };
+  return mergeGeos([mk(1), mk(-1)]);
 }
 
 /** A semicircular wheel-arch notch as profile points, to be spliced into a side profile that runs
@@ -1315,6 +1519,46 @@ function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
   }
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   g.rotateZ(Math.PI / 2);    // lathe axis Y -> axle on X
+  g.computeVertexNormals();
+  return g;
+}
+
+/**
+ * A STEEL WHEEL: the same closed lathe as wheelGeo, with the profile of a pressed-steel rim -- a
+ * flat outer face, a dished centre stepping in past a dark VENT RING (the row of oval holes,
+ * delivered as a band of vertex colour rather than as holes a turntable gate would read through),
+ * a small hub cap standing proud -- and a chunkier tyre whose tread ring alternates a lighter and
+ * a darker tone segment by segment, so the lugs read at prop distance for zero geometry. Per-point
+ * colours ride the lathe's segment-major vertex order exactly as in wheelGeo.
+ */
+function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
+                       tyreHex: number, rimHex: number, ventHex: number, lugHex: number, dish = 0.50): THREE.BufferGeometry {
+  const hw = halfW, d = hw * dish;
+  // [radius, axial] and a colour class per point: 0 rim, 1 vent ring, 2 tyre sidewall, 3 tread
+  const pts: number[][] = [
+    [0, -d + 0.02], [rRim * 0.22, -d + 0.02], [rRim * 0.24, -d],                       // hub cap
+    [rRim * 0.40, -d], [rRim * 0.42, -d - 0.006],                                        // dish floor
+    [rRim * 0.62, -d - 0.006], [rRim * 0.64, -hw * 0.86],                                // vent ring (dark)
+    [rRim * 0.90, -hw * 0.86], [rRim, -hw * 0.90], [rRim, -hw * 0.98],                  // rim face and lip
+    [rTyre * 0.88, -hw], [rTyre * 0.97, -hw * 0.86], [rTyre, -hw * 0.70],               // sidewall
+    [rTyre, hw * 0.70],                                                                  // tread
+    [rTyre * 0.97, hw * 0.86], [rTyre * 0.88, hw], [rRim, hw * 0.98],                   // far sidewall
+    [rRim, hw * 0.88], [rRim * 0.30, hw * 0.80], [0, hw * 0.80],                          // back of the rim
+  ];
+  const cls = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 3, 3, 2, 2, 0, 0, 0, 0];
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  const n = g.getAttribute('position').count;
+  const col = new Float32Array(n * 3);
+  const C = [new THREE.Color(rimHex), new THREE.Color(ventHex), new THREE.Color(tyreHex), new THREE.Color(lugHex)];
+  const ct = new THREE.Color(tyreHex);
+  for (let i = 0; i < n; i++) {
+    const j = i % pts.length, s = Math.floor(i / pts.length);
+    let c = C[cls[j]];
+    if (cls[j] === 3) c = (s % 2 === 0) ? ct : C[3];
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.rotateZ(Math.PI / 2);
   g.computeVertexNormals();
   return g;
 }
@@ -1410,22 +1654,65 @@ function lcg(seed: number): () => number {
  * from the bottom to `coverage` of the tile height plus splatter above it. Bound with height UVs
  * so v = 0 is the ground and the wash sits on the sills and arches.
  */
-function mudTile(size: number, base: number[], seed: number, coverage = 0.33): THREE.CanvasTexture | null {
+function mudTile(size: number, base: number[], seed: number, coverage = 0.33,
+                 opts: { floor?: number, streaks?: number, cloud?: number, speckle?: number, tone?: number[], zones?: number[][] } = {}): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     const toHex = (v: number[]) => '#' + v.map((c) => Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, '0')).join('');
     ctx.fillStyle = toHex(base); ctx.fillRect(0, 0, s, s);
-    const grad = ctx.createLinearGradient(0, s, 0, s * (1 - coverage));
-    grad.addColorStop(0, 'rgba(255,255,255,0.88)');
-    grad.addColorStop(0.45, 'rgba(255,255,255,0.45)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    // `floor` is the fraction of the tile height (i.e. of the world height the tile spans) below
+    // which the wash is FULL: a body whose sill is 0.46 m up a 2 m tile wants the mud solid to
+    // 0.23 and fading from there, not fading from the ground it never reaches.
+    const fl = Math.min(coverage, opts.floor ?? 0);
+    // `tone` is the MUD as a ratio of the envelope, for a paint whose envelope is the per-channel
+    // max of clean paint and mud (a green whose mud is tan is brighter in red, darker in green):
+    // unset, the mud is white -- the envelope itself.
+    const T = opts.tone ? opts.tone.map((v) => Math.round(255 * Math.min(1, Math.max(0, v)))) : null;
+    const mud = (a: number) => T ? `rgba(${T[0]},${T[1]},${T[2]},${a})` : `rgba(255,252,244,${a})`;
+    const grad = ctx.createLinearGradient(0, s * (1 - fl), 0, s * (1 - coverage));
+    grad.addColorStop(0, T ? mud(0.88) : 'rgba(255,255,255,0.88)');
+    grad.addColorStop(0.45, T ? mud(0.45) : 'rgba(255,255,255,0.45)');
+    grad.addColorStop(1, T ? mud(0) : 'rgba(255,255,255,0)');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    // `zones` are [u0, u1, weight] spans of the tile's width the spray concentrates in -- with
+    // the tile fitted to the vehicle's length (heightUV uScale = L), that is "behind the front
+    // wheel", "ahead of the rear arch", "along the bed side": where a wheel actually throws mud.
+    const zones = opts.zones ?? [[0, 1, 1]];
+    const zsum = zones.reduce((acc, zn) => acc + zn[2], 0);
+    const pickU = () => { let t = rnd() * zsum; for (const zn of zones) { if (t < zn[2]) return (zn[0] + rnd() * (zn[1] - zn[0])) * s; t -= zn[2]; } return rnd() * s; };
+    // DUST FILM: soft cloudy patches of the envelope over the clean paint everywhere, so the
+    // upper body is not a flat fill -- the plate's green is a dull, dusty green.
+    if (opts.cloud) for (let i = 0; i < 40; i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.08 + rnd() * 0.18), a = opts.cloud * (0.4 + rnd() * 0.6);
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, mud(a)); g2.addColorStop(1, mud(0));
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // SPRAY: the mud a wheel throws is a field of small splats streaked along the direction of
+    // travel (u), densest just above the wash and thinning upward in clusters -- not a gradient.
+    if (opts.streaks) for (let i = 0; i < opts.streaks; i++) {
+      const cx0 = pickU(), band = coverage;
+      const cy0 = s - s * (fl + Math.pow(rnd(), 1.6) * (band - fl));
+      const count = 6 + Math.floor(rnd() * 18), spread = s * (0.02 + rnd() * 0.05);
+      for (let k = 0; k < count; k++) {
+        const x = cx0 + (rnd() - 0.5) * spread * 3, y = cy0 + (rnd() - 0.5) * spread;
+        const w = 1 + rnd() * s * 0.006, h = 0.8 + rnd() * s * 0.003, a = 0.35 + rnd() * 0.55;
+        ctx.fillStyle = mud(a);
+        for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, w, h, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+    }
+    if (opts.speckle) for (let i = 0; i < opts.speckle; i++) {
+      const x = pickU(), y = s - Math.pow(rnd(), 1.3) * s * coverage, r = 0.6 + rnd() * 1.4, a = 0.3 + rnd() * 0.6;
+      ctx.fillStyle = mud(a);
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+    }
     for (let i = 0; i < 90; i++) {
       const x = rnd() * s, y = s - Math.pow(rnd(), 2.2) * s * coverage * 1.35;
       const r = 3 + rnd() * s * 0.05;
       const a = 0.08 + rnd() * 0.28;
       const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g2.addColorStop(0, `rgba(255,250,240,${a})`); g2.addColorStop(1, 'rgba(255,250,240,0)');
+      g2.addColorStop(0, T ? mud(a) : `rgba(255,250,240,${a})`); g2.addColorStop(1, T ? mud(0) : 'rgba(255,250,240,0)');
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
     }
@@ -1456,6 +1743,39 @@ function dustTile(size: number, dust: number[], seed: number, coverage = 0.30): 
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
     }
+  });
+}
+
+/** GLASS tile for a vehicle's glazing band, bound as `map` on the glass material AFTER
+ *  construction (the material stays textureless-declared). The pane's UVs are height-keyed
+ *  (`heightUV`), so v runs sill-to-roof: the tile is a vertical gradient from the material's
+ *  own tone at the top (white, i.e. the sky-lit value the material is re-based to) down to
+ *  `low` at the bottom -- a real screen reflects sky at the top and the dark dash and road below
+ *  -- plus a few soft diagonal reflection streaks and a faint tint band. `low` is a linear-space
+ *  ratio (see emit.mjs `ratio`) of the measured side-glass tone over the sky-lit tone. */
+function glassTile(size: number, low: number[], seed: number, streaks = 5): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const c = low.map((v) => Math.round(255 * Math.min(1, v)));
+    const grad = ctx.createLinearGradient(0, s, 0, 0);
+    grad.addColorStop(0, `rgb(${c[0]},${c[1]},${c[2]})`);
+    grad.addColorStop(0.45, `rgb(${Math.round((c[0] + 255) / 2)},${Math.round((c[1] + 255) / 2)},${Math.round((c[2] + 255) / 2)})`);
+    grad.addColorStop(1, '#ffffff');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    // reflection streaks: long soft diagonal bands, lighter, tiled in u so the seam never shows
+    for (let i = 0; i < streaks; i++) {
+      const x = rnd() * s, w = s * (0.04 + rnd() * 0.10), a = 0.10 + rnd() * 0.16, tilt = s * (0.25 + rnd() * 0.35);
+      for (const dx of [-s, 0, s]) {
+        const g2 = ctx.createLinearGradient(x + dx, 0, x + dx + w, 0);
+        g2.addColorStop(0, 'rgba(255,255,255,0)'); g2.addColorStop(0.5, `rgba(255,255,255,${a})`); g2.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.moveTo(x + dx, s); ctx.lineTo(x + dx + w, s); ctx.lineTo(x + dx + w + tilt, 0); ctx.lineTo(x + dx + tilt, 0); ctx.closePath(); ctx.fill();
+      }
+    }
+    // a darker film in the lowest tenth: the dash / cowl shadow behind the pane
+    const g3 = ctx.createLinearGradient(0, s, 0, s * 0.88);
+    g3.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.55)`); g3.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0)`);
+    ctx.fillStyle = g3; ctx.fillRect(0, 0, s, s);
   });
 }
 
@@ -1526,13 +1846,20 @@ function rustTile(size: number, ratio: number[], seed: number, density = 90): TH
 /** Height-keyed UVs: v is world HEIGHT over `scale` metres, u runs along the dominant horizontal
  *  axis. A mud tile bound this way darkens the sills and stays clean on the roof -- a plain box
  *  projection would repeat the tile's dirty band across the roof as stripes. */
-function heightUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry {
+function heightUV(geo: THREE.BufferGeometry, scale: number,
+                  opts: { uScale?: number, topClean?: boolean } = {}): THREE.BufferGeometry {
   const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
   const uv = new Float32Array(p.count * 2);
+  const us = opts.uScale ?? scale;
   for (let i = 0; i < p.count; i++) {
-    const ax = Math.abs(nrm.getX(i)), az = Math.abs(nrm.getZ(i));
+    const ax = Math.abs(nrm.getX(i)), ay = Math.abs(nrm.getY(i)), az = Math.abs(nrm.getZ(i));
     const u = ax >= az ? p.getZ(i) : p.getX(i);
-    uv[i * 2] = u / scale; uv[i * 2 + 1] = p.getY(i) / scale;
+    let v = p.getY(i) / scale;
+    // A tile keyed on height cannot tell a bonnet from a door at the same height, and a bonnet
+    // is clean where a door is sprayed: `topClean` sends every upward face into the tile's top
+    // band (v 0.75..0.95), above any wash, where only the dust film applies.
+    if (opts.topClean && ay >= 0.8) v = 0.75 + 0.2 * (v - Math.floor(v));
+    uv[i * 2] = u / us; uv[i * 2 + 1] = v;
   }
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   return geo;

@@ -74,7 +74,8 @@
         "welded-tube-sidecar",
         "planked-deck",
         "canvas-canopy-on-posts",
-        "asymmetric-three-wheeler"
+        "asymmetric-three-wheeler",
+        "wire-spoked-wheels"
       ],
       "structureKind": [
         "assembled-solid",
@@ -88,9 +89,10 @@
       "materialFamilies": [
         "cream-and-green-enamel",
         "rusted-steel-tube-and-canvas",
-        "weathered-timber-deck"
+        "weathered-timber-deck",
+        "dusty-treaded-rubber"
       ],
-      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A delivery sidecar: an old green-and-cream underbone with a welded-on cargo box on its left, rusted square tube, planked floor, low rails, four posts carrying a sagging tan canvas canopy, a spoked third wheel outboard of the box."
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A delivery sidecar: an old green-and-cream underbone with a welded-on cargo box on its left, rusted square tube, planked floor, low rails, four posts carrying a sagging tan canvas canopy, a wire-spoked third wheel outboard of the box."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,13 +110,13 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 3,
+        "materialLayers": 4,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "Two machines welded together: an old underbone (cream leg shield and covers, green fenders and cowl) on the right and a cargo box on its LEFT -- a rusted tube frame with a planked deck, rails, four posts and a canvas canopy, on a third spoked wheel.",
-        "Three materials: paint (cream and green as vertex colours), a white vertex-coloured trim (rust tubes, chrome, canvas canopy, engine, seat, tyres) and a timber material carrying the plank canvas for the deck.",
-        "One repetition system: the two bike wheels off one lathe; the sidecar wheel is a loose lathe merged into the trim.",
+        "Two machines welded together: an old underbone (cream leg shield and covers, green fenders, nacelle and fork shrouds) on the right and a cargo box on its LEFT -- a rusted tube frame with a planked deck, rails, four posts and a draped canvas canopy, on a third wire-spoked wheel.",
+        "Four materials: paint (cream, green and the black saddle as vertex colours), a white vertex-coloured trim (rust tubes, chrome, canvas canopy, engine, lamps), a timber material carrying the plank canvas for the deck, and a rubber material carrying the tread tile for the wheels.",
+        "One repetition system: all THREE wheels off one open spoked lathe (tyre ring, rim ring, drum hub, twenty prism spokes), the sidecar wheel as the third instance at 0.923 scale.",
         "Action readiness: three axle pivots, convex collider, not breakable."
       ]
     },
@@ -129,7 +131,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The sidecar is a CAGE and reads by its gaps: rails on three sides, posts to a canopy, daylight through all of it. It is therefore tubes and a deck, not a box, and the turntable sees the backdrop through it from every side -- the vehicle, not a hole. The bike is the shared underbone template offset to x -0.42."
+      "rationale": "The sidecar is a CAGE and reads by its gaps: rails on three sides, posts to a canopy, daylight through all of it -- and the wheels are wire wheels that read by the daylight through THEM. It is therefore tubes, a deck and open lathes, and the turntable sees the backdrop through it from every side: the vehicle, not a hole. The bike is the shared underbone template offset to x -0.52."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -164,7 +166,7 @@
           "zone": "sidecar",
           "kind": "contour",
           "identityDefining": true,
-          "description": "tan canvas canopy slab with a crown and rear valance on the posts",
+          "description": "draped tan canvas canopy over the top ring, with a crown and rear valance on the posts",
           "mapsTo": {
             "ref": "trim"
           },
@@ -187,9 +189,32 @@
           "zone": "wheels",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two spoked bike wheels and a spoked sidecar wheel",
+          "description": "three wire-spoked wheels with drum hubs, daylight through the spokes",
           "mapsTo": {
             "ref": "wheels"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-tread",
+          "zone": "wheels",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "grooved, siped, dust-shouldered tyre tread",
+          "mapsTo": {
+            "ref": "d7-tread"
+          },
+          "onMaterial": "rubber",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-front-end",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "raked fork through the hub with green shrouds and a triple clamp, round green headlamp nacelle with chrome bezel and lens, speedo, amber indicator pods, swept-back bars with grips, deep fender hugging the tyre, flared leg shield with its badge",
+          "mapsTo": {
+            "ref": "trim"
           },
           "realization": "unreported"
         },
@@ -198,7 +223,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": false,
-          "description": "cream leg shield and covers, green fenders and cowl, chrome bars and fork",
+          "description": "cream leg shield and covers, green fenders, black saddle, rear shocks, exhaust",
           "mapsTo": {
             "ref": "body"
           },
@@ -233,18 +258,18 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
     "resolvedUnknowns": [
-      "The canopy is built to the proxy at 1.30-1.45 m; the registry's 1.15 m height is reported as a declaration to revise.",
-      "The turntable gate's enclosed-background signal fires on the daylight through the cage from every azimuth (up to 456 x 135 px): real open air. --allow-holes is set on the _holecc measurement.",
-      "The canopy is a slab with a raised crown rather than the plate's sagging cloth; the sag is below the resolvable band.",
-      "The bike is the shared underbone template; its right side and the box rear are built to type."
+      "The declared size was corrected to the proxy anchored on the wheel (1.75 x 1.46 x 1.86); the list-time 2.20 length was an estimate the plate contradicts.",
+      "The turntable gate's enclosed-background signal fires on the daylight through the cage and the wire wheels from every azimuth: real open air. --allow-holes is set on the _holecc measurement.",
+      "The canopy is a draped height grid (crown 0.12, underside on the top ring crown); the plate's finer puckering is below the resolvable band.",
+      "The bike is the shared underbone template; its right side and the box rear are built to type. Twenty spokes stand for the plate's thirty-six."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 1.55 x 1.15 x 2.20 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Rendered model matches the reference silhouette, the 1.75 x 1.46 x 1.86 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=4 materials, <=8 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus one named pivot per wheel (3); zero sockets; convex collider; no destruction groups.",
       "Every material declares textureless with named evidence."
@@ -253,7 +278,7 @@
       "macroComponents": 1,
       "mesoComponents": 3,
       "microFeatureGroups": 3,
-      "materialLayers": 3,
+      "materialLayers": 4,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -264,7 +289,8 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Bike and box side by side in 1.55 m, box on the left",
+          "Bike and box side by side in 1.75 m, box on the left",
+          "A Cub's 1.84 m with the rear bodywork over the rear wheel",
           "Canopy at the proxy height"
         ],
         "evidenceRefs": [
@@ -272,7 +298,8 @@
         ],
         "failureModes": [
           "box on the wrong side",
-          "a closed box"
+          "a closed box",
+          "bodywork trailing behind the rear wheel"
         ]
       },
       {
@@ -283,7 +310,7 @@
         "qualityCriteria": [
           "Tube frame with rails and posts",
           "Planked deck",
-          "Canvas canopy, not planked"
+          "Draped canvas canopy, not a slab"
         ],
         "evidenceRefs": [
           "region-frame",
@@ -292,16 +319,18 @@
         ],
         "failureModes": [
           "the canopy taking the plank tile",
-          "no rails"
+          "no rails",
+          "a slab canopy"
         ]
       },
       {
         "id": "wheels",
-        "name": "Wheels and pivots",
+        "name": "Wheels, tread and pivots",
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Three spoked wheels",
+          "Three wire-spoked wheels with daylight through them",
+          "Treaded, dust-shouldered tyres",
           "A named pivot per wheel"
         ],
         "evidenceRefs": [
@@ -309,7 +338,29 @@
         ],
         "failureModes": [
           "flat discs",
+          "closed dishes hiding the spokes",
           "no sidecar pivot"
+        ]
+      },
+      {
+        "id": "front-end",
+        "name": "Front end of the bike",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Fork on the rake through the front hub",
+          "Round headlamp nacelle with bezel and lens",
+          "Fender hugging the tyre",
+          "Bars with grips and indicators"
+        ],
+        "evidenceRefs": [
+          "region-white",
+          "region-green"
+        ],
+        "failureModes": [
+          "fork legs off the hub",
+          "a box headlamp",
+          "a fender floating off the tyre"
         ]
       },
       {
@@ -510,10 +561,11 @@
     },
     {
       "id": "wheels",
-      "name": "Wheels and pivots",
+      "name": "Wheels, tread and pivots",
       "tier": "critical",
       "passIds": [
         "structural-pass",
+        "surface-pass",
         "interaction-pass"
       ],
       "minimumScore": 0.8,
@@ -523,6 +575,24 @@
       ],
       "evidenceRefs": [
         "region-tyre"
+      ]
+    },
+    {
+      "id": "front-end",
+      "name": "Front end of the bike",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "body",
+        "trim"
+      ],
+      "evidenceRefs": [
+        "region-white",
+        "region-green"
       ]
     },
     {
@@ -662,9 +732,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.42,
+          -0.52,
           0.26,
-          0.88
+          0.66
         ],
         "axis": [
           1,
@@ -678,9 +748,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.42,
+          -0.52,
           0.26,
-          -0.34
+          -0.56
         ],
         "axis": [
           1,
@@ -696,14 +766,14 @@
         "localPosition": [
           0.8,
           0.24,
-          -0.45
+          -0.34
         ],
         "axis": [
           1,
           0,
           0
         ],
-        "justification": "Sidecar hub outboard of the box; the wheel is merged into the trim, so the pivot marks the axle for a host that splits it out."
+        "justification": "Sidecar hub outboard of the box: the third instance of the wheel geometry at 0.923 scale."
       }
     ],
     "socketInventory": [],
@@ -720,10 +790,10 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The canopy is built to the proxy at 1.30-1.45 m; the registry's 1.15 m height is reported as a declaration to revise.",
-    "The turntable gate's enclosed-background signal fires on the daylight through the cage from every azimuth (up to 456 x 135 px): real open air. --allow-holes is set on the _holecc measurement.",
-    "The canopy is a slab with a raised crown rather than the plate's sagging cloth; the sag is below the resolvable band.",
-    "The bike is the shared underbone template; its right side and the box rear are built to type."
+    "The declared size was corrected to the proxy anchored on the wheel (1.75 x 1.46 x 1.86); the list-time 2.20 length was an estimate the plate contradicts.",
+    "The turntable gate's enclosed-background signal fires on the daylight through the cage and the wire wheels from every azimuth: real open air. --allow-holes is set on the _holecc measurement.",
+    "The canopy is a draped height grid (crown 0.12, underside on the top ring crown); the plate's finer puckering is below the resolvable band.",
+    "The bike is the shared underbone template; its right side and the box rear are built to type. Twenty spokes stand for the plate's thirty-six."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -735,13 +805,13 @@
   },
   "silhouette": {
     "envelope": {
-      "w": 1.55,
-      "h": 1.15,
-      "d": 2.2
+      "w": 1.75,
+      "h": 1.46,
+      "d": 1.86
     },
-    "description": "Bike wheels 0.52 m at z +0.88 and -0.34 on x -0.42; leg shield 0.32-0.82 m; bars at 0.98 m; seat at 0.61-0.71 m; box deck at 0.34 m from x -0.04 to 0.78 and z 0.52 to -0.92; rails at 0.48 and 0.62 m; posts to 1.30 m; canopy slab 1.30-1.40 m with a crown to 1.45 m; sidecar wheel 0.48 m at x 0.80, z -0.45.",
-    "envelopeDerivation": "x spans -0.75..+0.83 (bike bars to the sidecar wheel); y 0.00 to 1.45 at the canopy crown; z -1.04..+1.14 rack to fender, +Z forward. The Meshy proxy normalises to W:H:D = 1 : 0.885 : 1.100, i.e. 1.55 x 1.37 x 1.70 m at the declared width: the CANOPY stands at 1.37 m where the registry declares 1.15. Built to the proxy (canopy posts to 1.30, crown 1.45) and reported as a declaration to revise; the declared width and length stand.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to W:H:D = 1 : 0.885 : 1.100. Its front elevation (scratch/sidecar-motorcycle/_ev/side.png -- the proxy's long axis is the width) shows the bike on one side and the box with its canopy on the other at 0.885 W tall; its side elevation shows the box with the canopy over it and the bike behind, the sidecar wheel outboard. The canopy height is the one place proxy and declaration disagree (1.37 vs 1.15 m at 1.55 wide)."
+    "description": "Bike wheels 0.52 m at z +0.66 and -0.56 on x -0.52 with the fork on an 18 deg rake through the front hub; leg shield 0.31-0.90 m with a flared apron; headlamp nacelle at 0.88 m ahead of the bar clamp, bars at 0.99 m swept 18 cm back; saddle 0.60-0.72 m; rear fender hugging the rear tyre to 0.36 m behind the axle; box deck at 0.34 m from x -0.08 to 0.74 and z 0.38 to -0.67; rails at 0.48 and 0.62 m; posts to 1.28 m; canopy on the top ring with its crown to 1.43 m; sidecar wheel 0.48 m at x 0.80, z -0.34.",
+    "envelopeDerivation": "x spans -0.875..+0.86 (bike grips to the sidecar wheel face); y 0.00 to 1.455 at the canopy crown; z -0.895..+0.97 rear fender to front tyre, +Z forward. The Meshy proxy normalises to W:H:D = 1.724 : 1.527 : 1.899 = 1 : 0.886 : 1.10, and its side elevation puts the rig at 3.6 wheel diameters long: on a Cub 17-inch wheel (0.52 m) that is 1.87 long, 1.70 wide and 1.50 tall, against the list-time 1.55 x 1.15 x 2.20. A Cub is 1.84 m long; the first build had carried 2.18 m with the rear bodywork 0.70 m behind the rear axle. Rebuilt to the proxy and the declaration corrected to 1.75 x 1.46 x 1.86 (bands.mjs mean |dw| 0.052, |dd| 0.092 of height, from 0.097 / 0.350).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to W:H:D = 1 : 0.886 : 1.10. Its occupancy map (scratch/sidecar-motorcycle/_ev/occupancy.txt) puts the canopy at z 0.13-0.855 of H over the box posts at columns 37-75 of 80, the bike at columns 5-25, the sidecar wheel outboard at 76-79; the side elevation puts the sidecar hub 0.33 of the box length ahead of its rear. All of that is built; the residual band rows (|dw| <= 0.10, |dd| <= 0.15) are the proxy fusing the bike frame into the box at rail height."
   },
   "viewEvidence": [
     {
@@ -801,15 +871,15 @@
       "level": "macro",
       "role": "body",
       "importance": 1.0,
-      "confidence": 0.88,
+      "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Five thin side-profile extrusions on the bike centreline x -0.42 (cream shield and covers, green front and rear fenders, green cowl) and the floor cover merged into ONE geometry.",
+      "topologyRationale": "Side-profile extrusions on the bike centreline x -0.52 (cream shield with a flared apron and concave face, cream covers, black saddle, green fender arcs hugging both tyres at 25-50 mm), the green fork shrouds, the floor cover and the shield badge merged into ONE geometry.",
       "materialId": "paint",
       "material": "paint",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Shield 0.32-0.82 m at z 0.36-0.60; covers 0.40-0.60 m; fenders over both wheels; cowl 0.84-0.98 m.",
+        "topologyIntent": "Shield 0.31-0.90 m at z 0.16-0.44; covers 0.40-0.60 m; saddle 0.60-0.72; fenders over both wheels; shrouds 0.54-0.80 m on the rake.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -818,7 +888,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each panel its own width; nothing shares a plane with the box, which starts 0.38 m outboard of the bike centreline.",
+        "zFightingNote": "Each panel its own width; the badge stands 1-2 cm proud of the shield's raked face; nothing shares a plane with the box, which starts 0.44 m outboard of the bike centreline.",
         "mergeNote": "One merged BufferGeometry."
       },
       "localFeatures": [
@@ -836,13 +906,13 @@
       "colorMaterialRecipe": {
         "materialId": "paint",
         "baseColor": "#cecabb",
-        "recipe": "Cream and green enamel as vertex colours.",
+        "recipe": "Cream, green and saddle black as vertex colours.",
         "evidenceRef": "region-white",
-        "confidence": 0.88,
+        "confidence": 0.9,
         "dominantAlbedo": "rgba(206, 202, 187, 1.0)",
         "secondaryAlbedo": "rgba(206, 202, 187, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.88
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "root",
@@ -877,13 +947,13 @@
           "shape": "convex",
           "localCenter": [
             0,
-            0.575,
+            0.73,
             0
           ],
           "halfExtents": [
-            0.775,
-            0.575,
-            1.1
+            0.875,
+            0.73,
+            0.93
           ],
           "notes": "Declared on the asset as convex: one hull over the whole machine."
         }
@@ -891,19 +961,19 @@
     },
     {
       "id": "trim",
-      "name": "Frame, cage, canopy, engine, seat and fittings",
+      "name": "Frame, cage, canopy, engine, lamps and fittings",
       "level": "meso",
       "role": "detail",
       "importance": 0.9,
-      "confidence": 0.86,
+      "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "The whole cage (deck ring, rail ring, cross rails, four posts, top ring, two outriggers, stub axle), the canvas canopy slab, crown and valance, the sidecar wheel lathe, and every bike fitting (fork, stem, bars, spine, swingarm, exhaust, seat, engine, lamps, grips, pegs): one merge, one submission.",
+      "topologyRationale": "The whole cage (deck ring, rail ring, cross rails, four posts, top ring, two outriggers, stub axle), the draped canopy sheet and valance, and every bike fitting (fork lowers on the rake, triple clamp, stem, swept bars, grips, nacelle, bezel, lens, speedo, indicator pods and stalks, spine, swingarm, shocks, exhaust, engine, tail lamp): one merge, one submission. Tube runs whose ends are buried are open-ended.",
       "materialId": "trim",
       "material": "trim",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "Deck ring at 0.34 m over x -0.04..0.78, z 0.52..-0.92; rails at 0.48 and 0.62 m; posts to 1.30 m; canopy 1.30-1.45 m; sidecar wheel 0.48 m at x 0.80, z -0.45.",
+        "topologyIntent": "Deck ring at 0.34 m over x -0.08..0.74, z 0.38..-0.67; rails at 0.48 and 0.62 m; posts to 1.28 m; canopy crown 1.455 m; nacelle at 0.88 m; bars at 0.99 m.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -912,7 +982,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Tubes overlap their joints by 1.2 radii; the canopy slab sits on the post tops with the posts running 4 cm into it; the deck planks sit 5 mm above the deck ring.",
+        "zFightingNote": "Tubes overlap their joints by 1.2 radii; the canopy sheet underside is tangent to the top ring crown, a line contact, not a coplanar face; bezel and lens butt the nacelle face with opposed normals; the deck planks sit 5 mm above the deck ring.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -924,7 +994,12 @@
         {
           "id": "d3-canopy",
           "description": "canvas canopy",
-          "delivery": "tinted boxes in the trim merge"
+          "delivery": "sheet() height grid in the trim merge"
+        },
+        {
+          "id": "d8-front-end",
+          "description": "front-end fittings",
+          "delivery": "lathes, tubes and cyls in the trim merge"
         }
       ],
       "colorMaterialRecipe": {
@@ -932,11 +1007,11 @@
         "baseColor": "#5a4a3f",
         "recipe": "White material, every tone a vertex colour.",
         "evidenceRef": "region-frame",
-        "confidence": 0.86,
+        "confidence": 0.9,
         "dominantAlbedo": "rgba(90, 74, 63, 1.0)",
         "secondaryAlbedo": "rgba(90, 74, 63, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.86
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "child",
@@ -957,19 +1032,19 @@
     },
     {
       "id": "wheels",
-      "name": "Bike wheels",
+      "name": "Wheels",
       "level": "meso",
       "role": "mechanism",
       "importance": 0.9,
-      "confidence": 0.85,
+      "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One spoked lathe as an InstancedMesh with two instances on the bike centreline.",
-      "materialId": "trim",
-      "material": "trim",
+      "topologyRationale": "One OPEN spoked wheel (tyre ring, rim ring, drum hub, twenty prism spokes) as an InstancedMesh with three instances: the two bike hubs and the sidecar hub at 0.923 scale.",
+      "materialId": "rubber",
+      "material": "rubber",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "0.26 m radius at x -0.42, z +0.88 and -0.34.",
+        "topologyIntent": "0.26 m radius at x -0.52, z +0.66 and -0.56; 0.24 m at x 0.80, z -0.34.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -978,35 +1053,40 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Closed lathe.",
+        "zFightingNote": "Closed ring lathes; the hub cylinder ends inside the caps.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d6-wheels",
-          "description": "bike wheels",
+          "description": "wire wheels",
           "delivery": "repetitionSystems.wheels"
+        },
+        {
+          "id": "d7-tread",
+          "description": "tread",
+          "delivery": "tyre canvas as map and bumpMap on around-by-profile UVs"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "trim",
-        "baseColor": "#5e5a54",
-        "recipe": "Tyre #5e5a54, rim #a9a7a2, spokes as vertex colours.",
+        "materialId": "rubber",
+        "baseColor": "#5f5b53",
+        "recipe": "Tyre vertex colour under the tread tile; rim, drum and spokes pinned to its white band.",
         "evidenceRef": "region-tyre",
-        "confidence": 0.85,
-        "dominantAlbedo": "rgba(94, 90, 84, 1.0)",
-        "secondaryAlbedo": "rgba(94, 90, 84, 1.0)",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(95, 91, 83, 1.0)",
+        "secondaryAlbedo": "rgba(95, 91, 83, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.85
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "child",
         "pivot": {
           "mode": "custom",
           "localPosition": [
-            -0.42,
+            -0.52,
             0.26,
-            0.88
+            0.66
           ],
           "axis": [
             1,
@@ -1040,7 +1120,7 @@
       "confidence": 0.86,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Its own component because it is its own material: one 0.80 x 0.03 x 1.42 m deck slab with world-projected UVs for the plank tile.",
+      "topologyRationale": "Its own component because it is its own material: one 0.80 x 0.03 x 1.03 m deck slab with world-projected UVs for the plank tile.",
       "materialId": "wood",
       "material": "wood",
       "parent": "body",
@@ -1096,7 +1176,7 @@
   "materials": [
     {
       "id": "paint",
-      "name": "Cream and green enamel",
+      "name": "Cream and green enamel, black saddle",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#cecabb",
@@ -1113,7 +1193,7 @@
         "secondary": [
           "#cecabb",
           "#33402f",
-          "#9a9a8a"
+          "#2e2e2a"
         ],
         "samplingNotes": "Measured as the mean of crops/white.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1122,7 +1202,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Cream measured on viewEvidence region-white (leg shield, 0.75) at #cecabb and green on region-green (tank cover, 0.751) at #33402f; both as vertex colours on one white material.",
+          "Cream measured on viewEvidence region-white (leg shield, 0.75) at #cecabb and green on region-green (tank cover, 0.751) at #33402f; saddle #2e2e2a; all as vertex colours on one white material.",
           "Textureless as DECLARED: old enamel with no resolvable detail."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1136,7 +1216,7 @@
     },
     {
       "id": "trim",
-      "name": "Rusted tube, canvas, chrome and rubber",
+      "name": "Rusted tube, canvas, chrome and lamps",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#ffffff",
@@ -1162,8 +1242,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "WHITE on purpose with vertexColors: frame #5a4a3f (region-frame, 0.763), canvas canopy #c4b194 (region-canvas, 0.751), chrome #b9bcbf, engine alloy #6c6a66, seat #2e2e2a, tyres #5e5a54 and rims #a9a7a2 (region-tyre, 0.857).",
-          "Textureless as DECLARED: the canopy is in this merge so it does NOT take the deck's plank tile -- the first build had it on the timber material and rendered the canvas as boards."
+          "WHITE on purpose with vertexColors: frame #5a4a3f (region-frame, 0.763), canvas canopy #c4b194 (region-canvas, 0.751), chrome #b9bcbf, engine alloy #6c6a66, drum #8a8378, amber indicators #c8862e, lens #d8dde0.",
+          "Textureless as DECLARED: the canopy is in this merge so it does NOT take the deck's plank tile."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1224,28 +1304,80 @@
         "confidence": 0.8,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "rubber",
+      "name": "Dusty treaded tyre rubber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/rubber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#5f5b53",
+          "#a9a7a2",
+          "#8a8378"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tyre.png. extract_pbr_evidence confidence 0.857. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-tread",
+          "region": "the tyres",
+          "roughness": 0.88,
+          "palette": [
+            "#5F5B53",
+            "#2A2825",
+            "#E8D6BE"
+          ],
+          "evidence": "Tyre crop: three circumferential grooves cut by staggered sipes, bead rings, warm road dust on the lower shoulder; delivered as a tyre tile at 0.05 m per repeat around (33 on the bike wheel) with the treaded strip on the tread rows."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "WHITE with vertexColors: tyre measured on viewEvidence region-tyre (0.857) at #5f5b53 (plate tread 77,73,67, dusty sidewall 108,103,95), authored #6e675d against the tread tile's 200/255 base; rim #a9a7a2, drum #8a8378 and spokes #b0aea9 pinned to the tile's white band.",
+          "Textureless as DECLARED: the tread canvas is post-construction, one 256 px tile as map and bumpMap."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tyre.png",
+        "pbrReport": "material-evidence/rubber.pbr.json",
+        "confidence": 0.857,
+        "verdict": "pass"
+      }
     }
   ],
   "repetitionSystems": [
     {
       "id": "wheels",
-      "name": "Bike wheels",
-      "instanceCount": 2,
+      "name": "Wheels",
+      "instanceCount": 3,
       "sourceComponent": "wheels",
-      "material": "trim",
+      "material": "rubber",
       "renderAs": "InstancedMesh",
-      "sharedGeometry": "spoked-wheel-lathe",
+      "sharedGeometry": "open-spoked-wheel",
       "placement": {
         "mode": "explicit",
-        "note": "x -0.42, z +0.88 and -0.34."
+        "note": "x -0.52 at z +0.66 and -0.56; x 0.80, z -0.34 at 0.923 scale."
       },
       "instanceDimensions": {
-        "width": 0.07,
+        "width": 0.11,
         "height": 0.52,
         "depth": 0.52
       },
-      "rationale": "Two bike wheels at one geometry; the sidecar wheel differs in size and is a loose lathe in the trim merge.",
-      "zFightingNote": "Closed lathe."
+      "rationale": "Three wheels at one geometry and one submission; the sidecar wheel is the same wheel a size down.",
+      "zFightingNote": "Closed ring lathes."
     }
   ],
   "buildPasses": [
@@ -1356,27 +1488,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T04:47:25.273724+00:00",
+      "timestamp": "2026-08-27T22:30:00.449136+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
@@ -1387,80 +1519,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.357713+00:00",
+      "timestamp": "2026-08-27T22:30:00.531170+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
-        },
-        {
-          "id": "wheels",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:47:25.444920+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "sidecar",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T04:47:25.526933+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1473,26 +1534,211 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.611654+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-08-27T22:30:00.615484+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.702438+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.782604+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.862820+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.941928+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.021501+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.103060+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.182096+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "sidecar",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
+        },
+        {
+          "id": "front-end",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fork lowers on an 18 deg rake THROUGH the front hub (the first build's landed 0.11 m behind it), green shrouds 0.54-0.80 m, a triple clamp and stem into the bar clamp; a 0.19 m green nacelle lathe with a chrome bezel and pale lens at 0.88 m, ahead of the bar clamp, a speedo on top, amber indicator pods on stalks; bars swept 0.18 m back with round grips (levers removed at the user's request -- they read as stubs reaching for the lamps); fender arc 25-50 mm off the tyre from 20 deg below the axle to 125 deg behind; leg shield with the plate's flared apron and concave face and its dark badge.",
+          "notes": "Read against the plate's front three-quarter: nacelle, bezel, indicators and fender match; the shield stays a tumbled extrusion without the plate's plan curvature. The plate shows no mirrors, so none were built."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.261775+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.340790+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.84,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders, nacelle and shrouds, black #2e2e2a saddle as measured.",
           "notes": "Vertex colours on one material."
         }
       ],
@@ -1504,27 +1750,51 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.692721+00:00",
+      "timestamp": "2026-08-27T22:30:01.420225+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.502954+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "sidecar",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
@@ -1535,17 +1805,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.775492+00:00",
+      "timestamp": "2026-08-27T22:30:01.588816+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
@@ -1556,27 +1826,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.860457+00:00",
+      "timestamp": "2026-08-27T22:30:01.674185+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
@@ -1587,53 +1857,62 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T04:47:25.944587+00:00",
+      "timestamp": "2026-08-27T22:30:01.763865+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
         },
         {
           "id": "sidecar",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
+        },
+        {
+          "id": "front-end",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fork lowers on an 18 deg rake THROUGH the front hub (the first build's landed 0.11 m behind it), green shrouds 0.54-0.80 m, a triple clamp and stem into the bar clamp; a 0.19 m green nacelle lathe with a chrome bezel and pale lens at 0.88 m, ahead of the bar clamp, a speedo on top, amber indicator pods on stalks; bars swept 0.18 m back with round grips (levers removed at the user's request -- they read as stubs reaching for the lamps); fender arc 25-50 mm off the tyre from 20 deg below the axle to 125 deg behind; leg shield with the plate's flared apron and concave face and its dark badge.",
+          "notes": "Read against the plate's front three-quarter: nacelle, bezel, indicators and fender match; the shield stays a tumbled extrusion without the plate's plan curvature. The plate shows no mirrors, so none were built."
         },
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.84,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders, nacelle and shrouds, black #2e2e2a saddle as measured.",
           "notes": "Vertex colours on one material."
         }
       ],
@@ -1647,31 +1926,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T04:47:25.273724+00:00",
+      "timestamp": "2026-08-27T22:30:00.449136+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4.",
+      "summary": "Blockout: three components and one InstancedMesh (three wheels) at 4 draw calls of 4; rig re-stationed to the proxy and centred on the origin.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1688,40 +1967,88 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.357713+00:00",
+      "timestamp": "2026-08-27T22:30:00.531170+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rear bodywork, swingarm and exhaust trailed 0.70 m behind the rear axle on a 2.18 m bike; re-stationed to a 1.84 m Cub and the box to the proxy 1.05 m, declaration corrected to 1.75 x 1.46 x 1.86.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.615484+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Fork legs landed 0.11 m behind the front hub; put on the rake through it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.702438+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: bike template at x -0.42, cage of fourteen tube runs, deck, three wheels at the proxy stations.",
+      "summary": "Structural pass: bike template at x -0.52 with the fork on the rake through the hub, a 1.84 m Cub; cage 1.05 m long, wheels at the proxy stations; bands |dw| 0.052, |dd| 0.092.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1737,31 +2064,160 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.444920+00:00",
+      "timestamp": "2026-08-27T22:30:00.782604+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Wheels were closed dished lathes hiding their spokes: rebuilt as open wire wheels, one geometry instanced three times.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.862820+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Canopy was two slab boxes: rebuilt as a draped height-grid sheet.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:00.941928+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Handlebar clamp passed through the top front of the nacelle (user): nacelle, bezel, lens, speedo and indicators moved 8 cm forward and 2 cm down so the bar clears the shell by 1 cm.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.021501+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Brake and clutch lever stubs removed (user): at prop distance they read as pieces reaching for the indicators.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.103060+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Canopy sat around the frame (user): sheet set with its underside exactly on the top ring crown (1.296 m) so the cloth touches the frame and nothing comes through it -- the ring is 16 mm thick and tubes overrun their ends by 1.2 r (posts end at 1.291), so a corner set to touch a post tip had still broken the surface; edge sag and droop removed since the ring carries the cloth; valance hung 1 mm under the sheet.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.182096+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "sidecar",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
+        },
+        {
+          "id": "front-end",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fork lowers on an 18 deg rake THROUGH the front hub (the first build's landed 0.11 m behind it), green shrouds 0.54-0.80 m, a triple clamp and stem into the bar clamp; a 0.19 m green nacelle lathe with a chrome bezel and pale lens at 0.88 m, ahead of the bar clamp, a speedo on top, amber indicator pods on stalks; bars swept 0.18 m back with round grips (levers removed at the user's request -- they read as stubs reaching for the lamps); fender arc 25-50 mm off the tyre from 20 deg below the axle to 125 deg behind; leg shield with the plate's flared apron and concave face and its dark badge.",
+          "notes": "Read against the plate's front three-quarter: nacelle, bezel, indicators and fender match; the shield stays a tumbled extrusion without the plate's plan curvature. The plate shows no mirrors, so none were built."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: canopy slab, crown and valance; outriggers; stub axle; bike fittings.",
+      "summary": "Form refinement: headlamp nacelle, bezel, lens, speedo, indicator pods, swept bars, grips, triple clamp, shrouds, fender arcs hugging both tyres, flared shield with badge, saddle, shocks; draped canopy sheet.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1777,9 +2233,9 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.526933+00:00",
+      "timestamp": "2026-08-27T22:30:01.261775+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.88,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1801,31 +2257,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.611654+00:00",
+      "timestamp": "2026-08-27T22:30:01.340790+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.84,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders, nacelle and shrouds, black #2e2e2a saddle as measured.",
           "notes": "Vertex colours on one material."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 3 materials at PBR confidence 0.751-0.857; canopy moved off the timber material.",
+      "summary": "Material pass: 4 materials at PBR confidence 0.751-0.857; rubber added for the wheels, white under vertex colours with the tread tile.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1841,31 +2297,64 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.692721+00:00",
+      "timestamp": "2026-08-27T22:30:01.420225+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Tyres had no surface: a rubber material with a tread tile on around-by-profile UVs, rim and spokes pinned to its white band.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/sidecar-motorcycle/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T22:30:01.502954+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "sidecar",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
+        },
+        {
+          "id": "wheels",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: one 512 px plank canvas on the deck as map and bump.",
+      "summary": "Surface pass: one 512 px plank canvas on the deck and one 256 px tyre canvas (grooves, sipes, bead rings, dust shoulder, scuffs) on the rubber, each as map and bumpMap.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1881,17 +2370,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.775492+00:00",
+      "timestamp": "2026-08-27T22:30:01.588816+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [],
       "action": "continue",
@@ -1911,31 +2400,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.860457+00:00",
+      "timestamp": "2026-08-27T22:30:01.674185+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
         }
       ],
       "action": "continue",
-      "summary": "Interaction pass: root pivot plus THREE wheel pivots, ZERO sockets, one CONVEX collider, no destruction groups.",
+      "summary": "Interaction pass: root pivot plus THREE wheel pivots on the three instances, ZERO sockets, one CONVEX collider, no destruction groups.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1951,58 +2440,67 @@
       }
     },
     {
-      "timestamp": "2026-08-27T04:47:25.944587+00:00",
+      "timestamp": "2026-08-27T22:30:01.763865+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.85,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.87,
+        "lightingCamera": 0.84
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Bike at x -0.42 and box from x -0.04 to 0.78 with the wheel at 0.80, in 1.58 m; canopy to 1.45 m against the proxy's 1.37 and the registry's 1.15; length 2.18 m.",
-          "notes": "The proxy puts the box on the bike's left and the canopy at 0.885 W; built to it. The declared height is the residual and is reported for revision."
+          "evidence": "bands.mjs against the Meshy proxy: mean |dw| 0.052 and |dd| 0.092 of height (first build 0.097 / 0.350); bounds x -0.875..0.86, y 0..1.455, z -0.895..0.97 against the corrected 1.75 x 1.46 x 1.86. Bike 1.84 m on a 1.22 m wheelbase; box deck ring 1.05 m long at the proxy's columns 37-75; sidecar hub 0.33 of the box length ahead of its rear as the proxy's side elevation shows.",
+          "notes": "The first build's 2.18 m bike ran its covers, fender, swingarm and exhaust 0.70 m behind the rear axle; the declaration (1.55 x 1.15 x 2.20) was the residual and is now corrected in the registry with the arithmetic. Residual band rows at rail height are the proxy fusing the bike frame into the box."
         },
         {
           "id": "sidecar",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers to the bike frame and a stub axle; a seven-board planked deck; a tan canvas canopy slab with crown and rear valance.",
-          "notes": "The first build put the canopy on the timber material and it rendered as planks; moved into the trim merge with canvas as vertex colour. Turntable flags up to 456 x 135 px of daylight through the cage: real open air, allowed on measurement."
+          "evidence": "Rusted tube deck ring, rail ring, cross rails, four posts, top ring, two outriggers and a stub axle; seven-board planked deck; canopy as a draped 8 x 10 height grid (crown 0.12 m, underside on the top ring crown) with a rear valance.",
+          "notes": "The slab-and-crown boxes are gone; the sheet reads as cloth at 0, 90, 180 and 270. Turntable: daylight through the cage and the wire wheels, allowed on the _holecc measurement."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two instanced spoked bike wheels and a spoked sidecar wheel merged into the trim; pivots wheel-front, wheel-rear and wheel-sidecar on the axles.",
-          "notes": "Sixteen to eighteen spokes each."
+          "evidence": "Open wire wheels: closed tyre ring and rim ring lathes at 16 segments, a 0.065 m drum hub with chrome caps, twenty prism spokes; ONE geometry instanced three times (sidecar at 0.923). Tyre tile at 0.05 m per repeat (33 around the bike wheel): three grooves at 0.30 cut by staggered sipes, bead rings, road dust on the lower shoulder, scuffs, as map and bumpMap 0.08; rim, drum and spokes pinned to its white band. Pivots wheel-front, wheel-rear, wheel-sidecar on the axles (instances 0, 1, 2).",
+          "notes": "The first build's closed dished lathe hid its own spokes and rendered three grey discs. Tyre authored #6e675d under a 200/255 canvas base for the measured #5f5b53. Tread reads at the 4x crop of the sidecar wheel and as a textured band at prop distance; twenty spokes stand for the plate's thirty-six."
+        },
+        {
+          "id": "front-end",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Fork lowers on an 18 deg rake THROUGH the front hub (the first build's landed 0.11 m behind it), green shrouds 0.54-0.80 m, a triple clamp and stem into the bar clamp; a 0.19 m green nacelle lathe with a chrome bezel and pale lens at 0.88 m, ahead of the bar clamp, a speedo on top, amber indicator pods on stalks; bars swept 0.18 m back with round grips (levers removed at the user's request -- they read as stubs reaching for the lamps); fender arc 25-50 mm off the tyre from 20 deg below the axle to 125 deg behind; leg shield with the plate's flared apron and concave face and its dark badge.",
+          "notes": "Read against the plate's front three-quarter: nacelle, bezel, indicators and fender match; the shield stays a tumbled extrusion without the plate's plan curvature. The plate shows no mirrors, so none were built."
         },
         {
           "id": "paint",
           "tier": "important",
-          "score": 0.82,
+          "score": 0.84,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream #cecabb shield and covers, green #33402f fenders and cowl as measured.",
+          "evidence": "Cream #cecabb shield and covers, green #33402f fenders, nacelle and shrouds, black #2e2e2a saddle as measured.",
           "notes": "Vertex colours on one material."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 3,560/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, one 512 px canvas at 1.3 MB, factory 45 ms. Turntable: enclosed background is the open cage, allowed on measurement.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 3,964/4,000 triangles, 4/4 draw calls, 4/4 materials, 4/8 unique geometries, two canvases at 1.7 MB, factory 82 ms. Turntable: enclosed background is the open cage and the wire wheels, allowed on measurement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2034,8 +2532,8 @@
     "qualityPriority": "real-time",
     "targetTriangles": 4000,
     "maxDrawCalls": 4,
-    "maxMaterials": 3,
-    "maxUniqueGeometries": 6,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
@@ -2046,25 +2544,25 @@
         "projectedTotal": 5,
         "budget": 4,
         "headroom": -1,
-        "note": "Three components and one repetition system: 4 of 4. The canopy and the sidecar wheel ride the trim merge so the deck can have its own material."
+        "note": "Three components and one repetition system: 4 of 4. The canopy and every fitting ride the trim merge; all three wheels are one InstancedMesh on the rubber material."
       },
       "materials": {
-        "projectedTotal": 3,
-        "budget": 3,
+        "projectedTotal": 4,
+        "budget": 4,
         "headroom": 0,
-        "note": "paint, trim and timber: 3 of 3."
+        "note": "paint, trim, timber and rubber: 4 of 4."
       },
       "uniqueGeometries": {
         "projectedTotal": 5,
-        "budget": 6,
-        "headroom": 1,
+        "budget": 8,
+        "headroom": 3,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 3560,
+        "measured": 3964,
         "budget": 4000,
-        "headroom": 440,
-        "note": "3,560 of 4,000: three spoked wheel lathes are most of it."
+        "headroom": 36,
+        "note": "3,964 of 4,000: three open wheels at 648 each are half of it; tube runs with buried ends are open-ended to pay for the front end and the canopy sheet."
       }
     }
   },
@@ -2122,11 +2620,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Thin extrusions for the bike panels, polyline tubes for frame and cage, spoked lathes for the wheels, boxes for deck, canopy and fittings."
+      "strategy": "Thin extrusions for the bike panels and fender arcs, polyline tubes for frame and cage, open ring lathes with prism spokes for the wheels, lathes for the nacelle and pods, a height-grid sheet for the canopy, boxes for deck and fittings."
     },
     {
       "id": "instancing",
-      "strategy": "One InstancedMesh carries the two bike wheels; the sidecar wheel is merged."
+      "strategy": "One InstancedMesh carries all three wheels; the sidecar instance is scaled 0.923."
     },
     {
       "id": "determinism",
@@ -2134,22 +2632,22 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 512 px plank canvas on the timber as map and bumpMap. 1.3 MB of texture VRAM, factory 45 ms."
+      "strategy": "Every material is declared textureless. One 512 px plank canvas on the timber and one 256 px tyre canvas on the rubber, each as map and bumpMap. 1.7 MB of texture VRAM, factory 82 ms."
     }
   ],
   "animationAnchors": [],
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "declared-height",
-      "severity": "medium",
-      "description": "Built 1.45 m tall against a declared 1.15.",
-      "mitigation": "The proxy carries the canopy at 0.885 W = 1.37 m; the declaration should be revised to ~1.45. Reported."
+      "id": "declared-size",
+      "severity": "low",
+      "description": "The declaration was corrected from 1.55 x 1.15 x 2.20 to 1.75 x 1.46 x 1.86.",
+      "mitigation": "Arithmetic recorded in the registry notes; bands.mjs mean |dw| 0.052, |dd| 0.092."
     },
     {
       "id": "open-cage-turntable",
       "severity": "low",
-      "description": "The turntable gate flags daylight through the cage at every azimuth.",
+      "description": "The turntable gate flags daylight through the cage and the wire wheels at every azimuth.",
       "mitigation": "Real open air; --allow-holes on the _holecc measurement."
     }
   ],
@@ -2192,42 +2690,42 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.4061,
-        "aspectRatioDelta": 0.1586,
-        "scaleDelta": 0.2831,
-        "bilateralSymmetryError": 0.1369,
+        "silhouetteIoU": 0.3937,
+        "aspectRatioDelta": 0.1533,
+        "scaleDelta": 0.3061,
+        "bilateralSymmetryError": 0.1386,
         "colorDelta": {
           "checked": 4,
-          "maxDeltaE": 7.08,
+          "maxDeltaE": 8.2,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 2.57
+              "deltaE": 2.37
             },
             {
               "componentId": null,
-              "deltaE": 3.32
+              "deltaE": 4.93
             },
             {
               "componentId": null,
-              "deltaE": 7.08
+              "deltaE": 8.2
             },
             {
               "componentId": null,
-              "deltaE": 5.88
+              "deltaE": 4.64
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.406 is below threshold 0.85",
-        "aspect-ratio delta 0.159 exceeds threshold 0.05",
-        "scale delta 0.283 exceeds threshold 0.08",
+        "silhouette IoU 0.394 is below threshold 0.85",
+        "aspect-ratio delta 0.153 exceeds threshold 0.05",
+        "scale delta 0.306 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "4fb2cd829841d602",
+      "renderHash": "d06c1973cdd1e080",
       "passId": "blockout"
     }
   ]

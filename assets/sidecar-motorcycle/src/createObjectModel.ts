@@ -9,8 +9,8 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 1.55 x 1.37 x 2.20 m (declared 1.15 tall; the proxy carries the canopy at 0.885 W), origin base-center, +Y up, +Z forward.
- * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.
+ * Envelope 1.70 x 1.48 x 1.85 m (proxy W:H:D 1 : 0.886 : 1.10 anchored on the 0.52 m wheel), origin base-center, +Y up, +Z forward.
+ * Budget (large): <=4000 triangles, <=4 draw calls, <=4 materials, <=8 unique geometries.
  *
  * This is one of thaikit's VEHICLES. The shared vocabulary is the SIDE-PROFILE EXTRUSION -- a
  * closed polygon in the (z, y) plane swept across the width and then shaped per vertex for
@@ -41,7 +41,7 @@ const CONFIG = {
     "id": "sidecar-motorcycle",
     "name": "Sidecar Motorcycle",
     "exportName": "SidecarMotorcycle",
-    "envelope": "Envelope 1.55 x 1.37 x 2.20 m (declared 1.15 tall; the proxy carries the canopy at 0.885 W), origin base-center, +Y up, +Z forward.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+    "envelope": "Envelope 1.70 x 1.48 x 1.85 m (proxy W:H:D 1 : 0.886 : 1.10 anchored on the 0.52 m wheel), origin base-center, +Y up, +Z forward.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=4 materials, <=8 unique geometries.",
     "materials": [
       {
         "id": "paint",
@@ -63,6 +63,13 @@ const CONFIG = {
         "roughness": 0.92,
         "metalness": 0,
         "vertexColors": true
+      },
+      {
+        "id": "rubber",
+        "color": 16777215,
+        "roughness": 0.88,
+        "metalness": 0,
+        "vertexColors": true
       }
     ],
     "tiles": [
@@ -73,15 +80,33 @@ const CONFIG = {
         "seed": 81,
         "size": 512,
         "bump": 0.01
+      },
+      {
+        "material": "rubber",
+        "kind": "tyre",
+        "size": 256,
+        "seed": 29,
+        "base": 200,
+        "band": [
+          0.36,
+          0.64
+        ],
+        "groove": 0.3,
+        "grooves": 3,
+        "sipes": 2,
+        "sipeWidth": 0.09,
+        "dustAlpha": 0.3,
+        "scuffs": 12,
+        "bump": 0.08
       }
     ],
     "pivots": [
       {
         "name": "wheel-front",
         "position": [
-          -0.42,
+          -0.52,
           0.26,
-          0.8800000000000001
+          0.66
         ],
         "axis": [
           1,
@@ -95,9 +120,9 @@ const CONFIG = {
       {
         "name": "wheel-rear",
         "position": [
-          -0.42,
+          -0.52,
           0.26,
-          -0.33999999999999986
+          -0.5599999999999999
         ],
         "axis": [
           1,
@@ -113,16 +138,16 @@ const CONFIG = {
         "position": [
           0.8,
           0.24,
-          -0.45
+          -0.34
         ],
         "axis": [
           1,
           0,
           0
         ],
-        "component": "trim",
-        "instance": null,
-        "note": "sidecar hub, outboard of the box; the wheel is merged into the trim, so the pivot marks the axle for a host that splits it out"
+        "component": "wheels",
+        "instance": 2,
+        "note": "sidecar hub, outboard of the box; the third instance of the wheel geometry at 0.923 scale"
       }
     ],
     "geometry": {
@@ -131,59 +156,158 @@ const CONFIG = {
         "shape": "convex",
         "localCenter": [
           0,
-          0.685,
+          0.74,
           0
         ],
         "halfExtents": [
-          0.775,
-          0.685,
-          1.1
+          0.855,
+          0.74,
+          0.925
         ],
         "notes": "Declared on the asset as convex: one hull over bike and sidecar."
       },
-      "looseWheels": [
+      "sheets": [
         {
-          "at": [
-            0.8,
-            0.24,
-            -0.45
+          "x0": -0.13,
+          "x1": 0.79,
+          "z0": 0.44,
+          "z1": -0.73,
+          "nx": 8,
+          "nz": 10,
+          "t": 0.014,
+          "heights": [
+            [
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31
+            ],
+            [
+              1.31,
+              1.3739,
+              1.3926,
+              1.4011,
+              1.4034,
+              1.4011,
+              1.3926,
+              1.3739,
+              1.31
+            ],
+            [
+              1.31,
+              1.3855,
+              1.4075,
+              1.4176,
+              1.4202,
+              1.4176,
+              1.4075,
+              1.3855,
+              1.31
+            ],
+            [
+              1.31,
+              1.3903,
+              1.4137,
+              1.4244,
+              1.4273,
+              1.4244,
+              1.4137,
+              1.3903,
+              1.31
+            ],
+            [
+              1.31,
+              1.3919,
+              1.4158,
+              1.4268,
+              1.4297,
+              1.4268,
+              1.4158,
+              1.3919,
+              1.31
+            ],
+            [
+              1.31,
+              1.3922,
+              1.4161,
+              1.4271,
+              1.43,
+              1.4271,
+              1.4161,
+              1.3922,
+              1.31
+            ],
+            [
+              1.31,
+              1.3919,
+              1.4158,
+              1.4268,
+              1.4297,
+              1.4268,
+              1.4158,
+              1.3919,
+              1.31
+            ],
+            [
+              1.31,
+              1.3903,
+              1.4137,
+              1.4244,
+              1.4273,
+              1.4244,
+              1.4137,
+              1.3903,
+              1.31
+            ],
+            [
+              1.31,
+              1.3855,
+              1.4075,
+              1.4176,
+              1.4202,
+              1.4176,
+              1.4075,
+              1.3855,
+              1.31
+            ],
+            [
+              1.31,
+              1.3739,
+              1.3926,
+              1.4011,
+              1.4034,
+              1.4011,
+              1.3926,
+              1.3739,
+              1.31
+            ],
+            [
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31,
+              1.31
+            ]
           ],
-          "r": 0.24,
-          "rim": 0.18,
-          "halfW": 0.03,
-          "seg": 18,
-          "spokes": 16,
-          "dish": 0.3,
-          "tyreHex": 6183508,
-          "rimHex": 11118498,
-          "spokeHex": 11579049
+          "hex": 12890516
         }
       ],
       "trim": [
         [
           12890516,
-          0.37,
-          1.35,
-          -0.18000000000000002,
-          0.92,
-          0.1,
-          1.58
-        ],
-        [
-          12890516,
-          0.37,
-          1.42,
-          -0.18000000000000002,
-          0.7200000000000001,
-          0.06,
-          1.3399999999999999
-        ],
-        [
-          12890516,
-          0.37,
-          1.24,
-          -0.9400000000000001,
-          0.8800000000000001,
+          0.33,
+          1.235,
+          -0.6900000000000001,
+          0.72,
           0.12,
           0.02
         ]
@@ -192,308 +316,355 @@ const CONFIG = {
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.34,
-              0.52
+              0.38
             ],
             [
-              0.78,
+              0.74,
               0.34,
-              0.52
+              0.38
             ],
             [
-              0.78,
+              0.74,
               0.34,
-              -0.92
+              -0.67
             ],
             [
-              -0.04,
+              -0.08,
               0.34,
-              -0.92
+              -0.67
             ],
             [
-              -0.04,
+              -0.08,
               0.34,
-              0.52
+              0.38
             ]
           ],
           "r": 0.02,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.62,
-              0.52
+              0.38
             ],
             [
-              0.78,
+              0.74,
               0.62,
-              0.52
+              0.38
             ],
             [
-              0.78,
+              0.74,
               0.62,
-              -0.92
+              -0.67
             ],
             [
-              -0.04,
+              -0.08,
               0.62,
-              -0.92
+              -0.67
             ],
             [
-              -0.04,
+              -0.08,
               0.62,
-              0.52
+              0.38
             ]
           ],
           "r": 0.016,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.48,
-              -0.92
+              -0.67
             ],
             [
-              0.78,
+              0.74,
               0.48,
-              -0.92
+              -0.67
             ]
           ],
           "r": 0.014,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              0.78,
+              0.74,
               0.48,
-              0.52
+              0.38
             ],
             [
-              0.78,
+              0.74,
               0.48,
-              -0.92
+              -0.67
             ]
           ],
           "r": 0.014,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.32,
-              0.52
+              0.38
             ],
             [
-              -0.04,
-              1.3,
-              0.52
+              -0.08,
+              1.28,
+              0.38
             ]
           ],
           "r": 0.018,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              0.78,
+              0.74,
               0.32,
-              0.52
+              0.38
             ],
             [
-              0.78,
-              1.3,
-              0.52
+              0.74,
+              1.28,
+              0.38
             ]
           ],
           "r": 0.018,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.32,
-              -0.92
+              -0.67
             ],
             [
-              -0.04,
-              1.3,
-              -0.92
+              -0.08,
+              1.28,
+              -0.67
             ]
           ],
           "r": 0.018,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              0.78,
+              0.74,
               0.32,
-              -0.92
+              -0.67
             ],
             [
-              0.78,
-              1.3,
-              -0.92
+              0.74,
+              1.28,
+              -0.67
             ]
           ],
           "r": 0.018,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
-              1.3,
-              0.52
+              -0.08,
+              1.28,
+              0.38
             ],
             [
-              0.78,
-              1.3,
-              0.52
+              0.74,
+              1.28,
+              0.38
             ],
             [
-              0.78,
-              1.3,
-              -0.92
+              0.74,
+              1.28,
+              -0.67
             ],
             [
-              -0.04,
-              1.3,
-              -0.92
+              -0.08,
+              1.28,
+              -0.67
             ],
             [
-              -0.04,
-              1.3,
-              0.52
+              -0.08,
+              1.28,
+              0.38
             ]
           ],
           "r": 0.016,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.34,
               0.1
             ],
             [
-              -0.31999999999999995,
+              -0.48000000000000004,
               0.36,
               0.1
             ]
           ],
           "r": 0.02,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              -0.04,
+              -0.08,
               0.34,
-              -0.7
+              -0.42
             ],
             [
-              -0.31999999999999995,
+              -0.48000000000000004,
               0.34,
-              -0.7
+              -0.42
             ]
           ],
           "r": 0.02,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         },
         {
           "pts": [
             [
-              0.78,
+              0.74,
               0.34,
-              -0.45
+              -0.34
             ],
             [
               0.8,
               0.24,
-              -0.45
+              -0.34
             ]
           ],
           "r": 0.016,
-          "hex": 5917247
+          "hex": 5917247,
+          "open": true
         }
       ],
       "bike": {
-        "x": -0.42,
+        "x": -0.52,
+        "z": -0.22,
         "r": 0.26,
         "rim": 0.2,
         "halfW": 0.035,
-        "zF": 0.8800000000000001,
-        "zR": -0.33999999999999986,
-        "seg": 18,
-        "spokes": 18,
-        "dish": 0.3,
-        "tyreHex": 6183508,
+        "zF": 0.66,
+        "zR": -0.5599999999999999,
+        "seg": 16,
+        "spokes": 20,
+        "tyreHex": 7235421,
         "rimHex": 11118498,
         "spokeHex": 11579049,
+        "open": {
+          "pitch": 0.05,
+          "hubR": 0.065,
+          "hubW": 0.11,
+          "hubHex": 9077624,
+          "capHex": 12172479,
+          "spokeT": 0.006
+        },
+        "wheelMaterial": "rubber",
         "paintHex": 3358767,
         "chromeHex": 12172479,
         "darkHex": 4867906,
         "bodyName": "Bodywork: leg shield, tank, fenders",
         "positions": [
           [
-            -0.42,
+            -0.52,
             0.26,
-            0.8800000000000001
+            0.66
           ],
           [
-            -0.42,
+            -0.52,
             0.26,
-            -0.33999999999999986
+            -0.5599999999999999
+          ],
+          [
+            0.8,
+            0.24,
+            -0.34,
+            0.923076923076923
           ]
         ],
         "paintExtrudes": [
           {
             "poly": [
               [
-                0.56,
-                0.32
-              ],
-              [
                 0.6,
-                0.36
+                0.31
               ],
               [
-                0.54,
-                0.6
+                0.66,
+                0.42
               ],
               [
-                0.44,
+                0.64,
+                0.56
+              ],
+              [
+                0.57,
+                0.7
+              ],
+              [
+                0.5,
                 0.82
               ],
               [
-                0.36,
-                0.82
+                0.46,
+                0.9
               ],
               [
-                0.42,
-                0.6
+                0.38,
+                0.9
               ],
               [
-                0.48,
-                0.36
+                0.41,
+                0.8
+              ],
+              [
+                0.46,
+                0.68
+              ],
+              [
+                0.52,
+                0.56
+              ],
+              [
+                0.55,
+                0.44
+              ],
+              [
+                0.55,
+                0.31
               ]
             ],
-            "width": 0.38,
+            "width": 0.4,
             "hex": 13552315,
             "shape": {
               "tumble": {
                 "belt": 0.36,
-                "roof": 0.82,
+                "roof": 0.9,
                 "k": 0.25
               }
             }
@@ -517,12 +688,12 @@ const CONFIG = {
                 0.6
               ],
               [
-                -0.76,
-                0.54
+                -0.64,
+                0.55
               ],
               [
-                -0.82,
-                0.46
+                -0.66,
+                0.47
               ],
               [
                 -0.56,
@@ -546,48 +717,133 @@ const CONFIG = {
           {
             "poly": [
               [
-                0.96,
-                0.36
+                0.02,
+                0.61
               ],
               [
-                0.94,
-                0.44
+                0,
+                0.69
               ],
               [
-                0.84,
-                0.52
+                -0.08,
+                0.72
               ],
               [
-                0.7,
-                0.54
+                -0.44,
+                0.71
               ],
               [
-                0.58,
-                0.48
+                -0.56,
+                0.67
               ],
               [
-                0.56,
-                0.42
+                -0.55,
+                0.61
               ],
               [
-                0.64,
-                0.48
+                -0.2,
+                0.6
+              ]
+            ],
+            "width": 0.24,
+            "hex": 3026474,
+            "shape": {
+              "tumble": {
+                "belt": 0.61,
+                "roof": 0.72,
+                "k": 0.3
+              }
+            }
+          },
+          {
+            "poly": [
+              [
+                1.1713,
+                0.154
               ],
               [
-                0.74,
-                0.5
+                1.1886,
+                0.2303
               ],
               [
-                0.84,
-                0.46
+                1.1862,
+                0.3085
               ],
               [
-                0.9,
-                0.4
+                1.1643,
+                0.3836
               ],
               [
-                0.92,
-                0.36
+                1.1243,
+                0.4509
+              ],
+              [
+                1.0687,
+                0.5059
+              ],
+              [
+                1.0011,
+                0.5454
+              ],
+              [
+                0.9258,
+                0.5666
+              ],
+              [
+                0.8476,
+                0.5683
+              ],
+              [
+                0.7714,
+                0.5504
+              ],
+              [
+                0.7022,
+                0.5139
+              ],
+              [
+                0.7165,
+                0.4935
+              ],
+              [
+                0.7802,
+                0.527
+              ],
+              [
+                0.8502,
+                0.5434
+              ],
+              [
+                0.9221,
+                0.5419
+              ],
+              [
+                0.9914,
+                0.5223
+              ],
+              [
+                1.0535,
+                0.4861
+              ],
+              [
+                1.1046,
+                0.4355
+              ],
+              [
+                1.1414,
+                0.3736
+              ],
+              [
+                1.1615,
+                0.3046
+              ],
+              [
+                1.1637,
+                0.2327
+              ],
+              [
+                1.1478,
+                0.1625
               ]
             ],
             "width": 0.12,
@@ -596,81 +852,84 @@ const CONFIG = {
           {
             "poly": [
               [
-                0.6,
-                0.84
+                -0.2598,
+                0.5594
               ],
               [
-                0.64,
-                0.94
+                -0.337,
+                0.57
               ],
               [
-                0.58,
-                0.98
+                -0.4144,
+                0.5609
               ],
               [
-                0.44,
-                0.98
+                -0.4871,
+                0.5329
               ],
               [
-                0.4,
-                0.88
+                -0.5505,
+                0.4875
               ],
               [
-                0.46,
-                0.84
-              ]
-            ],
-            "width": 0.22,
-            "hex": 3358767,
-            "shape": {
-              "tumble": {
-                "belt": 0.84,
-                "roof": 0.98,
-                "k": 0.2
-              }
-            }
-          },
-          {
-            "poly": [
-              [
-                -0.6,
-                0.44
+                -0.6006,
+                0.4278
               ],
               [
-                -0.62,
-                0.52
+                -0.6343,
+                0.3575
               ],
               [
-                -0.72,
-                0.58
+                -0.6493,
+                0.281
               ],
               [
-                -0.9,
-                0.56
+                -0.6448,
+                0.2032
               ],
               [
-                -1.02,
-                0.48
+                -0.621,
+                0.129
               ],
               [
-                -1.04,
-                0.4
+                -0.5983,
+                0.1396
               ],
               [
-                -0.96,
-                0.46
+                -0.6202,
+                0.2078
               ],
               [
-                -0.86,
-                0.5
+                -0.6243,
+                0.2793
               ],
               [
-                -0.74,
-                0.5
+                -0.6105,
+                0.3496
               ],
               [
-                -0.66,
-                0.44
+                -0.5796,
+                0.4143
+              ],
+              [
+                -0.5336,
+                0.4692
+              ],
+              [
+                -0.4753,
+                0.5109
+              ],
+              [
+                -0.4084,
+                0.5367
+              ],
+              [
+                -0.3372,
+                0.545
+              ],
+              [
+                -0.2662,
+                0.5353
               ]
             ],
             "width": 0.12,
@@ -686,114 +945,344 @@ const CONFIG = {
             0.14,
             0.06,
             0.76
+          ],
+          [
+            3881784,
+            0,
+            0.66,
+            0.605,
+            0.11,
+            0.07,
+            0.02
           ]
+        ],
+        "paintTubes": [
+          {
+            "pts": [
+              [
+                0.068,
+                0.54,
+                0.787
+              ],
+              [
+                0.068,
+                0.8,
+                0.7
+              ]
+            ],
+            "r": 0.026,
+            "hex": 3358767,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                -0.068,
+                0.54,
+                0.787
+              ],
+              [
+                -0.068,
+                0.8,
+                0.7
+              ]
+            ],
+            "r": 0.026,
+            "hex": 3358767,
+            "open": true
+          }
+        ],
+        "lathes": [
+          {
+            "pts": [
+              [
+                0,
+                -0.09
+              ],
+              [
+                0.05,
+                -0.09
+              ],
+              [
+                0.085,
+                -0.05
+              ],
+              [
+                0.095,
+                0
+              ],
+              [
+                0.09,
+                0.05
+              ],
+              [
+                0.075,
+                0.07
+              ],
+              [
+                0,
+                0.07
+              ]
+            ],
+            "seg": 14,
+            "rx": 1.5707963267948966,
+            "at": [
+              0,
+              0.88,
+              0.62
+            ],
+            "hex": 3358767,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                0,
+                0
+              ],
+              [
+                0.092,
+                0
+              ],
+              [
+                0.092,
+                0.02
+              ],
+              [
+                0,
+                0.02
+              ]
+            ],
+            "seg": 14,
+            "rx": 1.5707963267948966,
+            "at": [
+              0,
+              0.88,
+              0.69
+            ],
+            "hex": 12172479,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                0.076,
+                0
+              ],
+              [
+                0.076,
+                0.012
+              ],
+              [
+                0,
+                0.012
+              ]
+            ],
+            "seg": 14,
+            "rx": 1.5707963267948966,
+            "at": [
+              0,
+              0.88,
+              0.71
+            ],
+            "hex": 14212576
+          },
+          {
+            "pts": [
+              [
+                0,
+                0
+              ],
+              [
+                0.036,
+                0
+              ],
+              [
+                0.036,
+                0.03
+              ],
+              [
+                0,
+                0.03
+              ]
+            ],
+            "seg": 12,
+            "at": [
+              0,
+              0.955,
+              0.66
+            ],
+            "hex": 4867906,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                0,
+                0
+              ],
+              [
+                0.024,
+                0
+              ],
+              [
+                0.024,
+                0.03
+              ],
+              [
+                0,
+                0.03
+              ]
+            ],
+            "seg": 8,
+            "rx": 1.5707963267948966,
+            "at": [
+              0.17,
+              0.9,
+              0.61
+            ],
+            "hex": 13141550
+          },
+          {
+            "pts": [
+              [
+                0,
+                0
+              ],
+              [
+                0.024,
+                0
+              ],
+              [
+                0.024,
+                0.03
+              ],
+              [
+                0,
+                0.03
+              ]
+            ],
+            "seg": 8,
+            "rx": 1.5707963267948966,
+            "at": [
+              -0.17,
+              0.9,
+              0.61
+            ],
+            "hex": 13141550
+          }
         ],
         "tubes": [
           {
             "pts": [
               [
-                0.05,
-                0.5,
-                0.66
+                0.068,
+                0.26,
+                0.88
               ],
               [
-                0.1,
-                0.8,
-                0.52
+                0.068,
+                0.56,
+                0.78
               ]
             ],
-            "r": 0.016,
-            "hex": 12172479
+            "r": 0.015,
+            "hex": 12172479,
+            "open": true
           },
           {
             "pts": [
               [
-                -0.05,
-                0.5,
-                0.66
+                -0.068,
+                0.26,
+                0.88
               ],
               [
-                -0.1,
-                0.8,
-                0.52
+                -0.068,
+                0.56,
+                0.78
               ]
             ],
-            "r": 0.016,
-            "hex": 12172479
-          },
-          {
-            "pts": [
-              [
-                0.06,
-                0.3,
-                0.77
-              ],
-              [
-                0.06,
-                0.52,
-                0.66
-              ]
-            ],
-            "r": 0.014,
-            "hex": 12172479
-          },
-          {
-            "pts": [
-              [
-                -0.06,
-                0.3,
-                0.77
-              ],
-              [
-                -0.06,
-                0.52,
-                0.66
-              ]
-            ],
-            "r": 0.014,
-            "hex": 12172479
+            "r": 0.015,
+            "hex": 12172479,
+            "open": true
           },
           {
             "pts": [
               [
                 0,
-                0.82,
-                0.5
+                0.8,
+                0.7
               ],
               [
                 0,
-                0.98,
-                0.44
+                0.985,
+                0.6
               ]
             ],
             "r": 0.02,
-            "hex": 4867906
+            "hex": 4867906,
+            "open": true
           },
           {
             "pts": [
               [
-                0.32,
-                0.96,
+                0.33,
+                0.95,
                 0.4
               ],
               [
-                0.1,
-                0.98,
-                0.46
+                0.14,
+                0.99,
+                0.58
               ],
               [
-                -0.1,
-                0.98,
-                0.46
+                -0.14,
+                0.99,
+                0.58
               ],
               [
-                -0.32,
-                0.96,
+                -0.33,
+                0.95,
                 0.4
               ]
             ],
-            "r": 0.014,
+            "r": 0.013,
             "hex": 12172479
+          },
+          {
+            "pts": [
+              [
+                0.09,
+                0.88,
+                0.6
+              ],
+              [
+                0.16,
+                0.9,
+                0.6
+              ]
+            ],
+            "r": 0.006,
+            "hex": 4867906,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                -0.09,
+                0.88,
+                0.6
+              ],
+              [
+                -0.16,
+                0.9,
+                0.6
+              ]
+            ],
+            "r": 0.006,
+            "hex": 4867906,
+            "open": true
           },
           {
             "pts": [
@@ -809,39 +1298,76 @@ const CONFIG = {
               ]
             ],
             "r": 0.02,
-            "hex": 4867906
+            "hex": 4867906,
+            "open": true
           },
           {
             "pts": [
               [
                 0.06,
                 0.3,
-                -0.4
+                -0.1
               ],
               [
                 0.06,
-                0.28,
-                -0.96
+                0.26,
+                -0.34
               ]
             ],
             "r": 0.014,
-            "hex": 4867906
+            "hex": 4867906,
+            "open": true
           },
           {
             "pts": [
               [
                 -0.06,
                 0.3,
-                -0.4
+                -0.1
               ],
               [
                 -0.06,
-                0.28,
-                -0.96
+                0.26,
+                -0.34
               ]
             ],
             "r": 0.014,
-            "hex": 4867906
+            "hex": 4867906,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                0.09,
+                0.28,
+                -0.3
+              ],
+              [
+                0.09,
+                0.56,
+                -0.42
+              ]
+            ],
+            "r": 0.012,
+            "hex": 12172479,
+            "open": true
+          },
+          {
+            "pts": [
+              [
+                -0.09,
+                0.28,
+                -0.3
+              ],
+              [
+                -0.09,
+                0.56,
+                -0.42
+              ]
+            ],
+            "r": 0.012,
+            "hex": 12172479,
+            "open": true
           },
           {
             "pts": [
@@ -858,12 +1384,12 @@ const CONFIG = {
               [
                 -0.16,
                 0.22,
-                -0.7
+                -0.5
               ],
               [
                 -0.16,
                 0.25,
-                -0.9
+                -0.66
               ]
             ],
             "r": 0.02,
@@ -872,13 +1398,13 @@ const CONFIG = {
         ],
         "trim": [
           [
-            3026474,
+            4867906,
             0,
-            0.66,
-            -0.28,
-            0.24,
-            0.1,
-            0.58
+            0.8,
+            0.7,
+            0.2,
+            0.035,
+            0.06
           ],
           [
             7105126,
@@ -899,61 +1425,40 @@ const CONFIG = {
             0.4
           ],
           [
-            14212576,
-            0,
-            0.92,
-            0.6,
-            0.12,
-            0.1,
-            0.03
-          ],
-          [
-            12089914,
-            0.12,
-            0.96,
-            0.54,
-            0.05,
-            0.05,
-            0.03
-          ],
-          [
-            12089914,
-            -0.12,
-            0.96,
-            0.54,
-            0.05,
-            0.05,
-            0.03
-          ],
-          [
-            2763304,
-            0.28,
-            0.96,
-            0.42,
-            0.1,
-            0.03,
-            0.03
-          ],
-          [
-            2763304,
-            -0.28,
-            0.96,
-            0.42,
-            0.1,
-            0.03,
-            0.03
-          ],
-          [
             11546672,
             0,
-            0.52,
-            -0.99,
+            0.42,
+            -0.63,
             0.1,
             0.06,
             0.02
           ]
         ],
         "cyls": [
+          {
+            "at": [
+              0.3,
+              0.955,
+              0.415
+            ],
+            "rt": 0.017,
+            "rb": 0.017,
+            "h": 0.11,
+            "rz": 1.5707963267948966,
+            "hex": 2763304
+          },
+          {
+            "at": [
+              -0.3,
+              0.955,
+              0.415
+            ],
+            "rt": 0.017,
+            "rb": 0.017,
+            "h": 0.11,
+            "rz": 1.5707963267948966,
+            "hex": 2763304
+          },
           {
             "at": [
               0.18,
@@ -990,12 +1495,12 @@ const CONFIG = {
           "boxes": [
             [
               4668980,
-              0.37,
+              0.33,
               0.36500000000000005,
-              -0.2,
-              0.8,
+              -0.14500000000000002,
+              0.7999999999999999,
               0.03,
-              1.42
+              1.03
             ]
           ]
         }
@@ -1506,49 +2011,208 @@ function worldUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry
  * world z, and the translate re-centres the slab on x = 0. Any shaping is applied AFTER that, and
  * normals are recomputed last so the shaded faces follow the shaped surface.
  */
-function sideExtrude(profile: number[][], width: number,
-                     opts: { tumble?: { belt: number, roof: number, k: number },
-                             plan?: number[][], curveSegments?: number } = {}): THREE.BufferGeometry {
+function sideExtrude(profile: number[][], width: number, opts: ShapeOpts = {}): THREE.BufferGeometry {
   const shape = new THREE.Shape();
   shape.moveTo(profile[0][0], profile[0][1]);
   for (let i = 1; i < profile.length; i++) shape.lineTo(profile[i][0], profile[i][1]);
   shape.closePath();
   const g = new THREE.ExtrudeGeometry(shape, { depth: width, bevelEnabled: false,
-                                                curveSegments: opts.curveSegments ?? 6 });
+                                                curveSegments: opts.curveSegments ?? 6, steps: opts.steps ?? 1 });
   g.rotateY(-Math.PI / 2);
   g.translate(width / 2, 0, 0);
-  shapeWidth(g, opts);
+  if (opts.edgeBias && (opts.steps ?? 1) > 1) {
+    // Pull the width columns toward the two edges (|t|^p, p < 1) so a shoulder fillet gets four
+    // real segments instead of one chamfer at the outermost column; the flat middle needs none.
+    const q = g.getAttribute('position'), hw = width / 2;
+    for (let i = 0; i < q.count; i++) {
+      const t = Math.max(-1, Math.min(1, q.getX(i) / hw));
+      q.setX(i, hw * Math.sign(t) * Math.pow(Math.abs(t), opts.edgeBias));
+    }
+  }
+  shapeWidth(g, opts, width);
+  if (opts.smooth) smoothNormals(g, opts.smooth);
   return g;
+}
+
+/** Shaping options shared by a body and everything swept proud of it (glass band, pillars).
+ *  `shoulder`, `nose` and `tail` are ROUNDINGS -- see shapeWidth -- and need `steps` > 1 so the
+ *  swept faces carry vertices across the width to bend; `baseWidth` is the body's width, so a
+ *  band swept wider than it is rounded about the SAME centres at a larger radius and stays
+ *  exactly as proud as it was authored; `topOf` is the body's own profile, which is where the
+ *  roof line every shoulder hangs off is read. All optional: unset, the sweep is the old slab. */
+type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: number[][],
+                   curveSegments?: number, steps?: number,
+                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
+                   nose?: { r: number }, tail?: { r: number },
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+
+/** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
+ *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
+function profileTop(profile: number[][], z: number, tol = 0): number {
+  let top = -Infinity;
+  const n = profile.length;
+  for (let i = 0; i < n; i++) {
+    const a = profile[i], b = profile[(i + 1) % n];
+    const lo = Math.min(a[0], b[0]), hi = Math.max(a[0], b[0]);
+    if (z < lo - tol - 1e-6 || z > hi + tol + 1e-6) continue;
+    // `tol` lets a band standing a few mm proud of a vertical face (a rear pane, a C-pillar strip
+    // behind the cab back) read the roof line of the face it stands on, not the bed floor behind it
+    const zc = Math.max(lo, Math.min(hi, z));
+    const y = hi - lo < 1e-6 ? Math.max(a[1], b[1]) : a[1] + (b[1] - a[1]) * (zc - a[0]) / (b[0] - a[0]);
+    if (y > top) top = y;
+  }
+  return top;
 }
 
 /** The per-vertex x shaping shared by the body and its glass band, so a pane offset 5 mm proud of
  *  the body stays 5 mm proud after both are narrowed by the same function. */
-function shapeWidth(g: THREE.BufferGeometry,
-                    opts: { tumble?: { belt: number, roof: number, k: number }, plan?: number[][] }): void {
+function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
   const p = g.getAttribute('position');
-  for (let i = 0; i < p.count; i++) {
-    let x = p.getX(i); const y = p.getY(i), z = p.getZ(i);
-    if (opts.tumble) {
-      const t = Math.min(1, Math.max(0, (y - opts.tumble.belt) / (opts.tumble.roof - opts.tumble.belt)));
-      x *= 1 - opts.tumble.k * t;
+  const tumbleAt = (y: number) => {
+    if (!opts.tumble) return 1;
+    const t = Math.min(1, Math.max(0, (y - opts.tumble.belt) / (opts.tumble.roof - opts.tumble.belt)));
+    return 1 - opts.tumble.k * t;
+  };
+  const planAt = (z: number) => {
+    if (!opts.plan || opts.plan.length < 2) return 1;
+    const st = opts.plan;
+    if (z <= st[0][0]) return st[0][1];
+    if (z >= st[st.length - 1][0]) return st[st.length - 1][1];
+    for (let k = 0; k < st.length - 1; k++) {
+      if (z >= st[k][0] && z <= st[k + 1][0]) {
+        const u = (z - st[k][0]) / (st[k + 1][0] - st[k][0]);
+        return st[k][1] + (st[k + 1][1] - st[k][1]) * u;
+      }
     }
-    if (opts.plan && opts.plan.length > 1) {
-      const st = opts.plan;
-      let s = st[0][1];
-      if (z <= st[0][0]) s = st[0][1];
-      else if (z >= st[st.length - 1][0]) s = st[st.length - 1][1];
-      else for (let k = 0; k < st.length - 1; k++) {
-        if (z >= st[k][0] && z <= st[k + 1][0]) {
-          const u = (z - st[k][0]) / (st[k + 1][0] - st[k][0]);
-          s = st[k][1] + (st[k + 1][1] - st[k][1]) * u; break;
+    return 1;
+  };
+  // ROUNDINGS. A sweep is a slab: its roof meets its side at a hard edge, and its nose meets both
+  // sides at two more. Real sheet metal crowns over the fender and wraps round the nose, so any
+  // vertex inside a corner quadrant (within r of the top AND within r of the side) is projected
+  // onto the circle of radius r about that corner's centre -- a fillet, in x/y for the shoulder
+  // and in x/z at the two ends. The centres are placed off the BODY's width (`baseWidth`) and
+  // roof line (`topOf`), so a glass band swept `e` wider is filleted at r + e about the same
+  // centre and stays `e` proud all the way round the corner.
+  const extra = opts.baseWidth ? (width - opts.baseWidth) / 2 : 0;
+  const baseHalf = (opts.baseWidth ?? width) / 2;
+  const top = opts.topOf ?? null;
+  let zMax = -Infinity, zMin = Infinity;
+  if (top) for (const q of top) { if (q[0] > zMax) zMax = q[0]; if (q[0] < zMin) zMin = q[0]; }
+  for (let i = 0; i < p.count; i++) {
+    let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    const tf = tumbleAt(y), pf = planAt(z);
+    x *= tf * pf;
+    if (opts.shoulder && top) {
+      const sh = opts.shoulder;
+      // The fillet lives on a z-range: hard at zMin (the cab back), faded over `fade` metres at
+      // zMax (the top of the windscreen rake -- a rake is a plane, its edge a crease, and a fade
+      // keyed on the roof line's SLOPE varied inside the rear corner and folded it).
+      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0;
+      const w = z < zLo || z > zHi ? 0 : fd > 0 ? Math.min(1, (zHi - z) / fd) : 1;
+      const yt = profileTop(top, z, 0.03);
+      if (w > 0 && isFinite(yt)) {
+        const r = sh.r + extra, cy = yt - sh.r;
+        const hw = baseHalf * tumbleAt(cy) * pf, cx = hw - sh.r;
+        const ax = Math.abs(x);
+        if (y > cy && ax > cx && r > 1e-6) {
+          const dx = ax - cx, dy = y - cy, d = Math.hypot(dx, dy) || 1;
+          let nx = ax, ny = y, hit = false;
+          if (dx >= r - 1e-4) {
+            // the EDGE column, shared with the side: the arc's foot, tangent to the side at cy
+            nx = cx + r; ny = cy; hit = true;
+          } else if (dy >= sh.r - 1e-4 && dx <= r + 1e-6) {
+            // a top-row vertex: its column position picks its angle on the arc
+            const th = Math.PI / 2 * (1 - dx / r);
+            nx = cx + Math.cos(th) * r; ny = cy + Math.sin(th) * r; hit = true;
+          } else if (dx <= r + 1e-6 && dy <= r + 1e-6 && d >= r - 1e-4) {
+            // a proud band's outer vertex below the top: onto its own circle; inside it, leave
+            nx = cx + dx / d * r; ny = cy + dy / d * r; hit = true;
+          }
+          if (hit) { x = Math.sign(x || 1) * (ax + (nx - ax) * w); y = y + (ny - y) * w; }
         }
       }
-      x *= s;
     }
-    p.setX(i, x);
+    for (const end of [opts.nose ? { r: opts.nose.r, zc: zMax - opts.nose.r, s: 1 } : null,
+                       opts.tail ? { r: opts.tail.r, zc: zMin + opts.tail.r, s: -1 } : null]) {
+      if (!end || !top) continue;
+      const r = end.r + extra;
+      const hw = baseHalf * tumbleAt(y) * planAt(end.zc), cx = hw - end.r;
+      const ax = Math.abs(x), dz = (z - end.zc) * end.s;
+      if (dz > 0 && ax > cx && r > 1e-6) {
+        const dx = ax - cx, d = Math.hypot(dx, dz) || 1;
+        // Only a vertex OUTSIDE the circle is projected onto it (the shoulder's rule): a side
+        // strip's inner face lies inside, and projecting it too lands it on the outer face,
+        // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
+        if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
+      }
+    }
+    p.setXYZ(i, x, y, z);
   }
   p.needsUpdate = true;
   g.computeVertexNormals();
+}
+
+/** Angle-limited SMOOTH NORMALS on a non-indexed geometry. Every vertex sharing a position
+ *  averages the face normals of its neighbours that lie within `maxDeg` of its own face, so a
+ *  filleted shoulder, a plan-rounded nose and the tumblehome kink at the belt shade as one
+ *  continuous surface, while a 90-degree edge -- the arch cut, the nose against the bumper --
+ *  stays a crease. Without this every quad the roundings bend splits into two differently lit
+ *  triangles, which is the "blocky" a viewer sees before any silhouette. */
+function smoothNormals(geo: THREE.BufferGeometry, maxDeg: number): THREE.BufferGeometry {
+  const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
+  if (!nrm || geo.getIndex()) return geo;
+  const n = p.count, cosLim = Math.cos(maxDeg * Math.PI / 180);
+  const groups = new Map<string, number[]>();
+  for (let i = 0; i < n; i++) {
+    const k = `${Math.round(p.getX(i) * 2000)},${Math.round(p.getY(i) * 2000)},${Math.round(p.getZ(i) * 2000)}`;
+    const g = groups.get(k); if (g) g.push(i); else groups.set(k, [i]);
+  }
+  const face = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { face[i * 3] = nrm.getX(i); face[i * 3 + 1] = nrm.getY(i); face[i * 3 + 2] = nrm.getZ(i); }
+  const out = new Float32Array(n * 3);
+  for (const g of groups.values()) {
+    for (const i of g) {
+      let sx = 0, sy = 0, sz = 0;
+      const ax = face[i * 3], ay = face[i * 3 + 1], az = face[i * 3 + 2];
+      for (const j of g) {
+        const bx = face[j * 3], by = face[j * 3 + 1], bz = face[j * 3 + 2];
+        if (ax * bx + ay * by + az * bz >= cosLim) { sx += bx; sy += by; sz += bz; }
+      }
+      const l = Math.hypot(sx, sy, sz) || 1;
+      out[i * 3] = sx / l; out[i * 3 + 1] = sy / l; out[i * 3 + 2] = sz / l;
+    }
+  }
+  geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
+  return geo;
+}
+
+/** A PILLAR STRIP: the pillar polygon swept only `stripW` deep at each outer edge of `width`,
+ *  mirrored, and shaped exactly as the body. The old full-width sweep put a slab across the
+ *  windscreen wherever the A-pillar polygon lay on the rake -- a pillar is at the side of the
+ *  glass, not through it. The mirrored half has its winding restored. */
+function sideStrip(profile: number[][], width: number, stripW: number, opts: ShapeOpts = {}): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  shape.moveTo(profile[0][0], profile[0][1]);
+  for (let i = 1; i < profile.length; i++) shape.lineTo(profile[i][0], profile[i][1]);
+  shape.closePath();
+  const mk = (sx: number) => {
+    const g = new THREE.ExtrudeGeometry(shape, { depth: stripW, bevelEnabled: false, steps: 2 });
+    g.rotateY(-Math.PI / 2);                 // depth now runs along -x from x = 0
+    g.translate(width / 2, 0, 0);            // outer face at +width/2, inner at width/2 - stripW
+    if (sx < 0) {
+      g.scale(-1, 1, 1);
+      const q = g.getAttribute('position');
+      for (let i = 0; i < q.count; i += 3) {
+        const x1 = q.getX(i + 1), y1 = q.getY(i + 1), z1 = q.getZ(i + 1);
+        q.setXYZ(i + 1, q.getX(i + 2), q.getY(i + 2), q.getZ(i + 2)); q.setXYZ(i + 2, x1, y1, z1);
+      }
+    }
+    g.computeVertexNormals();
+    shapeWidth(g, opts, width);
+    if (opts.smooth) smoothNormals(g, opts.smooth);
+    return g;
+  };
+  return mergeGeos([mk(1), mk(-1)]);
 }
 
 /** A semicircular wheel-arch notch as profile points, to be spliced into a side profile that runs
@@ -1595,16 +2259,59 @@ function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
   return g;
 }
 
+/**
+ * A STEEL WHEEL: the same closed lathe as wheelGeo, with the profile of a pressed-steel rim -- a
+ * flat outer face, a dished centre stepping in past a dark VENT RING (the row of oval holes,
+ * delivered as a band of vertex colour rather than as holes a turntable gate would read through),
+ * a small hub cap standing proud -- and a chunkier tyre whose tread ring alternates a lighter and
+ * a darker tone segment by segment, so the lugs read at prop distance for zero geometry. Per-point
+ * colours ride the lathe's segment-major vertex order exactly as in wheelGeo.
+ */
+function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
+                       tyreHex: number, rimHex: number, ventHex: number, lugHex: number, dish = 0.50): THREE.BufferGeometry {
+  const hw = halfW, d = hw * dish;
+  // [radius, axial] and a colour class per point: 0 rim, 1 vent ring, 2 tyre sidewall, 3 tread
+  const pts: number[][] = [
+    [0, -d + 0.02], [rRim * 0.22, -d + 0.02], [rRim * 0.24, -d],                       // hub cap
+    [rRim * 0.40, -d], [rRim * 0.42, -d - 0.006],                                        // dish floor
+    [rRim * 0.62, -d - 0.006], [rRim * 0.64, -hw * 0.86],                                // vent ring (dark)
+    [rRim * 0.90, -hw * 0.86], [rRim, -hw * 0.90], [rRim, -hw * 0.98],                  // rim face and lip
+    [rTyre * 0.88, -hw], [rTyre * 0.97, -hw * 0.86], [rTyre, -hw * 0.70],               // sidewall
+    [rTyre, hw * 0.70],                                                                  // tread
+    [rTyre * 0.97, hw * 0.86], [rTyre * 0.88, hw], [rRim, hw * 0.98],                   // far sidewall
+    [rRim, hw * 0.88], [rRim * 0.30, hw * 0.80], [0, hw * 0.80],                          // back of the rim
+  ];
+  const cls = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 3, 3, 2, 2, 0, 0, 0, 0];
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  const n = g.getAttribute('position').count;
+  const col = new Float32Array(n * 3);
+  const C = [new THREE.Color(rimHex), new THREE.Color(ventHex), new THREE.Color(tyreHex), new THREE.Color(lugHex)];
+  const ct = new THREE.Color(tyreHex);
+  for (let i = 0; i < n; i++) {
+    const j = i % pts.length, s = Math.floor(i / pts.length);
+    let c = C[cls[j]];
+    if (cls[j] === 3) c = (s % 2 === 0) ? ct : C[3];
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.rotateZ(Math.PI / 2);
+  g.computeVertexNormals();
+  return g;
+}
+
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
  *  side of the rim so they cross the way real spokes do. Merged into the wheel geometry so the
  *  wheel stays ONE instanced geometry. */
-function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006): THREE.BufferGeometry {
+function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006, prism = false): THREE.BufferGeometry {
   const segs: THREE.BufferGeometry[] = [];
   for (let i = 0; i < n; i++) {
     const a = i * Math.PI * 2 / n;
     const side = (i % 2 === 0 ? 1 : -1) * halfW * 0.35;
     const len = rRim - rHub;
-    const g = new THREE.BoxGeometry(t, len, t);
+    // `prism`: an open three-sided prism at six triangles where the box costs twelve -- a wire
+    // spoke has no resolvable section at prop distance, and sixty of them on three wheels is the
+    // difference between a large prop inside its triangle ceiling and one over it
+    const g = prism ? new THREE.CylinderGeometry(t * 0.62, t * 0.62, len, 3, 1, true) : new THREE.BoxGeometry(t, len, t);
     g.translate(0, rHub + len / 2, 0);
     g.rotateX(Math.atan2(side, len) * 0.6);
     g.rotateX(0); g.translate(0, 0, side * 0.5);
@@ -1616,14 +2323,16 @@ function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: numbe
 
 /** A polyline TUBE: one cylinder per segment, each rotated onto its chord, with a small sphere-less
  *  overlap so the joints close. Handlebars, canopy rails, roll cages and frame tubes. */
-function tube(pts: number[][], r: number, seg = 8, hex?: number): THREE.BufferGeometry {
+function tube(pts: number[][], r: number, seg = 8, hex?: number, open = false): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
   for (let i = 0; i < pts.length - 1; i++) {
     const a = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]);
     const b = new THREE.Vector3(pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
     const d = b.clone().sub(a); const len = d.length();
     if (len < 1e-6) continue;
-    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, false);
+    // `open`: no end discs -- for a run whose every end is buried in a joint, a ring or a hub, the
+    // two caps are half the segment's triangles spent on faces nothing can see
+    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, open);
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
     g.applyQuaternion(q);
     const m = a.clone().add(b).multiplyScalar(0.5);
@@ -1686,22 +2395,65 @@ function lcg(seed: number): () => number {
  * from the bottom to `coverage` of the tile height plus splatter above it. Bound with height UVs
  * so v = 0 is the ground and the wash sits on the sills and arches.
  */
-function mudTile(size: number, base: number[], seed: number, coverage = 0.33): THREE.CanvasTexture | null {
+function mudTile(size: number, base: number[], seed: number, coverage = 0.33,
+                 opts: { floor?: number, streaks?: number, cloud?: number, speckle?: number, tone?: number[], zones?: number[][] } = {}): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     const toHex = (v: number[]) => '#' + v.map((c) => Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, '0')).join('');
     ctx.fillStyle = toHex(base); ctx.fillRect(0, 0, s, s);
-    const grad = ctx.createLinearGradient(0, s, 0, s * (1 - coverage));
-    grad.addColorStop(0, 'rgba(255,255,255,0.88)');
-    grad.addColorStop(0.45, 'rgba(255,255,255,0.45)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    // `floor` is the fraction of the tile height (i.e. of the world height the tile spans) below
+    // which the wash is FULL: a body whose sill is 0.46 m up a 2 m tile wants the mud solid to
+    // 0.23 and fading from there, not fading from the ground it never reaches.
+    const fl = Math.min(coverage, opts.floor ?? 0);
+    // `tone` is the MUD as a ratio of the envelope, for a paint whose envelope is the per-channel
+    // max of clean paint and mud (a green whose mud is tan is brighter in red, darker in green):
+    // unset, the mud is white -- the envelope itself.
+    const T = opts.tone ? opts.tone.map((v) => Math.round(255 * Math.min(1, Math.max(0, v)))) : null;
+    const mud = (a: number) => T ? `rgba(${T[0]},${T[1]},${T[2]},${a})` : `rgba(255,252,244,${a})`;
+    const grad = ctx.createLinearGradient(0, s * (1 - fl), 0, s * (1 - coverage));
+    grad.addColorStop(0, T ? mud(0.88) : 'rgba(255,255,255,0.88)');
+    grad.addColorStop(0.45, T ? mud(0.45) : 'rgba(255,255,255,0.45)');
+    grad.addColorStop(1, T ? mud(0) : 'rgba(255,255,255,0)');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    // `zones` are [u0, u1, weight] spans of the tile's width the spray concentrates in -- with
+    // the tile fitted to the vehicle's length (heightUV uScale = L), that is "behind the front
+    // wheel", "ahead of the rear arch", "along the bed side": where a wheel actually throws mud.
+    const zones = opts.zones ?? [[0, 1, 1]];
+    const zsum = zones.reduce((acc, zn) => acc + zn[2], 0);
+    const pickU = () => { let t = rnd() * zsum; for (const zn of zones) { if (t < zn[2]) return (zn[0] + rnd() * (zn[1] - zn[0])) * s; t -= zn[2]; } return rnd() * s; };
+    // DUST FILM: soft cloudy patches of the envelope over the clean paint everywhere, so the
+    // upper body is not a flat fill -- the plate's green is a dull, dusty green.
+    if (opts.cloud) for (let i = 0; i < 40; i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.08 + rnd() * 0.18), a = opts.cloud * (0.4 + rnd() * 0.6);
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, mud(a)); g2.addColorStop(1, mud(0));
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // SPRAY: the mud a wheel throws is a field of small splats streaked along the direction of
+    // travel (u), densest just above the wash and thinning upward in clusters -- not a gradient.
+    if (opts.streaks) for (let i = 0; i < opts.streaks; i++) {
+      const cx0 = pickU(), band = coverage;
+      const cy0 = s - s * (fl + Math.pow(rnd(), 1.6) * (band - fl));
+      const count = 6 + Math.floor(rnd() * 18), spread = s * (0.02 + rnd() * 0.05);
+      for (let k = 0; k < count; k++) {
+        const x = cx0 + (rnd() - 0.5) * spread * 3, y = cy0 + (rnd() - 0.5) * spread;
+        const w = 1 + rnd() * s * 0.006, h = 0.8 + rnd() * s * 0.003, a = 0.35 + rnd() * 0.55;
+        ctx.fillStyle = mud(a);
+        for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, w, h, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+    }
+    if (opts.speckle) for (let i = 0; i < opts.speckle; i++) {
+      const x = pickU(), y = s - Math.pow(rnd(), 1.3) * s * coverage, r = 0.6 + rnd() * 1.4, a = 0.3 + rnd() * 0.6;
+      ctx.fillStyle = mud(a);
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+    }
     for (let i = 0; i < 90; i++) {
       const x = rnd() * s, y = s - Math.pow(rnd(), 2.2) * s * coverage * 1.35;
       const r = 3 + rnd() * s * 0.05;
       const a = 0.08 + rnd() * 0.28;
       const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g2.addColorStop(0, `rgba(255,250,240,${a})`); g2.addColorStop(1, 'rgba(255,250,240,0)');
+      g2.addColorStop(0, T ? mud(a) : `rgba(255,250,240,${a})`); g2.addColorStop(1, T ? mud(0) : 'rgba(255,250,240,0)');
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
     }
@@ -1732,6 +2484,39 @@ function dustTile(size: number, dust: number[], seed: number, coverage = 0.30): 
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
     }
+  });
+}
+
+/** GLASS tile for a vehicle's glazing band, bound as `map` on the glass material AFTER
+ *  construction (the material stays textureless-declared). The pane's UVs are height-keyed
+ *  (`heightUV`), so v runs sill-to-roof: the tile is a vertical gradient from the material's
+ *  own tone at the top (white, i.e. the sky-lit value the material is re-based to) down to
+ *  `low` at the bottom -- a real screen reflects sky at the top and the dark dash and road below
+ *  -- plus a few soft diagonal reflection streaks and a faint tint band. `low` is a linear-space
+ *  ratio (see emit.mjs `ratio`) of the measured side-glass tone over the sky-lit tone. */
+function glassTile(size: number, low: number[], seed: number, streaks = 5): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const c = low.map((v) => Math.round(255 * Math.min(1, v)));
+    const grad = ctx.createLinearGradient(0, s, 0, 0);
+    grad.addColorStop(0, `rgb(${c[0]},${c[1]},${c[2]})`);
+    grad.addColorStop(0.45, `rgb(${Math.round((c[0] + 255) / 2)},${Math.round((c[1] + 255) / 2)},${Math.round((c[2] + 255) / 2)})`);
+    grad.addColorStop(1, '#ffffff');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    // reflection streaks: long soft diagonal bands, lighter, tiled in u so the seam never shows
+    for (let i = 0; i < streaks; i++) {
+      const x = rnd() * s, w = s * (0.04 + rnd() * 0.10), a = 0.10 + rnd() * 0.16, tilt = s * (0.25 + rnd() * 0.35);
+      for (const dx of [-s, 0, s]) {
+        const g2 = ctx.createLinearGradient(x + dx, 0, x + dx + w, 0);
+        g2.addColorStop(0, 'rgba(255,255,255,0)'); g2.addColorStop(0.5, `rgba(255,255,255,${a})`); g2.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.moveTo(x + dx, s); ctx.lineTo(x + dx + w, s); ctx.lineTo(x + dx + w + tilt, 0); ctx.lineTo(x + dx + tilt, 0); ctx.closePath(); ctx.fill();
+      }
+    }
+    // a darker film in the lowest tenth: the dash / cowl shadow behind the pane
+    const g3 = ctx.createLinearGradient(0, s, 0, s * 0.88);
+    g3.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.55)`); g3.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0)`);
+    ctx.fillStyle = g3; ctx.fillRect(0, 0, s, s);
   });
 }
 
@@ -1802,13 +2587,20 @@ function rustTile(size: number, ratio: number[], seed: number, density = 90): TH
 /** Height-keyed UVs: v is world HEIGHT over `scale` metres, u runs along the dominant horizontal
  *  axis. A mud tile bound this way darkens the sills and stays clean on the roof -- a plain box
  *  projection would repeat the tile's dirty band across the roof as stripes. */
-function heightUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry {
+function heightUV(geo: THREE.BufferGeometry, scale: number,
+                  opts: { uScale?: number, topClean?: boolean } = {}): THREE.BufferGeometry {
   const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
   const uv = new Float32Array(p.count * 2);
+  const us = opts.uScale ?? scale;
   for (let i = 0; i < p.count; i++) {
-    const ax = Math.abs(nrm.getX(i)), az = Math.abs(nrm.getZ(i));
+    const ax = Math.abs(nrm.getX(i)), ay = Math.abs(nrm.getY(i)), az = Math.abs(nrm.getZ(i));
     const u = ax >= az ? p.getZ(i) : p.getX(i);
-    uv[i * 2] = u / scale; uv[i * 2 + 1] = p.getY(i) / scale;
+    let v = p.getY(i) / scale;
+    // A tile keyed on height cannot tell a bonnet from a door at the same height, and a bonnet
+    // is clean where a door is sprayed: `topClean` sends every upward face into the tile's top
+    // band (v 0.75..0.95), above any wash, where only the dust film applies.
+    if (opts.topClean && ay >= 0.8) v = 0.75 + 0.2 * (v - Math.floor(v));
+    uv[i * 2] = u / us; uv[i * 2 + 1] = v;
   }
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   return geo;
@@ -1851,6 +2643,164 @@ function flare(zc: number, yc: number, rIn: number, rOut: number, x0: number, x1
   else { const p = l.getAttribute('position'); for (let i = 0; i < p.count; i += 3) { const x1_ = p.getX(i + 1), y1_ = p.getY(i + 1), z1_ = p.getZ(i + 1); p.setXYZ(i + 1, p.getX(i + 2), p.getY(i + 2), p.getZ(i + 2)); p.setXYZ(i + 2, x1_, y1_, z1_); } }
   l.computeVertexNormals();
   return mergeGeos([l, r]);
+}
+
+/** Seamless around-by-profile UVs for a LatheGeometry revolved about Y: u from the SEGMENT index
+ *  (the lathe orders its vertices segment-major, index = seg * pointCount + point) so the duplicated
+ *  seam column reads u = repeats exactly and RepeatWrapping closes it; v per PROFILE POINT from
+ *  `vs` (one value per profile point), so the caller decides which tile rows land on the tread and
+ *  which on the sidewalls. `pitch` is the tile size in metres around the widest radius. */
+function latheUV(g: THREE.BufferGeometry, pointCount: number, seg: number, pitch: number, vs: number[]): void {
+  const p = g.getAttribute('position');
+  let rMax = 0;
+  for (let i = 0; i < p.count; i++) rMax = Math.max(rMax, Math.hypot(p.getX(i), p.getZ(i)));
+  const rep = Math.max(1, Math.round(2 * Math.PI * rMax / pitch));
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const s = Math.floor(i / pointCount), j = i % pointCount;
+    uv[i * 2] = (s / seg) * rep; uv[i * 2 + 1] = vs[Math.min(j, vs.length - 1)];
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+/** Pin every UV of a geometry to one texel -- the WHITE band a tyre tile keeps at its top -- so a
+ *  rim, hub or spoke sharing the tyre's material renders its vertex colour unmultiplied. */
+function pinUV(g: THREE.BufferGeometry, u: number, v: number): THREE.BufferGeometry {
+  const uv = g.getAttribute('uv');
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, u, v);
+  return g;
+}
+
+/**
+ * An OPEN spoked wheel about the X axle: a tyre RING lathe (bead, sidewall, shoulder, tread and back
+ * down the far side -- a closed torus-like profile, so nothing is open to the gate), a rim ring, a
+ * brake-drum hub, and wire spokes as three-sided prisms. The closed dish `wheelGeo` fills the wheel
+ * with a solid disc that HIDES the spokes it carries; a motorcycle's wire wheel reads by the daylight
+ * through it, so the dish is gone. Tyre UVs are around-by-profile for a tread tile (`o.pitch` metres
+ * per repeat around; v 0.5..0.96 is the treaded strip of `tyreTile`), rim, hub and spokes are pinned
+ * to the tile's white band. Revolved about Y, then laid onto X.
+ */
+function openWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number, o: any): THREE.BufferGeometry {
+  const hw = halfW, rr = rRim * 1.02;
+  const prof: number[][] = [
+    [rr, -hw * 0.72], [rTyre * 0.90, -hw * 0.98], [rTyre * 0.985, -hw * 0.66], [rTyre, -hw * 0.30],
+    [rTyre, hw * 0.30], [rTyre * 0.985, hw * 0.66], [rTyre * 0.90, hw * 0.98], [rr, hw * 0.72], [rr, -hw * 0.72],
+  ];
+  // v per profile point: sidewall 0.50..0.66, tread 0.66..0.80, sidewall 0.80..0.96 (0.96..1 is white)
+  const vs = [0.50, 0.56, 0.64, 0.68, 0.78, 0.82, 0.90, 0.96, 0.96];
+  const tyre = new THREE.LatheGeometry(prof.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  latheUV(tyre, prof.length, seg, o.pitch ?? 0.05, vs);
+  tyre.computeVertexNormals();
+  const rimProf = [[rRim * 0.90, -hw * 0.50], [rRim, -hw * 0.62], [rRim, hw * 0.62], [rRim * 0.90, hw * 0.50], [rRim * 0.90, -hw * 0.50]];
+  const rim = new THREE.LatheGeometry(rimProf.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  rim.computeVertexNormals();
+  const hubR = o.hubR ?? rRim * 0.32, hubW = o.hubW ?? hw * 2.6;
+  const hub = new THREE.CylinderGeometry(hubR, hubR, hubW, o.hubSeg ?? 12);
+  const hubCap = new THREE.CylinderGeometry(hubR * 0.55, hubR * 0.55, hubW * 1.25, o.hubSeg ?? 12);
+  const parts = [tintGeo(tyre, o.tyreHex), pinUV(tintGeo(rim, o.rimHex), 0.5, 0.985),
+                 pinUV(tintGeo(hub, o.hubHex ?? o.rimHex), 0.5, 0.985), pinUV(tintGeo(hubCap, o.capHex ?? o.rimHex), 0.5, 0.985)];
+  const g = mergeGeos(parts);
+  g.rotateZ(Math.PI / 2);                     // lathe axis Y -> the axle on X
+  const sp = pinUV(spokes(hubR * 0.9, rRim * 0.95, hw, o.spokes ?? 20, o.spokeHex ?? 0xb0aea9, o.spokeT ?? 0.006, true), 0.5, 0.985);
+  return mergeGeos([g, sp]);
+}
+
+/** TYRE tile, ported from the prop template: `o.pitch` metres around (via latheUV), the strip at
+ *  v 0.5..0.96 a treaded tyre (circumferential grooves cut by staggered sipes, bead rings, mould
+ *  lines, road dust on the lower shoulder, grey scuffs, grain), v 0..0.5 a worn slick, and the top
+ *  4% pure WHITE so pinned parts render their vertex colour. Drawn as RATIOS against the
+ *  vertex-coloured rubber at `base` (200/255 -> the tyre tone is authored 1.275x its albedo so dust
+ *  and scuffs can go BRIGHTER than the rubber under a multiply canvas). `o.band` is the tread's
+ *  share of the strip, top to bottom, and must agree with openWheelGeo's tread rows. */
+function tyreTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const base = o.base ?? 200, band = o.band ?? [0.35, 0.65], groove = o.groove ?? 0.45;
+    const gv = Math.round(base * groove), rv = Math.round(base * 0.7), mv = Math.round(base * 0.9);
+    const dust = o.dust ?? [232, 214, 190];
+    const white = Math.round(s * 0.04);
+    ctx.fillStyle = `rgb(${base},${base},${base})`; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s * s / 6; i++) { const v = base + Math.round((rnd() - 0.5) * 22); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(rnd() * s, rnd() * s, 2, 2); }
+    const strip = (ya: number, yb: number, treaded: boolean) => {
+      const h = yb - ya, b0 = ya + h * (1 - band[1]), b1 = ya + h * (1 - band[0]);
+      const ng = o.grooves ?? 3, gw = h * 0.024;
+      ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+      for (let i = 0; i < ng; i++) { const y = b0 + (b1 - b0) * (i + 1) / (ng + 1); ctx.fillRect(0, y - gw / 2, s, gw); }
+      const ns = o.sipes ?? 2, w = s * (o.sipeWidth ?? 0.05);
+      for (let k = 0; k <= ng; k++) {
+        const y0 = k === 0 ? b0 : b0 + (b1 - b0) * k / (ng + 1) + gw / 2, y1 = k === ng ? b1 : b0 + (b1 - b0) * (k + 1) / (ng + 1) - gw / 2;
+        const outer = k === 0 || k === ng;
+        if (!treaded && !outer) continue;
+        const ys0 = treaded ? y0 : (k === 0 ? y0 : y1 - (y1 - y0) * 0.45), ys1 = treaded ? y1 : (k === 0 ? y0 + (y1 - y0) * 0.45 : y1);
+        for (let i = 0; i < ns; i++) {
+          const x = ((i + 0.5) / ns + (k % 2) * 0.5 / ns) * s + (rnd() - 0.5) * s * 0.06, sl = (rnd() - 0.5) * s * 0.08;
+          for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, ys0); ctx.lineTo(x + dx + w, ys0); ctx.lineTo(x + dx + w + sl, ys1); ctx.lineTo(x + dx + sl, ys1); ctx.closePath(); ctx.fill(); }
+        }
+      }
+      const sh = ctx.createLinearGradient(0, b0 - h * 0.03, 0, b0 + h * 0.02); sh.addColorStop(0, `rgba(${gv},${gv},${gv},0)`); sh.addColorStop(1, `rgba(${gv},${gv},${gv},0.45)`);
+      ctx.fillStyle = sh; ctx.fillRect(0, b0 - h * 0.03, s, h * 0.05);
+      ctx.fillStyle = `rgb(${rv},${rv},${rv})`; ctx.fillRect(0, ya + h * 0.045, s, h * 0.012); ctx.fillRect(0, ya + h * 0.94, s, h * 0.012);
+      ctx.fillStyle = `rgb(${mv},${mv},${mv})`; ctx.fillRect(0, ya + h * 0.11, s, 2); ctx.fillRect(0, ya + h * 0.88, s, 2);
+      const dg = ctx.createLinearGradient(0, yb, 0, ya + h * 0.6); dg.addColorStop(0, `rgba(${dust[0]},${dust[1]},${dust[2]},${o.dustAlpha ?? 0.35})`); dg.addColorStop(1, `rgba(${dust[0]},${dust[1]},${dust[2]},0)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, ya + h * 0.6, s, h * 0.4);
+      for (let i = 0; i < (o.scuffs ?? 14); i++) {
+        const x = rnd() * s, y = rnd() < 0.5 ? b0 + (rnd() - 0.3) * h * 0.08 : b1 + (rnd() - 0.7) * h * 0.08, r = s * (0.02 + rnd() * 0.05), v = 225 + Math.round(rnd() * 25);
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+        ctx.fillStyle = g2; for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, r * 2.2, r * 0.6, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 60; i++) { const x = rnd() * s, y = b0 + rnd() * (b1 - b0), v = 6 + Math.round(rnd() * 14); ctx.fillStyle = `rgb(${v},${Math.round(v * 0.9)},${Math.round(v * 0.75)})`; ctx.fillRect(x, y, 2 + rnd() * 6, 2 + rnd() * 3); }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+    strip(white, s / 2, true);   // v 0.5..0.96: treaded
+    strip(s / 2, s, false);      // v 0..0.5: slick
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, white);   // v 0.96..1: white, for pinned parts
+  });
+}
+
+/**
+ * A DRAPED SHEET (ported from the prop template): `heights[j][i]` is the top surface at x = x0..x1
+ * (i over nx) and z = z0..z1 (j over nz); the sheet is `t` thick. Top and underside are smooth-shaded
+ * grids, the four edges are flat strips wound outward. A canvas canopy is a ridge line minus the sag
+ * between its posts minus the droop of its free edges -- cloth, where a slab reads as a painted box.
+ */
+function sheet(s: any): THREE.BufferGeometry {
+  const nx: number = s.nx, nz: number = s.nz, Hh: number[][] = s.heights, t: number = s.t ?? 0.012;
+  const X = (i: number) => s.x0 + (s.x1 - s.x0) * i / nx;
+  const Z = (j: number) => s.z0 + (s.z1 - s.z0) * j / nz;
+  const grid = (yOff: number, flip: boolean) => {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { pos.push(X(i), Hh[j][i] + yOff, Z(j)); uv.push(i / nx, j / nz); }
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      if (flip) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  const parts = [grid(0, false), grid(-t, true)];
+  const strip = (pts: number[][][], out: number[]) => {
+    const pos: number[] = [], uv: number[] = [];
+    for (const [p0, p1] of pts) {
+      const q0 = p0, q1 = p1, q2 = [p1[0], p1[1] - t, p1[2]], q3 = [p0[0], p0[1] - t, p0[2]];
+      const e1 = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]], e2 = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+      const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      const tri = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? [q0, q1, q2, q0, q2, q3] : [q0, q2, q1, q0, q3, q2];
+      for (const q of tri) { pos.push(q[0], q[1], q[2]); uv.push(0, 0); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.computeVertexNormals(); return g;
+  };
+  const top = (i: number, j: number) => [X(i), Hh[j][i], Z(j)];
+  const e0: number[][][] = [], e1: number[][][] = [], e2: number[][][] = [], e3: number[][][] = [];
+  for (let i = 0; i < nx; i++) { e0.push([top(i, 0), top(i + 1, 0)]); e1.push([top(i, nz), top(i + 1, nz)]); }
+  for (let j = 0; j < nz; j++) { e2.push([top(0, j), top(0, j + 1)]); e3.push([top(nx, j), top(nx, j + 1)]); }
+  parts.push(strip(e0, [0, 0, -1]), strip(e1, [0, 0, 1]), strip(e2, [-1, 0, 0]), strip(e3, [1, 0, 0]));
+  return mergeGeos(parts);
 }
 
 /** Bind a post-construction canvas tile to a material as map (and bump), leaving the textureless
@@ -1972,6 +2922,7 @@ export function createSidecarMotorcycleModel(options: ProceduralModelOptions = {
   /* ---------------------------------------------------------------- motorcycle (shared template) */
   const B = G.bike as any;
   const ox = B.x ?? 0;                       // the bike's centreline in x (a sidecar offsets it)
+  const oz = B.z ?? 0;                       // and along z, so a rig can be re-centred on its origin
   const rW = B.r, rimR = B.rim, hw = B.halfW;
   const zF = B.zF, zR = B.zR;
   const P = B.paintHex, CH = B.chromeHex ?? 0xb9bcbf, DK = B.darkHex ?? 0x4a4742;
@@ -1980,26 +2931,26 @@ export function createSidecarMotorcycleModel(options: ProceduralModelOptions = {
   const paintGeos: THREE.BufferGeometry[] = [];
   for (const ex of (B.paintExtrudes ?? []) as any[]) {
     const g = sideExtrude(ex.poly, ex.width, ex.shape ?? {}); if (ex.x) g.translate(ex.x, 0, 0);
-    g.translate(ox, 0, 0); paintGeos.push(tintGeo(g, ex.hex ?? P));
+    g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, ex.hex ?? P));
   }
-  for (const b of (B.paintBoxes ?? []) as number[][]) { const g = rbox(b.slice(1)); g.translate(ox, 0, 0); paintGeos.push(tintGeo(g, b[0])); }
-  for (const t of (B.paintTubes ?? []) as any[]) { const g = tube(t.pts.map((p: number[]) => [p[0] + ox, p[1], p[2]]), t.r, t.seg ?? 8); paintGeos.push(tintGeo(g, t.hex ?? P)); }
+  for (const b of (B.paintBoxes ?? []) as number[][]) { const g = rbox(b.slice(1)); g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, b[0])); }
+  for (const t of (B.paintTubes ?? []) as any[]) { const g = tube(t.pts.map((p: number[]) => [p[0] + ox, p[1], p[2] + oz]), t.r, t.seg ?? 8, undefined, t.open ?? false); paintGeos.push(tintGeo(g, t.hex ?? P)); }
   const bodyGeo = heightUV(mergeGeos(paintGeos), G.mudScale ?? 1.2);
   add('body', B.bodyName ?? 'Bodywork', bodyGeo, 'paint');
   if (G.collider) colliders['body'] = G.collider;
 
   // FRAME, FORKS, BARS, ENGINE, SEAT, RACK, LAMPS -- every tone a vertex colour on one white trim.
   const trimGeos: THREE.BufferGeometry[] = [];
-  const shift = (pts: number[][]) => pts.map((p) => [p[0] + ox, p[1], p[2]]);
-  for (const t of (B.tubes ?? []) as any[]) trimGeos.push(tube(shift(t.pts), t.r, t.seg ?? 8, t.hex ?? CH));
+  const shift = (pts: number[][]) => pts.map((p) => [p[0] + ox, p[1], p[2] + oz]);
+  for (const t of (B.tubes ?? []) as any[]) trimGeos.push(tube(shift(t.pts), t.r, t.seg ?? 8, t.hex ?? CH, t.open ?? false));
   const tb: number[][] = [];
-  for (const b of (B.trim ?? []) as number[][]) tb.push([b[0], b[1] + ox, ...b.slice(2)]);
-  for (const b of mirrorX((B.trimMirrored ?? []) as number[][])) tb.push([b[0], b[1] + ox, ...b.slice(2)]);
+  for (const b of (B.trim ?? []) as number[][]) tb.push([b[0], b[1] + ox, b[2], b[3] + oz, ...b.slice(4)]);
+  for (const b of mirrorX((B.trimMirrored ?? []) as number[][])) tb.push([b[0], b[1] + ox, b[2], b[3] + oz, ...b.slice(4)]);
   if (tb.length) trimGeos.push(tintedBoxes(tb));
   for (const c of (B.cyls ?? []) as any[]) {
     const g = new THREE.CylinderGeometry(c.rt, c.rb, c.h, c.seg ?? 12);
     if (c.rx) g.rotateX(c.rx); if (c.rz) g.rotateZ(c.rz);
-    g.translate(c.at[0] + ox, c.at[1], c.at[2]);
+    g.translate(c.at[0] + ox, c.at[1], c.at[2] + oz);
     trimGeos.push(tintGeo(g, c.hex ?? DK));
   }
   // extra loose lathes (a sidecar's third wheel, a trailer's small wheels) merged into the trim
@@ -2008,20 +2959,33 @@ export function createSidecarMotorcycleModel(options: ProceduralModelOptions = {
                          ...(w.spokes ? [spokes(w.rim * 0.28, w.rim * 0.98, w.halfW, w.spokes, w.spokeHex ?? CH)] : [])]);
     g.translate(w.at[0], w.at[1], w.at[2]); trimGeos.push(g);
   }
-  for (const t of (G.tubes ?? []) as any[]) trimGeos.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
+  // lathes on the bike (a headlamp nacelle, a bezel) and on the rig: [radius, axial] profiles
+  // revolved about Y, then rotated onto their axis and placed
+  for (const l of [...((B.lathes ?? []) as any[]).map((l: any) => ({ ...l, at: [l.at[0] + ox, l.at[1], l.at[2] + oz] })), ...((G.lathes ?? []) as any[])]) {
+    const g = lathe(l.pts, l.seg ?? 12);
+    if (l.rx) g.rotateX(l.rx); if (l.ry) g.rotateY(l.ry); if (l.rz) g.rotateZ(l.rz);
+    g.translate(l.at[0], l.at[1], l.at[2]); trimGeos.push(tintGeo(g, l.hex ?? CH));
+  }
+  // draped sheets (a canvas canopy) as height grids -- cloth, not a slab
+  for (const s of (G.sheets ?? []) as any[]) trimGeos.push(tintGeo(sheet(s), s.hex));
+  for (const t of (G.tubes ?? []) as any[]) trimGeos.push(tube(t.pts, t.r, t.seg ?? 8, t.hex, t.open ?? false));
   for (const b of (G.trim ?? []) as number[][]) trimGeos.push(tintGeo(rbox(b.slice(1)), b[0]));
   for (const b of mirrorX((G.trimMirrored ?? []) as number[][])) trimGeos.push(tintGeo(rbox(b.slice(1)), b[0]));
   add('trim', B.trimName ?? 'Frame, forks, engine, seat and fittings', mergeGeos(trimGeos), 'trim');
 
   // WHEELS: one spoked lathe, instanced at every hub the cfg lists, each a named pivot.
-  const wheelG = mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5),
-                            ...(B.spokes ? [spokes(rimR * 0.28, rimR * 0.98, hw, B.spokes, B.spokeHex ?? CH)] : [])]);
+  // `open`: a wire wheel with daylight through it (tyre ring, rim ring, drum hub, prism spokes) and
+  // tread UVs for a tyre tile on `B.wheelMaterial`; otherwise the closed dished lathe.
+  const wheelG = B.open
+    ? openWheelGeo(rW, rimR, hw, B.seg ?? 20, { ...B.open, tyreHex: B.tyreHex, rimHex: B.rimHex, spokes: B.spokes, spokeHex: B.spokeHex ?? CH })
+    : mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5),
+                 ...(B.spokes ? [spokes(rimR * 0.28, rimR * 0.98, hw, B.spokes, B.spokeHex ?? CH)] : [])]);
   const wheelMats: THREE.Matrix4[] = [];
   for (const p of B.positions as number[][]) {
     wheelMats.push(new THREE.Matrix4().compose(new THREE.Vector3(p[0], p[1], p[2]),
       new THREE.Quaternion(), new THREE.Vector3(p[3] ?? 1, p[3] ?? 1, p[3] ?? 1)));
   }
-  addInst('wheels', 'Wheels', wheelG, 'trim', wheelMats);
+  addInst('wheels', 'Wheels', wheelG, B.wheelMaterial ?? 'trim', wheelMats);
 
   // EXTRA components (a sidecar box, a canvas canopy, a tuk-tuk cabin) -- own material each.
   for (const ex of (G.extras ?? []) as any[]) {
@@ -2045,6 +3009,7 @@ export function createSidecarMotorcycleModel(options: ProceduralModelOptions = {
     if (t.kind === 'dust') tex = dustTile(t.size ?? 512, t.dust, t.seed ?? 1, t.coverage ?? 0.30);
     if (t.kind === 'plank') tex = plankTile(t.size ?? 512, t.boards ?? 6, t.seed ?? 5);
     if (t.kind === 'rust') tex = rustTile(t.size ?? 512, t.ratio, t.seed ?? 7, t.density ?? 90);
+    if (t.kind === 'tyre') tex = tyreTile(t.size ?? 256, t.seed ?? 29, t);
     bindTile(mat, tex, t.bump ?? 0);
   }
 

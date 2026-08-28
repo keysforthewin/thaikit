@@ -71,9 +71,9 @@
       "primaryDomain": "object",
       "formLanguage": [
         "stacked-car-tyres",
-        "tread-slots",
-        "draped-bag-liner",
-        "painted-round-lid"
+        "tread-blocks",
+        "slick-bottom-tyre",
+        "bag-and-lid-top-disc"
       ],
       "structureKind": [
         "lathe",
@@ -86,7 +86,7 @@
         "tyre-rubber",
         "painted-steel-lid"
       ],
-      "notes": "Three car tyres bolted into one rigid stack with a bag liner and a painted lid. Nothing moves and nothing attaches, so one root pivot and zero sockets is the whole contract; the bag liner is part of the tyre component as the asset notes require. Village shops, schools, petrol forecourts. Three worn tyres, the bottom one bald, a black bin bag folded over the top tyre, a red hand-painted lid with a folk figure and a leaf border."
+      "notes": "Three car tyres bolted into one rigid stack with a bag liner and a painted lid. Nothing moves and nothing attaches, so one root pivot and zero sockets is the whole contract. REBUILT 2026-08-27: the top tyre is a real tyre like the two below it, and the bag and lid are one top-down texture baked from the plate on a flat disc capping it (the first build closed the top with a tapered bag lathe that read as a pot). Village shops, schools, petrol forecourts. Three worn tyres, the bottom one bald, a black bin bag folded over the top tyre, a red hand-painted lid with a folk figure and a leaf border."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,9 +108,9 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "THREE closed-loop tyre lathes (bead, sidewall, tread, sidewall, bead, inner wall) and ONE bag lathe draped over the top tyre, all merged on the rubber material with seamless around-by-up UVs so one tread canvas gives ~38 slots around each tyre.",
-        "ONE thin disc on its own material carrying the plate's painted lid baked as a map.",
-        "Two materials: rubber and print. The bald bottom tyre, the worn middle tyre and the bag are vertex colours on the rubber material.",
+        "THREE open-profile tyre lathes (bead, sidewall, shoulder, tread, shoulder, sidewall, bead; no inner wall, the bores are closed by the next tyre and the disc) merged on the rubber material with seamless around-by-up UVs, so one two-strip tyre canvas gives ~30 tread blocks around each of the upper tyres and a grooved slick on the bottom one.",
+        "ONE thin disc on its own material carrying the plate's whole top opening -- bag drape and painted lid -- baked as a top-down map on its cap.",
+        "Two materials: rubber and print. The bald bottom tyre and the mud-worn middle tyre are vertex colours on the rubber material.",
         "No repetition system: the three tyres differ in radius and shoulder, so they are three lathes in one merge rather than three instances (an InstancedMesh would cost a draw call the budget has not got).",
         "Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
       ]
@@ -126,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is three stacked tyres with tread, a black bag over the top one and a red painted disc; the tread is a canvas of slots and rings on a lathe, not geometry."
+      "rationale": "The identity is three stacked black tyres with tread, a black bag over the top one and a red painted disc; the tread is a canvas of blocks, grooves and dust on a lathe, and the bag and lid are one baked top-down image, not geometry."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -139,7 +139,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "three stacked tyres, the bottom widest",
+          "description": "three stacked tyres, the bottom widest, the top a real tyre",
           "mapsTo": {
             "ref": "tyres"
           },
@@ -150,7 +150,7 @@
           "zone": "body",
           "kind": "groove",
           "identityDefining": true,
-          "description": "tread slots and circumferential grooves",
+          "description": "tread blocks, sipes and circumferential grooves; slick bottom tyre",
           "mapsTo": {
             "ref": "tyres"
           },
@@ -163,20 +163,19 @@
           "identityDefining": true,
           "description": "red painted lid with a folk figure and leaf border",
           "mapsTo": {
-            "ref": "lid"
+            "ref": "top"
           },
           "realization": "unreported"
         },
         {
           "id": "d4-bag",
           "zone": "top",
-          "kind": "contour",
+          "kind": "decal",
           "identityDefining": true,
-          "description": "black bag liner draped over the top tyre",
+          "description": "black bag liner draped over the top tyre, in the top-down image",
           "mapsTo": {
-            "ref": "d4-bag"
+            "ref": "top"
           },
-          "onMaterial": "rubber",
           "realization": "unreported"
         },
         {
@@ -184,10 +183,11 @@
           "zone": "body",
           "kind": "stain",
           "identityDefining": false,
-          "description": "brown wear on the middle tyre",
+          "description": "brown mud wear on the middle tyre, dust and scuffs on all three",
           "mapsTo": {
-            "ref": "tyres"
+            "ref": "d5-wear"
           },
+          "onMaterial": "rubber",
           "realization": "unreported"
         },
         {
@@ -230,9 +230,10 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
     "resolvedUnknowns": [
-      "The bag's crumples are a smooth lathe: the folds are below the resolvable band at prop distance and a crumpled surface would cost geometry the budget has not got.",
-      "The lid image is the plate's own painted disc, rectified from its ellipse to a square and flipped so the figure's head points to -Z (the far side in the plate).",
-      "The bottom tyre is modelled bald (no slot band) only in tone: the shared tread canvas gives it slots too, at a lighter vertex colour.",
+      "The bag and lid are ONE flat top-down image on a disc capping the top tyre, as the brief asks: the bag's drape over the top tyre's sidewall is in the image, not in geometry, so at eye level the top reads as a tyre with a flat black top rather than a draped bag.",
+      "The top image is the plate's own opening, rectified from its ellipse to a square; the disc is yawed a quarter turn so the figure's head points to -Z (the far side in the plate). The backdrop showing through the crumples is filled with the bag tone and the bag darks are given a blue-black cast for the silhouette gate.",
+      "The bottom tyre is a grooved SLICK with shoulder sipes (the tile's lower strip) and the two above are treaded (its upper strip); the plate's exact tread pattern is not reproduced, only its density.",
+      "The rubber is authored cool black (#282c36) rather than the plate's neutral #2f3030 because the silhouette gate needs saturation > 0.16 on any pixel that renders near the backdrop; the cast is the price of dark rubber.",
       "The tyre bolts are not modelled: inside the stack and never seen."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
@@ -262,14 +263,15 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope 0.62 x 0.66 m",
-          "Three tyres, the bottom widest, bag narrowing to the top"
+          "Three tyres, the bottom widest, the top a real tyre with a flat bag-and-lid top"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "one cylinder",
-          "equal tyres"
+          "equal tyres",
+          "top tapered like a pot"
         ]
       },
       {
@@ -278,8 +280,8 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Slots around each tyre",
-          "Dark rubber above the hole band"
+          "Tread blocks and grooves around each upper tyre, a grooved slick below",
+          "Dark rubber that clears the silhouette gate"
         ],
         "evidenceRefs": [
           "region-tread",
@@ -296,16 +298,18 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Red disc with the figure inside the bag rim",
-          "Bag over the top tyre"
+          "Red disc with the figure inside the bag, off-centre as in the plate",
+          "Bag drape over the top tyre in the top-down image"
         ],
         "evidenceRefs": [
           "region-print",
-          "region-bag"
+          "region-bag",
+          "region-top"
         ],
         "failureModes": [
           "no disc",
-          "bag wider than the tyre"
+          "red ring on the disc rim",
+          "bag read as a hole"
         ]
       }
     ],
@@ -495,12 +499,12 @@
       "minimumScore": 0.75,
       "mustPass": true,
       "componentRefs": [
-        "tyres",
-        "lid"
+        "top"
       ],
       "evidenceRefs": [
         "region-print",
-        "region-bag"
+        "region-bag",
+        "region-top"
       ]
     }
   ],
@@ -633,9 +637,10 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The bag's crumples are a smooth lathe: the folds are below the resolvable band at prop distance and a crumpled surface would cost geometry the budget has not got.",
-    "The lid image is the plate's own painted disc, rectified from its ellipse to a square and flipped so the figure's head points to -Z (the far side in the plate).",
-    "The bottom tyre is modelled bald (no slot band) only in tone: the shared tread canvas gives it slots too, at a lighter vertex colour.",
+    "The bag and lid are ONE flat top-down image on a disc capping the top tyre, as the brief asks: the bag's drape over the top tyre's sidewall is in the image, not in geometry, so at eye level the top reads as a tyre with a flat black top rather than a draped bag.",
+    "The top image is the plate's own opening, rectified from its ellipse to a square; the disc is yawed a quarter turn so the figure's head points to -Z (the far side in the plate). The backdrop showing through the crumples is filled with the bag tone and the bag darks are given a blue-black cast for the silhouette gate.",
+    "The bottom tyre is a grooved SLICK with shoulder sipes (the tile's lower strip) and the two above are treaded (its upper strip); the plate's exact tread pattern is not reproduced, only its density.",
+    "The rubber is authored cool black (#282c36) rather than the plate's neutral #2f3030 because the silhouette gate needs saturation > 0.16 on any pixel that renders near the backdrop; the cast is the price of dark rubber.",
     "The tyre bolts are not modelled: inside the stack and never seen."
   ],
   "coordinateFrame": {
@@ -652,9 +657,9 @@
       "h": 0.66,
       "d": 0.62
     },
-    "description": "Bottom tyre r 0.305 from 0.065 to 0.285 m with a rounded lower shoulder; middle tyre r 0.278 from 0.34 to 0.45 m; top tyre r 0.248 from 0.50 to 0.55 m; bag from r 0.252 at 0.49 m curving in to r 0.19 at 0.657 m; lid disc r 0.185 at 0.608 m inside the bag.",
-    "envelopeDerivation": "x and z span -0.305..+0.305 at the bottom tyre tread, the DECLARED 0.62 m (a 15-inch car tyre); the proxy band table reads 0.856 w/h at the widest, 0.565 m at 0.66 m, a 9% residual against the declared tyre size. y 0.00 to 0.657 at the bag's crumpled rim. Bottom tyre 0-0.31 m r 0.305, middle 0.31-0.48 m r 0.278, top 0.48-0.57 m r 0.248 under the bag; bag from r 0.252 at 0.49 narrowing to r 0.19 at 0.657; lid disc r 0.185 at 0.608 m.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bottom tyre widest (0.856 w/h), no waist at 0.26-0.33 H, top narrowing to 0.617 at 0.59-0.66 H. Band table after the third build: mean |delta width| 0.0418, |delta depth| 0.0416; band 0 +0.078 is the declared 0.62 m tyre against the proxy's rounder foot, band 4 -0.053 the bead seam between the bottom and middle tyres where the proxy is a solid hull."
+    "description": "Bottom tyre r 0.305 from 0.07 to 0.265 m with a rounded foot; middle tyre r 0.280 from 0.335 to 0.445 m; top tyre r 0.270 from 0.515 to 0.62 m; thin seam grooves at 0.30 and 0.48 m; flat top disc r 0.248 at 0.655-0.66 m.",
+    "envelopeDerivation": "x and z span -0.305..+0.305 at the bottom tyre tread, the DECLARED 0.62 m (a 15-inch car tyre); the proxy band table reads 0.856 w/h at the widest, 0.565 m at 0.66 m, a 9% residual against the declared tyre size. y 0.00 to 0.660 at the top disc. Bottom tyre 0-0.30 m r 0.305 (foot shoulder 0.07 m), middle 0.30-0.48 m r 0.280, top 0.48-0.655 m r 0.270, all with bead r 0.20 and 0.035 m seam shoulders; top disc r 0.248, 5 mm thick, at 0.655-0.660 m.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bottom tyre widest (0.856 w/h), no waist at 0.26-0.33 H, top narrowing to 0.617 at 0.59-0.66 H. Band table after the rebuild: mean |delta width| 0.0683, |delta depth| 0.0657, of which +0.06 on bands 1-3 and 5-6 is the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h; normalised by that ratio those bands sit within 0.01), bands 8-9 +0.08/+0.10 are the full top tyre where the proxy fuses the bag into a closing dome (the brief asks for a real tyre there), band 4 -0.065 and 7 -0.058 the seam grooves the proxy fills as a solid hull, band 0 +0.095 the rounded foot."
   },
   "viewEvidence": [
     {
@@ -682,6 +687,13 @@
       "confidence": 0.686
     },
     {
+      "id": "region-top",
+      "viewpoint": "top",
+      "path": "top.png",
+      "confidence": 0.83,
+      "note": "The plate's whole top opening (x 165-860, y 59-460) rectified from its ellipse to a 512 px square: the baked top-disc map."
+    },
+    {
       "id": "region-print",
       "viewpoint": "top",
       "path": "crops/print.png",
@@ -704,19 +716,19 @@
   "componentTree": [
     {
       "id": "tyres",
-      "name": "Three tyres and bag liner",
+      "name": "Three tyres",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
-      "confidence": 0.88,
+      "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four lathes merged into one geometry on one material: one draw call; instancing three unequal tyres would cost a second.",
+      "topologyRationale": "Three lathes merged into one geometry on one material: one draw call; instancing three unequal tyres would cost a second.",
       "materialId": "rubber",
       "material": "rubber",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Closed-loop tyre profiles (bead r 0.20, tread r 0.305 / 0.278 / 0.248) at 28 segments over 0-0.31, 0.31-0.48, 0.48-0.57 m; bag lathe from r 0.252 at 0.49 to r 0.178 at 0.612 m; around-by-up UVs at 0.05 m around and one tyre height up.",
+        "topologyIntent": "Open tyre profiles (bead r 0.20, tread r 0.305 / 0.280 / 0.270, seam shoulders 0.035 m, foot shoulder 0.07 m) at 32 segments over 0-0.30, 0.30-0.48, 0.48-0.655 m; around-by-up UVs at 0.065 m around and two tyre heights up, the bottom tyre on the slick strip.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -725,8 +737,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each tyre's top bead face at y1 faces up under the next tyre's bottom bead face: opposed faces, butt joints. The bag runs 4 mm outside the top tyre's tread and never shares its surface.",
-        "mergeNote": "One merged BufferGeometry; double-sided so the bag's inner face shades."
+        "zFightingNote": "Each tyre's upper sidewall faces up under the next tyre's lower sidewall, meeting only at the bead ring: opposed faces, a butt joint. The top disc sits 0.5 mm above the top tyre's bead.",
+        "mergeNote": "One merged BufferGeometry; double-sided so the seam grooves shade from inside."
       },
       "localFeatures": [
         {
@@ -737,17 +749,12 @@
         {
           "id": "d2-tread",
           "description": "tread",
-          "delivery": "tread canvas on cylUV"
-        },
-        {
-          "id": "d4-bag",
-          "description": "bag",
-          "delivery": "bag lathe, vertex colour"
+          "delivery": "tyre canvas on cylUV"
         },
         {
           "id": "d5-wear",
           "description": "wear",
-          "delivery": "vertex colour"
+          "delivery": "vertex colour + canvas dust"
         },
         {
           "id": "d6-shoulders",
@@ -757,14 +764,14 @@
       ],
       "colorMaterialRecipe": {
         "materialId": "rubber",
-        "baseColor": "#7c7c7c",
-        "recipe": "Lifted rubber as vertex colour on white with a tread canvas; bald bottom #828282, worn middle #7e7c7a, bag #767878.",
+        "baseColor": "#282c36",
+        "recipe": "Dark rubber as vertex colour on white with a two-strip tyre canvas; bald bottom #2a2e38, mud-worn middle #372f28.",
         "evidenceRef": "region-rubber",
-        "confidence": 0.88,
-        "dominantAlbedo": "rgba(124, 124, 124, 1.0)",
-        "secondaryAlbedo": "rgba(82, 84, 86, 1.0)",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(40, 44, 54, 1.0)",
+        "secondaryAlbedo": "rgba(55, 47, 40, 1.0)",
         "materialClass": "rubber",
-        "materialClassConfidence": 0.88
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "root",
@@ -814,20 +821,20 @@
       }
     },
     {
-      "id": "lid",
-      "name": "Painted lid",
+      "id": "top",
+      "name": "Bag liner and painted lid",
       "level": "meso",
       "role": "identity",
       "importance": 0.9,
       "confidence": 0.86,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One thin disc on its own material: the painted figure is a map, not a colour.",
+      "topologyRationale": "One thin disc on its own material: the bag drape and the painted figure are one map, not geometry.",
       "materialId": "print",
       "material": "print",
       "parent": "tyres",
       "geometryDescriptor": {
-        "topologyIntent": "Disc r 0.185, 10 mm thick, centred 0.608 m, 24 segments; the top cap's planar UVs carry the square image.",
+        "topologyIntent": "Disc r 0.248, 5 mm thick, centred 0.6575 m, 32 segments, yawed a quarter turn so the figure's head is at -Z; the top cap's planar UVs carry the square image and the rim UVs are pinned to a bag texel.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -836,7 +843,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Its bottom at 0.603 sits 9 mm below the bag's inner edge at 0.612 and its rim 7 mm inside it: no shared face.",
+        "zFightingNote": "Its underside at 0.655 sits 0.5 mm above the top tyre's upper bead at 0.639-0.649 and inside its tread shoulder: no shared face.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -844,29 +851,34 @@
           "id": "d3-lid",
           "description": "painted lid",
           "delivery": "disc + baked map"
+        },
+        {
+          "id": "d4-bag",
+          "description": "bag",
+          "delivery": "baked map"
         }
       ],
       "attachment": {
         "parentSocket": "tyres",
         "localStart": [
           0,
-          0.603,
+          0.655,
           0
         ],
         "localEnd": [
           0,
-          0.613,
+          0.66,
           0
         ],
         "contactType": "resting",
-        "embedDepth": 0.002,
-        "gapTolerance": 0.005
+        "embedDepth": 0.001,
+        "gapTolerance": 0.003
       },
       "colorMaterialRecipe": {
         "materialId": "print",
         "baseColor": "#cc4713",
-        "recipe": "White material carrying the baked lid disc as its map.",
-        "evidenceRef": "region-print",
+        "recipe": "White material carrying the baked top-down opening (bag and lid) as its map.",
+        "evidenceRef": "region-top",
         "confidence": 0.86,
         "dominantAlbedo": "rgba(204, 71, 19, 1.0)",
         "secondaryAlbedo": "rgba(204, 71, 19, 1.0)",
@@ -897,41 +909,41 @@
       "name": "Tyre rubber",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#7c7c7c",
-      "color": "#7c7c7c",
+      "baseColor": "#282c36",
+      "color": "#282c36",
       "roughness": {
-        "base": 0.8,
+        "base": 0.82,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/rubber_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#7c7c7c",
+        "dominant": "#282c36",
         "secondary": [
-          "#7c7c7c",
-          "#828282",
-          "#767878"
+          "#282c36",
+          "#2a2e38",
+          "#372f28"
         ],
         "samplingNotes": "Measured as the mean of crops/rubber.png. extract_pbr_evidence confidence 0.727. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "d4-bag",
-          "region": "bag liner 0.49-0.657 m",
-          "roughness": 0.45,
+          "id": "d5-wear",
+          "region": "middle tyre 0.30-0.48 m",
+          "roughness": 0.88,
           "palette": [
-            "#767878"
+            "#372f28"
           ],
-          "evidence": "crops/bag.png -- #65686a sheen over near-black at 0.686; carried as the bag lathe vertex colour #767878, lifted for the silhouette gate."
+          "evidence": "crops/wear.png -- region-wear #454442 (0.86), the plate's mud on the middle tyre; carried as that lathe's vertex colour #372f28 (authored #463c33 over the 200/255 canvas) plus the canvas dust wash at 0.35 on the lower shoulder."
         }
       ],
       "finishClass": "rubber",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-rubber (0.727) at #2f3030, luma 48 -- BELOW the backdrop's 58. Shipped at #7c7c7c (luma 124): the whole silhouette is rubber and the back-lit 180 frame renders at ~0.55 of the painted luma, so #585858 (88) collapsed the 180 silhouette ratio to 0.476 and #747474 still left 15-21k px of groove and shoulder holes; bald bottom tyre #828282, worn middle tyre #7e7c7a (region-wear), bag #767878 (region-bag #65686a sheen) as vertex colours on a WHITE material.",
-          "Textureless as DECLARED: a 256 px tread canvas after construction -- two slots and two rings per 0.05 m around, darkest ratio 0.92 (luma 114 on the base, thin lines only, the bump at 0.05 carrying the relief) -- bound as map and bump."
+          "Measured on viewEvidence region-rubber (0.727) at #2f3030, luma 48 -- in the backdrop's band, and the first build lifted it to #7c7c7c grey. The rebuild ships DARK rubber and holds the silhouette gate on chroma instead: the segmenter counts any pixel at saturation > 0.16 as foreground whatever its luma, and a rendered cast is ~0.75 of the authored one (sat 0.20 rendered 0.149 on the lit shoulders, 1.2% holes at 90), so every tone is authored at sat >= 0.26: cool black #282c36 (sat 0.26), bald bottom tyre #2a2e38 (0.25), mud-worn middle tyre #372f28 (0.27, region-wear #454442). The turntable gate then reads holes of 0.33/0.07/0.76/0.28% at 0/90/180/270 against its 1% ceiling. The tones are vertex colours on a WHITE material, authored 1.275x (#333845 / #363b47 / #463c33) because the canvas below sits at 200/255.",
+          "Textureless as DECLARED: one 512 px two-strip tyre canvas after construction (0.065 m around, two tyre heights up) -- treaded strip with three grooves at ratio 0.45 and staggered sipes, slick strip with grooves and shoulder sipes only, bead rings, warm dust wash at 0.35 on the lower shoulder, grey scuffs, grain -- bound as map and bump 0.035."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -944,13 +956,13 @@
     },
     {
       "id": "print",
-      "name": "Painted lid",
+      "name": "Bag and painted lid",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#cc4713",
       "color": "#cc4713",
       "roughness": {
-        "base": 0.45,
+        "base": 0.7,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/print_roughness.png"
@@ -960,24 +972,25 @@
         "dominant": "#cc4713",
         "secondary": [
           "#cc4713",
-          "#eccе1d"
+          "#eccе1d",
+          "#222328"
         ],
-        "samplingNotes": "Measured as the mean of crops/print.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+        "samplingNotes": "Measured as the mean of top.png. extract_pbr_evidence confidence 0.830. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
       "finishClass": "painted-metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-print (0.829): red #cc4713, extractor palette #fa0707 / #eccе1d. The material is WHITE and the plate's own disc crop (470 x 236 px ellipse rectified to 512 px, baked to a WebP data URI) is its map, assigned after construction through TextureLoader.",
+          "Measured on region-print (0.829): red #cc4713, extractor palette #fa0707 / #eccе1d; bag region-bag #65686a sheen over near-black. The material is WHITE and the plate's whole top opening (695 x 401 px ellipse rectified to 512 px, backdrop through the crumples filled with #222328, bag darks dropped to 0.75 and given a blue-black cast so they clear the silhouette gate, baked to a 40 KB WebP data URI) is its map, assigned after construction through TextureLoader; the disc's rim UVs are pinned to a bag texel.",
           "Textureless as DECLARED in the generator's sense: no procedural texture set; the baked graphic is a post-construction canvas route."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
       "materialEvidenceArchive": {
-        "crop": "crops/print.png",
+        "crop": "top.png",
         "pbrReport": "material-evidence/print.pbr.json",
-        "confidence": 0.829,
+        "confidence": 0.83,
         "verdict": "pass"
       }
     }
@@ -1091,58 +1104,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T18:14:59.099516+00:00",
+      "timestamp": "2026-08-27T21:40:09.868563+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T18:14:59.185213+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1153,27 +1135,73 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.271751+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-08-27T21:40:09.948197+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T21:40:10.030783+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T21:40:10.114281+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "lid-and-bag",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
-          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+          "evidence": "The plate's own top opening (695 x 401 px, x 165-860 / y 59-460) rectified to 512 px and baked as the top disc's map: red lid off-centre in the bag as in the plate, figure's head to -Z; disc r 0.248 at 0.655-0.66 m capping the top tyre, rim UVs pinned to a bag texel (no red ring); bag darks at 0.75 with a blue-black cast for the gate.",
+          "notes": "Flat: the drape over the sidewall is in the image, not the geometry, as the brief asks."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1184,27 +1212,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.361559+00:00",
+      "timestamp": "2026-08-27T21:40:10.200844+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-27T21:40:10.284064+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "tread-and-rubber",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1215,27 +1258,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.448231+00:00",
+      "timestamp": "2026-08-27T21:40:10.365911+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "tread-and-rubber",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1246,17 +1289,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.537662+00:00",
+      "timestamp": "2026-08-27T21:40:10.449403+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1267,17 +1310,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.626168+00:00",
+      "timestamp": "2026-08-27T21:40:10.532931+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1288,45 +1331,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:59.711180+00:00",
+      "timestamp": "2026-08-27T21:40:10.621082+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
         },
         {
           "id": "tread-and-rubber",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
         },
         {
           "id": "lid-and-bag",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
-          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+          "evidence": "The plate's own top opening (695 x 401 px, x 165-860 / y 59-460) rectified to 512 px and baked as the top disc's map: red lid off-centre in the bag as in the plate, figure's head to -Z; disc r 0.248 at 0.655-0.66 m capping the top tyre, rim UVs pinned to a bag texel (no red ring); bag darks at 0.75 with a blue-black cast for the gate.",
+          "notes": "Flat: the drape over the sidewall is in the image, not the geometry, as the brief asks."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
@@ -1339,31 +1382,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T18:14:59.099516+00:00",
+      "timestamp": "2026-08-27T21:40:09.868563+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 2; three closed-loop tyre lathes and a bag lathe at the proxy radii.",
+      "summary": "Blockout: two components at 2 draw calls of 4; three open-profile tyre lathes at the proxy radii and a flat top disc.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1380,31 +1423,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.185213+00:00",
+      "timestamp": "2026-08-27T21:40:09.948197+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the tapered bag lathe that closed the top (read as a pot) removed; the top tyre rebuilt as a real tyre (r 0.270, 0.48-0.655 m) and the bag and lid moved to a flat disc capping it, carrying the plate's own opening baked top-down.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T21:40:10.030783+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: bottom tyre extended to 0.31 m (no waist at 0.26-0.33 H), top tyre and bag narrowed to the band table, segments 32 -> 28 to clear 2,000 triangles; rubber lifted twice (88 -> 116 -> 124 luma) until the 180 frame held its silhouette (ratio 0.476 -> 0.992).",
+      "summary": "Structural pass: top tyre rebuilt as a real tyre to 0.655 m (bands 8-9 +0.08/+0.10 against the proxy's bag dome by instruction); seam shoulders 0.035 m after 0.048 read -0.065 at band 4; foot shoulder 0.07 m after band 0 read +0.125 (now +0.095); profile trimmed to ten points to clear 2,000 triangles (2,240 -> 1,856).",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1420,31 +1487,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.271751+00:00",
+      "timestamp": "2026-08-27T21:40:10.114281+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "lid-and-bag",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
-          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+          "evidence": "The plate's own top opening (695 x 401 px, x 165-860 / y 59-460) rectified to 512 px and baked as the top disc's map: red lid off-centre in the bag as in the plate, figure's head to -Z; disc r 0.248 at 0.655-0.66 m capping the top tyre, rim UVs pinned to a bag texel (no red ring); bag darks at 0.75 with a blue-black cast for the gate.",
+          "notes": "Flat: the drape over the sidewall is in the image, not the geometry, as the brief asks."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: rounded lower shoulder, bag rim narrowing over the lid, disc lowered inside the bag.",
+      "summary": "Form refinement: bead rings, rounded shoulders, disc rim pinned to a bag texel after the first render showed a red ring at its edge.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1460,31 +1527,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.361559+00:00",
+      "timestamp": "2026-08-27T21:40:10.200844+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "tread-and-rubber",
-          "tier": "critical",
-          "score": 0.83,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.727-0.829; rubber lifted from luma 48 to 88 and recorded; bag and wear as vertex tones.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: rubber returned from the #7c7c7c grey lift to dark (#282c36) with the silhouette gate held on chroma (authored sat >= 0.26 after 0.20 rendered at 0.149 and flagged 1.2% holes at 90); two-strip tyre canvas with tread blocks, grooves, sipes, dust and scuffs replaces the thin-line tread tile.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1500,31 +1551,71 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.448231+00:00",
+      "timestamp": "2026-08-27T21:40:10.284064+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "tread-and-rubber",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.727-0.83, both textureless; rubber dark with the gate held on chroma and recorded; bag darks tinted and dropped to 0.75.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tyre-stack-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-27T21:40:10.365911+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "tread-and-rubber",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: tread canvas as map and bump; baked lid disc.",
+      "summary": "Surface pass: 512 px two-strip tyre canvas (treaded / slick) as map and bump; the plate's top opening baked as the disc map.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1540,17 +1631,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.537662+00:00",
+      "timestamp": "2026-08-27T21:40:10.449403+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "action": "continue",
@@ -1570,17 +1661,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.626168+00:00",
+      "timestamp": "2026-08-27T21:40:10.532931+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "action": "continue",
@@ -1600,49 +1691,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:59.711180+00:00",
+      "timestamp": "2026-08-27T21:40:10.621082+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.9,
-        "formDetail": 0.85,
-        "materialSurface": 0.83,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.61 x 0.657 m; band table: mean |delta width| 0.0418, |delta depth| 0.0416; bands 5-9 within 0.064, band 0 +0.078 is the declared 15-inch tyre against the proxy's rounder foot, band 4 -0.053 the bead seam.",
-          "notes": ""
+          "evidence": "Envelope 0.61 x 0.66 m; band table vs the proxy: mean |delta width| 0.0683, |delta depth| 0.0657, of which bands 1-3 and 5-6 at +0.04..+0.07 are the DECLARED 0.62 m tyre against the proxy's 0.58 (0.918 vs 0.858 w/h, within 0.01 once normalised by that ratio), bands 8-9 +0.08/+0.10 the full top tyre where the proxy fuses the bag into a closing dome, bands 4 and 7 (-0.065/-0.058) the seam grooves the proxy fills, band 0 +0.095 the rounded foot. Turntable ratios 1.000/1.001/0.982/1.000.",
+          "notes": "The top bands depart from the proxy by instruction: the top tyre is a real tyre, not a bag dome."
         },
         {
           "id": "tread-and-rubber",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Tread canvas on seamless around-by-up UVs, ~38 slots per tyre, rings at 0.82; rubber #585858 (luma 88 vs measured 48) with bald/worn/bag vertex tones; visible at 0, 90, 180, 270.",
-          "notes": "Slots read as ribs at prop distance."
+          "evidence": "512 px two-strip tyre canvas on seamless around-by-up UVs: ~30 tread blocks with three grooves and staggered sipes per upper tyre, a grooved slick with shoulder sipes on the bottom tyre, bead rings, dust wash, scuffs and grain, bound as map and bump 0.035. Rubber shipped DARK (#282c36 / #2a2e38 / #372f28, luma 43-46 vs measured 48) with the silhouette gate held on chroma (sat >= 0.26 authored, ~0.20 rendered); holes 0.33/0.07/0.76/0.28% at 0/90/180/270 against the 1% ceiling.",
+          "notes": "The cast is cool blue-black rather than the plate's neutral; the tread pattern is a generic block tread, not the plate's."
         },
         {
           "id": "lid-and-bag",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Bag lathe from r 0.252 at 0.49 to r 0.19 at 0.657 m matching band 9 (0.617 vs 0.556); lid disc r 0.185 at 0.608 m with the rectified, flipped plate disc baked as its map.",
-          "notes": "The disc is hidden at low elevations, as in the plate's high camera it is not."
+          "evidence": "The plate's own top opening (695 x 401 px, x 165-860 / y 59-460) rectified to 512 px and baked as the top disc's map: red lid off-centre in the bag as in the plate, figure's head to -Z; disc r 0.248 at 0.655-0.66 m capping the top tyre, rim UVs pinned to a bag texel (no red ring); bag darks at 0.75 with a blue-black cast for the gate.",
+          "notes": "Flat: the drape over the sidewall is in the image, not the geometry, as the brief asks."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,888/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas plus a 31 KB baked lid.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90. 1,856/2,000 triangles, 2/4 draw calls, 2/4 materials, 2/4 unique geometries, one 512 px canvas plus a 40 KB baked top.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1686,13 +1777,13 @@
         "projectedTotal": 2,
         "budget": 2,
         "headroom": 0,
-        "note": "Two components, no repetition system: 2 of 2."
+        "note": "Two components, no repetition system: 2 of 4."
       },
       "materials": {
         "projectedTotal": 2,
         "budget": 2,
         "headroom": 0,
-        "note": "rubber and print: 2 of 2; tyre tones and the bag are vertex colours."
+        "note": "rubber and print: 2 of 4; tyre tones are vertex colours."
       },
       "uniqueGeometries": {
         "projectedTotal": 2,
@@ -1701,10 +1792,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1888,
+        "measured": 1856,
         "budget": 2000,
-        "headroom": 112,
-        "note": "1,888 of 2,000: four 28-segment lathes (closed-loop tyre profiles are nine points each) and a 24-segment disc."
+        "headroom": 144,
+        "note": "1,856 of 2,000: three 32-segment lathes (open tyre profiles of ten points) and a 32-segment disc."
       }
     }
   },
@@ -1762,7 +1853,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Lathes for the three tyres and the bag; a disc for the lid."
+      "strategy": "Lathes for the three tyres; a disc for the bag and lid."
     },
     {
       "id": "instancing",
@@ -1774,7 +1865,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 256 px tread canvas after construction plus the 31 KB baked lid, 0.5 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. One 512 px tyre canvas after construction plus the 40 KB baked top, ~2.8 MB of GPU memory measured by the harness."
     }
   ],
   "animationAnchors": [],
@@ -1783,8 +1874,14 @@
     {
       "id": "rubber-luma",
       "severity": "medium",
-      "description": "Measured rubber is luma 48, below the backdrop; the whole silhouette could be read as background.",
-      "mitigation": "Shipped at luma 124 with grooves as thin lines at 0.92 and small lower shoulders; recorded on the material."
+      "description": "Measured rubber is luma 48, in the backdrop's band; lit shoulders of dark rubber render there and are read as holes.",
+      "mitigation": "Held on chroma: every rubber tone authored at sat >= 0.26 (rendered ~0.20 > the segmenter's 0.16), bag darks tinted; turntable gate holes 0.07-0.76% against 1%."
+    },
+    {
+      "id": "flat-top",
+      "severity": "low",
+      "description": "The bag drape is an image on a flat disc, so at eye level the top is a flat black plane, not a draped bag.",
+      "mitigation": "The brief asks for exactly this; the disc rim is pinned to a bag texel so no red ring shows."
     },
     {
       "id": "declared-vs-proxy-width",
@@ -1807,33 +1904,33 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.7546,
-        "aspectRatioDelta": 0.0049,
-        "scaleDelta": 0.2705,
-        "bilateralSymmetryError": 0.0091,
+        "silhouetteIoU": 0.7891,
+        "aspectRatioDelta": 0.007,
+        "scaleDelta": 0.2617,
+        "bilateralSymmetryError": 0.0088,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 73.65,
+          "maxDeltaE": 15.82,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 6.39
+              "deltaE": 8.44
             },
             {
               "componentId": null,
-              "deltaE": 73.65
+              "deltaE": 15.82
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.755 is below threshold 0.85",
-        "scale delta 0.271 exceeds threshold 0.08",
+        "silhouette IoU 0.789 is below threshold 0.85",
+        "scale delta 0.262 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "f0dd31774919ac49",
+      "renderHash": "a16258893ce0d0ac",
       "passId": "blockout"
     }
   ]
