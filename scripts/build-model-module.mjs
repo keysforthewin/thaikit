@@ -28,12 +28,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import * as esbuild from 'esbuild';
 import {
   ASSETS_DIR, SCRATCH_DIR, assetDir, workDir, toRepoRelative, updateAsset,
 } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
+import { buildModule } from './lib/bundle.mjs';
 
 /** Where the skill is told to leave its factory, and where a rebuild looks first. */
 const DEFAULT_ENTRIES = ['src/createObjectModel.ts', 'src/createObjectModel.tsx', 'createObjectModel.ts'];
@@ -49,26 +49,7 @@ async function firstExisting(dir, candidates) {
   return null;
 }
 
-export async function buildModule({ entry, outFile }) {
-  const result = await esbuild.build({
-    entryPoints: [entry],
-    outfile: outFile,
-    bundle: true,
-    format: 'cjs',
-    platform: 'browser',
-    target: 'es2022',
-    // Left in: this is a dev tool, the bundles are small, and a stack trace that
-    // points at the authored TypeScript is worth more than the bytes.
-    sourcemap: 'inline',
-    external: ['three'],
-    logLevel: 'silent',
-    metafile: true,
-  });
-
-  const bytes = (await fs.stat(outFile)).size;
-  const inputs = Object.keys(result.metafile.inputs).filter((f) => !f.includes('node_modules'));
-  return { bytes, inputs, warnings: result.warnings.map((w) => w.text) };
-}
+export { buildModule };
 
 async function main() {
   const args = parseArgs();

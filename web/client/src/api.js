@@ -86,3 +86,78 @@ export function mediaUrl(repoPath) {
   if (p.startsWith('scratch/')) return '/scratch/' + p.slice('scratch/'.length);
   return '/media/' + p.replace(/^assets\//, '');
 }
+
+/**
+ * Levels are GLBs, so their calls speak bytes rather than JSON. The ETag is the
+ * same optimistic lock the colliders use: a save that has not seen the current
+ * bytes is refused with a 409, never merged.
+ */
+async function bytesRequest(path, options = {}, etagKey) {
+  const res = await fetch(path, options);
+  const etag = res.headers.get('ETag');
+  if (etag && res.ok && etagKey) etags.set(etagKey, etag);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const err = new Error(body.error || `${res.status} ${res.statusText}`);
+    err.status = res.status;
+    err.etag = body.etag;
+    err.issues = body.issues;
+    throw err;
+  }
+  return res;
+}
+
+export const levelsApi = {
+  list: () => request('/api/levels', {}, null),
+  create: (name) => request('/api/levels', { method: 'POST', body: JSON.stringify({ name }) }, null),
+  remove: (id) => request(`/api/levels/${id}`, { method: 'DELETE' }, null),
+  /** The GLB bytes; the ETag is remembered for the next save. */
+  load: async (id) => {
+    const res = await bytesRequest(`/api/levels/${id}`, { cache: 'no-store' }, `level:${id}`);
+    return res.arrayBuffer();
+  },
+  save: async (id, glbBytes) => {
+    const res = await bytesRequest(
+      `/api/levels/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'content-type': 'model/gltf-binary',
+          ...(etags.has(`level:${id}`) ? { 'If-Match': etags.get(`level:${id}`) } : {}),
+        },
+        body: glbBytes,
+      },
+      `level:${id}`,
+    );
+    return res.json();
+  },
+  etag: (id) => etags.get(`level:${id}`) ?? null,
+  forgetEtag: (id) => etags.delete(`level:${id}`),
+};
+
+export const packsApi = {
+  list: () => request('/api/packs', {}, null),
+  items: (params = {}) => {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== '' && v != null));
+    return request(`/api/packs/items?${q}`, {}, null);
+  },
+  add: (source) => request('/api/packs', { method: 'POST', body: JSON.stringify({ source }) }, null),
+  refresh: (id) => request(`/api/packs/${encodeURIComponent(id)}/refresh`, { method: 'POST' }, null),
+  remove: (id) => request(`/api/packs/${encodeURIComponent(id)}`, { method: 'DELETE' }, null),
+  job: (id) => request(`/api/packs/jobs/${id}`, {}, null),
+};
+
+levelsApi.bake = async (id, glbBytes, { baker = 'blender' } = {}) => {
+  const res = await bytesRequest(`/api/levels/${id}/bake?baker=${encodeURIComponent(baker)}`, {
+    method: 'POST',
+    headers: { 'content-type': 'model/gltf-binary' },
+    body: glbBytes,
+  }, null);
+  return res.json();
+};
+levelsApi.build = (id) => request(`/api/levels/${id}/build`, {}, null);
+
+export const ktx2Api = {
+  status: (id) => request(`/api/assets/${id}/ktx2-status`, {}, null),
+  compress: (id) => request(`/api/assets/${id}/compress-maps`, { method: 'POST' }, null),
+};

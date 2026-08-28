@@ -88,6 +88,79 @@ that still says "mesh" means the model.
   `@thaikit/registry-core`, which holds the lock the web UI also respects. A
   direct write will be silently lost or will corrupt a concurrent one.
 
+## The level editor, packs, bake and runtime
+
+`/level` is a second page in the same client (a pathname switch in `web/client/src/main.jsx`, no
+router). It edits a **GLB** -- `levels/<id>/level.glb` is the whole project: one node per
+placement with `extras.tk = {kind:'placement', ref:'@pack/item', version, static, physics, ...}`
+and the prop's meshes underneath, lights as `KHR_lights_punctual` nodes named `light_<id>`, spawns
+as empties, and the settings on `scene.extras.thaikitLevel` (schemas in
+`packages/level-schema`). On load the editor **re-evaluates every factory from `ref`** and only
+falls back to the embedded meshes when the pack is gone; that is what makes "refresh pack" update
+placed geometry. Export writes a second, self-contained GLB.
+
+- **A pack is a vibe3d registry, and packs ship SOURCE, not bundles.** `scripts/install-pack.mjs`
+  downloads the npm tarball, writes every item's inlined TypeScript under `packs/<ns>/<tag>/src/`
+  (`{models}` -> `src/models`, `{vibe3d}` -> `src/vibe3d`, plus the three runtime templates from
+  the vibe3d CLI vendored in `scripts/lib/packs/templates/`), wraps each model item so it exports
+  thaikit's `createObjectModel(spec, options)` (unwrapping a `ModelInstance { root }`), and
+  esbuild-bundles it. Then it constructs every item once in an isolated child process (90 s budget,
+  4 at a time -- the scifi kit's occlusion bakes take seconds each and one model printed its whole
+  geometry to stdout) to record size, cost, sockets and a derived collider compound
+  (`deriveFromParts` in `scripts/lib/colliders.mjs`, bbox fallback). `packs/index.json` is the
+  record; `packs/` is gitignored because a pack is re-downloadable.
+- **Use the FULL npm packument.** `application/vnd.npm.install-v1+json` strips custom fields, and
+  `vibe3d.registry` in package.json is the only thing that says a package is a pack.
+- **`external: ['three']` in esbuild externalises `three/addons/*` too**, which the host cannot
+  answer. `scripts/lib/bundle.mjs` carries a plugin that bundles `three/addons/*` and
+  `three/examples/jsm/*` back in; their own bare `three` import stays external and shared. No
+  thaikit factory imports an addon, so this changed nothing for them.
+- **`three/webgpu` maps to the host's three; `three/tsl` is a stub.** Both shims
+  (`scripts/lib/probe.mjs` `makePackShim`, `web/client/src/three/modelModule.js`) answer
+  `three/webgpu` with the same THREE (the scene graph is shared with three.core.js) and `three/tsl`
+  with a Proxy whose every property is a callable returning itself. The scifi kit imports TSL in a
+  shared `wear.ts` that every model pulls in while only one model builds a node material; the stub
+  lets 108 of 110 build, degrading wear to plain materials. The probe records `tslUsed`.
+- **`Object3D.clone()` JSON-copies `userData`, and a factory root's `sculptRuntime` holds Object3D
+  references** -- so `web/client/src/three/instances.js` harvests markers and bbox from the built
+  prototype, strips every node's `userData`, and only then clones per placement. N placements of
+  one prop share geometry, materials and the synthesised canvases.
+- **three-stdlib's TransformControls ignores a `pointermove` whose `button !== -1`.** A real mouse
+  reports -1 while moving; a synthetic test event that copies `button: 0` from the pointerdown
+  drags nothing and looks like a broken gizmo.
+- **The bake runs in the browser first, then Node.** Procedural textures are canvases that only
+  exist in a page, so `web/client/src/level/export/buildExportScene.js` materialises every
+  factory, expands `InstancedMesh`es, tags meshes with placement/cell/static, and ships a raw GLB to
+  `POST /api/levels/:id/bake`; `scripts/level/bake-level.mjs` does the rest with gltf-transform:
+  fold base colour into COLOR_0 so tinted twins dedup, normalise attributes, flatten, reparent
+  static meshes under `cell_<ix>_<iz>/lod0` and dynamic ones under `dynamic/<placement>`, `join()`
+  (siblings only, so never across cells), LOD tiers with meshoptimizer (lod1 quality at 0.4, lod2
+  sloppy at 0.15 -- sloppy needs an error budget of ~0.5, at 0.01 it keeps 98% of the triangles),
+  KTX2 through the `ktx` CLI, meshopt, and the manifest on `scene.extras.thaikitManifest`.
+  `doc.transform(fn)` returns the Document, NOT `fn`'s result -- call custom stages directly.
+  gltf-transform logs to stdout; the pipeline's stdout is one JSON line, so its loggers are silent.
+- **`prune()` strips `TEXCOORD_0` from untextured meshes, and Blender then makes the lightmap layer
+  the FIRST UV layer** -- exported as `TEXCOORD_0` where the pipeline expects `TEXCOORD_1`. Keep
+  attributes through prune and give every mesh a base UV layer before adding `lightmap`.
+- **The lightmap is an image nothing references.** glTF has no lightmap slot, so it is written as
+  a KTX2 `images[]` entry (index in `manifest.lightmap.image`) with no `textures[]` entry; the
+  runtime reads its bufferView and hands it to `KTX2Loader.parse`. `parser.loadTexture(i)` on it
+  fails with "reading 'source'". RGB = sky + bounce + emissive (moon off), A = the moon's
+  visibility (Cycles SHADOW bake), and `attachLightmap` masks the real-time moon's direct term
+  with A so the moon stays a live light for dynamic objects and a small dynamic shadow map.
+- **The Blender bake is batch (`blender.exe -b --python`), not the addon**, over UNC via
+  `toBlenderPath()`; `blenderExe()` finds the Windows install from WSL. Pass vector args as
+  `--moon=-0.4,...`: a value starting with `-` reads as an option to argparse. A 512² / 16-sample
+  test took 30 s on OPTIX.
+- **KTX-Software need not be root-installed**: `dpkg-deb -x` the release .deb into
+  `~/.local/opt/ktx`; `scripts/level/pipeline/ktx2.mjs` looks there, on PATH, and at
+  `THAIKIT_KTX_BIN`. gltf-transform 4.x's `toktx()` moved to its CLI package, so the shell-out is
+  ours: `ktx create --format R8G8B8A8_SRGB|UNORM --encode basis-lz|uastc --generate-mipmap`.
+- **A night level fails a brightness gate honestly.** `scripts/level/smoke-level.mjs` measures the
+  share of the frame that is not the backdrop, not mean luma.
+- **A 4 ms bake with `--baker none` is a 4 s one in Blender at 4096²/128 samples per minute of
+  level** -- use `--lightmap-size 512 --samples 16` to test the round trip.
+
 ## Layout
 
 - `packages/registry-core/` — schema, lock, atomic write, ETag. Imported by the
@@ -98,7 +171,12 @@ that still says "mesh" means the model.
 - `prompts/` — budgets, categories and the image prompt scaffold. Data, so it
   lives here rather than inside a skill.
 - `render/` — the headless harness. Vendored three, no loaders: it evaluates the
-  model module the same way the browser does.
+  model module the same way the browser does. `level-harness.*` is the runtime smoke page.
+- `packages/level-schema/` — zod schemas for the level GLB extras and the export manifest.
+- `packages/level-runtime/` — `loadLevel()` for a game (cells + LOD, lights, lightmap, Rapier
+  colliders, per-cell BVH) and `loadLevelHeadless()` for a server.
+- `levels/` — level projects (`<id>/level.glb`, tracked) and their `build/` (gitignored).
+- `packs/` — installed vibe3d packs (gitignored; `packs/index.json` is the record).
 - `scratch/` — gitignored; every build's working directory, and where
   img2threejs writes its state, spec and renders.
 

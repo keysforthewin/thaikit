@@ -49,3 +49,8 @@ export function etagForAsset(asset) {
   const canonical = JSON.stringify(sortValue(asset));
   return `"${crypto.createHash('sha256').update(canonical).digest('hex').slice(0, 32)}"`;
 }
+
+/** Strong ETag over the exact bytes of a sidecar file (colliders, levels). */
+export function etagForText(textOrBuffer) {
+  return `"${crypto.createHash('sha256').update(textOrBuffer).digest('hex').slice(0, 32)}"`;
+}

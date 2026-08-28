@@ -334,6 +334,21 @@ const TextureMap = z.object({
   bytes: z.number().int().nonnegative().nullable().default(null),
   width: z.number().int().positive().nullable().default(null),
   height: z.number().int().positive().nullable().default(null),
+  /**
+   * A GPU-compressed sibling of `file`, written by scripts/compress-maps.mjs.
+   * The webp stays the source of truth; `sourceSha256` says which webp this
+   * was made from, so a regenerated map reads as stale rather than current.
+   */
+  ktx2: z
+    .object({
+      file: z.string().min(1),
+      mode: z.enum(['uastc', 'etc1s']),
+      bytes: z.number().int().nonnegative(),
+      sourceSha256: z.string(),
+      generatedAt: z.string(),
+    })
+    .nullable()
+    .default(null),
 });
 
 const Model = ModelStats.extend({

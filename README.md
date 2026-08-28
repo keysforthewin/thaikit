@@ -185,3 +185,34 @@ npm test                                 # registry concurrency
 
 MIT — code and assets. Every model is fully synthetic and procedurally
 authored; no scanned or scraped third-party geometry.
+
+## Level editor
+
+`http://localhost:3733/level` builds levels from these props -- and from any
+[vibe3d](https://github.com/vibe-stack/vibe3d)-compatible pack you add by npm name
+(`@scifi-kit/registry`, `@medieval-kit/registry`, ...). A level is a GLB
+(`levels/<id>/level.glb`); **Export** bakes a second, self-contained GLB with geometry merged
+per 24 m cell and material, three LOD tiers per cell, every texture as KTX2, a Cycles lightmap
+(Blender, headless), and the colliders, lights and spawns in the scene extras.
+
+```
+npm run dev                                   # editor at /level
+npm run packs:install -- --source @scifi-kit/registry
+npm run level:bake -- --level <id> [--baker none]
+npm run level:verify -- --level <id> --strict
+npm run level:smoke -- --level <id>           # renders it through the runtime, headlessly
+npm run compress:maps -- --all                # KTX2 siblings for every shipped webp
+```
+
+Load a baked level in a game with `packages/level-runtime`:
+
+```js
+import { loadLevel, RapierPhysics } from '@thaikit/level-runtime';
+const level = await loadLevel('/levels/soi/build/level.glb', { scene, renderer, camera, physics });
+// per frame: level.update(dt, camera.position)   // physics, LOD tiers, moon shadow box
+```
+
+`loadLevelHeadless()` (`@thaikit/level-runtime/node`) builds the same colliders on a server.
+Requirements: [KTX-Software](https://github.com/KhronosGroup/KTX-Software/releases) for KTX2
+(extract the .deb into `~/.local/opt/ktx`, no root needed) and Blender for the lightmap;
+`npm run doctor` checks both.

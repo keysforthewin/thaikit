@@ -146,6 +146,7 @@ export default function App() {
         <span className="muted">{health?.assetCount ?? assets.length} assets</span>
         <span className="grow" />
         <input placeholder="search…" value={q} onChange={(e) => setQ(e.target.value)} style={{ width: 240 }} />
+        <a href="/level"><button title="build a level from these props">level editor</button></a>
         <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>
       </div>
 

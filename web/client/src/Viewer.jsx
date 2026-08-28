@@ -3,88 +3,17 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Bounds, Center, Grid, OrbitControls, Stage, TransformControls, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
 
-/**
- * Live mesh stats, read off the constructed scene.
- *
- * GPU bytes and file bytes are shown separately and deliberately: they differ by
- * an order of magnitude, and it is the GPU number that decides whether a low-end
- * machine can hold the level.
- */
-function useMeshStats(scene) {
-  return useMemo(() => {
-    if (!scene) return null;
-    let triangles = 0;
-    let vertices = 0;
-    let drawCalls = 0;
-    const materials = new Set();
-    // Distinct geometries, not distinct meshes. The GAP between this and
-    // drawCalls is the only visible evidence that a repeated part became one
-    // InstancedMesh rather than N copies of the same primitive.
-    const geometries = new Set();
-    const images = new Set();
-    let gpuBytes = 0;
-
-    scene.traverse((o) => {
-      if (!o.isMesh) return;
-      drawCalls++;
-      materials.add(o.material.uuid);
-      const g = o.geometry;
-      geometries.add(g.uuid);
-      // An InstancedMesh is one draw call and one geometry but N copies on
-      // screen, every one of which the GPU rasterises.
-      const copies = o.isInstancedMesh ? o.count ?? 0 : 1;
-      const meshVertices = g.attributes.position?.count ?? 0;
-      vertices += meshVertices * copies;
-      triangles += (g.index ? g.index.count / 3 : meshVertices / 3) * copies;
-
-      for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) {
-        const tex = o.material[key];
-        const img = tex?.image;
-        if (!img || images.has(img)) continue;
-        images.add(img);
-        // 4 bytes per texel, plus a third again for the mip chain.
-        gpuBytes += Math.round((img.width ?? 0) * (img.height ?? 0) * 4 * (4 / 3));
-      }
-    });
-
-    return {
-      triangles: Math.round(triangles),
-      vertices,
-      drawCalls,
-      materials: materials.size,
-      uniqueGeometries: geometries.size,
-      textures: images.size,
-      gpuBytes,
-    };
-  }, [scene]);
-}
-
-/** Free everything the factory allocated. Nothing caches this for us. */
-function disposeScene(root) {
-  if (!root) return;
-  root.traverse((o) => {
-    if (!o.isMesh) return;
-    o.geometry?.dispose?.();
-    for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
-      if (!m) continue;
-      for (const key of Object.keys(m)) {
-        const v = m[key];
-        if (v && v.isTexture) v.dispose();
-      }
-      m.dispose?.();
-    }
-  });
-}
+import { loadFactory, baseUrlOf } from './three/modelModule.js';
+import { disposeScene } from './three/dispose.js';
+import { useMeshStats } from './three/stats.js';
+import { useRuntimeMarkers, MarkerGizmos, unplaced } from './three/runtimeMarkers.jsx';
+import { unitGeometry } from './three/colliderGeometry.js';
 
 /**
- * Load and run a generated Three.js factory.
- *
- * The prop is code, not a file format, so there is no loader: the module is
- * fetched as text and evaluated with THIS page's THREE injected as its only
- * `require`. That is the whole reason build-model-module.mjs emits CommonJS with
- * `three` external -- an ESM build would need an import map, and an import map
- * either resolves to a second copy of three (whose Mesh is not r3f's Mesh, so
- * nothing renders) or forces a fixed-name three chunk out of Rollup.
+ * Build a fresh scene from a module. The module itself is cached by URL in
+ * three/modelModule.js; the built scene is per mount, because a factory's
+ * output is mutable (wireframe toggles, destruction poses) and is disposed on
+ * unmount.
  */
 function useModelFactory(url, exportName) {
   const [state, setState] = useState({ scene: null, error: null, loading: Boolean(url) });
@@ -100,32 +29,8 @@ function useModelFactory(url, exportName) {
 
     (async () => {
       try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-        const code = await res.text();
-
-        const mod = { exports: {} };
-        // eslint-disable-next-line no-new-func
-        new Function('module', 'exports', 'require', code)(mod, mod.exports, (name) => {
-          if (name === 'three') return THREE;
-          throw new Error(`model module required "${name}"; only "three" is provided`);
-        });
-
-        const factory = mod.exports[exportName || 'createObjectModel'] ?? mod.exports.default;
-        if (typeof factory !== 'function') {
-          throw new Error(
-            `no factory export; expected "${exportName || 'createObjectModel'}" or a default, ` +
-              `got: ${Object.keys(mod.exports).join(', ') || '(nothing)'}`,
-          );
-        }
-
-        // The module is eval'd rather than imported, so it has no import.meta and
-        // no currentScript to resolve its own shipped maps against, and a bare
-        // relative path would resolve against the SPA route instead. `url` here is
-        // /media/<id>/model.bundle.js (plus the cache-busting ?v=), so its
-        // directory is where the maps sit. new URL('.') drops the query cleanly.
-        const baseUrl = new URL('.', new URL(url, window.location.href)).href;
-        const scene = factory({}, { baseUrl });
+        const factory = await loadFactory(url, exportName);
+        const scene = factory({}, { baseUrl: baseUrlOf(url) });
         if (!scene?.isObject3D) throw new Error('factory did not return an Object3D');
         if (cancelled) { disposeScene(scene); return; }
 
@@ -143,163 +48,6 @@ function useModelFactory(url, exportName) {
   useEffect(() => () => { disposeScene(current.current); current.current = null; }, []);
 
   return state;
-}
-
-/**
- * `sculptRuntime` arrives in one of two shapes and both are legitimate.
- *
- * img2threejs's generator emits Records keyed by component id; a factory whose
- * wrapper normalises for thaikit emits arrays of named things. Neither side is
- * wrong -- they are two contracts over the same data -- so every reader here
- * accepts both rather than assuming whichever one the prop in front of it used.
- * A prop built without the normalising wrapper otherwise shows an empty runtime,
- * which reads as "this model has no pivots" when it means "I could not parse it".
- */
-const entries = (value) => {
-  if (Array.isArray(value)) {
-    return value.map((item) =>
-      typeof item === 'string' ? [item, null] : [item?.name, item],
-    ).filter(([name]) => name);
-  }
-  if (value && typeof value === 'object') return Object.entries(value);
-  return [];
-};
-
-const names = (list) => entries(list).map(([name]) => name);
-
-/** Names on `sculptRuntime` that no object in the scene answers to. */
-const unplaced = (runtime) =>
-  ['pivots', 'sockets', 'groups'].reduce(
-    (total, key) => total + ((runtime.declared?.[key] ?? 0) - (runtime[key]?.length ?? 0)),
-    0,
-  );
-
-/**
- * The named pivots and sockets, counted whether or not they are being drawn.
- *
- * Counted separately because they answer different questions and a single
- * "markers" number answers neither. Pivots are moving parts, and a static prop
- * that reports eight of them has been given seven axes nothing will ever turn.
- * Sockets are attachment points, and a prop something clips onto that reports
- * none is missing its contract.
- *
- * `placed` is the count that actually resolved to a node in the scene: a name on
- * `sculptRuntime` with no object behind it draws nothing, and silently counting
- * it would make a broken contract look honoured.
- */
-function useRuntimeMarkers(scene) {
-  return useMemo(() => {
-    const empty = { pivots: [], sockets: [], groups: [] };
-    if (!scene) return empty;
-    const rt = scene.userData?.sculptRuntime;
-    if (!rt) return empty;
-
-    // A runtime entry may carry its own Object3D, or only a name to look up.
-    const nodeFor = (name, value) =>
-      (value?.isObject3D ? value : null) ?? rt.byId?.nodes?.[name] ?? scene.getObjectByName(name);
-
-    const resolve = (list) => {
-      const out = [];
-      for (const [name, value] of entries(list)) {
-        const node = nodeFor(name, value);
-        if (!node) continue;
-        const position = new THREE.Vector3();
-        node.getWorldPosition(position);
-        out.push({ name, node, position });
-      }
-      return out;
-    };
-
-    // Members may be the Object3Ds themselves, or component ids to resolve.
-    const groups = [];
-    for (const [name, value] of entries(rt.destructionGroups)) {
-      const raw = Array.isArray(value) ? value : value?.members ?? [];
-      const members = raw
-        .map((m) => (m?.isObject3D ? m : rt.byId?.nodes?.[m] ?? scene.getObjectByName(String(m))))
-        .filter(Boolean);
-      if (members.length) groups.push({ name, members });
-    }
-
-    return {
-      pivots: resolve(rt.pivots),
-      sockets: resolve(rt.sockets),
-      groups,
-      declared: {
-        pivots: names(rt.pivots).length,
-        sockets: names(rt.sockets).length,
-        groups: names(rt.destructionGroups).length,
-      },
-    };
-  }, [scene]);
-}
-
-/**
- * An axes helper at every marker in one set.
- *
- * This is the visible payoff of requiring pivots and sockets on anything that
- * moves, and the fastest way to see one is in the wrong place: a lid hinge
- * floating above the lid is obvious here and invisible in a beauty render.
- */
-function MarkerGizmos({ markers, size, kind }) {
-  // Build the helpers once per marker set and dispose them on the way out --
-  // creating them inline would leak a helper per render.
-  const helpers = useMemo(
-    () =>
-      markers.map((m) => {
-        // Pivots and sockets are shown at once and must be told apart at a
-        // glance: a pivot is an AXIS, so it gets the three coloured axes and you
-        // can read which way a lid swings off it. A socket is a POINT something
-        // clips into, with no orientation to read, so it gets one cyan cage.
-        const helper =
-          kind === 'pivot'
-            ? new THREE.AxesHelper(size)
-            : new THREE.Mesh(
-                new THREE.OctahedronGeometry(size * 0.28),
-                new THREE.MeshBasicMaterial({ color: 0x35d6d6, wireframe: true }),
-              );
-        // Draw through the prop. A hinge is almost always INSIDE the geometry it
-        // hinges -- the lid pivot sits under the lid -- so a depth-tested gizmo
-        // is invisible exactly when you most need to see it.
-        helper.material.depthTest = false;
-        helper.material.depthWrite = false;
-        helper.material.transparent = true;
-        helper.renderOrder = 999;
-        helper.position.copy(m.position);
-        return { name: m.name, helper };
-      }),
-    [markers, size, kind],
-  );
-
-  useEffect(
-    () => () => { for (const h of helpers) { h.helper.geometry.dispose(); h.helper.material.dispose(); } },
-    [helpers],
-  );
-
-  if (!helpers.length) return null;
-  return (
-    <group>
-      {helpers.map((h) => <primitive key={h.name} object={h.helper} />)}
-    </group>
-  );
-}
-
-/**
- * The physics proxy for one part, drawn as the shape the engine will test.
- *
- * A collider is not the mesh: it is the cheap stand-in a physics engine actually
- * tests against, and the gap between the two is where a prop feels wrong to walk
- * into. Seeing them is the only way to notice a canopy with no box under its top
- * face, or a doorway filled solid.
- *
- * The geometry is built at UNIT size and sized by the mesh's own scale, which is
- * what makes the gizmo work: TransformControls in scale mode writes object.scale,
- * so a unit box scaled to [w, h, d] hands back the extents directly instead of a
- * multiplier over a size baked into the geometry.
- */
-function unitGeometry(type) {
-  if (type === 'sphere') return new THREE.SphereGeometry(0.5, 16, 12);
-  if (type === 'cylinder' || type === 'capsule') return new THREE.CylinderGeometry(0.5, 0.5, 1, 20, 1);
-  return new THREE.BoxGeometry(1, 1, 1);
 }
 
 const AMBER = 0xf0a63a;

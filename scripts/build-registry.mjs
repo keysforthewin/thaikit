@@ -115,7 +115,7 @@ const ships = (a) =>
        * is most of the kit, so their entries stay byte-identical.
        */
       maps: a.model.maps?.length
-        ? a.model.maps.map((m) => ({ material: m.material, role: m.role, file: m.file }))
+        ? a.model.maps.map((m) => ({ material: m.material, role: m.role, file: m.file, ...(m.ktx2 ? { ktx2: m.ktx2.file } : {}) }))
         : undefined,
       /**
        * What a game can drive without reading the geometry: the named pivots for

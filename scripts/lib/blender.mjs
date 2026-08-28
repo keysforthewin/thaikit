@@ -124,4 +124,24 @@ export const START_BLENDER = [
   `Then re-run the preflight. Expecting an addon on ${BLENDER_HOST}:${BLENDER_PORT}.`,
 ].join('\n');
 
+/**
+ * A Blender executable for BATCH work (`blender -b --python …`), which the
+ * lightmap bake uses instead of the live-session addon. On WSL the Windows
+ * install is reachable directly through interop.
+ */
+export async function blenderExe() {
+  const { access } = await import('node:fs/promises');
+  const { readdir } = await import('node:fs/promises');
+  const candidates = [process.env.THAIKIT_BLENDER_EXE].filter(Boolean);
+  try {
+    const base = '/mnt/c/Program Files/Blender Foundation';
+    for (const d of (await readdir(base)).sort().reverse()) candidates.push(`${base}/${d}/blender.exe`);
+  } catch { /* not WSL, or no Windows Blender */ }
+  candidates.push('/usr/bin/blender', '/usr/local/bin/blender', '/snap/bin/blender', '/Applications/Blender.app/Contents/MacOS/Blender');
+  for (const c of candidates) {
+    try { await access(c); return c; } catch { /* next */ }
+  }
+  return null;
+}
+
 export { fromRepoRelative, toRepoRelative };

@@ -4,12 +4,14 @@ import morgan from 'morgan';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ASSETS_DIR, SCRATCH_DIR, readRegistry, etagFor, REGISTRY_PATH } from '@thaikit/registry-core';
+import { ASSETS_DIR, SCRATCH_DIR, LEVELS_DIR, PACKS_DIR, readRegistry, etagFor, REGISTRY_PATH } from '@thaikit/registry-core';
 
 import { healthRouter } from './routes/health.js';
 import { assetsRouter } from './routes/assets.js';
 import { collidersRouter } from './routes/colliders.js';
 import { eventsRouter } from './routes/events.js';
+import { levelsRouter } from './routes/levels.js';
+import { packsRouter } from './routes/packs.js';
 import { errorHandler } from './errors.js';
 import { CLIENT_DIST, IS_DEV } from './paths.js';
 import { budgets } from '../../../scripts/lib/config.mjs';
@@ -34,6 +36,8 @@ export async function createApp(state) {
   app.use('/api', assetsRouter(state));
   app.use('/api', collidersRouter(state));
   app.use('/api', eventsRouter(state));
+  app.use('/api', levelsRouter(state));
+  app.use('/api', packsRouter(state));
 
   app.get('/api/meta', async (req, res, next) => {
     try {
@@ -105,6 +109,27 @@ export async function createApp(state) {
       },
     }),
   );
+
+  // Level build products (the baked GLB, its smoke render) and downloaded pack
+  // bundles. Both are overwritten in place, so no-cache like /media.
+  for (const [mount, dir] of [['/levels', LEVELS_DIR], ['/packs', PACKS_DIR]]) {
+    app.use(
+      mount,
+      express.static(dir, {
+        etag: true,
+        cacheControl: true,
+        maxAge: 0,
+        index: false,
+        dotfiles: 'ignore',
+        setHeaders(res, filePath) {
+          const ext = path.extname(filePath).toLowerCase();
+          if (ext === '.glb') res.setHeader('Content-Type', 'model/gltf-binary');
+          else if (ext === '.ktx2') res.setHeader('Content-Type', 'image/ktx2');
+          res.setHeader('Cache-Control', 'no-cache');
+        },
+      }),
+    );
+  }
 
   if (IS_DEV) {
     // Vite in middleware mode: HMR on the same port as the API, so there is no

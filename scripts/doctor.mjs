@@ -11,7 +11,8 @@ import { REGISTRY_PATH, ASSETS_DIR, SCRATCH_DIR, readRegistry } from '@thaikit/r
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { budgets, styleProfiles, categories } from './lib/config.mjs';
-import { blenderRepoRoot, probeAddon, BLENDER_HOST, BLENDER_PORT } from './lib/blender.mjs';
+import { blenderRepoRoot, probeAddon, BLENDER_HOST, BLENDER_PORT, blenderExe } from './lib/blender.mjs';
+import { findKtx, KTX_INSTALL_HINT } from './level/pipeline/ktx2.mjs';
 
 const run = promisify(execFile);
 
@@ -104,6 +105,25 @@ async function main() {
         } catch { /* keep looking */ }
       }
       throw new Error('no Chrome found; set CHROME_PATH. Renders and thumbnails will fail.');
+    }),
+
+    check('ktx (KTX-Software; level export texture compression)', async () => {
+      const k = await findKtx();
+      if (!k) throw new Error(KTX_INSTALL_HINT);
+      return `${k.version} at ${k.bin}`;
+    }),
+
+    check('gltf-transform + meshoptimizer (level bake)', async () => {
+      const core = await import('@gltf-transform/core');
+      const { MeshoptEncoder } = await import('meshoptimizer');
+      await MeshoptEncoder.ready;
+      return `gltf-transform ${core.VERSION ?? 'ok'}, meshopt ok`;
+    }),
+
+    check('blender.exe (headless lightmap bake)', async () => {
+      const exe = await blenderExe();
+      if (!exe) throw new Error('no blender executable found; set THAIKIT_BLENDER_EXE');
+      return exe;
     }),
 
     // Kept, but no skill is on this path any more: generation is procedural
