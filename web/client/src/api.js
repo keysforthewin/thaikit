@@ -158,6 +158,24 @@ levelsApi.bake = async (id, glbBytes, { baker = 'blender' } = {}) => {
 };
 levelsApi.build = (id) => request(`/api/levels/${id}/build`, {}, null);
 
+/**
+ * The sky's sidecar images. They are files, not part of the level document, so
+ * they upload immediately rather than waiting for a save -- the setting only
+ * ever records the filename the server chose.
+ */
+levelsApi.sky = {
+  list: (id) => request(`/api/levels/${encodeURIComponent(id)}/sky`, {}, null),
+  upload: async (id, slot, file) => {
+    const res = await bytesRequest(
+      `/api/levels/${encodeURIComponent(id)}/sky/${encodeURIComponent(slot)}`,
+      { method: 'POST', headers: { 'content-type': file.type || 'application/octet-stream' }, body: file },
+      null,
+    );
+    return res.json();
+  },
+  remove: (id, slot) => request(`/api/levels/${encodeURIComponent(id)}/sky/${encodeURIComponent(slot)}`, { method: 'DELETE' }, null),
+};
+
 export const ktx2Api = {
   status: (id) => request(`/api/assets/${id}/ktx2-status`, {}, null),
   compress: (id) => request(`/api/assets/${id}/compress-maps`, { method: 'POST' }, null),

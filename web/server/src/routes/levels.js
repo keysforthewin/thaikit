@@ -16,8 +16,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
+import sharp from 'sharp';
+
 import { LEVELS_DIR, levelDir, writeFileAtomic, etagForText } from '@thaikit/registry-core';
-import { LevelExtras, emptyLevelGltf } from '@thaikit/level-schema';
+import { LevelExtras, emptyLevelGltf, CUBE_FACES } from '@thaikit/level-schema';
 
 import { parseGlb, buildGlb, rewriteGlbJson, levelExtrasOf } from '../../../../scripts/lib/glb.mjs';
 import { runBake, bakeStatus } from '../lib/bake.js';
@@ -35,6 +37,63 @@ function slugify(name) {
 }
 
 const fileFor = (id) => path.join(levelDir(id), 'level.glb');
+
+/**
+ * The sky's sidecar images: `levels/<id>/sky/<slot>.<ext>`.
+ *
+ * A sky needs pictures and the level GLB is rebuilt and re-uploaded whole on
+ * every save, so several megabytes of equirect cannot ride inside it. They go
+ * beside it instead, and `/levels` already serves the directory statically --
+ * so this router only has to WRITE them. The level's own DELETE removes the
+ * whole directory, which takes the sky with it.
+ *
+ * One file per slot, whatever its extension: re-uploading a face replaces it
+ * rather than accumulating, so a level cannot end up with both `px.jpg` and
+ * `px.png` and no way to say which one is live.
+ */
+const SKY_SLOTS = new Set(['equirect', ...CUBE_FACES, 'clouds']);
+const SKY_EXT = { jpeg: 'jpg', jpg: 'jpg', png: 'png', webp: 'webp' };
+
+const skyDir = (id) => path.join(levelDir(id), 'sky');
+
+async function listSky(id) {
+  let entries = [];
+  try {
+    entries = await fs.readdir(skyDir(id), { withFileTypes: true });
+  } catch (err) {
+    if (err.code === 'ENOENT') return {};
+    throw err;
+  }
+  const out = {};
+  for (const e of entries) {
+    if (!e.isFile()) continue;
+    const slot = e.name.replace(/\.[^.]+$/, '');
+    if (!SKY_SLOTS.has(slot)) continue;
+    const stat = await fs.stat(path.join(skyDir(id), e.name));
+    out[slot] = { file: e.name, bytes: stat.size, updatedAt: stat.mtime.toISOString() };
+  }
+  return out;
+}
+
+/** Remove every file for a slot, whatever extension it was uploaded under. */
+async function clearSlot(id, slot) {
+  const dir = skyDir(id);
+  let entries = [];
+  try {
+    entries = await fs.readdir(dir);
+  } catch (err) {
+    if (err.code === 'ENOENT') return 0;
+    throw err;
+  }
+  let n = 0;
+  for (const name of entries) {
+    if (name.replace(/\.[^.]+$/, '') !== slot) continue;
+    await fs.rm(path.join(dir, name), { force: true });
+    n += 1;
+  }
+  return n;
+}
+
 
 async function readLevel(id) {
   try {
@@ -224,6 +283,64 @@ export function levelsRouter(state) {
       if (!buf) return res.status(404).json({ error: `no level "${req.params.id}"` });
       await fs.rm(dir, { recursive: true, force: true });
       res.json({ deleted: req.params.id });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+
+  // ---- the sky's sidecar images -------------------------------------------
+
+  router.get('/levels/:id/sky', async (req, res, next) => {
+    try {
+      if (!(await readLevel(req.params.id))) return res.status(404).json({ error: `no level "${req.params.id}"` });
+      res.json({ slots: await listSky(req.params.id) });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post(
+    '/levels/:id/sky/:slot',
+    guard,
+    express.raw({ type: ['image/*', 'application/octet-stream'], limit: '32mb' }),
+    async (req, res, next) => {
+      try {
+        const { id, slot } = req.params;
+        if (!SKY_SLOTS.has(slot)) return res.status(400).json({ error: `unknown sky slot "${slot}"`, slots: [...SKY_SLOTS] });
+        if (!(await readLevel(id))) return res.status(404).json({ error: `no level "${id}"` });
+        if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: 'expected an image body' });
+
+        // Decode rather than trust the Content-Type: the bake has to be able to
+        // read this back with sharp months later, so a file sharp cannot open
+        // is rejected here where the author can still see why.
+        let meta;
+        try {
+          meta = await sharp(req.body).metadata();
+        } catch (err) {
+          return res.status(400).json({ error: `not a readable image: ${err.message}` });
+        }
+        const ext = SKY_EXT[meta.format];
+        if (!ext) return res.status(400).json({ error: `unsupported image format "${meta.format}"; use JPEG, PNG or WebP` });
+
+        await fs.mkdir(skyDir(id), { recursive: true });
+        await clearSlot(id, slot);
+        const file = `${slot}.${ext}`;
+        await writeFileAtomic(path.join(skyDir(id), file), req.body);
+        res.status(201).json({ slot, file, bytes: req.body.length, width: meta.width, height: meta.height, format: meta.format });
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
+
+  router.delete('/levels/:id/sky/:slot', guard, async (req, res, next) => {
+    try {
+      const { id, slot } = req.params;
+      if (!SKY_SLOTS.has(slot)) return res.status(400).json({ error: `unknown sky slot "${slot}"` });
+      if (!(await readLevel(id))) return res.status(404).json({ error: `no level "${id}"` });
+      const removed = await clearSlot(id, slot);
+      res.json({ slot, removed });
     } catch (err) {
       next(err);
     }

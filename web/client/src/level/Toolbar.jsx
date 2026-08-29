@@ -1,4 +1,5 @@
 import { useLevel } from './store.js';
+import { DEFAULT_GROUND } from './ground.js';
 
 const Btn = ({ on, onClick, title, children, disabled }) => (
   <button className={on ? 'primary' : ''} onClick={onClick} title={title} disabled={disabled}>{children}</button>
@@ -14,6 +15,14 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
   const toggleView = useLevel((s) => s.toggleView);
   const setSetting = useLevel((s) => s.setSetting);
   const snap = doc?.settings?.snap ?? {};
+  const ground = { ...DEFAULT_GROUND, ...(doc?.settings?.ground ?? {}) };
+  // Read the height from the STORE, not from this render. Two clicks in quick
+  // succession both run before React re-renders, so a closed-over `ground.y`
+  // makes the second one repeat the first step instead of adding to it.
+  const nudgeGround = (dy) => {
+    const y = useLevel.getState().doc?.settings?.ground?.y ?? 0;
+    setSetting('ground.y', +(y + dy).toFixed(3));
+  };
   const hasMoon = doc?.lights.some((l) => l.role === 'moon');
 
   return (
@@ -42,6 +51,19 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
         <Btn on={view.sockets} onClick={() => toggleView('sockets')} title="named sockets">sockets</Btn>
         <Btn on={view.helpers} onClick={() => toggleView('helpers')} title="light helpers">helpers</Btn>
         <Btn on={view.wireframe} onClick={() => toggleView('wireframe')} title="wireframe">wire</Btn>
+      </div>
+      <div className="group">
+        <Btn on={ground.enabled} onClick={() => setSetting('ground.enabled', !ground.enabled)} title="one flat walkable surface under the whole map">ground</Btn>
+        {ground.enabled && (
+          <>
+            <button onClick={() => nudgeGround(-0.5)} title="lower the ground by 0.5 m">−</button>
+            <input
+              type="number" step="0.25" value={ground.y} style={{ width: 72 }} title="ground height (m)"
+              onChange={(e) => { const n = Number(e.target.value); if (Number.isFinite(n)) setSetting('ground.y', n); }}
+            />
+            <button onClick={() => nudgeGround(0.5)} title="raise the ground by 0.5 m">+</button>
+          </>
+        )}
       </div>
       <div className="group">
         <button className="primary" onClick={onAdd} title="add an object from any installed pack — A">+ object</button>

@@ -141,6 +141,69 @@ placed geometry. Export writes a second, self-contained GLB.
 - **three-stdlib's TransformControls ignores a `pointermove` whose `button !== -1`.** A real mouse
   reports -1 while moving; a synthetic test event that copies `button: 0` from the pointerdown
   drags nothing and looks like a broken gizmo.
+- **The ground plane is a SETTING that bakes as tiles.** `settings.ground` (enabled, y, colour,
+  margin) is one flat walkable surface under the whole map -- there is exactly one, it cannot be
+  rotated or scaled, and the only thing anyone moves is its height. Its extent is DERIVED from the
+  world bounds of everything placed, expanded by the margin and snapped out to whole cells, so
+  adding a prop at the edge extends the floor under it. `buildExportScene` emits it as one ordinary
+  STATIC placement per cell (`ground_<ix>_<iz>`, `@thaikit/ground`), which is the whole trick:
+  partition, join, LOD, the lightmap and the manifest's collider list all key off the placement
+  rows, so the floor needs no special case in any of them and the runtime needs no change at all.
+  A single 400 m quad would instead land in ONE cell, take one lightmap island for the level and
+  simplify to nothing at LOD2. The collider is a box a quarter-metre THICK hanging below the
+  surface, not a zero-height sheet: a plane is a knife edge to a character controller. Its default
+  colour is `#8b909b` because the first try, `#4a4f5c`, was invisible under the editor's night rig
+  and made the toggle look broken.
+- **The sky is a setting with SIDECAR images, and it is three domes, not a background.**
+  `settings.sky` is a base backdrop (one equirect, or six cube faces), an additive
+  cloud dome that drifts, and a procedural star field -- authored on the `sky` tab
+  beside `object` and `level`. The pictures do NOT go in the level GLB: it is
+  rebuilt and re-uploaded whole on every save, so they are uploaded to
+  `levels/<id>/sky/<slot>.<ext>` (`POST /api/levels/:id/sky/:slot`, one file per
+  slot, replaced not accumulated) and the setting records only the filename.
+  `/levels` already serves them statically, so the editor reads them back with no
+  route. The BAKE is what makes a shipped level self-contained again: it reads the
+  sidecars off disk and writes them into the GLB as unreferenced KTX2 images, the
+  lightmap's arrangement, with the indices on `manifest.sky`.
+  `packages/level-runtime/src/sky.js` (`buildSky`) is shared VERBATIM by
+  `loadLevel()` and the editor's `<SkyDome>`, so the star shader you art-direct is
+  the one that ships. Four things it cost:
+  - **Six faces are resampled to ONE equirect at bake.** A KTX2 `CubeTexture`
+    cannot be assembled from six compressed 2D images, so shipping a cube would
+    mean a second runtime path. `cubeToEquirect` inverts three's own convention
+    (`u = atan2(z,x)/2PI + 0.5`, `v = asin(y)/PI + 0.5`); the first version was a
+    quarter turn out and looked entirely plausible.
+  - **Every sky image ships FLIPPED.** The editor loads PNG/JPEG through
+    `TextureLoader`, where `flipY` defaults true; a KTX2 arrives as a
+    `CompressedTexture`, which ignores `flipY` because WebGL cannot flip a
+    compressed upload. Flipping the pixels once in `prepareSkyImages` is the only
+    place the two paths can agree.
+  - **`scene.background` is the wrong home for a panorama.** Three does not sample
+    an equirect background directly -- `WebGLEnvironments.getCube` converts it into
+    a `WebGLCubeRenderTarget` sized by the texture's HEIGHT (24 MB of VRAM for a
+    2048x1024 sky) and copies `minFilter`/`generateMipmaps` off the source, so a
+    KTX2's mipmap filtering with no generated chain makes the target incomplete and
+    it samples BLACK. It rendered fine in the editor and vanished in the shipped
+    level. The base is a dome sampling the panorama as itself.
+  - **The backdrop ships with NO mip chain** (`minFilter = LinearFilter`, and the
+    bake encodes it without one). An equirect's `u` sweeps the whole panorama
+    across a few pixels at the poles, so automatic mip selection picks the smallest
+    level and the zenith collapses to the average colour of the entire sky -- a
+    grey disc directly overhead.
+  A hand-written `ShaderMaterial` also gets none of three's output pipeline: without
+  `#include <tonemapping_fragment>` and `#include <colorspace_fragment>` the domes
+  write linear values into a buffer the renderer already treats as encoded, and a
+  pure blue sky renders half dark. Both domes set `raycast = () => {}`, or
+  `placementPoint`'s forward ray meets the sky first and every object lands on it;
+  and `smoke-level.mjs` passes `sky: false`, because `frameStats` measures the share
+  of the frame that is not the backdrop and a sky makes every pixel foreground.
+- **A new object lands under the CROSSHAIR, not under the pointer.** `placementPoint` casts the
+  camera's forward ray through the centre of the frame and takes the first thing it meets -- another
+  object's surface, or the ground plane -- and with neither, puts the item in front of the camera at
+  `r / sin(fov/2) * 1.35`, the distance that frames it whole. The grid step snaps x and z ONLY: the
+  surface it landed on is the answer for y, whatever the grid says. The old behaviour was
+  `lastGroundHit` at y=0, which after a pick from a modal is wherever the pointer last crossed the
+  plane on its way to the button.
 - **The bake runs in the browser first, then Node.** Procedural textures are canvases that only
   exist in a page, so `web/client/src/level/export/buildExportScene.js` materialises every
   factory, expands `InstancedMesh`es, tags meshes with placement/cell/static, and ships a raw GLB to

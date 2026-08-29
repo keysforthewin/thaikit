@@ -1,7 +1,11 @@
 import { newLightId } from './ids.js';
+import { DEFAULT_GROUND } from './ground.js';
+import { DEFAULT_SKY } from './sky.js';
 
 export const DEFAULT_SETTINGS = {
   cellSize: 24,
+  ground: { ...DEFAULT_GROUND },
+  sky: structuredClone(DEFAULT_SKY),
   gridSize: 1,
   snap: {
     enabled: true, translate: 0.5, rotateDeg: 15, scale: 0.1,

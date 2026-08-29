@@ -20,6 +20,9 @@ export const Quat = z.tuple([num, num, num, num]);
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 export const Slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
+/** The six cube-map faces, in the order three's CubeTextureLoader wants them. */
+export const CUBE_FACES = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
+
 /** `@thaikit/honda-wave` -- a pack namespace and an item name. */
 export const ItemRef = z.string().regex(/^@[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/);
 
@@ -39,8 +42,74 @@ export const SnapSettings = z.object({
     .default({}),
 });
 
+/**
+ * One flat walkable surface under the whole map. It is a setting rather than a
+ * placement because there is exactly one, its extent follows the map's own, and
+ * the only thing anyone moves is its height.
+ */
+export const GroundSettings = z.object({
+  enabled: z.boolean().default(false),
+  y: num.default(0),
+  color: hex.default('#8b909b'),
+  margin: num.nonnegative().default(8),
+});
+
+/**
+ * The sky: three layers over the level, none of which is geometry in the bake.
+ *
+ * A base dome (one equirectangular image, or six cube faces the bake resamples
+ * into one), an ADDITIVE cloud dome that drifts, and a procedural star field
+ * that twinkles. Like the ground it is a SETTING -- there is exactly one sky,
+ * nothing about it can be selected or dragged, and its images live beside the
+ * project as `levels/<id>/sky/<slot>.<ext>` rather than inside the level GLB,
+ * which is re-uploaded whole on every save.
+ *
+ * Only the FILENAME rides in the level; the bake reads the sidecar off disk and
+ * folds it into the shipped GLB as an unreferenced KTX2 image, the same
+ * arrangement the lightmap uses.
+ */
+export const SkySettings = z.object({
+  enabled: z.boolean().default(false),
+  base: z
+    .object({
+      mode: z.enum(['none', 'equirect', 'cube']).default('none'),
+      /** The equirect slot's file, when mode is 'equirect'. */
+      file: z.string().nullable().default(null),
+      /** px/nx/py/ny/pz/nz -> filename, when mode is 'cube'. */
+      faces: z.record(z.enum(CUBE_FACES), z.string()).nullable().default(null),
+      intensity: num.nonnegative().default(1),
+      rotationDeg: num.default(0),
+    })
+    .default({}),
+  clouds: z
+    .object({
+      file: z.string().nullable().default(null),
+      color: hex.default('#ffffff'),
+      opacity: num.min(0).max(1).default(0.5),
+      /** Yaw the cloud dome turns through per minute. */
+      driftDegPerMin: num.default(3),
+      repeat: num.positive().default(2),
+      /** Flattens the dome so it reads as a sky rather than a ball around you. */
+      heightScale: num.positive().default(0.35),
+    })
+    .default({}),
+  stars: z
+    .object({
+      enabled: z.boolean().default(true),
+      density: num.positive().default(1),
+      brightness: num.nonnegative().default(1),
+      twinkleSpeed: num.nonnegative().default(1),
+      color: hex.default('#dfe6ff'),
+      /** How far up the dome the field fades in, 0 = to the horizon. */
+      horizonFade: num.min(0).max(1).default(0.25),
+    })
+    .default({}),
+});
+
 export const LevelSettings = z.object({
   cellSize: num.positive().default(24),
+  ground: GroundSettings.default({}),
+  sky: SkySettings.default({}),
   gridSize: num.positive().default(1),
   snap: SnapSettings.default({}),
   showGrid: z.boolean().default(true),
@@ -189,6 +258,43 @@ export const ManifestExtras = z.object({
     .default(null),
   lights: z.array(ManifestLight).default([]),
   ambient: z.object({ sky: hex, ground: hex, intensity: num.nonnegative() }),
+  /**
+   * The sky, if the level has one. Nullable and defaulted so a level baked
+   * before the sky existed still parses at schemaVersion 1.
+   *
+   * `image` is an index into `images[]` -- the base and cloud maps are KTX2
+   * images nothing references, read by bufferView exactly like the lightmap.
+   */
+  sky: z
+    .object({
+      base: z
+        .object({ image: z.number().int().nonnegative(), intensity: num.nonnegative().default(1), rotationDeg: num.default(0) })
+        .nullable()
+        .default(null),
+      clouds: z
+        .object({
+          image: z.number().int().nonnegative(),
+          color: hex.default('#ffffff'),
+          opacity: num.min(0).max(1).default(0.5),
+          driftDegPerMin: num.default(3),
+          repeat: num.positive().default(2),
+          heightScale: num.positive().default(0.35),
+        })
+        .nullable()
+        .default(null),
+      stars: z
+        .object({
+          density: num.positive().default(1),
+          brightness: num.nonnegative().default(1),
+          twinkleSpeed: num.nonnegative().default(1),
+          color: hex.default('#dfe6ff'),
+          horizonFade: num.min(0).max(1).default(0.25),
+        })
+        .nullable()
+        .default(null),
+    })
+    .nullable()
+    .default(null),
   colliders: z.array(z.object({ placement: z.string(), shapes: z.array(ColliderShape) })).default([]),
   dynamic: z
     .array(

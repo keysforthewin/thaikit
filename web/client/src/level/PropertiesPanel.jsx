@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { useLevel } from './store.js';
 import { findEntity, ownerOf } from './ids.js';
 import { isStatic } from './cells.js';
+import { DEFAULT_GROUND } from './ground.js';
+import { SkyPanel } from './SkyPanel.jsx';
 import { peekPrototype } from '../three/instances.js';
 
 /** A number field that commits on blur / Enter, one undo entry per change. */
@@ -55,8 +57,11 @@ export function PropertiesPanel() {
   const edit = (label, fn) => commit(label, (d) => { for (const id of ids) { const f = findEntity(d, id); if (f) fn(f.entity, f.kind, d); } });
 
   let body = null;
-  if (tab === 'level' || !showObject) {
+  if (tab === 'sky') {
+    body = <SkyPanel Num={Num} />;
+  } else if (tab === 'level' || !showObject) {
     const s = doc.settings;
+    const ground = { ...DEFAULT_GROUND, ...(s.ground ?? {}) };
     body = (
       <>
         <div className="field"><label>name</label><input value={doc.name} onChange={(e) => commit('rename level', (d) => { d.name = e.target.value; })} /></div>
@@ -64,6 +69,23 @@ export function PropertiesPanel() {
           <div className="field"><label>cell size (m)</label><Num value={s.cellSize} step={1} min={4} onCommit={(n) => setSetting('cellSize', n)} /></div>
           <div className="field"><label>grid (m)</label><Num value={s.gridSize} step={0.5} min={0.1} onCommit={(n) => setSetting('gridSize', n)} /></div>
         </div>
+        <h4>ground</h4>
+        <div className="row">
+          <div className="field">
+            <label>ground plane</label>
+            <select value={ground.enabled ? 'on' : 'off'} onChange={(e) => setSetting('ground.enabled', e.target.value === 'on')} title="one flat walkable surface under the whole map, baked as one tile per cell">
+              <option value="off">none</option>
+              <option value="on">on</option>
+            </select>
+          </div>
+          <div className="field"><label>height (m)</label><Num value={ground.y} step={0.25} onCommit={(n) => setSetting('ground.y', n)} /></div>
+        </div>
+        {ground.enabled && (
+          <div className="row">
+            <div className="field"><label>colour</label><input type="color" value={ground.color} onChange={(e) => setSetting('ground.color', e.target.value)} /></div>
+            <div className="field"><label>margin (m)</label><Num value={ground.margin} step={1} min={0} onCommit={(n) => setSetting('ground.margin', n)} /></div>
+          </div>
+        )}
         <h4>surface snap</h4>
         <div className="row">
           <div className="field"><label>gap threshold (m)</label><Num value={s.snap.surface.threshold} step={0.05} onCommit={(n) => setSetting('snap.surface.threshold', n)} /></div>
@@ -193,7 +215,8 @@ export function PropertiesPanel() {
     <aside className="props">
       <div className="tabs sub">
         <span className={`tab ${tab === 'object' && showObject ? 'on' : ''}`} onClick={() => setTab('object')}>object</span>
-        <span className={`tab ${tab === 'level' || !showObject ? 'on' : ''}`} onClick={() => setTab('level')}>level</span>
+        <span className={`tab ${(tab === 'level' || !showObject) && tab !== 'sky' ? 'on' : ''}`} onClick={() => setTab('level')}>level</span>
+        <span className={`tab ${tab === 'sky' ? 'on' : ''}`} onClick={() => setTab('sky')}>sky</span>
       </div>
       <div className="content">{body}</div>
     </aside>

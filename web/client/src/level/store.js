@@ -38,6 +38,13 @@ export const useLevel = create((set, get) => ({
   dragging: false,
   /** Bumps whenever a prototype resolves, so stats and cells recompute. */
   protoRev: 0,
+  /**
+   * Bumps on every sky image upload. A slot keeps its filename across a
+   * re-upload (`px.jpg` replaced by another `px.jpg`), so without a
+   * cache-buster in the URL the browser serves the old face and the upload
+   * looks like it silently did nothing.
+   */
+  skyRev: 0,
 
   setCatalogue(catalogue) {
     const byRef = {};
@@ -112,6 +119,7 @@ export const useLevel = create((set, get) => ({
   setDragging: (dragging) => set({ dragging }),
   setGroundHit: (p) => set({ lastGroundHit: p }),
   bumpProto: () => set((s) => ({ protoRev: s.protoRev + 1 })),
+  bumpSky: () => set((s) => ({ skyRev: s.skyRev + 1 })),
   setBuildError: (id, error) => set((s) => ({ buildErrors: { ...s.buildErrors, [id]: error } })),
 
   /** Settings edits are commits too, so cell-size experiments are undoable. */

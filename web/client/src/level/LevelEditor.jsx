@@ -21,6 +21,7 @@ import { levelStats } from './cells.js';
 import { findEntity, ownerOf, newPlacementId, newSpawnId } from './ids.js';
 import { defaultMoon, defaultPointLight, defaultSpotLight, round4 } from './defaults.js';
 import { nodeFor } from './nodes.js';
+import { placementPoint } from './placement.js';
 import { evictUnused, itemKey } from '../three/instances.js';
 
 const snapTo = (v, step) => (step > 0 ? Math.round(v / step) * step : v);
@@ -105,12 +106,17 @@ export default function LevelEditor({ initialId }) {
   const addItem = useCallback((item) => {
     const st = useLevel.getState();
     const step = st.doc.settings?.snap?.enabled !== false ? st.doc.settings.snap.translate : 0;
-    const at = st.lastGroundHit.map((v) => round4(snapTo(v, step)));
+    const { position, on } = placementPoint(st.doc, item, { fallback: st.lastGroundHit });
+    // The grid step is a PLAN snap. Snapping the height too would lift a crate
+    // off the roof it was just dropped on, or bury it -- the surface it landed
+    // on is the answer for y, whatever the grid says.
+    const at = [round4(snapTo(position[0], step)), round4(position[1]), round4(snapTo(position[2], step))];
     const id = newPlacementId();
     st.commit(`add ${item.title}`, (d) => {
-      d.placements.push({ id, ref: item.ref, version: item.version ?? null, name: '', position: [at[0], 0, at[2]], rotation: [0, 0, 0], scale: [1, 1, 1], static: null, physics: null, castShadow: true, receiveShadow: true, tags: [] });
+      d.placements.push({ id, ref: item.ref, version: item.version ?? null, name: '', position: at, rotation: [0, 0, 0], scale: [1, 1, 1], static: null, physics: null, castShadow: true, receiveShadow: true, tags: [] });
     });
     st.select(id);
+    st.setStatus(on === 'object' ? 'placed on the surface under the crosshair' : on === 'ground' ? 'placed on the ground' : 'placed in front of the camera');
     setModal(null);
   }, []);
 

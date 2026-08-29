@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { getPrototype, instantiate } from '../../three/instances.js';
 import { buildLight } from '../doc/lights.js';
 import { cellOf, cellKey, isStatic } from '../cells.js';
+import { groundOf, groundExtent, GROUND_THICKNESS } from '../ground.js';
 import { exportGlb } from '../doc/toGlb.js';
 
 /**
@@ -77,6 +78,8 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress } =
     onProgress?.(i + 1, doc.placements.length);
   }
 
+  addGround(doc, scene, placements, cellSize);
+
   for (const l of doc.lights) {
     if (l.enabled === false) continue;
     const light = buildLight(l);
@@ -107,6 +110,63 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress } =
   await settleImages(scene);
   markCanvasTextures(scene);
   return { scene, missing };
+}
+
+/**
+ * The ground plane, cut to the cell grid.
+ *
+ * Each tile enters the bake as an ordinary STATIC placement, which is the whole
+ * trick: partition, join, LOD, the lightmap and the manifest's collider list
+ * all key off the placement rows, so the floor needs no special case in any of
+ * them. It gets a box collider a quarter-metre thick rather than a zero-height
+ * sheet -- a plane collider is a knife edge to a character controller, and
+ * something has to stop a physics prop that lands on it fast.
+ *
+ * The extent is measured from the real world bounds of everything already
+ * placed, so it covers the map rather than a number somebody typed.
+ */
+function addGround(doc, scene, placements, cellSize) {
+  const ground = groundOf(doc);
+  if (!ground.enabled) return;
+
+  const extent = groundExtent(placements.map((p) => p.bounds), { cellSize, margin: ground.margin });
+  const geometry = new THREE.PlaneGeometry(cellSize, cellSize);
+  // One material for every tile: the pipeline dedups identical materials, and
+  // an identical one per tile is what lets the cells merge cleanly.
+  const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(ground.color), roughness: 1, metalness: 0 });
+  const half = cellSize / 2;
+
+  for (const t of extent.tiles) {
+    const id = `ground_${t.ix}_${t.iz}`;
+    const cell = cellKey(t.ix, t.iz);
+    const tk = { kind: 'placement', placement: id, asset: '@thaikit/ground', cell, static: true };
+
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.receiveShadow = true;
+    mesh.castShadow = false;
+    mesh.userData.tk = tk;
+
+    const g = new THREE.Group();
+    g.name = id;
+    g.position.set(t.cx, ground.y, t.cz);
+    g.add(mesh);
+    g.userData = { tk: { ...tk, physics: { enabled: false, massKg: null } } };
+    g.updateMatrixWorld(true);
+    scene.add(g);
+
+    placements.push({
+      id, ref: '@thaikit/ground', static: true, cell, ix: t.ix, iz: t.iz,
+      position: [t.cx, ground.y, t.cz], rotation: [0, 0, 0], scale: [1, 1, 1],
+      bounds: { min: [t.cx - half, ground.y - GROUND_THICKNESS, t.cz - half], max: [t.cx + half, ground.y, t.cz + half] },
+      physics: { enabled: false, massKg: null },
+      destructionGroups: [],
+      // Half-extents, hanging BELOW the surface so the walkable face is exactly
+      // the rendered one.
+      colliders: [{ name: 'ground', type: 'box', offset: [0, -GROUND_THICKNESS / 2, 0], scale: [half, GROUND_THICKNESS / 2, half], isTrigger: false }],
+      colliderYaw: 0,
+    });
+  }
 }
 
 /** InstancedMesh -> N meshes, so every triangle has a real matrixWorld to flatten. */

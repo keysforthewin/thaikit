@@ -89,7 +89,7 @@ export function localShapes(p) {
   }));
 }
 
-export function writeManifest({ bake, lodStats, lightmapImage, generator }) {
+export function writeManifest({ bake, lodStats, lightmapImage, skyIndices = null, generator }) {
   return (doc) => {
     const root = doc.getRoot();
     const scene = root.listScenes()[0];
@@ -157,6 +157,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, generator }) {
       lightmap: lightmapImage == null ? null : { image: lightmapImage, channel: 1, intensity: settings.lightmap?.intensity ?? 1, layout: 'rgb=indirect+sky,a=moonVisibility' },
       lights,
       ambient: { sky: settings.environment?.hemisphere?.sky ?? '#8797c2', ground: settings.environment?.hemisphere?.ground ?? '#2a2620', intensity: settings.environment?.hemisphere?.intensity ?? 0.35 },
+      sky: skyBlock(settings.sky, skyIndices),
       colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p) })),
       dynamic: bake.placements.filter((p) => !p.static).map((p) => ({
         node: `dynamic/${p.id}`, placement: p.id, physics: p.physics, destructionGroups: p.destructionGroups ?? [], colliders: localShapes(p),
@@ -167,4 +168,37 @@ export function writeManifest({ bake, lodStats, lightmapImage, generator }) {
     root.setExtras({});
     return manifest;
   };
+}
+
+/**
+ * The sky as the runtime needs it: the same numbers the author set, but with
+ * FILENAMES replaced by indices into the baked GLB's `images[]`. A layer whose
+ * image did not make it in is null rather than an index that points nowhere,
+ * and a level with no sky at all is one null -- which is what lets a level
+ * baked before the sky existed still parse at schemaVersion 1.
+ */
+function skyBlock(sky, indices) {
+  if (!sky?.enabled) return null;
+  const base = indices?.base == null ? null : {
+    image: indices.base,
+    intensity: sky.base?.intensity ?? 1,
+    rotationDeg: sky.base?.rotationDeg ?? 0,
+  };
+  const clouds = indices?.clouds == null ? null : {
+    image: indices.clouds,
+    color: sky.clouds?.color ?? '#ffffff',
+    opacity: sky.clouds?.opacity ?? 0.5,
+    driftDegPerMin: sky.clouds?.driftDegPerMin ?? 3,
+    repeat: sky.clouds?.repeat ?? 2,
+    heightScale: sky.clouds?.heightScale ?? 0.35,
+  };
+  const stars = sky.stars?.enabled === false ? null : {
+    density: sky.stars?.density ?? 1,
+    brightness: sky.stars?.brightness ?? 1,
+    twinkleSpeed: sky.stars?.twinkleSpeed ?? 1,
+    color: sky.stars?.color ?? '#dfe6ff',
+    horizonFade: sky.stars?.horizonFade ?? 0.25,
+  };
+  // Enabled but with nothing in any layer is not a sky.
+  return base || clouds || stars ? { base, clouds, stars } : null;
 }

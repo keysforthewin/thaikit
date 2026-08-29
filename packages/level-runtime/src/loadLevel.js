@@ -7,6 +7,7 @@ import { manifestFromScene } from './manifest.js';
 import { CellSet, CASTER_LAYER } from './cells.js';
 import { attachLightmap, eachMaterial } from './materials.js';
 import { applyLights } from './lights.js';
+import { buildSky } from './sky.js';
 import { buildColliders } from './colliders.js';
 import { LevelRaycaster } from './bvh.js';
 import { NullPhysics } from './physics/null.js';
@@ -27,9 +28,10 @@ import { pickSpawn } from './spawns.js';
  * @param {PhysicsAdapter} [opts.physics]        default: none
  * @param {string}         [opts.transcoderPath] where basis_transcoder.{js,wasm} are served (default 'https://unpkg.com/three@0.185.0/examples/jsm/libs/basis/')
  * @param {KTX2Loader}     [opts.ktx2Loader]     a configured loader, if you already have one
+ * @param {boolean}        [opts.sky]            build the level's sky (default true); false leaves `scene.background` alone
  */
 export async function loadLevel(source, opts) {
-  const { scene, renderer, camera = null, physics = new NullPhysics(), transcoderPath, ktx2Loader: givenKtx2, lightmapIntensity = null, hemisphere = true } = opts;
+  const { scene, renderer, camera = null, physics = new NullPhysics(), transcoderPath, ktx2Loader: givenKtx2, lightmapIntensity = null, hemisphere = true, sky: wantSky = true } = opts;
   if (!scene || !renderer) throw new Error('loadLevel needs { scene, renderer }');
 
   const ktx2 = givenKtx2 ?? new KTX2Loader().setTranscoderPath(transcoderPath ?? 'https://unpkg.com/three@0.185.0/examples/jsm/libs/basis/').detectSupport(renderer);
@@ -50,15 +52,20 @@ export async function loadLevel(source, opts) {
   }
   for (const node of dynamicNodes.values()) node.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
 
+  // The lightmap and the sky's maps are IMAGES nothing references (glTF has no
+  // slot for either), so they have no textures[] entry to load through the
+  // parser: read the bufferView the manifest points at and transcode it
+  // directly. `parser.loadTexture(i)` on one of these fails on 'source'.
+  const readEmbedded = async (index, what) => {
+    const imageDef = gltf.parser.json.images?.[index];
+    if (!imageDef || imageDef.bufferView == null) throw new Error(`manifest.${what} does not point at an embedded image`);
+    const view = await gltf.parser.getDependency('bufferView', imageDef.bufferView);
+    return new Promise((resolve, reject) => ktx2.parse(view.slice(0), resolve, reject));
+  };
+
   let lightmap = null;
   if (manifest.lightmap) {
-    // The lightmap is an IMAGE nothing references (no material carries a
-    // lightMap in glTF), so it has no textures[] entry to load through the
-    // parser: read its bufferView and transcode it directly.
-    const imageDef = gltf.parser.json.images?.[manifest.lightmap.image];
-    if (!imageDef || imageDef.bufferView == null) throw new Error('manifest.lightmap.image does not point at an embedded image');
-    const view = await gltf.parser.getDependency('bufferView', imageDef.bufferView);
-    lightmap = await new Promise((resolve, reject) => ktx2.parse(view.slice(0), resolve, reject));
+    lightmap = await readEmbedded(manifest.lightmap.image, 'lightmap.image');
     lightmap.channel = manifest.lightmap.channel ?? 1;
     lightmap.colorSpace = THREE.SRGBColorSpace;
     lightmap.flipY = false;
@@ -72,12 +79,27 @@ export async function loadLevel(source, opts) {
   if (camera) camera.layers.disable(CASTER_LAYER);
   scene.add(root);
 
+  // The sky goes on the SCENE, not on `root`: it is not level geometry, and
+  // anything under root is fair game for the cell sweep and the LOD tiers. It
+  // is all domes, so `scene.background` is left exactly as the game set it --
+  // it shows only if every sky layer is off.
+  let sky = null;
+  if (manifest.sky && wantSky) {
+    const base = manifest.sky.base ? await readEmbedded(manifest.sky.base.image, 'sky.base.image') : null;
+    const clouds = manifest.sky.clouds ? await readEmbedded(manifest.sky.clouds.image, 'sky.clouds.image') : null;
+    // No flipY to set: KTX2Loader hands back CompressedTextures, which ignore
+    // the flag because WebGL cannot flip a compressed upload. The bake writes
+    // these images already flipped so this path matches what the editor showed.
+    sky = buildSky(manifest.sky, { base, clouds, owned: true });
+    scene.add(sky.group);
+  }
+
   const colliders = buildColliders(manifest, physics, { nodes: dynamicNodes });
   const raycaster = new LevelRaycaster(cells);
 
   const followTarget = new THREE.Vector3();
   return {
-    manifest, root, cells, lights, lightmap, colliders, physics, gltf,
+    manifest, root, cells, lights, sky, lightmap, colliders, physics, gltf,
     spawns: { list: manifest.spawns, pick: (team) => pickSpawn(manifest.spawns, team) },
     raycast: (ray, o) => raycaster.raycast(ray, o),
     /** Step physics, sync dynamic nodes, switch LOD tiers, keep the moon's shadow box around `cameraPosition`. */
@@ -93,12 +115,19 @@ export async function loadLevel(source, opts) {
         cells.update(cameraPosition);
         lights.follow(followTarget.copy(cameraPosition));
       }
+      // The domes ride the camera, so they take the position even on a frame
+      // where nothing else moved.
+      sky?.update(dt, cameraPosition);
     },
     dispose() {
       scene.remove(root);
       root.traverse((o) => { if (o.isMesh) { o.geometry.boundsTree?.dispose?.(); o.geometry.dispose(); } });
       eachMaterial(root, (m) => { for (const v of Object.values(m)) if (v?.isTexture) v.dispose(); m.dispose(); });
       lightmap?.dispose();
+      if (sky) {
+        scene.remove(sky.group);
+        sky.dispose();
+      }
       physics.dispose();
       if (!givenKtx2) ktx2.dispose();
     },

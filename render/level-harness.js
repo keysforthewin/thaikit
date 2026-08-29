@@ -43,7 +43,10 @@ function frameStats() {
 window.__smoke = { ready: false };
 (async () => {
   try {
-    const level = await loadLevel(url, { scene, renderer, camera, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
+    // No sky. `frameStats` measures the share of the frame that is NOT the
+    // backdrop, and a sky makes every pixel foreground -- the coverage gate
+    // would read 100% on an empty level. The smoke test is about geometry.
+    const level = await loadLevel(url, { scene, renderer, camera, sky: false, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
     const spawn = level.spawns.list[0] ?? { position: [0, 0, 0], yawDeg: 0 };
     const b = level.manifest.bounds;
     const center = new THREE.Vector3((b.min[0] + b.max[0]) / 2, 0, (b.min[2] + b.max[2]) / 2);

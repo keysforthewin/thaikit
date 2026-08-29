@@ -32,6 +32,7 @@ import { partitionCells } from './pipeline/partition.mjs';
 import { buildLodTiers } from './pipeline/lod.mjs';
 import { compressTextures, addLightmapTexture } from './pipeline/textures.mjs';
 import { writeManifest } from './pipeline/manifest.mjs';
+import { prepareSkyImages, addSkyTextures } from './pipeline/sky.mjs';
 import { bakeWithBlender } from './bakers/blender-cycles.mjs';
 import { findKtx, KTX_INSTALL_HINT } from './pipeline/ktx2.mjs';
 
@@ -155,12 +156,25 @@ async function main() {
   })(doc);
   let lightmapImage = null;
   if (lightmapPng) lightmapImage = await addLightmapTexture(doc, lightmapPng, { onProgress: (m) => progress('textures', m) });
-  progress('textures', `${count} texture(s) as KTX2${lightmapImage != null ? ' + lightmap' : ''}`);
+
+  // The sky's images are sidecars beside the project; the shipped level is one
+  // file, so they are folded in here as unreferenced KTX2, the lightmap's
+  // arrangement. A cube map is resampled to one equirect on the way.
+  const skySettings = bake.settings?.sky ?? null;
+  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('textures', m) });
+  for (const note of skyImages.notes) progress('textures', `sky: ${note}`);
+  const skyIndices = await addSkyTextures(doc, skyImages, {
+    colorMode: tex.colorMode ?? 'etc1s', maxSize: tex.maxSize ?? 2048,
+    onProgress: (m) => progress('textures', m),
+  });
+
+  const extra = [lightmapImage != null && 'lightmap', skyIndices.base != null && 'sky', skyIndices.clouds != null && 'clouds'].filter(Boolean);
+  progress('textures', `${count} texture(s) as KTX2${extra.length ? ` + ${extra.join(' + ')}` : ''}`);
 
   progress('compress', 'meshopt (EXT_meshopt_compression, medium)');
   await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 
-  const manifest = writeManifest({ bake, lodStats, lightmapImage, generator: { tool: 'thaikit', version: VERSION } })(doc);
+  const manifest = writeManifest({ bake, lodStats, lightmapImage, skyIndices, generator: { tool: 'thaikit', version: VERSION } })(doc);
   await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
 
   const outFile = path.join(buildDir, 'level.glb');
