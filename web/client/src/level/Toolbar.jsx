@@ -13,6 +13,7 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
   const setTool = useLevel((s) => s.setTool);
   const setSpace = useLevel((s) => s.setSpace);
   const toggleView = useLevel((s) => s.toggleView);
+  const setView = useLevel((s) => s.setView);
   const setSetting = useLevel((s) => s.setSetting);
   const snap = doc?.settings?.snap ?? {};
   const ground = { ...DEFAULT_GROUND, ...(doc?.settings?.ground ?? {}) };
@@ -51,6 +52,13 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
         <Btn on={view.sockets} onClick={() => toggleView('sockets')} title="named sockets">sockets</Btn>
         <Btn on={view.helpers} onClick={() => toggleView('helpers')} title="light helpers">helpers</Btn>
         <Btn on={view.wireframe} onClick={() => toggleView('wireframe')} title="wireframe">wire</Btn>
+        <select
+          value={view.fov ?? 90}
+          onChange={(e) => setView('fov', Number(e.target.value))}
+          title="horizontal field of view — the editor and play mode both use it. 90° is the game default; a 360 viewer shows about 100°."
+        >
+          {[60, 70, 80, 90, 100, 110, 120].map((v) => <option key={v} value={v}>{v}° fov</option>)}
+        </select>
       </div>
       <div className="group">
         <Btn on={ground.enabled} onClick={() => setSetting('ground.enabled', !ground.enabled)} title="one flat walkable surface under the whole map">ground</Btn>

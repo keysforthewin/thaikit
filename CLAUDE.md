@@ -179,10 +179,16 @@ placed geometry. Export writes a second, self-contained GLB.
     `CUBE_SOURCE` branch the shipped level does, `lodBias` and all. An unmipped
     8192x2048 backdrop is 64 MB the whole dome samples every frame (it CANNOT
     carry mips -- the equirect pole collapses), which is what "the editor got
-    slow when I added a sky" is. Faces are `width/4` capped at **1024**, not the
-    bake's 2048: nothing here is compressed, so 2048 would be 134 MB against the
-    equirect's 64, while 1024 is 33 MB -- half of today, mipped, at 11.4 px/deg
-    against the shipped 22.8. Measured against the old 2D path over a synthetic
+    slow when I added a sky" is. Faces are `width/PI` capped at **3072**, the
+    bake's own ceiling, so the preview resolves exactly what ships. It was 1024
+    to hold the preview to 33 MB -- nothing here is compressed, so six 2608 faces
+    with mips are ~217 MB against the equirect's 64 -- and that bought a preview
+    a whole mip softer than the level, which makes a soft SOURCE and a soft
+    preview indistinguishable, the one judgement the sky tab exists to support.
+    The 217 MB is the price of that call; it is clamped to the GPU's
+    `maxCubemapSize`, which WebGL2 only guarantees to 2048, so a low-end GPU
+    previews softer than it ships and `equirectToCubeTexture` warns when that
+    binds. Measured against the old 2D path over a synthetic
     panorama at seven bearings and three nadir settings: mean |diff| 0.02-0.41
     of 255, the only pixels over 8 being a hard 1-texel test edge and the
     equirect ZENITH, where the cube is the correct one. The decoded image is
@@ -223,17 +229,30 @@ placed geometry. Export writes a second, self-contained GLB.
     button was never broken. Never leave a page you called `upload_file` on in
     front of the user, and when a chooser "does nothing", check whether an
     automated upload has touched that tab BEFORE reading any code.
-  - **`cube` mode resamples six faces to ONE equirect at bake; `panoramic` mode
-    ships a real compressed cubemap.** Six SEPARATE KTX2 files cannot be
-    assembled into a `CubeTexture` -- three has no loader that stitches
-    compressed 2D images -- which is why `cube` mode flattens. But ONE KTX2 with
+  - **BOTH picture modes ship a real compressed cubemap.** Six SEPARATE KTX2
+    files cannot be assembled into a `CubeTexture` -- three has no loader that
+    stitches compressed 2D images. But ONE KTX2 with
     `faceCount: 6` is fine: `ktx create --cubemap` writes it and `KTX2Loader`
     returns a `CompressedCubeTexture` unasked (`isCubeTexture` true), so
     `buildSky`'s existing `CUBE_SOURCE` branch takes it with no runtime change.
+    `cube` mode therefore resamples NOTHING: it is the one mode that already has
+    cube faces, and it hands them straight to `encodeKtx2Cubemap`. It used to
+    flatten them to a 2048-wide equirect first, which on a real 1024 face pack
+    measured **2048x1024, faceCount 1, 1 mip, 5.7 px/deg** against the faces'
+    own **1024x1024, faceCount 6, 11 mips, 8.9 px/deg at face centre** -- half
+    the resolution
+    the author supplied, thrown away to reach the projection with the collapsing
+    pole and no mip chain. It was a leftover from before `encodeKtx2Cubemap`
+    existed. The cost is bytes: 167 KB became 583 KB, which is what a mip chain
+    and twice the angular detail weigh. `maxFace` (3072) caps cube mode too, for
+    the same reason it caps the panoramic path -- face size is the VRAM bill, six
+    times over.
     `cubeToEquirect` and `equirectToCube` are inverses of three's own convention
-    (`u = atan2(z,x)/2PI + 0.5`, `v = asin(y)/PI + 0.5`) and must stay so -- the
-    bake runs both; the first version was a quarter turn out and looked entirely
-    plausible.
+    (`u = atan2(z,x)/2PI + 0.5`, `v = asin(y)/PI + 0.5`) and must stay so; the
+    first version was a quarter turn out and looked entirely plausible. Nothing
+    in the bake calls `cubeToEquirect` any more -- it survives as the inverse
+    that guards `equirectToCube` in `sky.test.mjs`, which is the only thing
+    keeping that arithmetic honest.
   - **A `panoramic` source is a ground-level 360 whose ground is SYNTHESISED.**
     The projection crushes the nadir into one row, so whatever is down there was
     invented, and resampling it onto `ny` makes that row a full-resolution square
@@ -292,7 +311,8 @@ placed geometry. Export writes a second, self-contained GLB.
     camera on its own bearing, inverted per equirect texel and cross-faded by
     angular distance from each plate's centre. Four nano-banana-pro 4K plates
     (6336px over 95 degrees = 67 px/deg native) give an 8192-wide equirect --
-    22.8 px/deg, EXACTLY the 2048 face cap, so there is nothing left to upscale
+    22.8 px/deg, EXACTLY what a 2608 face resolves at its centre, so there is
+    nothing left to upscale
     and a seam-preserving upscaler would only invent detail already there.
     Measured wrap seam **0.60** against an adjacent-column floor of 0.25, seamless
     by construction rather than by repair. Three things it needs: the plates must
@@ -320,14 +340,95 @@ placed geometry. Export writes a second, self-contained GLB.
     keeps every horizontal pixel and only interpolates the axis about to be
     upscaled. A rejected aspect_ratio is a 422 at result-fetch time and is not
     billed.
-  - **A sky's sharpness is px/DEGREE, and the source is almost always the
-    binding constraint.** An equirect of width W carries `W/360` px/deg; a cube
-    face spanning 90 degrees carries `size/90`. A 1080p screen at 60 degrees FOV
-    wants 18. The hunyuan panorama was 1920 wide -- **5.3 px/deg** -- so the
-    faces at a hard-coded 1024 (11.4 px/deg) were UPSAMPLING it 2x and paying
-    for bytes that carried no detail. Face size is therefore DERIVED, `width/4`
-    capped by `maxFace`, which is the only size that neither invents pixels nor
-    throws any away. Fixing the pipeline without fixing the source does nothing.
+  - **A sky's sharpness is px/DEGREE, and a cube face's density is measured at
+    its CENTRE, not its average.** An equirect of width W carries `W/360`
+    px/deg. A cube face spans 90 degrees, so `size/90` looks like its density
+    and is only its AVERAGE: a face is a TANGENT plane, densest at the corners
+    and sparsest in the middle, where one pixel step is `atan(2/size)` --
+    **`size * PI / 360` px/deg**, a factor of PI/4 lower. A 2048 face resolves
+    **17.9** px/deg where the camera is actually pointed, not 22.8. A 1080p
+    screen at 60 degrees FOV wants 18; the editor at fov 50 and dpr 1.5 wants
+    21-27. So face size is DERIVED as **`width/PI`** (2608 for an 8192
+    panorama), capped by `maxFace` -- the size whose CENTRE matches the source.
+    It was `width/4`, which threw away 21% of an 8192 plate's linear resolution
+    before anything else touched it and read as "the sky is blurry"; the
+    resample itself is not the loss (2x supersampling the faces changed the
+    laplacian energy 24.47 -> 24.64, i.e. nothing). The other half of that
+    complaint is `base.lodBias`: `levels/thepurge` had it saved at 0 against the
+    -0.5 default, which is a half-resolution mip blended into a sky that was
+    already under-resolved. The hunyuan panorama was 1920 wide -- **5.3 px/deg**
+    -- so faces at a hard-coded 1024 were UPSAMPLING it 2x and paying for bytes
+    that carried no detail. Fixing the pipeline without fixing the source does
+    nothing.
+  - **The resample's RECONSTRUCTION FILTER was costing 40%, and no face size
+    fixes that.** Once `faceSizeFor` derives a face carrying the source's own
+    density, the resample runs at ~1:1 -- and a 1:1 resample lands on arbitrary
+    fractional phase, where hardware bilinear is a 2x2 box blur. Measured on the
+    8192 plate's +X face at 2608, same window, same projection, only the filter
+    changing: source **34.16**, NEAREST **35.02**, bilinear **21.06**,
+    Catmull-Rom **25.58**. Nearest matching the source is the proof that the
+    texels are there and the loss is entirely the filter; nearest is not the fix,
+    because it scores well by ALIASING and crawls when the camera turns. So both
+    resamplers are Catmull-Rom: `sampler()` in `equirect-to-cube.mjs` and
+    `sampleCatmullRom` in the editor's `equirectCube.js` FRAG, same weights.
+    Costs: 11 s for six 2608 faces in Node (it was ~3), and 16 taps in a shader
+    that runs six times in the life of a panorama. Two things the shader needs --
+    the taps go through `texture2D` so the sampler's own Repeat/ClampToEdge
+    carries the seam, and the weights are applied UNROLLED, because indexing a
+    vec4 by a loop counter is a constant-index-expression the ESSL1 spec allows
+    and some drivers refuse.
+  - **"The skybox is zoomed in" was the editor's FIELD OF VIEW, and the fov is
+    HORIZONTAL now.** The Canvas camera was a hard-coded `fov: 50`, and three's
+    fov is VERTICAL -- so the horizontal angle actually on screen fell out of
+    whatever width the two side panels left behind. At 1360x1041 that is **62.6
+    degrees across**, against the **100** a 360 viewer like Pannellum shows by
+    default and the ~90 a game does. Everything in the sky was therefore about
+    1.6x larger than in the visualiser the plate was judged in, which reads
+    exactly like a pipeline defect and is not one. `view.fov` in the store is
+    now horizontal degrees, defaulting to **90**, with a toolbar select
+    (60..120) and `CameraFov` in `Viewport.jsx` deriving the vertical from the
+    live aspect: `tan(vfov/2) = tan(hfov/2) / aspect`. Play mode shares the
+    camera, so it gets the game-standard 90 too. Verified live: 75.9 vertical,
+    90.0 horizontal, and the skyline that ran off the top edge now fits with
+    room above it.
+    Do NOT reach for the plate's standoff first -- that was the wrong diagnosis
+    here and it cost a whole exchange. It is still worth knowing how to measure:
+    scan the columns for the highest lit structure and convert the row with
+    `90 - (row / height) * 180`. This panorama's tower tops sit at **40.3°**,
+    which is a real property of the plate (Petronas is 452 m, so the camera
+    stood 533 m away) -- but a 360 has no depth, so that number only matters
+    when you are choosing a plate, never when the SAME plate looks different in
+    two viewers. Two viewers disagreeing is fov.
+  - **The editor's `dpr` cap was the last thing making the preview a preview.**
+    `Viewport`'s Canvas asked for `dpr={[1, 1.5]}`, so on an ordinary HiDPI
+    laptop (`devicePixelRatio` 2) a 1360x1041 viewport rendered into a 2040x1561
+    buffer and the BROWSER upscaled that to 2720x2082 -- the whole editor, sky
+    included, arriving through a 1.33x upscale the shipped game does not apply.
+    It is `[1, 2]` now. Read the numbers off the live page rather than guessing:
+    `window.__r3f` is exposed in DEV, so `gl.getPixelRatio()`,
+    `gl.domElement.width/height` and `camera.fov` give the px/deg the screen can
+    actually show -- 41.6 vertical here, against the sky's 22.8.
+  - **Past that point the sky is SOURCE-limited, and the way to prove it is a
+    matched window against the plate.** Render the sky in the editor, crop the
+    middle of the render buffer, and crop the SAME solid angle out of the
+    panorama: 512 px of a 1561/50 deg frame is 16.40 deg is 373 px of an 8192
+    plate. Rendered scored a laplacian energy of **11.08** against the source
+    window's **7.30** -- the renderer is showing everything the plate has and
+    then some (Catmull-Rom's overshoot), so any remaining softness is
+    magnification, not the pipeline. A 8192 plate is 22.8 px/deg; feeding a
+    41.6 px/deg display wants one about **15,000** px wide.
+  - **The bake is the FLOOR, not the ceiling.** The editor holds uncompressed
+    RGBA faces off a GPU resample; the shipped cubemap is ETC1S at half a byte
+    per pixel. A baked sky is never sharper than the preview, so "it will look
+    better once it ships" is backwards.
+  - **Measuring sharpness with laplacian energy needs a matched WINDOW, twice
+    over.** Two false readings were chased here. Comparing a face crop against a
+    source crop of different angular width reads the CONTENT density, not the
+    filter -- a 2048 face's centre 1024 px spans 53 degrees against a 2608
+    face's 43, so the coarser face scored HIGHER. And a window that includes the
+    cut ground is half flat colour: that read a correct 2608 face at 12.27
+    against the source's 34.16 and looked like a catastrophic pipeline loss.
+    Crop the same solid angle, at the same px/deg, with the nadir off.
   - **Upscale the sky-only crop, and wrap-pad it first.** Half a 2:1 panorama is
     thrown away by `panoramic` mode, so crop to the upper hemisphere BEFORE
     upscaling and every pixel bought lands where it is used -- 1920x480 through

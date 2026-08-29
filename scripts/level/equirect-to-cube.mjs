@@ -123,33 +123,68 @@ export function measureNadirColour(src, { elevMin, elevMax, startRad }) {
 }
 
 /**
- * Bilinear sample of an equirect, wrapping in x and clamping in y.
+ * Catmull-Rom weights for a fractional position between the two middle taps.
+ * The standard cubic with a = -0.5: interpolating, C1, and mildly sharpening,
+ * which is what makes it the right reconstruction for a ~1:1 resample.
+ */
+function catmullRom(t) {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return [
+    -0.5 * t3 + t2 - 0.5 * t,
+    1.5 * t3 - 2.5 * t2 + 1,
+    -1.5 * t3 + 2 * t2 + 0.5 * t,
+    0.5 * t3 - 0.5 * t2,
+  ];
+}
+
+/**
+ * Catmull-Rom sample of an equirect, wrapping in x and clamping in y.
  *
  * The x wrap is the whole point of the exercise: a face straddling the
  * panorama's own seam (nx, at u = 0) reads columns from both ends, so clamping
  * there would print the seam onto the face.
+ *
+ * The FILTER is the other point, and it was bilinear, which cost 40% of the
+ * panorama's high-frequency detail. `faceSizeFor` now derives a face that
+ * carries the source's own density -- measured on an 8192 plate's +X face at
+ * 2608, NEAREST scores a laplacian energy of 35.02 against the source crop's
+ * 34.16, so the texels are there -- but a resample at ~1:1 lands on arbitrary
+ * fractional phase, and bilinear at half-phase is a 2x2 box blur. Same face,
+ * same projection, bilinear scored 21.06. Catmull-Rom scores 25.58.
+ *
+ * Nearest is not the answer despite topping the table: it scores well by
+ * aliasing, printing a different neighbour into each face texel wherever the
+ * phase drifts, which crawls when the camera turns. Catmull-Rom is the
+ * reconstruction that recovers detail without inventing it.
  */
 function sampler({ data, w, h, channels }) {
+  const wx = new Float64Array(4);
+  const wy = new Float64Array(4);
   return (fx, fy, dst, o) => {
     const x = fx - 0.5;
     const y = Math.min(h - 1, Math.max(0, fy - 0.5));
     const x0 = Math.floor(x);
     const y0 = Math.floor(y);
-    const tx = x - x0;
-    const ty = y - y0;
-    const xa = ((x0 % w) + w) % w;
-    const xb = (xa + 1) % w;
-    const ya = y0;
-    const yb = Math.min(h - 1, y0 + 1);
-    const at = (px, py) => (py * w + px) * channels;
-    const a = at(xa, ya);
-    const b = at(xb, ya);
-    const c = at(xa, yb);
-    const d = at(xb, yb);
+    wx.set(catmullRom(x - x0));
+    wy.set(catmullRom(y - y0));
     for (let k = 0; k < channels; k += 1) {
-      const top = data[a + k] * (1 - tx) + data[b + k] * tx;
-      const bot = data[c + k] * (1 - tx) + data[d + k] * tx;
-      dst[o + k] = Math.round(top * (1 - ty) + bot * ty);
+      let acc = 0;
+      for (let j = 0; j < 4; j += 1) {
+        // Clamped in y: a tap past the top or bottom row repeats the edge, the
+        // same thing the bilinear version did and the same thing the GPU does.
+        const py = Math.min(h - 1, Math.max(0, y0 - 1 + j));
+        let row = 0;
+        for (let i = 0; i < 4; i += 1) {
+          // Wrapped in x, so the seam blends rather than clamping.
+          const px = (((x0 - 1 + i) % w) + w) % w;
+          row += data[(py * w + px) * channels + k] * wx[i];
+        }
+        acc += row * wy[j];
+      }
+      // Catmull-Rom overshoots at an edge -- that IS the sharpening -- so it
+      // has to be clamped back into range rather than wrapped by the Buffer.
+      dst[o + k] = Math.max(0, Math.min(255, Math.round(acc)));
     }
   };
 }

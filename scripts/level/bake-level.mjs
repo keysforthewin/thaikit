@@ -159,7 +159,7 @@ async function main() {
 
   // The sky's images are sidecars beside the project; the shipped level is one
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
-  // arrangement. A cube map is resampled to one equirect on the way.
+  // arrangement. Both picture modes ship as one KTX2 with faceCount 6.
   const skySettings = bake.settings?.sky ?? null;
   const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('textures', m) });
   for (const note of skyImages.notes) progress('textures', `sky: ${note}`);

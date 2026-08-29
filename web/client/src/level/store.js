@@ -23,7 +23,16 @@ export const useLevel = create((set, get) => ({
   selection: [],
   tool: 'translate',
   space: 'world',
-  view: { grid: true, axes: true, cells: false, colliders: false, helpers: true, wireframe: false, sockets: false },
+  // `fov` is HORIZONTAL degrees, unlike three's camera, which is vertical.
+  //
+  // The editor's viewport is narrowed by two panels, so a vertical fov gives a
+  // horizontal one that depends on how wide those panels happen to be: the
+  // hard-coded 50 vertical was only 62.6 degrees across at 1360x1041, against
+  // the 100 a panorama viewer like Pannellum shows by default and the ~90 a
+  // game does. That is why a sky authored here looked magnified next to the
+  // same panorama in a 360 visualiser. Anchoring the horizontal instead means
+  // the viewport shows the same slice of the world whatever the panels do.
+  view: { grid: true, axes: true, cells: false, colliders: false, helpers: true, wireframe: false, sockets: false, fov: 90 },
 
   catalogue: { packs: [], items: [], byRef: {} },
   catalogueError: null,
@@ -119,6 +128,7 @@ export const useLevel = create((set, get) => ({
   setTool: (tool) => set({ tool }),
   setSpace: (space) => set({ space }),
   toggleView: (key) => set((s) => ({ view: { ...s.view, [key]: !s.view[key] } })),
+  setView: (key, value) => set((s) => ({ view: { ...s.view, [key]: value } })),
   setModal: (modal) => set({ modal }),
   /** Entering drops the selection and any open modal; the gizmo has no place in a walkthrough. */
   setPlay: (play) => set(play ? { play: true, selection: [], modal: null, snapHint: null } : { play: false, status: null }),

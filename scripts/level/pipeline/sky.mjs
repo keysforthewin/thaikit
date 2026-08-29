@@ -40,6 +40,19 @@ import { equirectToCube } from '../equirect-to-cube.mjs';
 /** Wider than most authored panoramas need, and 2:1 as an equirect must be. */
 const EQUIRECT_WIDTH = 2048;
 
+/**
+ * The ceiling on a cube face edge, shared by both picture modes.
+ *
+ * `faceSizeFor` derives the face from the source, so this only ever binds on a
+ * panorama wider than `3072 * PI` = 9650 px, or on a cube pack whose own faces
+ * are larger. It is a VRAM budget: six ETC1S faces at half a byte per pixel
+ * plus a third again for the mips is 38 MB at 3072, against 17 MB at 2048.
+ *
+ * Mirrored by `PREVIEW_MAX_FACE` in `web/client/src/level/equirectCube.js`, so
+ * the editor previews the sharpness the bake ships. Keep the two the same.
+ */
+export const MAX_FACE = 3072;
+
 const skyDir = (id) => path.join(levelDir(id), 'sky');
 
 async function readSlot(id, file) {
@@ -146,8 +159,20 @@ export async function cubeToEquirect(faceBuffers, { width = EQUIRECT_WIDTH } = {
 /**
  * The face edge to resample a panorama onto.
  *
- * A cube face spans 90 degrees and an equirect's width spans 360, so the face
- * that neither invents pixels nor throws any away is exactly `width / 4`.
+ * A cube face spans 90 degrees and an equirect's width spans 360, so `width / 4`
+ * looks like the size that neither invents pixels nor throws any away. It is
+ * not: that is the face's AVERAGE density, and a cube face is a tangent plane,
+ * so its density is LOWEST at the centre and highest at the corners. One pixel
+ * step at the centre is `atan(2 / size)`, which is `size * PI / 360` px/deg --
+ * a factor of PI/4 below the `size / 90` the average suggests. A 2048 face
+ * therefore resolves 17.9 px/deg where you are actually looking, not 22.8, and
+ * an 8192-wide panorama fed through `width / 4` lost 21% of its linear
+ * resolution to the projection before anything else touched it.
+ *
+ * So the face that matches the source AT THE CENTRE is `width / PI`: set
+ * `size * PI / 360` equal to the equirect's own `width / 360` and the 4 becomes
+ * PI. For an 8192 panorama that is 2608 rather than 2048.
+ *
  * Pinning it to a constant is wrong in both directions and was: at a fixed
  * 1024 a 2048-wide panorama was UPSAMPLED 2x, paying for bytes that carried no
  * detail, while a 7680-wide one would have been thrown away down to a quarter
@@ -156,8 +181,8 @@ export async function cubeToEquirect(faceBuffers, { width = EQUIRECT_WIDTH } = {
  * `maxFace` is the ceiling, because the face size is also the VRAM bill: six
  * faces of ETC1S at half a byte per pixel, plus a third again for the mips.
  */
-function faceSizeFor(width, maxFace) {
-  const ideal = Math.round(width / 4);
+export function faceSizeFor(width, maxFace) {
+  const ideal = Math.round(width / Math.PI);
   // Block compression wants a multiple of 4.
   return Math.max(256, Math.floor(Math.min(ideal, maxFace) / 4) * 4);
 }
@@ -178,7 +203,7 @@ function faceSizeFor(width, maxFace) {
  * transcodes alike -- so both ends read row 0 as the top and there is nothing
  * to reconcile. Flipping here would ship the sky upside down.
  */
-async function panoramaToFaces(bytes, base, { onProgress, maxFace = 2048 } = {}) {
+async function panoramaToFaces(bytes, base, { onProgress, maxFace = MAX_FACE } = {}) {
   const notes = [];
   const meta = await sharp(bytes, { failOn: 'none' }).metadata();
   const aspect = (meta.width ?? 2) / (meta.height ?? 1);
@@ -195,10 +220,10 @@ async function panoramaToFaces(bytes, base, { onProgress, maxFace = 2048 } = {})
 
   const nadir = base?.nadir ?? {};
   const size = faceSizeFor(meta.width ?? 2048, maxFace);
-  if (size < Math.round((meta.width ?? 0) / 4)) {
+  if (size < Math.round((meta.width ?? 0) / Math.PI)) {
     notes.push(`panorama is ${meta.width}px wide (${((meta.width ?? 0) / 360).toFixed(1)} px/deg); faces capped at ${size}`);
   }
-  onProgress?.(`resampling panorama to 6 x ${size}² cube faces (${(size / 90).toFixed(1)} px/deg)`);
+  onProgress?.(`resampling panorama to 6 x ${size}² cube faces (${((size * Math.PI) / 360).toFixed(1)} px/deg at face centre)`);
   if (nadir.mode === 'cut') {
     onProgress?.('nadir mode is cut: the cube ships with no floor');
     notes.push('nadir cut at the horizon; ny is one flat colour and the side faces stop at the skyline');
@@ -234,12 +259,13 @@ async function panoramaToFaces(bytes, base, { onProgress, maxFace = 2048 } = {})
  * throwing for a missing file: a sky whose picture was deleted outside the
  * editor should bake as the layers that remain, not fail the whole level.
  *
- * `base` and `baseFaces` are exclusive: a `cube` sky flattens to one equirect
- * image, a panoramic one to six faces that ship as a single cubemap.
+ * `base` and `baseFaces` are exclusive, and BOTH picture modes now take the
+ * `baseFaces` route: a cube sky ships the faces it already has, a panoramic one
+ * is resampled into six. `base` remains for an equirect nothing produces today.
  *
  * @returns {{ base: Buffer|null, baseFaces: Buffer[]|null, clouds: Buffer|null, notes: string[] }}
  */
-export async function prepareSkyImages(levelId, sky, { onProgress, maxFace = 2048 } = {}) {
+export async function prepareSkyImages(levelId, sky, { onProgress, maxFace = MAX_FACE } = {}) {
   const notes = [];
   if (!sky?.enabled) return { base: null, baseFaces: null, clouds: null, notes };
 
@@ -256,14 +282,39 @@ export async function prepareSkyImages(levelId, sky, { onProgress, maxFace = 204
       notes.push(...built.notes);
     }
   } else if (mode === 'cube') {
+    // Six faces SHIP as six faces. They used to be resampled into one 2048-wide
+    // equirect here, which is 5.7 px/deg against a 1024 face's 11.4 -- it threw
+    // away half of a sky that was already in the right projection, and landed it
+    // on the `base` branch, which encodes an equirect with NO mip chain and a
+    // pole that collapses to the average colour of the whole sky. That was a
+    // leftover from before `encodeKtx2Cubemap` existed: six separate KTX2 files
+    // cannot be assembled into a CubeTexture, but ONE file with `faceCount: 6`
+    // can, which is exactly what the panoramic path has been shipping. Cube mode
+    // is the one mode that STARTS with cube faces, so it resamples nothing at
+    // all now. `cubeToEquirect` stays as the inverse that guards
+    // `equirectToCube` in the tests.
     const files = CUBE_FACES.map((f) => sky.base?.faces?.[f]);
     const buffers = await Promise.all(files.map((f) => readSlot(levelId, f)));
     const missing = CUBE_FACES.filter((_, i) => !buffers[i]);
     if (missing.length) {
       notes.push(`cube map is missing ${missing.join(', ')}; the base layer is skipped`);
     } else {
-      onProgress?.(`resampling 6 cube faces to ${EQUIRECT_WIDTH}×${EQUIRECT_WIDTH >> 1} equirect`);
-      base = await cubeToEquirect(buffers);
+      const metas = await Promise.all(buffers.map((b) => sharp(b, { failOn: 'none' }).metadata()));
+      const edges = metas.map((m) => Math.min(m.width ?? 0, m.height ?? 0));
+      if (metas.some((m) => m.width !== m.height)) {
+        notes.push('some cube faces are not square; all six ship stretched to the first face\'s edge');
+      }
+      const sizes = [...new Set(edges)];
+      if (sizes.length > 1) notes.push(`cube faces differ in size (${sizes.join(', ')}px); all six ship at ${edges[0]}px`);
+      // The same ceiling the panoramic path applies: face size is the VRAM bill,
+      // six of them. A 2608 face is 22.8 px/deg at its CENTRE against the ~18 a
+      // 1080p view at 60 degrees can show; `MAX_FACE` leaves headroom above it.
+      const edge = Math.min(edges[0], maxFace);
+      if (edge < edges[0]) notes.push(`cube faces are ${edges[0]}px; capped at ${edge}`);
+      onProgress?.(`encoding 6 cube faces at ${edge}² (${((edge * Math.PI) / 360).toFixed(1)} px/deg at face centre)`);
+      baseFaces = edge < edges[0]
+        ? await Promise.all(buffers.map((b) => sharp(b, { failOn: 'none' }).resize(edge, edge, { fit: 'fill' }).png().toBuffer()))
+        : buffers;
     }
   }
 

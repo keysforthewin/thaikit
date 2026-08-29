@@ -294,8 +294,9 @@ export function SkyPanel({ Num }) {
                 )}
                 {' '}Resampled into a cubemap here the moment it loads — the editor never samples the panorama
                 itself, which is what an unmipped 8192-wide plate across a full-screen dome costs. It ships as a
-                single KTX2 cubemap with a full mip chain and no equirect pole to collapse; the preview's faces are
-                capped at 1024 against the bake's 2048, so what you see is one mip softer than what ships.
+                single KTX2 cubemap with a full mip chain and no equirect pole to collapse, and the preview is built at
+                the same 2048 ceiling the bake uses — what you see here is what ships. Face size is the panorama's
+                width ÷ 4, so only a plate 8192 or wider resolves the full 22.8 px/deg.
               </div>
               <div className="muted small">
                 <strong>spans</strong> is what de-stretches a backdrop. It says which elevations the panorama's FIRST

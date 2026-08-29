@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useEffect, useMemo } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { GizmoHelper, GizmoViewport, Grid, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -55,6 +55,31 @@ function GroundPlane({ ground, extent }) {
   );
 }
 
+/**
+ * Hold the camera to the stored HORIZONTAL field of view.
+ *
+ * three's `PerspectiveCamera.fov` is vertical, so the horizontal angle it
+ * actually shows falls out of the viewport's aspect -- and this viewport's
+ * aspect is whatever the two side panels leave behind. A hard-coded 50 vertical
+ * was 62.6 degrees across at 1360x1041, which is why a panorama authored here
+ * read as magnified beside the same file in a 360 viewer (Pannellum defaults to
+ * 100 across; a game is usually 90). Anchoring the horizontal makes the amount
+ * of world on screen a property of the setting rather than of the layout.
+ *
+ *   tan(vfov / 2) = tan(hfov / 2) / aspect
+ */
+function CameraFov({ fov }) {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  useEffect(() => {
+    const aspect = size.width / Math.max(1, size.height);
+    const v = 2 * Math.atan(Math.tan((fov * Math.PI) / 360) / aspect) * (180 / Math.PI);
+    camera.fov = v;
+    camera.updateProjectionMatrix();
+  }, [camera, fov, size.width, size.height]);
+  return null;
+}
+
 export function Viewport({ stats }) {
   const doc = useLevel((s) => s.doc);
   const view = useLevel((s) => s.view);
@@ -79,7 +104,18 @@ export function Viewport({ stats }) {
       <Canvas
         shadows
         camera={{ fov: 50, near: 0.1, far: 3000, position: [18, 14, 22] }}
-        dpr={[1, 1.5]}
+        // Up to the display's OWN pixel ratio, capped at 2.
+        //
+        // This was [1, 1.5], which on an ordinary HiDPI laptop (devicePixelRatio
+        // 2) rendered a 1360x1041 viewport into a 2040x1561 buffer and let the
+        // browser scale it up to 2720x2082 -- every pixel in the editor, sky
+        // included, arriving through a 1.33x upscale that the shipped game does
+        // not apply. It is the one place the viewport knowingly showed something
+        // softer than what ships, and it made a source-limited sky impossible to
+        // tell from a pipeline defect. 2 rather than uncapped because a 3x phone
+        // display would otherwise ask for 2.25x the fragments again for detail
+        // nobody can see.
+        dpr={[1, 2]}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onPointerMissed={(e) => {
           const st = useLevel.getState();
@@ -87,6 +123,7 @@ export function Viewport({ stats }) {
         }}
         onCreated={(state) => { setViewport(state); state.scene.background = bg; if (import.meta.env.DEV) window.__r3f = state; }}
       >
+        <CameraFov fov={view.fov ?? 90} />
         {hasSky
           ? <SkyDome sky={sky} levelId={levelId} rev={skyRev} fallbackColor={bg} />
           : <color attach="background" args={[bg]} />}
