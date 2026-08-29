@@ -63,6 +63,21 @@ export function packsRouter(state) {
     }
   });
 
+  // Backfill for a pack installed before previews existed, and the redo after a
+  // browser or harness fix. It reuses the bundles already on disk -- nothing is
+  // downloaded and nothing is rebuilt.
+  router.post('/packs/:id/previews', guard, async (req, res, next) => {
+    try {
+      const index = await readPacksIndex();
+      const pack = (index.packs ?? []).find((p) => p.id === req.params.id);
+      if (!pack) return res.status(404).json({ error: `no installed pack "${req.params.id}"` });
+      const job = runPackJob(state, { previews: true, pack: pack.id });
+      res.status(202).json({ jobId: job.id });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   router.delete('/packs/:id', guard, async (req, res, next) => {
     try {
       const job = runPackJob(state, { remove: true, pack: req.params.id });

@@ -106,6 +106,47 @@ const MATERIALS = {
   normal: function () { return new THREE.MeshNormalMaterial({ flatShading: true }); }
 };
 
+/**
+ * A stand-in for `three/tsl` on a WebGL renderer -- the same trade the editor
+ * makes: every property is a callable returning the same proxy, so a node
+ * material degrades to the plain material it was assigned onto instead of
+ * throwing at module scope. See web/client/src/three/tslStub.js.
+ */
+let tslProxy = null;
+function tslStub() {
+  if (!tslProxy) {
+    const handler = {
+      get: function (t, prop) {
+        if (prop === Symbol.toPrimitive) return function () { return 0; };
+        if (prop === 'then') return undefined;
+        if (prop === '__esModule') return true;
+        return tslProxy;
+      },
+      apply: function () { return tslProxy; },
+      construct: function () { return tslProxy; },
+      has: function () { return true; }
+    };
+    tslProxy = new Proxy(function tsl() {}, handler);
+  }
+  return tslProxy;
+}
+
+/** Release everything one model owns: geometries, materials and their maps. */
+function disposeTree(root) {
+  const seen = new Set();
+  root.traverse(function (o) {
+    if (o.geometry && !seen.has(o.geometry.uuid)) { seen.add(o.geometry.uuid); o.geometry.dispose(); }
+    const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
+    for (const m of mats) {
+      if (seen.has(m.uuid)) continue;
+      seen.add(m.uuid);
+      for (const k of MAP_KEYS) if (m[k] && m[k].dispose) m[k].dispose();
+      m.dispose();
+    }
+  });
+  originalMaterials.clear();
+}
+
 window.__thaikit = {
   /**
    * Run the built factory and put its Group in the scene.
@@ -123,6 +164,16 @@ window.__thaikit = {
     const mod = { exports: {} };
     new Function('module', 'exports', 'require', code)(mod, mod.exports, function (name) {
       if (name === 'three') return THREE;
+      // A vibe3d pack item is the same module shape as a thaikit factory, so it
+      // renders here too -- but it may ask for three/webgpu and three/tsl. Both
+      // are answered exactly as the level editor answers them
+      // (web/client/src/three/modelModule.js): webgpu re-exports the scene graph
+      // from the shared three.core.js, so it IS this THREE, and TSL degrades to
+      // a proxy so one model building a node material does not cost the pack
+      // every model that merely imports the shared file. thaikit's own factories
+      // ask for neither, so nothing about their renders changes.
+      if (name === 'three/webgpu') return THREE;
+      if (name === 'three/tsl') return tslStub();
       // Anything else is a bundling mistake, not a runtime one: the factory is
       // supposed to import three and nothing else. Say which, so the fix is
       // obvious rather than a blank canvas.
@@ -137,7 +188,11 @@ window.__thaikit = {
       );
     }
 
-    if (model) scene.remove(model);
+    // A single page loads one model per asset run -- but the pack preview pass
+    // walks a hundred items through this same page, and three frees nothing on
+    // its own. Left undisposed, each one's geometries, materials and synthesised
+    // canvases stay resident until the GPU gives up somewhere around item sixty.
+    if (model) { scene.remove(model); disposeTree(model); model = null; }
     // The module is eval'd, not imported: it has no import.meta and no
     // currentScript, so it cannot resolve its own shipped files. A bare relative
     // path would resolve against THIS document instead, which is a different

@@ -143,6 +143,7 @@ export const packsApi = {
   },
   add: (source) => request('/api/packs', { method: 'POST', body: JSON.stringify({ source }) }, null),
   refresh: (id) => request(`/api/packs/${encodeURIComponent(id)}/refresh`, { method: 'POST' }, null),
+  previews: (id) => request(`/api/packs/${encodeURIComponent(id)}/previews`, { method: 'POST' }, null),
   remove: (id) => request(`/api/packs/${encodeURIComponent(id)}`, { method: 'DELETE' }, null),
   job: (id) => request(`/api/packs/jobs/${id}`, {}, null),
 };

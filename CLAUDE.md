@@ -104,11 +104,24 @@ placed geometry. Export writes a second, self-contained GLB.
   (`{models}` -> `src/models`, `{vibe3d}` -> `src/vibe3d`, plus the three runtime templates from
   the vibe3d CLI vendored in `scripts/lib/packs/templates/`), wraps each model item so it exports
   thaikit's `createObjectModel(spec, options)` (unwrapping a `ModelInstance { root }`), and
-  esbuild-bundles it. Then it constructs every item once in an isolated child process (90 s budget,
+  esbuild-bundles it. Then it constructs every item once in an isolated child process (6 min budget,
   4 at a time -- the scifi kit's occlusion bakes take seconds each and one model printed its whole
   geometry to stdout) to record size, cost, sockets and a derived collider compound
   (`deriveFromParts` in `scripts/lib/colliders.mjs`, bbox fallback). `packs/index.json` is the
   record; `packs/` is gitignored because a pack is re-downloadable.
+- **A pack ships no pictures, so thaikit renders them.** `meta.preview` on a vibe3d item LOOKS
+  like an image path and is a code reference (`.../model.ts#createPreview`, a preview scene for the
+  pack's own site), so the installer's image-extension test correctly rejects all 110 of the scifi
+  kit's. `scripts/lib/packs/previews.mjs` is the last install stage: one headless Chrome, ONE page
+  reused across the pack, `render/harness.html` at the same 45/20 hero angle as thaikit's own
+  tiles, sharp-resized to a 512 webp under `packs/<ns>/<tag>/previews/`. It is never fatal -- by
+  then the pack is installed and usable, and no Chrome just means no pictures. `--previews <id>`
+  (also the pack manager's `previews` button, `POST /api/packs/:id/previews`) redoes them from the
+  bundles on disk with nothing downloaded. Two things it needed: the web image now installs
+  `chromium` and sets `CHROME_PATH` (puppeteer-CORE, so npm never downloads a second browser), and
+  the harness had to answer `three/webgpu` and `three/tsl` the way the editor does -- without the
+  stub, 108 of 110 scifi items throw before they can be photographed. It also disposes the previous
+  model now: a hundred undisposed factories in one page exhaust the GPU around item sixty.
 - **Use the FULL npm packument.** `application/vnd.npm.install-v1+json` strips custom fields, and
   `vibe3d.registry` in package.json is the only thing that says a package is a pack.
 - **`external: ['three']` in esbuild externalises `three/addons/*` too**, which the host cannot

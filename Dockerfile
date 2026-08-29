@@ -5,8 +5,17 @@
 # bind-mount failure -- the production service mounts data only.
 FROM node:22-slim AS base
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends tini ca-certificates \
+# chromium is here for one job: scripts/lib/packs/previews.mjs renders a
+# thumbnail for every item of an installed vibe3d pack, because a pack ships no
+# pictures and the Add-object grid is otherwise a wall of "no preview". It is
+# the same headless route render-model.mjs uses for thaikit's own props, so both
+# tiles come out of one rig. It costs a few hundred MB of image; puppeteer-core
+# is deliberately the dependency, so nothing downloads a SECOND browser at
+# npm install time.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      tini ca-certificates chromium fonts-liberation \
  && rm -rf /var/lib/apt/lists/*
+ENV CHROME_PATH=/usr/bin/chromium
 # tini means Ctrl-C on `docker compose up` exits immediately instead of waiting
 # out a 10-second SIGKILL timeout.
 ENTRYPOINT ["/usr/bin/tini", "--"]

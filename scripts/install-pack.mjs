@@ -6,8 +6,8 @@
  * script downloads it, writes the sources under packs/<ns>/<version>/src/,
  * bundles each model item into thaikit's own module shape (CommonJS,
  * `createObjectModel(spec, options)`, three external), constructs each once
- * under Node to measure it and derive a collider compound, and records the lot
- * in packs/index.json. The web server spawns it; progress goes to stderr as
+ * under Node to measure it and derive a collider compound, renders a thumbnail
+ * for each in headless Chrome, and records the lot in packs/index.json. The web server spawns it; progress goes to stderr as
  * JSON lines and the result is one JSON line on stdout.
  *
  * Usage:
@@ -15,6 +15,7 @@
  *   node scripts/install-pack.mjs --source npm:@medieval-kit/registry@^0.1 --refresh --pack @medieval-kit
  *   node scripts/install-pack.mjs --source https://example.com/registry.json
  *   node scripts/install-pack.mjs --remove @scifi-kit
+ *   node scripts/install-pack.mjs --previews @scifi-kit [--force]
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -97,7 +98,7 @@ function validateRegistry(registry) {
 }
 
 const PROBE_WORKER = path.join(here, 'lib/packs/probe-worker.mjs');
-const PROBE_TIMEOUT_MS = 90_000;
+const PROBE_TIMEOUT_MS = 360_000;
 const PROBE_CONCURRENCY = Math.max(1, Math.min(4, (os.availableParallelism?.() ?? 4) - 1));
 
 /** Build one item in a child process; a hang or a crash is a recorded failure, not ours. */
@@ -131,7 +132,36 @@ async function pool(items, limit, fn) {
   await Promise.all(workers);
 }
 
-async function install({ source, refresh, packId }) {
+/**
+ * Render a thumbnail for every supported item that has none.
+ *
+ * A vibe3d pack ships no pictures, so without this the Add-object grid is a
+ * wall of "no preview". Deliberately the LAST stage and deliberately
+ * non-fatal: by the time it runs the pack is already installed, measured and
+ * usable, and a missing thumbnail must never cost you a working pack.
+ */
+async function addPreviews(entry, { force = false } = {}) {
+  const { renderPreviews } = await import('./lib/packs/previews.mjs');
+  const packRoot = path.join(PACKS_DIR, entry.id, entry.buildTag);
+  const todo = entry.items.filter((i) => i.role === 'model' && i.supported && i.bundle && (force || !i.preview));
+  if (!todo.length) return;
+  progress('preview', `rendering ${todo.length} thumbnail(s)`);
+  const entries = todo.map((i) => ({
+    name: i.name,
+    bundleFile: path.join(packRoot, i.name, 'model.bundle.js'),
+    outFile: path.join(packRoot, 'previews', `${i.name}.webp`),
+  }));
+  const { done, warnings: warned } = await renderPreviews(entries, {
+    progress: (message, extra) => progress('preview', message, extra),
+  });
+  for (const item of todo) {
+    if (done.has(item.name)) item.preview = `/packs/${entry.id}/${entry.buildTag}/previews/${item.name}.webp`;
+  }
+  entry.warnings.push(...warned);
+  progress('preview', `${done.size} of ${todo.length} thumbnail(s) rendered`);
+}
+
+async function install({ source, refresh, packId, previews = true }) {
   const { materialise, targetToPath, pickEntry, wrapperSource, bundleItem } = await loadInstallDeps();
   const cacheDir = path.join(PACKS_DIR, '.cache');
   const { registry, version, pkgDir, license, description, homepage } = await loadRegistry(source, cacheDir);
@@ -236,6 +266,17 @@ async function install({ source, refresh, packId }) {
     schemaVersion: registry.schemaVersion ?? null, warnings, items,
   };
 
+  if (previews) {
+    try {
+      await addPreviews(entry);
+    } catch (err) {
+      // No Chrome, no GPU, a harness that never came up: the pack is fine, it
+      // just has no pictures. Recorded where the pack manager will show it.
+      warnings.push(`previews: ${err.message}`);
+      progress('preview', `skipped — ${err.message}`);
+    }
+  }
+
   const next = await readIndex();
   next.packs = next.packs.filter((p) => p.id !== ns).concat(entry);
   await writeIndex(next);
@@ -251,10 +292,31 @@ async function install({ source, refresh, packId }) {
   return {
     pack: ns, version, previousVersion: previous?.version ?? null,
     models: modelItems.length, supported: modelItems.filter((i) => i.supported).length,
+    previews: modelItems.filter((i) => i.preview).length,
     unsupported: modelItems.filter((i) => !i.supported).map((i) => ({ name: i.name, error: i.error })),
     added: [...after].filter((x) => !before.has(x)), removed: [...before].filter((x) => !after.has(x)),
     warnings,
   };
+}
+
+/**
+ * Re-render an installed pack's thumbnails without downloading anything.
+ *
+ * The bundles are already on disk, so this is the cheap way to give a pack
+ * installed before previews existed its pictures -- and the only way to redo
+ * them after a browser or harness fix, short of a full refresh.
+ */
+async function previewsOnly(packId, { force }) {
+  const index = await readIndex();
+  const entry = index.packs.find((p) => p.id === packId);
+  if (!entry) throw new Error(`no installed pack "${packId}"`);
+  entry.warnings = entry.warnings ?? [];
+  await addPreviews(entry, { force });
+  const next = await readIndex();
+  next.packs = next.packs.map((p) => (p.id === packId ? entry : p));
+  await writeIndex(next);
+  const models = entry.items.filter((i) => i.role === 'model');
+  return { pack: packId, version: entry.version, models: models.length, previews: models.filter((i) => i.preview).length };
 }
 
 async function remove(packId) {
@@ -270,10 +332,16 @@ async function remove(packId) {
 async function main() {
   const args = parseArgs();
   if (args.remove) return ok(await remove(String(args.remove)));
-  if (!args.source) return fail('need --source <npm name | npm:name@range | https://…json | file:…> or --remove <id>');
+  // Previews need puppeteer and sharp, not the download stack, so this mode
+  // works on a pack whose source is long gone.
+  if (args.previews) return ok(await previewsOnly(String(args.previews), { force: Boolean(args.force) }));
+  if (!args.source) return fail('need --source <npm name | npm:name@range | https://…json | file:…>, --previews <id> or --remove <id>');
   const { parseSource } = await loadInstallDeps();
   const source = parseSource(String(args.source));
-  return ok(await install({ source, refresh: Boolean(args.refresh), packId: args.pack ? String(args.pack) : null }));
+  return ok(await install({
+    source, refresh: Boolean(args.refresh), packId: args.pack ? String(args.pack) : null,
+    previews: args['no-previews'] !== true,
+  }));
 }
 
 main().catch((err) => { progress('failed', err.message); fail(err); });

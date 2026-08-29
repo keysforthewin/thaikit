@@ -26,9 +26,9 @@ export function jobStatus(id) {
   return jobs.get(id) ?? null;
 }
 
-export function runPackJob(state, { source, refresh = false, remove = false, pack = null }) {
+export function runPackJob(state, { source, refresh = false, remove = false, previews = false, pack = null }) {
   const id = crypto.randomUUID().slice(0, 8);
-  const job = { id, source, pack, refresh, remove, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
+  const job = { id, source, pack, refresh, remove, previews, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
   jobs.set(id, job);
 
   queue = queue.then(
@@ -36,10 +36,11 @@ export function runPackJob(state, { source, refresh = false, remove = false, pac
       new Promise((resolve) => {
         job.status = 'running';
         job.startedAt = new Date().toISOString();
-        broadcast(state, 'pack', { jobId: id, phase: 'start', message: remove ? `removing ${pack}` : `installing ${source}` });
+        broadcast(state, 'pack', { jobId: id, phase: 'start', message: remove ? `removing ${pack}` : previews ? `rendering previews for ${pack}` : `installing ${source}` });
 
         const args = [SCRIPT];
         if (remove) args.push('--remove', pack);
+        else if (previews) args.push('--previews', pack, '--force');
         else {
           args.push('--source', source);
           if (refresh) args.push('--refresh');

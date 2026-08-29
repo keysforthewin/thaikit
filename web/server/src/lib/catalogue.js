@@ -105,7 +105,7 @@ export async function installedItems() {
   const packs = [];
   const items = [];
   for (const p of index.packs ?? []) {
-    packs.push({ id: p.id, name: p.name, builtin: false, version: p.version, source: p.source, installedAt: p.installedAt, items: (p.items ?? []).filter((i) => i.role !== 'support').length, unsupported: (p.items ?? []).filter((i) => i.role !== 'support' && !i.supported).length, license: p.license ?? null });
+    packs.push({ id: p.id, name: p.name, builtin: false, version: p.version, source: p.source, installedAt: p.installedAt, items: (p.items ?? []).filter((i) => i.role !== 'support').length, unsupported: (p.items ?? []).filter((i) => i.role !== 'support' && !i.supported).length, warnings: p.warnings ?? [], license: p.license ?? null });
     for (const it of p.items ?? []) {
       if (it.role === 'support') continue;
       items.push({
