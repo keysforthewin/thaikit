@@ -36,7 +36,8 @@ export async function parseLevelGlb(arrayBuffer) {
         id: node.name, ref: tk.ref, version: tk.version ?? null, name: tk.label ?? '',
         position: node.position.toArray(), rotation: [e.x, e.y, e.z], scale: node.scale.toArray(),
         static: tk.static ?? null, physics: tk.physics ?? null,
-        castShadow: tk.castShadow !== false, receiveShadow: tk.receiveShadow !== false, tags: tk.tags ?? [],
+        castShadow: tk.castShadow !== false, receiveShadow: tk.receiveShadow !== false,
+        billboard: tk.billboard ?? 'none', tags: tk.tags ?? [],
       });
       // Keep the meshes as a fallback. Detached now; disposed only if unused.
       const fallback = new THREE.Group();

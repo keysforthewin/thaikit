@@ -102,6 +102,9 @@ async function bytesRequest(path, options = {}, etagKey) {
     err.status = res.status;
     err.etag = body.etag;
     err.issues = body.issues;
+    // The whole payload, for the callers that show more than the headline --
+    // the cube-map zip import names the faces it could not find or read.
+    err.body = body;
     throw err;
   }
   return res;
@@ -174,6 +177,15 @@ levelsApi.sky = {
     return res.json();
   },
   remove: (id, slot) => request(`/api/levels/${encodeURIComponent(id)}/sky/${encodeURIComponent(slot)}`, { method: 'DELETE' }, null),
+  /** A zip of six `_right`/`_left`/`_up`/`_down`/`_front`/`_back` images: all six slots at once. */
+  uploadCubeZip: async (id, file) => {
+    const res = await bytesRequest(
+      `/api/levels/${encodeURIComponent(id)}/sky/cube-zip`,
+      { method: 'POST', headers: { 'content-type': 'application/zip' }, body: file },
+      null,
+    );
+    return res.json();
+  },
 };
 
 export const ktx2Api = {

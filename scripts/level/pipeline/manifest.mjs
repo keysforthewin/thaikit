@@ -160,7 +160,8 @@ export function writeManifest({ bake, lodStats, lightmapImage, skyIndices = null
       sky: skyBlock(settings.sky, skyIndices),
       colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p) })),
       dynamic: bake.placements.filter((p) => !p.static).map((p) => ({
-        node: `dynamic/${p.id}`, placement: p.id, physics: p.physics, destructionGroups: p.destructionGroups ?? [], colliders: localShapes(p),
+        node: `dynamic/${p.id}`, placement: p.id, physics: p.physics, billboard: p.billboard ?? 'none',
+        destructionGroups: p.destructionGroups ?? [], colliders: localShapes(p),
       })),
       spawns: bake.spawns,
     });
@@ -181,7 +182,12 @@ function skyBlock(sky, indices) {
   if (!sky?.enabled) return null;
   const base = indices?.base == null ? null : {
     image: indices.base,
+    // What the encoder actually wrote, not what the source mode was: a
+    // `panoramic` sky ships as a 6-face cubemap, an `equirect` or `cube` one as
+    // a single panorama.
+    projection: indices.projection ?? 'equirect',
     intensity: sky.base?.intensity ?? 1,
+    lodBias: sky.base?.lodBias ?? -0.5,
     rotationDeg: sky.base?.rotationDeg ?? 0,
   };
   const clouds = indices?.clouds == null ? null : {

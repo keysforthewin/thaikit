@@ -43,7 +43,8 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     g.userData.tk = {
       kind: 'placement', ref: p.ref, version: item?.version ?? p.version ?? null,
       static: p.static ?? null, physics: p.physics ?? null,
-      castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false, tags: p.tags ?? [],
+      castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false,
+      billboard: p.billboard ?? 'none', tags: p.tags ?? [],
       ...(p.name ? { label: p.name } : {}),
     };
     if (item?.supported) {

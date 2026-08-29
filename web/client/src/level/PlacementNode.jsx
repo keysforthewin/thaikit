@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { applyBillboard, isBillboard } from '@thaikit/level-runtime/billboard';
 
 import { useLevel } from './store.js';
 import { registerNode } from './nodes.js';
@@ -14,6 +16,14 @@ const SELECTED = 0x7ee787;
  * the raycaster tests, and the overlays. The group's transform is written
  * imperatively by the gizmo during a drag and re-synced from the doc after a
  * commit, undo, or a typed value.
+ *
+ * A billboarded placement turns on an INNER group rather than on this one. The
+ * gizmo drags the outer group and commits whatever rotation it finds there, so
+ * writing a camera-derived facing onto it every frame would feed the camera's
+ * angle straight back into the document the next time anything was dragged.
+ * Turning a child instead leaves the authored transform alone, and keeps the
+ * pick box and the selection outline at a stable angle rather than swinging
+ * with the view.
  */
 export function PlacementNode({ placement }) {
   const item = useLevel((s) => s.catalogue.byRef[placement.ref]);
@@ -52,6 +62,17 @@ export function PlacementNode({ placement }) {
   }, [instance, placement.castShadow, placement.receiveShadow, wireframe]);
 
   const fallback = useMemo(() => (!instance && orphan ? orphan.clone(true) : null), [instance, orphan]);
+
+  const facingRef = useRef(null);
+  const billboard = placement.billboard ?? 'none';
+  useLayoutEffect(() => {
+    // Back to the authored facing the moment billboarding is switched off.
+    if (!isBillboard(billboard) && facingRef.current) {
+      facingRef.current.quaternion.identity();
+      facingRef.current.updateMatrixWorld(true);
+    }
+  }, [billboard]);
+  useFrame((state) => applyBillboard(facingRef.current, billboard, state.camera));
 
   useLayoutEffect(() => {
     registerNode(placement.id, groupRef.current);
@@ -92,8 +113,10 @@ export function PlacementNode({ placement }) {
 
   return (
     <group ref={groupRef} name={placement.id}>
-      {instance && <primitive object={instance} />}
-      {fallback && <primitive object={fallback} />}
+      <group ref={facingRef}>
+        {instance && <primitive object={instance} />}
+        {fallback && <primitive object={fallback} />}
+      </group>
       <mesh
         position={center}
         scale={size}

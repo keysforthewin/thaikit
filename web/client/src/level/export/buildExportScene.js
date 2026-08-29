@@ -48,7 +48,10 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress } =
     const { ix, iz } = cellOf(c.x, c.z, cellSize);
     const staticFlag = isStatic(p, item, proto);
     const colliders = item?.colliders?.parts ?? [];
-    const tk = { kind: 'placement', placement: p.id, asset: p.ref, cell: cellKey(ix, iz), static: staticFlag };
+    // The geometry is exported at its AUTHORED rotation and the runtime turns
+    // the node; there is nothing to bake about facing the camera.
+    const billboard = p.billboard ?? 'none';
+    const tk = { kind: 'placement', placement: p.id, asset: p.ref, cell: cellKey(ix, iz), static: staticFlag, billboard };
 
     expandInstances(source);
     source.traverse((o) => {
@@ -71,6 +74,7 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress } =
       position: p.position, rotation: p.rotation, scale: p.scale,
       bounds: { min: bbox.min.toArray(), max: bbox.max.toArray() },
       physics: { enabled: p.physics ?? Boolean(item?.physics?.enabled), massKg: item?.physics?.massKg ?? null },
+      billboard,
       destructionGroups: item?.destructionGroups ?? [],
       colliders: colliders.map((c) => ({ name: c.name, type: c.type, offset: c.offset, scale: c.scale, isTrigger: Boolean(c.isTrigger) })),
       colliderYaw: 0,

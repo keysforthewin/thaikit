@@ -42,7 +42,7 @@ test('a level with no sky settings still gets the defaults, off', () => {
 test('a cube map records one filename per face', () => {
   const s = SkySettings.parse({ enabled: true, base: { mode: 'cube', faces: { px: 'px.jpg', nx: 'nx.png' } } });
   assert.equal(s.base.faces.px, 'px.jpg');
-  assert.equal(s.base.file, null);
+  assert.equal(s.base.panorama, null);
   assert.throws(() => SkySettings.parse({ base: { mode: 'sphere' } }));
   assert.throws(() => SkySettings.parse({ base: { mode: 'cube', faces: { up: 'up.jpg' } } }));
 });
@@ -50,6 +50,14 @@ test('a cube map records one filename per face', () => {
 // A level baked before the sky existed has no `sky` key, and must still parse
 // at schemaVersion 1 -- which is why the field is nullable with a default
 // rather than a bump of MANIFEST_SCHEMA_VERSION.
+// `equirect` was the old 2D-image mode, replaced outright by `panoramic`. A
+// level GLB written while it existed must still OPEN -- rejecting the value
+// would make the project unloadable rather than merely dropping its backdrop.
+test('a legacy equirect base reads as none', () => {
+  const s = SkySettings.parse({ enabled: true, base: { mode: 'equirect', file: 'sky.jpg' } });
+  assert.equal(s.base.mode, 'none');
+});
+
 test('a manifest baked before the sky still parses', () => {
   const m = ManifestExtras.parse({
     schemaVersion: 1, id: 'soi-1', name: 'Soi 1', generatedAt: new Date().toISOString(),

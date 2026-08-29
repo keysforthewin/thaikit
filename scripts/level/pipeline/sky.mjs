@@ -9,12 +9,21 @@
  * way the lightmap goes in -- as KTX2 textures nothing references, pulled back
  * out by index from the manifest.
  *
- * Six cube faces are resampled here into ONE equirectangular map, and that is
- * the point of this file. A KTX2 `CubeTexture` cannot be assembled out of six
- * compressed 2D images, so shipping a cube would mean a second runtime path
- * with uncompressed faces in it. Resampling once at bake time leaves the
- * runtime with exactly one thing to load, and costs the author nothing: the
- * editor still previews the real cube through `CubeTextureLoader`.
+ * Two shapes of backdrop ship from here, and which one is a real decision.
+ *
+ * `cube` mode resamples six faces into ONE equirect, because six SEPARATE KTX2
+ * files cannot be assembled into a `CubeTexture` -- three has no loader that
+ * stitches compressed 2D images together. `panoramic` mode goes the other way
+ * and ships a single KTX2 with `faceCount: 6`, which `ktx create --cubemap`
+ * writes and `KTX2Loader` hands back as a `CompressedCubeTexture` unasked. One
+ * container, one download, one `parse` -- so there is no second runtime path,
+ * which was the only thing wrong with cubes before.
+ *
+ * The cubemap is the better of the two where it applies. An equirect backdrop
+ * has to ship with NO mip chain (its u singularity collapses the zenith to the
+ * sky's average colour under automatic mip selection); a cube face is an
+ * ordinary square, WebGL2 filters across the seams unconditionally, and the
+ * whole artefact goes away.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -25,7 +34,8 @@ import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { levelDir } from '@thaikit/registry-core';
 import { CUBE_FACES } from '@thaikit/level-schema';
 
-import { encodeKtx2 } from './ktx2.mjs';
+import { encodeKtx2, encodeKtx2Cubemap } from './ktx2.mjs';
+import { equirectToCube } from '../equirect-to-cube.mjs';
 
 /** Wider than most authored panoramas need, and 2:1 as an equirect must be. */
 const EQUIRECT_WIDTH = 2048;
@@ -134,21 +144,117 @@ export async function cubeToEquirect(faceBuffers, { width = EQUIRECT_WIDTH } = {
 }
 
 /**
+ * The face edge to resample a panorama onto.
+ *
+ * A cube face spans 90 degrees and an equirect's width spans 360, so the face
+ * that neither invents pixels nor throws any away is exactly `width / 4`.
+ * Pinning it to a constant is wrong in both directions and was: at a fixed
+ * 1024 a 2048-wide panorama was UPSAMPLED 2x, paying for bytes that carried no
+ * detail, while a 7680-wide one would have been thrown away down to a quarter
+ * of what it had.
+ *
+ * `maxFace` is the ceiling, because the face size is also the VRAM bill: six
+ * faces of ETC1S at half a byte per pixel, plus a third again for the mips.
+ */
+function faceSizeFor(width, maxFace) {
+  const ideal = Math.round(width / 4);
+  // Block compression wants a multiple of 4.
+  return Math.max(256, Math.floor(Math.min(ideal, maxFace) / 4) * 4);
+}
+
+/**
+ * A `panoramic` base: one ground-level panorama, completed into six faces.
+ *
+ * The panorama covers the azimuth fully and the sky honestly, and the ground
+ * not at all -- so `equirectToCube` synthesises the lower hemisphere while it
+ * resamples, fading into a colour measured off the horizon rows. Doing it here
+ * rather than on the `ny` face alone is what keeps the four side faces meeting
+ * the bottom one without a step: the fade is a function of ELEVATION, so every
+ * face crossing the band gets the same blend at the same angle.
+ *
+ * These faces are NOT flipped, and that is the one place this path differs from
+ * the equirect one. `CubeTexture.flipY` is false in three -- for the editor's
+ * `CubeTextureLoader` preview and for the `CompressedCubeTexture` the runtime
+ * transcodes alike -- so both ends read row 0 as the top and there is nothing
+ * to reconcile. Flipping here would ship the sky upside down.
+ */
+async function panoramaToFaces(bytes, base, { onProgress, maxFace = 2048 } = {}) {
+  const notes = [];
+  const meta = await sharp(bytes, { failOn: 'none' }).metadata();
+  const aspect = (meta.width ?? 2) / (meta.height ?? 1);
+
+  // What the rows span. The uploader records this; an older level, or a
+  // panorama dropped in by hand, gets the aspect ratio's answer -- 4:1 is the
+  // sky alone, anything else is treated as a whole sphere.
+  let { minDeg, maxDeg } = base?.elevation ?? {};
+  if (typeof minDeg !== 'number' || typeof maxDeg !== 'number') {
+    minDeg = Math.abs(aspect - 4) < Math.abs(aspect - 2) ? 0 : -90;
+    maxDeg = 90;
+    notes.push(`panorama elevation not recorded; ${meta.width}x${meta.height} (${aspect.toFixed(2)}:1) read as ${minDeg}..${maxDeg}°`);
+  }
+
+  const nadir = base?.nadir ?? {};
+  const size = faceSizeFor(meta.width ?? 2048, maxFace);
+  if (size < Math.round((meta.width ?? 0) / 4)) {
+    notes.push(`panorama is ${meta.width}px wide (${((meta.width ?? 0) / 360).toFixed(1)} px/deg); faces capped at ${size}`);
+  }
+  onProgress?.(`resampling panorama to 6 x ${size}² cube faces (${(size / 90).toFixed(1)} px/deg)`);
+  if (nadir.mode === 'cut') {
+    onProgress?.('nadir mode is cut: the cube ships with no floor');
+    notes.push('nadir cut at the horizon; ny is one flat colour and the side faces stop at the skyline');
+  }
+  const { faces, nadirColour } = await equirectToCube(bytes, {
+    size,
+    nadir: nadir.color ?? 'auto',
+    // The defaults live in `resolveNadirFade`, not here. These used to fall back
+    // to 8/40 while the schema said 0/8, so a setting the editor never wrote
+    // left EIGHT degrees of unfaded panorama below the horizon -- for an aerial
+    // plate, roads running under the map.
+    nadirMode: nadir.mode ?? 'fade',
+    nadirStart: nadir.startDeg,
+    nadirEnd: nadir.endDeg,
+    elevMinDeg: minDeg,
+    elevMaxDeg: maxDeg,
+  });
+  if (!nadir.color && nadirColour) {
+    notes.push(`nadir measured off the horizon at #${nadirColour.slice(0, 3).map((c) => c.toString(16).padStart(2, '0')).join('')}`);
+  }
+
+  // Raw RGBA out, PNG in: the encoder wants a file it can read.
+  const png = await Promise.all(
+    CUBE_FACES.map((f) =>
+      sharp(faces[f].raw, { raw: { width: faces[f].size, height: faces[f].size, channels: 4 } }).png().toBuffer(),
+    ),
+  );
+  return { faces: png, notes };
+}
+
+/**
  * The sky's images as PNG bytes, ready to encode. Returns nulls rather than
  * throwing for a missing file: a sky whose picture was deleted outside the
  * editor should bake as the layers that remain, not fail the whole level.
  *
- * @returns {{ base: Buffer|null, clouds: Buffer|null, notes: string[] }}
+ * `base` and `baseFaces` are exclusive: a `cube` sky flattens to one equirect
+ * image, a panoramic one to six faces that ship as a single cubemap.
+ *
+ * @returns {{ base: Buffer|null, baseFaces: Buffer[]|null, clouds: Buffer|null, notes: string[] }}
  */
-export async function prepareSkyImages(levelId, sky, { onProgress } = {}) {
+export async function prepareSkyImages(levelId, sky, { onProgress, maxFace = 2048 } = {}) {
   const notes = [];
-  if (!sky?.enabled) return { base: null, clouds: null, notes };
+  if (!sky?.enabled) return { base: null, baseFaces: null, clouds: null, notes };
 
   let base = null;
+  let baseFaces = null;
   const mode = sky.base?.mode ?? 'none';
-  if (mode === 'equirect') {
-    base = await readSlot(levelId, sky.base?.file);
-    if (!base) notes.push(`equirect image "${sky.base?.file ?? '(none)'}" is missing`);
+  if (mode === 'panoramic') {
+    const bytes = await readSlot(levelId, sky.base?.panorama);
+    if (!bytes) {
+      notes.push(`panorama "${sky.base?.panorama ?? '(none)'}" is missing`);
+    } else {
+      const built = await panoramaToFaces(bytes, sky.base, { onProgress, maxFace });
+      baseFaces = built.faces;
+      notes.push(...built.notes);
+    }
   } else if (mode === 'cube') {
     const files = CUBE_FACES.map((f) => sky.base?.faces?.[f]);
     const buffers = await Promise.all(files.map((f) => readSlot(levelId, f)));
@@ -177,8 +283,12 @@ export async function prepareSkyImages(levelId, sky, { onProgress } = {}) {
   // in the runtime is its LAST row: a sky that renders correctly while you
   // author it and comes back inverted in the game. Flipping the pixels once,
   // here, is the only place the two paths can be made to agree.
+  //
+  // None of which applies to CUBE faces: `CubeTexture.flipY` is false, and the
+  // editor's six-face preview and the runtime's transcoded cubemap both read
+  // row 0 as the top. `baseFaces` therefore goes through untouched.
   const flip = async (bytes) => (bytes ? sharp(bytes, { failOn: 'none' }).flip().png().toBuffer() : null);
-  return { base: await flip(base), clouds: await flip(clouds), notes };
+  return { base: await flip(base), baseFaces, clouds: await flip(clouds), notes };
 }
 
 /**
@@ -187,26 +297,51 @@ export async function prepareSkyImages(levelId, sky, { onProgress } = {}) {
  *
  * @returns {{ base: number|null, clouds: number|null }} indices into textures[]
  */
-export async function addSkyTextures(doc, { base = null, clouds = null }, { colorMode = 'etc1s', maxSize = 2048, onProgress } = {}) {
-  if (!base && !clouds) return { base: null, clouds: null };
+export async function addSkyTextures(doc, { base = null, baseFaces = null, clouds = null }, { colorMode = 'etc1s', maxSize = 2048, onProgress } = {}) {
+  if (!base && !baseFaces && !clouds) return { base: null, clouds: null, projection: 'equirect' };
   doc.createExtension(KHRTextureBasisu).setRequired(true);
+
+  const store = (name, bytes) => {
+    const tex = doc.createTexture(`sky-${name}`).setImage(bytes).setMimeType('image/ktx2').setExtras({ tk: { kind: 'sky', layer: name } });
+    return doc.getRoot().listTextures().indexOf(tex);
+  };
 
   const add = async (name, bytes, opts) => {
     onProgress?.(`encoding sky ${name}`);
     const out = await encodeKtx2(bytes, { srgb: true, mipmaps: true, ...opts });
-    const tex = doc.createTexture(`sky-${name}`).setImage(out.bytes).setMimeType('image/ktx2').setExtras({ tk: { kind: 'sky', layer: name } });
-    return doc.getRoot().listTextures().indexOf(tex);
+    return store(name, out.bytes);
   };
 
-  // The backdrop is the largest single texture in the level and is never seen
-  // up close, so it takes the colour mode like any other colour map.
-  // No mip chain on the backdrop: the runtime samples it with LinearFilter to
-  // avoid an equirect's pole collapse, so a chain would be uploaded and never
-  // read. Roughly a third off the texture.
-  const baseIndex = base ? await add('base', base, { mode: colorMode, mipmaps: false, maxSize: Math.max(maxSize, 2048) }) : null;
-  // Clouds carry their shape in ALPHA as well as luminance, and ETC1S's palette
-  // is hard on an alpha ramp -- a soft cloud edge bands into contours. UASTC.
-  const cloudIndex = clouds ? await add('clouds', clouds, { mode: 'uastc', maxSize }) : null;
+  // Both layers are COLOUR maps and take the level's colour-texture mode, the
+  // same as every base colour in the level. The sky is not a special case, and
+  // a backdrop pinned to UASTC while the props hanging in front of it are ETC1S
+  // is a setting that silently does not apply to the two largest textures in
+  // the file. The cloud plate carries its shape in alpha as well as luminance;
+  // basis-lz encodes alpha as its own slice, so a soft edge survives.
+  //
+  // The backdrop ships with NO mip chain: the runtime samples it with
+  // LinearFilter to avoid an equirect's pole collapse, so a chain would be
+  // uploaded and never read.
+  //
+  // A CUBEMAP has no such problem and so ships WITH one. The pole collapse is
+  // an equirect artefact -- it is the projection's own u singularity, not a
+  // property of skies -- and a cube face is an ordinary square that mips down
+  // like any other. WebGL2 filters across cube seams unconditionally, so the
+  // chain costs a third more bytes and buys correct minification everywhere.
+  let baseIndex = null;
+  let projection = 'equirect';
+  if (baseFaces) {
+    onProgress?.('encoding sky base as a 6-face cubemap');
+    // The faces were already sized against the source; re-clamping here would
+    // undo that silently.
+    const edge = (await sharp(baseFaces[0], { failOn: 'none' }).metadata()).width;
+    const out = await encodeKtx2Cubemap(baseFaces, { mode: colorMode, srgb: true, mipmaps: true, maxSize: edge });
+    baseIndex = store('base', out.bytes);
+    projection = 'cube';
+  } else if (base) {
+    baseIndex = await add('base', base, { mode: colorMode, mipmaps: false, maxSize: Math.max(maxSize, 2048) });
+  }
+  const cloudIndex = clouds ? await add('clouds', clouds, { mode: colorMode, maxSize }) : null;
 
-  return { base: baseIndex, clouds: cloudIndex };
+  return { base: baseIndex, clouds: cloudIndex, projection };
 }

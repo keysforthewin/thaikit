@@ -23,6 +23,7 @@ import { defaultMoon, defaultPointLight, defaultSpotLight, round4 } from './defa
 import { nodeFor } from './nodes.js';
 import { placementPoint } from './placement.js';
 import { evictUnused, itemKey } from '../three/instances.js';
+import { PlayHud } from './play/PlayHud.jsx';
 
 const snapTo = (v, step) => (step > 0 ? Math.round(v / step) * step : v);
 
@@ -192,7 +193,7 @@ export default function LevelEditor({ initialId }) {
     escape: () => { const st = useLevel.getState(); if (st.modal) st.setModal(null); else st.clearSelection(); },
     selectAll: () => { const st = useLevel.getState(); if (st.doc) st.select(st.doc.placements.map((p) => p.id)); },
   }), [save, duplicateSelected, removeSelected, frame]);
-  useHotkeys(hotkeys);
+  useHotkeys(hotkeys, s.play);
 
   useEffect(() => { window.__level = useLevel; }, []);
 
@@ -211,6 +212,13 @@ export default function LevelEditor({ initialId }) {
             <button className={dirty ? 'primary' : ''} onClick={save} disabled={s.saving || !dirty} title="save the level GLB — Ctrl+S">{s.saving ? 'saving…' : 'save'}</button>
             <button onClick={() => useLevel.getState().undo()} disabled={!s.past.length} title="undo — Ctrl+Z">undo</button>
             <button onClick={() => useLevel.getState().redo()} disabled={!s.future.length} title="redo — Ctrl+Shift+Z">redo</button>
+            <button
+              className={s.play ? 'primary' : ''}
+              onClick={() => s.setPlay(!s.play)}
+              title="walk the level in first person — WASD, mouse look, C for third person, Esc to come back"
+            >
+              {s.play ? '■ stop' : '▶ play'}
+            </button>
           </>
         )}
         <span className="grow" />
@@ -226,6 +234,7 @@ export default function LevelEditor({ initialId }) {
         <div className="viewport-wrap" style={{ position: 'relative', minWidth: 0 }}>
           <Viewport stats={stats} />
           {doc && <StatsHud stats={stats} shippingNotKtx2={shippingNotKtx2} onOpenTextures={() => setTexturesOpen(true)} />}
+          {s.play && <PlayHud />}
           {s.status && <div className="status">{s.status}</div>}
           {s.loading && <div className="status">loading level…</div>}
         </div>

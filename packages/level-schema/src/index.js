@@ -20,8 +20,63 @@ export const Quat = z.tuple([num, num, num, num]);
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 export const Slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
+/**
+ * How a placement faces the camera. `yaw` turns about Y only and is what a
+ * planted prop wants; `full` copies the camera's orientation the way a sprite
+ * does. A billboarded placement can never be merged into a static cell -- it
+ * turns every frame -- so this also decides which side of the bake it lands on.
+ */
+export const BillboardMode = z.enum(['none', 'yaw', 'full']);
+
 /** The six cube-map faces, in the order three's CubeTextureLoader wants them. */
 export const CUBE_FACES = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
+
+/**
+ * What every skybox exporter on earth calls those six faces.
+ *
+ * Nothing ships a `px.png`: a downloaded or generated skybox is six files named
+ * `<whatever>_right`, `_left`, `_up`, `_down`, `_front`, `_back`, and the zip
+ * import matches on that suffix alone so the prefix can be anything.
+ *
+ * `front` is **-Z** and `back` is **+Z** -- the OpenGL convention three itself
+ * uses, where the default camera looks down -Z, so "front" is what is in front
+ * of it. This was shipped the other way round first, on the assumption that the
+ * naming came from Unity (+Z forward), and it put a visible seam down all four
+ * vertical joins. It is not a matter of convention lore: `scripts/level/check-cubemap.mjs`
+ * scores an assignment by the mean |difference| between the pixels either side
+ * of all 12 shared cube edges, and on a real four-face pack the two orders
+ * measured **1.19** and **14.70** against an in-face adjacent-column floor of
+ * **2.24** -- the correct one is smoother than ordinary detail inside a face,
+ * and the runner-up assignment was 7.57, so there is no ambiguity to split.
+ */
+export const CUBE_FACE_ALIASES = {
+  right: 'px',
+  left: 'nx',
+  up: 'py',
+  top: 'py',
+  down: 'ny',
+  bottom: 'ny',
+  front: 'nz',
+  back: 'pz',
+};
+
+/**
+ * The face a filename inside a cube-map zip names, or null.
+ *
+ * Matches the LAST alias word in the stem, so `skybox_back.png`, `sky-back.jpg`
+ * and `back.webp` all land on `nz` while a directory prefix (`Skybox/`, or the
+ * `__MACOSX/` junk a Mac zip carries) is ignored.
+ */
+export function faceFromFilename(name) {
+  const parts = String(name).split('/');
+  const base = parts.pop() ?? '';
+  // A zip made on a Mac carries an AppleDouble resource fork beside every file;
+  // `__MACOSX/._sky_left.png` is not an image and must not claim `nx`.
+  if (base.startsWith('._') || parts.includes('__MACOSX')) return null;
+  const stem = base.replace(/\.[^.]+$/, '').toLowerCase();
+  const m = stem.match(/(?:^|[^a-z])([a-z]+)$/);
+  return (m && CUBE_FACE_ALIASES[m[1]]) ?? null;
+}
 
 /** `@thaikit/honda-wave` -- a pack namespace and an item name. */
 export const ItemRef = z.string().regex(/^@[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/);
@@ -57,8 +112,8 @@ export const GroundSettings = z.object({
 /**
  * The sky: three layers over the level, none of which is geometry in the bake.
  *
- * A base dome (one equirectangular image, or six cube faces the bake resamples
- * into one), an ADDITIVE cloud dome that drifts, and a procedural star field
+ * A base dome (one ground-level panorama the bake resamples into a cubemap, or
+ * six cube faces the bake resamples into one equirect), an ADDITIVE cloud dome that drifts, and a procedural star field
  * that twinkles. Like the ground it is a SETTING -- there is exactly one sky,
  * nothing about it can be selected or dragged, and its images live beside the
  * project as `levels/<id>/sky/<slot>.<ext>` rather than inside the level GLB,
@@ -68,16 +123,123 @@ export const GroundSettings = z.object({
  * folds it into the shipped GLB as an unreferenced KTX2 image, the same
  * arrangement the lightmap uses.
  */
+/**
+ * How a `panoramic` base is completed into a whole sphere.
+ *
+ * A panorama is shot or generated at ground level, so it covers the full 360
+ * of azimuth and the sky above the horizon -- and nothing usable below it. The
+ * equirect projection crushes the nadir into a single row, so whatever is down
+ * there was invented rather than observed, and resampling it onto a cube face
+ * turns that one row into a full-resolution square underfoot. So the lower
+ * hemisphere is SYNTHESISED: everything below `startDeg` fades into one flat
+ * colour by `endDeg`.
+ *
+ * `color` is measured off the panorama's own horizon rows when the image is
+ * uploaded, not chosen. A hand-picked grey is a disc of the wrong hue directly
+ * underfoot, and against a night sky that reads as a lit hole rather than as
+ * ground. It is RECORDED here rather than re-measured at bake time so the
+ * editor's preview and the shipped cubemap cannot drift apart; null means the
+ * bake measures it, which is the fallback for a panorama uploaded by hand.
+ *
+ * The fade runs 0..8 degrees, and both ends are deliberate. It starts AT the
+ * horizon because a panoramic sky fills the top half of the dome and nothing
+ * else; start it lower and a band of the image wraps under the player, which
+ * for a panorama generated from the air is a city seen from above, upside down
+ * beneath their feet. It ENDS quickly because the fade is a blend, not a cut --
+ * at 25 degrees the mix is still two thirds image ten degrees down, and the
+ * measured symptom was orange street lights glowing through the ground. Eight
+ * degrees is wide enough that the joint is not a drawn line at the skyline and
+ * narrow enough that nothing recognisable survives it.
+ */
+export const SkyNadir = z.object({
+  /**
+   * `fade` blends the panorama into `color` across the band below, which suits
+   * a panorama whose lower rows are plausible ground.
+   *
+   * `cut` gives the cube NO FLOOR: everything below the horizon is `color`
+   * outright, the `ny` face is one flat colour and the four side faces stop
+   * dead at the skyline. That is the right mode for a backdrop that RINGS a
+   * level rather than containing it -- the level's own ground plane is the
+   * floor, and any city the panorama draws below the horizon is a second,
+   * aerial city underneath the map. A fade only thins that city out; it is
+   * still there, and the eight degrees nearest the horizon are not faded at
+   * all, which is where the roads come through.
+   */
+  mode: z.enum(['fade', 'cut']).default('fade'),
+  color: hex.nullable().default(null),
+  /** Degrees below the horizon where the fade into `color` begins. Ignored when mode is 'cut'. */
+  startDeg: num.min(0).max(90).default(0),
+  /** Degrees below the horizon by which it is `color` alone. Ignored when mode is 'cut'. */
+  endDeg: num.min(0).max(90).default(8),
+});
+
+/**
+ * How wide a `cut` nadir's edge is, in degrees.
+ *
+ * A cut is a hard horizon, but a genuinely hard one is a stair-stepped line
+ * across the skyline: the boundary is a latitude, and a cube face's ROW is not
+ * an iso-elevation line, so the step lands on a different row along the face.
+ * A third of a degree is about ten pixels on a 2048 face -- invisible as a
+ * gradient, and enough to resolve the edge.
+ */
+export const NADIR_CUT_FEATHER_DEG = 0.35;
+
+/**
+ * The fade band a nadir setting actually means, in degrees below the horizon.
+ *
+ * `cut` is expressed as a hairline fade starting AT the horizon rather than as
+ * a separate branch, so the editor's preview shader and the bake's resampler
+ * run the same arithmetic and cannot drift. Both import this.
+ */
+export function resolveNadirFade(nadir = {}) {
+  if (nadir?.mode === 'cut') return { startDeg: 0, endDeg: NADIR_CUT_FEATHER_DEG, cut: true };
+  return { startDeg: nadir?.startDeg ?? 0, endDeg: nadir?.endDeg ?? 8, cut: false };
+}
+
 export const SkySettings = z.object({
   enabled: z.boolean().default(false),
   base: z
     .object({
-      mode: z.enum(['none', 'equirect', 'cube']).default('none'),
-      /** The equirect slot's file, when mode is 'equirect'. */
-      file: z.string().nullable().default(null),
+      /**
+       * `panoramic` is the 2D-image route: one equirectangular panorama, which
+       * the bake resamples into a real compressed cubemap. There used to be a
+       * second `equirect` mode that shipped the panorama AS an equirect, with
+       * no mip chain and a collapsing pole; `panoramic` replaced it outright,
+       * so the legacy value is folded back to `none` rather than rejected --
+       * a level GLB written by the older schema must still open.
+       */
+      mode: z
+        .preprocess((v) => (v === 'equirect' ? 'none' : v), z.enum(['none', 'cube', 'panoramic']))
+        .default('none'),
       /** px/nx/py/ny/pz/nz -> filename, when mode is 'cube'. */
       faces: z.record(z.enum(CUBE_FACES), z.string()).nullable().default(null),
+      /** The panorama slot's file, when mode is 'panoramic'. */
+      panorama: z.string().nullable().default(null),
+      /**
+       * What the panorama's rows span, in degrees of elevation. A 2:1 image is
+       * a whole sphere whose bottom half is invented; a 4:1 image is the upper
+       * hemisphere alone. The uploader reads this off the aspect ratio, and it
+       * is stored rather than re-derived so a hand-cropped panorama can say so.
+       */
+      elevation: z
+        .object({ minDeg: num.min(-90).max(90).default(-90), maxDeg: num.min(-90).max(90).default(90) })
+        .default({}),
+      nadir: SkyNadir.default({}),
       intensity: num.nonnegative().default(1),
+      /**
+       * Mip selection bias for a CUBEMAP backdrop, in mip levels. Ignored by
+       * the equirect path a `cube` sky bakes down to, which ships no chain to
+       * bias.
+       *
+       * A sky authored at more px/degree than the screen has is minified, so
+       * the GPU picks a fractional mip and trilinear blends in a
+       * half-resolution level. That is correct filtering and visibly softer
+       * than the display can show: measured against a 3x3 supersampled
+       * reference at 60 degrees FOV, bias 0 scored an RMSE of 1.42 and -0.5
+       * scored 0.52 -- the same as sampling level 0 directly, without giving up
+       * the chain that keeps a wide FOV from crawling.
+       */
+      lodBias: num.min(-4).max(4).default(-0.5),
       rotationDeg: num.default(0),
     })
     .default({}),
@@ -178,6 +340,7 @@ export const PlacementExtras = z.object({
   physics: z.boolean().nullable().default(null),
   castShadow: z.boolean().default(true),
   receiveShadow: z.boolean().default(true),
+  billboard: BillboardMode.default('none'),
   tags: z.array(z.string()).default([]),
 });
 
@@ -268,7 +431,23 @@ export const ManifestExtras = z.object({
   sky: z
     .object({
       base: z
-        .object({ image: z.number().int().nonnegative(), intensity: num.nonnegative().default(1), rotationDeg: num.default(0) })
+        .object({
+          image: z.number().int().nonnegative(),
+          /**
+           * What that KTX2 image IS. `equirect` is one 2:1 panorama sampled as
+           * itself; `cube` is a single KTX2 with `faceCount: 6`, which
+           * `KTX2Loader` hands back as a `CompressedCubeTexture`.
+           *
+           * The runtime does not need this -- it branches on the texture's own
+           * `isCubeTexture` -- but a manifest that does not say which of the two
+           * it wrote cannot be checked without transcoding it.
+           */
+          projection: z.enum(['equirect', 'cube']).default('equirect'),
+          intensity: num.nonnegative().default(1),
+          /** Mip bias, cubemap only. See `SkySettings.base.lodBias`. */
+          lodBias: num.min(-4).max(4).default(-0.5),
+          rotationDeg: num.default(0),
+        })
         .nullable()
         .default(null),
       clouds: z
@@ -302,6 +481,8 @@ export const ManifestExtras = z.object({
         node: z.string(),
         placement: z.string(),
         physics: z.object({ enabled: z.boolean(), massKg: num.nullable() }),
+        // Defaulted, so a level baked before billboarding still parses.
+        billboard: BillboardMode.default('none'),
         destructionGroups: z.array(z.string()).default([]),
         colliders: z.array(ColliderShape).default([]),
       }),

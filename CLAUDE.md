@@ -155,7 +155,9 @@ placed geometry. Export writes a second, self-contained GLB.
   colour is `#8b909b` because the first try, `#4a4f5c`, was invisible under the editor's night rig
   and made the toggle look broken.
 - **The sky is a setting with SIDECAR images, and it is three domes, not a background.**
-  `settings.sky` is a base backdrop (one equirect, or six cube faces), an additive
+  `settings.sky` is a base backdrop (one ground-level `panoramic` plate, or six
+  cube faces -- the old `equirect` mode, which shipped a 2D panorama as itself with
+  no mip chain and a collapsing pole, is GONE and reads back as `none`), an additive
   cloud dome that drifts, and a procedural star field -- authored on the `sky` tab
   beside `object` and `level`. The pictures do NOT go in the level GLB: it is
   rebuilt and re-uploaded whole on every save, so they are uploaded to
@@ -167,12 +169,198 @@ placed geometry. Export writes a second, self-contained GLB.
   lightmap's arrangement, with the indices on `manifest.sky`.
   `packages/level-runtime/src/sky.js` (`buildSky`) is shared VERBATIM by
   `loadLevel()` and the editor's `<SkyDome>`, so the star shader you art-direct is
-  the one that ships. Four things it cost:
-  - **Six faces are resampled to ONE equirect at bake.** A KTX2 `CubeTexture`
-    cannot be assembled from six compressed 2D images, so shipping a cube would
-    mean a second runtime path. `cubeToEquirect` inverts three's own convention
-    (`u = atan2(z,x)/2PI + 0.5`, `v = asin(y)/PI + 0.5`); the first version was a
-    quarter turn out and looked entirely plausible.
+  the one that ships. What it cost:
+  - **The editor resamples a panorama into a cubemap at load, on the GPU, and
+    never samples the equirect itself.** `web/client/src/level/equirectCube.js`
+    renders six faces through a `CubeCamera` into a `WebGLCubeRenderTarget`
+    using `BASE_FRAG`'s `PANORAMIC_SOURCE` arithmetic verbatim -- elevation
+    remap plus nadir fade -- then disposes the source texture, so `SkyDome`
+    always hands `buildSky` a `CubeTexture` and the editor takes the same
+    `CUBE_SOURCE` branch the shipped level does, `lodBias` and all. An unmipped
+    8192x2048 backdrop is 64 MB the whole dome samples every frame (it CANNOT
+    carry mips -- the equirect pole collapses), which is what "the editor got
+    slow when I added a sky" is. Faces are `width/4` capped at **1024**, not the
+    bake's 2048: nothing here is compressed, so 2048 would be 134 MB against the
+    equirect's 64, while 1024 is 33 MB -- half of today, mipped, at 11.4 px/deg
+    against the shipped 22.8. Measured against the old 2D path over a synthetic
+    panorama at seven bearings and three nadir settings: mean |diff| 0.02-0.41
+    of 255, the only pixels over 8 being a hard 1-texel test edge and the
+    equirect ZENITH, where the cube is the correct one. The decoded image is
+    kept and the GPU texture is not, so a nudge of the spans or the ground fade
+    re-bakes in milliseconds without re-fetching 16 megapixels. Do not measure
+    this under SwiftShader or llvmpipe -- a software rasterizer's sampler cost
+    is filter ALU, not cache misses, and it reports the cubemap as SLOWER.
+  - **Nothing anybody downloads is called `px.png`, so the cube tab imports a
+    ZIP.** A skybox from a generator or an asset pack is six files named
+    `_right _left _up _down _front _back` (also `_top`/`_bottom`), and picking
+    them through six file dialogs is six chances to put the left face on the
+    right. `POST /api/levels/:id/sky/cube-zip` unpacks the archive with
+    `scripts/lib/unzip.mjs` -- 60 lines over `node:zlib`, because the one copy of
+    `fflate` on disk is a TRANSITIVE drei dependency hoisted here by chance --
+    maps the names through `faceFromFilename()` in `@thaikit/level-schema`, and
+    writes all six slots. Three things it insists on: ALL SIX or none (a partial
+    set is a sky that silently never draws, as `CubeTextureLoader` never fires
+    `onLoad`), square and equal-sized, and re-encoded to WEBP -- six 2048x2048
+    PNG faces are ~50 MB the editor re-fetches on every load, and the bake
+    resamples them either way. **`_front` is -Z and `_back` is +Z**, three's own
+    convention -- the default camera looks down -Z, so "front" is what is in
+    front of it. Shipped the other way round first, on the assumption the naming
+    came from Unity, and it put a seam down all four vertical joins. Do not
+    settle this from convention lore: ``scripts/level/check-cubemap.mjs` scores an
+    assignment by the mean |difference| across the pixels either side of all 12
+    shared cube edges, and on a real pack the two orders measured **1.19** and
+    **14.70** against an in-face adjacent-column floor of **2.24** -- the right
+    one is smoother than ordinary detail INSIDE a face, and the best wrong one
+    was 7.57. Re-run it on any cubemap that looks subtly off. `__MACOSX/._*` AppleDouble forks are skipped -- they match
+    the suffix and are not images. `accept` is a bare `.zip`, not a mime
+    type, and the control also takes a dropped file.
+
+    **A file chooser that stops opening is chrome-devtools MCP, not the page.**
+    `upload_file` turns on `Page.setInterceptFileChooserDialog` for that TARGET
+    and leaves it on, so from then until the tab is closed EVERY file input on it
+    silently does nothing when a human clicks it -- the dialog is suppressed and
+    handed to CDP instead. It cost a real debugging session and a wrong fix: the
+    button was never broken. Never leave a page you called `upload_file` on in
+    front of the user, and when a chooser "does nothing", check whether an
+    automated upload has touched that tab BEFORE reading any code.
+  - **`cube` mode resamples six faces to ONE equirect at bake; `panoramic` mode
+    ships a real compressed cubemap.** Six SEPARATE KTX2 files cannot be
+    assembled into a `CubeTexture` -- three has no loader that stitches
+    compressed 2D images -- which is why `cube` mode flattens. But ONE KTX2 with
+    `faceCount: 6` is fine: `ktx create --cubemap` writes it and `KTX2Loader`
+    returns a `CompressedCubeTexture` unasked (`isCubeTexture` true), so
+    `buildSky`'s existing `CUBE_SOURCE` branch takes it with no runtime change.
+    `cubeToEquirect` and `equirectToCube` are inverses of three's own convention
+    (`u = atan2(z,x)/2PI + 0.5`, `v = asin(y)/PI + 0.5`) and must stay so -- the
+    bake runs both; the first version was a quarter turn out and looked entirely
+    plausible.
+  - **A `panoramic` source is a ground-level 360 whose ground is SYNTHESISED.**
+    The projection crushes the nadir into one row, so whatever is down there was
+    invented, and resampling it onto `ny` makes that row a full-resolution square
+    underfoot. `equirectToCube` fades everything below `nadir.startDeg` into one
+    colour by `endDeg`, in DIRECTION space rather than on `ny` alone, so every
+    face crossing the band blends identically and the sides meet the bottom with
+    no step. The fade runs 0..8 degrees BELOW the horizon and both ends are
+    measured, not chosen: it starts AT the horizon because a panoramic sky is the
+    top half of the dome and nothing else, and it ends FAST because a wide fade
+    is a blend, not a cut -- at 0..25 the mix was still two thirds image ten
+    degrees down and the aerial half of the panorama glowed through the ground as
+    orange street lights underfoot. The colour is MEASURED off the horizon rows by the client at upload
+    (`measurePanorama`) and recorded on the setting, because the editor previews
+    the fade in the shader while the bake bakes it into the faces -- re-measuring
+    at bake time is how those two drift apart. `base.elevation` says what the
+    rows span: 2:1 is a whole sphere, 4:1 the sky alone. And a cube face is an
+    ordinary square, so unlike the equirect backdrop the cubemap ships WITH a mip
+    chain -- the pole collapse is the equirect projection's artefact, not a
+    property of skies, and WebGL2 filters cube seams unconditionally.
+  - **A backdrop that RINGS a level needs `nadir.mode: 'cut'`, not a fade.** A
+    fade thins the panorama's lower hemisphere toward a colour and leaves its
+    first `startDeg` degrees untouched, so an aerial plate keeps a whole second
+    city under the map with its roads showing through the unfaded band -- which
+    is what `levels/thepurge`'s first sky did, its skyline sitting at +5° with
+    drone-shot streets filling everything below. `cut` ends the image AT the
+    horizon: `ny` is one flat colour written directly (no resampling a million
+    texels of a face that is entirely past the fade), the four side faces stop
+    dead at the skyline, and `auto` sinks to BLACK rather than the mean of the
+    horizon rows, which for a night city would paint the skyline's own glow
+    underfoot as a lit disc. It is a hairline fade, not a branch:
+    `resolveNadirFade()` in `@thaikit/level-schema` turns `cut` into 0..0.35°
+    so the editor's preview shader and the bake's resampler run the SAME
+    arithmetic -- a genuinely hard edge stair-steps, because a cube face's row
+    is not an iso-elevation line. Measured on the old panorama at 512²: a side
+    face went 48.8 KB -> 20.5 KB.
+  - **The nadir fade's defaults lived in three places and two of them were
+    stale.** The schema said 0..8°, `equirectToCube` defaulted to 8..40 and
+    `panoramaToFaces` passed `nadir.startDeg ?? 8, nadir.endDeg ?? 40` -- so any
+    setting the editor had not written got EIGHT degrees of unfaded panorama
+    below the horizon. `resolveNadirFade()` is now the only place the defaults
+    exist; callers pass the setting through and never guess.
+  - **The stretch and the floor are DIFFERENT knobs, and only one of them is
+    `nadir`.** `nadir` decides what happens BELOW the horizon; `base.elevation`
+    decides how tall what is above it looks. A 2:1 plate read as -90..90 spreads
+    its rows over the whole sphere, so every building is twice as tall as the
+    same plate read as 0..90 -- and no amount of fading or cutting changes that,
+    which is what "fading and cutting are doing the same thing" means when you
+    hear it. `measurePanorama` only ever GUESSES the span off the aspect ratio,
+    so the SkyPanel now has `spans from/to` plus a "top half only" button
+    (0..90 + cut). Squeezing a 2:1 into 0..90 is only right when the image's
+    content really is sky-above-horizon: do it to an aerial plate and the roads
+    move from underfoot to overhead.
+  - **Four street-level plates stitched beat any image-to-360.** The route that
+    works for a backdrop that RINGS a level is
+    `scripts/level/stitch-plates.mjs`: N rectilinear plates, each treated as a
+    camera on its own bearing, inverted per equirect texel and cross-faded by
+    angular distance from each plate's centre. Four nano-banana-pro 4K plates
+    (6336px over 95 degrees = 67 px/deg native) give an 8192-wide equirect --
+    22.8 px/deg, EXACTLY the 2048 face cap, so there is nothing left to upscale
+    and a seam-preserving upscaler would only invent detail already there.
+    Measured wrap seam **0.60** against an adjacent-column floor of 0.25, seamless
+    by construction rather than by repair. Three things it needs: the plates must
+    be shot at STREET level tilted UP (a rooftop or drone plate has its towers
+    BELOW the horizon, so cutting at the horizon throws the city away -- this is
+    the same defect as the old panorama, and it is invisible until you profile
+    the rows); the far left and right edges must be prompted LOW, distant and
+    hazy so the joins land where nothing is recognisable; and `pitch` and `hfov`
+    must satisfy `pitch - atan(tanV * cos(180/N)) <= 0`, because a rectilinear
+    plate's bottom edge bows UPWARD in an equirect and at 90/20 each join wore a
+    black wedge notch where the bottom edge sat at +3.3 degrees. 95/15 clears it.
+  - **No text-to-image model will draw an equirect, and the good ones fail
+    convincingly.** nano-banana-pro at 4K (6336x2688) returns either a
+    beautiful FLAT photograph -- candidate A, wrap seam mean|L-R| **24.25**
+    against an adjacent-column floor of 0.88, no 360 content at all -- or the
+    mirrored-band hallucination, the skyline repeated top and bottom around a
+    black stripe, whose zenith row means 77 with max 255. Both look like
+    panoramas in a thumbnail. Check the ROW LUMA PROFILE before anything else:
+    a ground-level sky is brightest at the horizon and darkest at the zenith,
+    and the old panorama read 90-102 at 75-90° falling to 39 at the horizon,
+    which is the whole "buildings are stretched" complaint stated as a
+    measurement. The route that works is t2i for the PLATE, then
+    `fal-ai/hunyuan_world` for the wrap. Its `aspect_ratio` has no `2:1` --
+    `21:9` is the closest, and the fix is to stretch VERTICALLY to 2:1, which
+    keeps every horizontal pixel and only interpolates the axis about to be
+    upscaled. A rejected aspect_ratio is a 422 at result-fetch time and is not
+    billed.
+  - **A sky's sharpness is px/DEGREE, and the source is almost always the
+    binding constraint.** An equirect of width W carries `W/360` px/deg; a cube
+    face spanning 90 degrees carries `size/90`. A 1080p screen at 60 degrees FOV
+    wants 18. The hunyuan panorama was 1920 wide -- **5.3 px/deg** -- so the
+    faces at a hard-coded 1024 (11.4 px/deg) were UPSAMPLING it 2x and paying
+    for bytes that carried no detail. Face size is therefore DERIVED, `width/4`
+    capped by `maxFace`, which is the only size that neither invents pixels nor
+    throws any away. Fixing the pipeline without fixing the source does nothing.
+  - **Upscale the sky-only crop, and wrap-pad it first.** Half a 2:1 panorama is
+    thrown away by `panoramic` mode, so crop to the upper hemisphere BEFORE
+    upscaling and every pixel bought lands where it is used -- 1920x480 through
+    `fal-ai/clarity-upscaler` at 4x is 7680x1920, 21.3 px/deg, and 10x the
+    laplacian energy of a plain lanczos 4x (13.9 vs 1.4), so it is real detail
+    and not resampling. Clarity is TILED diffusion and does not know the image
+    wraps: pad each side with 45 degrees taken from the other end, upscale, then
+    crop the pad back off. Even then the seam wants a short cross-fade whose
+    strength is HIGHEST at the outermost column and decays inward -- inverted,
+    it leaves the seam exactly as it was (measured mean 2.34 -> 0.93, against a
+    0.95 natural adjacent-column floor).
+  - **A cubemap sky needs a NEGATIVE mip bias, not a disabled mip chain.** A sky
+    authored denser than the screen is minified, so the GPU picks a fractional
+    mip and trilinear blends in a half-resolution level -- correct filtering, and
+    visibly softer than the display can show. Against a 3x3 supersampled
+    reference at 60 degrees FOV: bias 0 scored RMSE **1.42**, -0.25 **0.85**,
+    -0.5 **0.52**, and level-0-only **0.52**. So `base.lodBias` defaults to
+    **-0.5** -- all of the detail back, with the chain still there for the wide
+    FOV and small viewport where the backdrop really is minified several times
+    and city lights would crawl. Sampling is `textureCube(uCube, dir, uLodBias)`,
+    whose bias overload is valid in both ESSL1 and GLSL3.
+  - **A cube face's ROW is not an iso-elevation line.** Its edge columns look
+    along `(1, -v, +-1)`, which is `asin(v / sqrt(2 + v^2))` below the horizon --
+    shallower than the `atan(v)` at its centre. At 10 degrees down the corners
+    are still at 7, so a fade that ends at 8 has not finished across the whole
+    row until about 12. A side face also spans only +-45 degrees, so its BOTTOM
+    row looks 45 degrees down and the horizon is its MIDDLE row; both mistakes
+    cost a test rewrite each.
+  - **Cube faces are NOT flipped; equirects are.** `CubeTexture.flipY` is false
+    in three, for the editor's `CubeTextureLoader` preview and the runtime's
+    `CompressedCubeTexture` alike, so both read row 0 as the top and there is
+    nothing to reconcile. Flipping the faces the way `prepareSkyImages` flips an
+    equirect ships the sky upside down.
   - **Every sky image ships FLIPPED.** The editor loads PNG/JPEG through
     `TextureLoader`, where `flipY` defaults true; a KTX2 arrives as a
     `CompressedTexture`, which ignores `flipY` because WebGL cannot flip a

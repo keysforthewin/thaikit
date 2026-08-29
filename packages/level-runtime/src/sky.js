@@ -20,11 +20,22 @@
  *   frame, so walking never approaches the sky and the dome radius is a
  *   rendering convenience rather than a world size. It only has to sit inside
  *   the camera's far plane.
- * - Both are additive with `depthWrite: false` and `depthTest: false`, drawn
- *   at a negative `renderOrder`. They are a backdrop, so they paint first and
- *   everything solid paints over them.
+ * - The stars and clouds are additive with `depthWrite: false` but they DO
+ *   depth-test. A negative `renderOrder` is not enough on its own: an additive
+ *   material is `transparent`, so it is sorted into the TRANSPARENT queue,
+ *   which three draws AFTER every opaque object regardless of render order --
+ *   `renderOrder` only sorts within that queue. With `depthTest: false` the
+ *   stars therefore painted over solid geometry, and you could see the field
+ *   through a building. Testing (but not writing) depth puts them behind
+ *   anything already in the depth buffer while still letting the three domes
+ *   stack on each other, since none of them writes depth. Only the base
+ *   backdrop skips the test: it is opaque, so it is drawn first in the opaque
+ *   queue, before there is any depth to test against.
  */
 import * as THREE from 'three';
+// The one import that is not three: what a nadir setting MEANS belongs with the
+// schema that declares it, and the bake resolves it from the same function.
+import { resolveNadirFade } from '@thaikit/level-schema';
 
 /** Comfortably inside the editor's 3000 m far plane, and any sane game's. */
 export const SKY_RADIUS = 1200;
@@ -218,21 +229,57 @@ void main() {
 const BASE_FRAG = /* glsl */ `
 #ifdef CUBE_SOURCE
 uniform samplerCube uCube;
+uniform float uLodBias;
 #else
 uniform sampler2D uMap;
 #endif
 uniform float uIntensity;
+#ifdef PANORAMIC_SOURCE
+uniform vec2 uElevation;   // the elevation the first and last rows sit at, radians
+uniform vec3 uNadirColor;
+uniform vec2 uNadirFade;   // start, end -- radians BELOW the horizon
+#endif
 varying vec3 vDir;
 
 void main() {
   vec3 dir = normalize(vDir);
 #ifdef CUBE_SOURCE
-  vec4 texel = textureCube(uCube, dir);
+  // A negative bias against trilinear's over-blur.
+  //
+  // A sky cubemap authored at more px/degree than the screen has is MINIFIED,
+  // so the GPU picks a fractional mip and blends in a half-resolution level --
+  // correct filtering, and softer than the display can actually show. Dropping
+  // the selection by a fraction of a level trades a little aliasing back for
+  // the detail that was paid for. Turning the chain off instead is the wrong
+  // trade: at a wide FOV or on a small viewport the backdrop is minified
+  // several times over and city lights crawl as the camera turns.
+  vec4 texel = textureCube(uCube, dir, uLodBias);
 #else
   // Three's own equirect convention, so a panorama authored against the
   // editor's cube preview lands the same way round after the bake resamples it.
-  vec2 uv = vec2(atan(dir.z, dir.x) * 0.15915494 + 0.5, asin(clamp(dir.y, -1.0, 1.0)) * 0.31830989 + 0.5);
-  vec4 texel = texture2D(uMap, uv);
+  float lat = asin(clamp(dir.y, -1.0, 1.0));
+  float u = atan(dir.z, dir.x) * 0.15915494 + 0.5;
+  #ifdef PANORAMIC_SOURCE
+  // A panorama's rows need not span the whole sphere -- a sky-only one covers
+  // the horizon to the zenith and nothing below. Map the covered range, and
+  // let the fade below deal with everything outside it.
+  float v = 1.0 - (uElevation.y - lat) / (uElevation.y - uElevation.x);
+  vec4 texel = texture2D(uMap, vec2(u, v));
+  // The synthesised ground, in the SHADER rather than in the image, because
+  // this is the preview: the bake bakes exactly this fade into the cube faces,
+  // so what is authored here is what ships. Below the horizon a panorama has
+  // only invented pixels, and the equirect projection crushes the nadir into
+  // one row that would become a whole face underfoot.
+  //
+  // A 'cut' nadir arrives here as a fade a third of a degree wide starting AT
+  // the horizon: a hard edge with just enough feather not to draw a
+  // stair-stepped skyline. Same arithmetic as the fade, so there is no second
+  // branch here to keep in step with the bake.
+  float below = smoothstep(uNadirFade.x, uNadirFade.y, -lat);
+  texel.rgb = mix(texel.rgb, uNadirColor, below);
+  #else
+  vec4 texel = texture2D(uMap, vec2(u, lat * 0.31830989 + 0.5));
+  #endif
 #endif
   gl_FragColor = vec4(texel.rgb * uIntensity, 1.0);
   // A hand-written ShaderMaterial gets none of three's output pipeline for
@@ -288,10 +335,35 @@ export function buildSky(config, { base = null, clouds = null, owned = true } = 
       base.generateMipmaps = false;
       base.needsUpdate = true;
     }
+    // A `panoramic` base is a 2D panorama the EDITOR is previewing: the shipped
+    // level gets the same sky as a cubemap with the ground already resampled
+    // in, so it takes the cube branch above and needs none of this.
+    const panoramic = !isCube && config?.base?.mode === 'panoramic';
+    const nadir = config?.base?.nadir ?? {};
+    const nadirFade = resolveNadirFade(nadir);
+    const elevation = config?.base?.elevation ?? {};
+
     baseMat = new THREE.ShaderMaterial({
-      defines: isCube ? { CUBE_SOURCE: '' } : {},
+      defines: isCube ? { CUBE_SOURCE: '' } : panoramic ? { PANORAMIC_SOURCE: '' } : {},
       uniforms: {
-        ...(isCube ? { uCube: { value: base } } : { uMap: { value: base } }),
+        ...(isCube ? { uCube: { value: base }, uLodBias: { value: config?.base?.lodBias ?? -0.5 } } : { uMap: { value: base } }),
+        ...(panoramic
+          ? {
+            uElevation: {
+              value: new THREE.Vector2(
+                THREE.MathUtils.degToRad(elevation.minDeg ?? -90),
+                THREE.MathUtils.degToRad(elevation.maxDeg ?? 90),
+              ),
+            },
+            uNadirColor: { value: new THREE.Color(nadir.color ?? '#202020') },
+            uNadirFade: {
+              value: new THREE.Vector2(
+                THREE.MathUtils.degToRad(nadirFade.startDeg),
+                THREE.MathUtils.degToRad(nadirFade.endDeg),
+              ),
+            },
+          }
+          : {}),
         uIntensity: { value: config?.base?.intensity ?? 1 },
       },
       vertexShader: BASE_VERT,
@@ -329,7 +401,10 @@ export function buildSky(config, { base = null, clouds = null, owned = true } = 
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
-      depthTest: false,
+      // Tested, not written: an additive material lands in the transparent
+      // queue, which is drawn after all solid geometry, so without this the
+      // star field shows through every building.
+      depthTest: true,
       fog: false,
     });
     const mesh = new THREE.Mesh(domeGeometry(SKY_RADIUS), starMat);
@@ -364,7 +439,8 @@ export function buildSky(config, { base = null, clouds = null, owned = true } = 
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
-      depthTest: false,
+      // As the stars: occluded by anything solid in front of them.
+      depthTest: true,
       fog: false,
     });
     // Slightly inside the stars, and flattened: a cloud layer sits ON the sky,

@@ -19,9 +19,10 @@ import { z } from 'zod';
 import sharp from 'sharp';
 
 import { LEVELS_DIR, levelDir, writeFileAtomic, etagForText } from '@thaikit/registry-core';
-import { LevelExtras, emptyLevelGltf, CUBE_FACES } from '@thaikit/level-schema';
+import { LevelExtras, emptyLevelGltf, CUBE_FACES, faceFromFilename } from '@thaikit/level-schema';
 
 import { parseGlb, buildGlb, rewriteGlbJson, levelExtrasOf } from '../../../../scripts/lib/glb.mjs';
+import { unzipSync } from '../../../../scripts/lib/unzip.mjs';
 import { runBake, bakeStatus } from '../lib/bake.js';
 
 const CreateInput = z.object({ name: z.string().min(1), id: z.string().optional() });
@@ -42,7 +43,7 @@ const fileFor = (id) => path.join(levelDir(id), 'level.glb');
  * The sky's sidecar images: `levels/<id>/sky/<slot>.<ext>`.
  *
  * A sky needs pictures and the level GLB is rebuilt and re-uploaded whole on
- * every save, so several megabytes of equirect cannot ride inside it. They go
+ * every save, so several megabytes of panorama cannot ride inside it. They go
  * beside it instead, and `/levels` already serves the directory statically --
  * so this router only has to WRITE them. The level's own DELETE removes the
  * whole directory, which takes the sky with it.
@@ -51,7 +52,7 @@ const fileFor = (id) => path.join(levelDir(id), 'level.glb');
  * rather than accumulating, so a level cannot end up with both `px.jpg` and
  * `px.png` and no way to say which one is live.
  */
-const SKY_SLOTS = new Set(['equirect', ...CUBE_FACES, 'clouds']);
+const SKY_SLOTS = new Set(['panorama', ...CUBE_FACES, 'clouds']);
 const SKY_EXT = { jpeg: 'jpg', jpg: 'jpg', png: 'png', webp: 'webp' };
 
 const skyDir = (id) => path.join(levelDir(id), 'sky');
@@ -299,6 +300,117 @@ export function levelsRouter(state) {
       next(err);
     }
   });
+
+  /**
+   * Six faces at once, out of a zip.
+   *
+   * A skybox arrives from a generator or an asset pack as an archive of six
+   * images named `_right`/`_left`/`_up`/`_down`/`_front`/`_back`, never as
+   * thaikit's own `px`..`nz`, so this maps the names and writes the slots. It
+   * is all six or none: `CubeTextureLoader` never fires `onLoad` on a partial
+   * set, so a zip missing a face would leave the editor with a sky that
+   * silently never draws and nothing on screen to say why.
+   *
+   * Each face is re-encoded to WEBP rather than stored as it arrived. Six 2048²
+   * PNG faces are ~50 MB the editor fetches on every load; the same faces at
+   * webp q92 are a few megabytes, and the bake resamples them either way. This
+   * is also why the route replaces whatever was in the slot first -- a `px.png`
+   * left behind by an earlier single-face upload would still be the live file.
+   *
+   * Registered BEFORE `/sky/:slot`, or `cube-zip` reads as a slot name.
+   */
+  router.post(
+    '/levels/:id/sky/cube-zip',
+    guard,
+    express.raw({ type: ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'], limit: '256mb' }),
+    async (req, res, next) => {
+      try {
+        const { id } = req.params;
+        if (!(await readLevel(id))) return res.status(404).json({ error: `no level "${id}"` });
+        if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: 'expected a zip body' });
+
+        let entries;
+        try {
+          entries = unzipSync(req.body);
+        } catch (err) {
+          return res.status(400).json({ error: `could not read the zip: ${err.message}` });
+        }
+
+        // Name -> face first, so a duplicate is reported as the ambiguity it is
+        // rather than resolved by whichever entry the archive happens to list
+        // last.
+        const picked = new Map();
+        for (const entry of entries) {
+          const face = faceFromFilename(entry.name);
+          if (!face) continue;
+          if (picked.has(face)) {
+            return res.status(400).json({
+              error: `two entries name the ${face} face: "${picked.get(face).name}" and "${entry.name}"`,
+            });
+          }
+          picked.set(face, entry);
+        }
+        const missing = CUBE_FACES.filter((f) => !picked.has(f));
+        if (missing.length) {
+          return res.status(400).json({
+            error: `the zip is missing ${missing.length} of the six faces`,
+            missing,
+            found: [...picked.keys()],
+            expected: 'one image per face, named _right, _left, _up, _down, _front, _back',
+            entries: entries.map((e) => e.name).slice(0, 24),
+          });
+        }
+
+        // Decode every face BEFORE writing any of them: half a cube on disk is
+        // worse than none, because the settings would name files that do not
+        // all exist.
+        const encoded = [];
+        for (const face of CUBE_FACES) {
+          const entry = picked.get(face);
+          let meta;
+          try {
+            meta = await sharp(entry.data).metadata();
+          } catch (err) {
+            return res.status(400).json({ error: `"${entry.name}" (${face}) is not a readable image: ${err.message}` });
+          }
+          if (!SKY_EXT[meta.format]) {
+            return res.status(400).json({ error: `"${entry.name}" (${face}) is ${meta.format}; use JPEG, PNG or WebP` });
+          }
+          encoded.push({ face, name: entry.name, width: meta.width, height: meta.height, source: meta.format });
+        }
+        // A cube face is a square, and all six are the same square: three builds
+        // the cubemap from face 0's size and a mismatch samples garbage.
+        const odd = encoded.filter((e) => e.width !== e.height);
+        if (odd.length) {
+          return res.status(400).json({
+            error: 'cube faces must be square',
+            faces: odd.map((e) => `${e.face} (${e.name}) is ${e.width}×${e.height}`),
+          });
+        }
+        const size = encoded[0].width;
+        const mismatched = encoded.filter((e) => e.width !== size);
+        if (mismatched.length) {
+          return res.status(400).json({
+            error: `all six faces must be the same size; ${encoded[0].face} is ${size}px`,
+            faces: mismatched.map((e) => `${e.face} (${e.name}) is ${e.width}px`),
+          });
+        }
+
+        await fs.mkdir(skyDir(id), { recursive: true });
+        const slots = {};
+        for (const e of encoded) {
+          const webp = await sharp(picked.get(e.face).data).webp({ quality: 92 }).toBuffer();
+          await clearSlot(id, e.face);
+          const file = `${e.face}.webp`;
+          await writeFileAtomic(path.join(skyDir(id), file), webp);
+          slots[e.face] = { slot: e.face, file, bytes: webp.length, from: e.name, source: e.source };
+        }
+        res.status(201).json({ slots, size, format: 'webp' });
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
 
   router.post(
     '/levels/:id/sky/:slot',

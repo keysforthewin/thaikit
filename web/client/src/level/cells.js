@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { isBillboard } from '@thaikit/level-runtime/billboard';
+
 import { peekPrototype } from '../three/instances.js';
 
 /** Grid cell of a world point. Origin at 0,0 so the runtime uses the same formula. */
@@ -24,6 +26,12 @@ export function placementWorldBox(p, item) {
 }
 
 export function isStatic(p, item, proto) {
+  // Billboarding comes FIRST, ahead of even an explicit `static: true`, because
+  // it is not a preference the author can outvote: a billboard turns every
+  // frame, and a static placement is merged into its cell's one mesh at bake
+  // and can never turn again. Merging it would not make it cheap, it would make
+  // it broken.
+  if (isBillboard(p.billboard)) return false;
   if (p.static != null) return p.static;
   if (p.physics === true) return false;
   if (item?.physics?.enabled && p.physics !== false) return false;

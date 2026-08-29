@@ -34,6 +34,12 @@ export const useLevel = create((set, get) => ({
 
   snapHint: null,
   modal: null,
+  /**
+   * Play mode: the first-person walkthrough. UI state, never saved and never a
+   * commit -- entering it must not make a clean document dirty.
+   */
+  play: false,
+  playView: 'first',
   lastGroundHit: [0, 0, 0],
   dragging: false,
   /** Bumps whenever a prototype resolves, so stats and cells recompute. */
@@ -114,6 +120,9 @@ export const useLevel = create((set, get) => ({
   setSpace: (space) => set({ space }),
   toggleView: (key) => set((s) => ({ view: { ...s.view, [key]: !s.view[key] } })),
   setModal: (modal) => set({ modal }),
+  /** Entering drops the selection and any open modal; the gizmo has no place in a walkthrough. */
+  setPlay: (play) => set(play ? { play: true, selection: [], modal: null, snapHint: null } : { play: false, status: null }),
+  togglePlayView: () => set((s) => ({ playView: s.playView === 'first' ? 'third' : 'first' })),
   setStatus: (status) => set({ status }),
   setSnapHint: (snapHint) => set({ snapHint }),
   setDragging: (dragging) => set({ dragging }),

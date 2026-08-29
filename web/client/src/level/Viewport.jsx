@@ -13,6 +13,7 @@ import { LightNode, SpawnNode } from './Lights.jsx';
 import { SelectionGizmo } from './SelectionGizmo.jsx';
 import { SnapHint } from './SnapHint.jsx';
 import { CellOverlay } from './CellOverlay.jsx';
+import { PlayMode } from './play/PlayMode.jsx';
 
 /**
  * The invisible pick plane every "add here" reads. It sits at the ground's
@@ -59,6 +60,7 @@ export function Viewport({ stats }) {
   const view = useLevel((s) => s.view);
   const levelId = useLevel((s) => s.levelId);
   const skyRev = useLevel((s) => s.skyRev);
+  const play = useLevel((s) => s.play);
   const clearSelection = useLevel((s) => s.clearSelection);
   const env = doc?.settings?.environment;
   const bg = useMemo(() => new THREE.Color(env?.background ?? '#0b0d16'), [env?.background]);
@@ -79,16 +81,19 @@ export function Viewport({ stats }) {
         camera={{ fov: 50, near: 0.1, far: 3000, position: [18, 14, 22] }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
-        onPointerMissed={(e) => { if (e.button === 0 && !useLevel.getState().dragging) clearSelection(); }}
+        onPointerMissed={(e) => {
+          const st = useLevel.getState();
+          if (e.button === 0 && !st.dragging && !st.play) clearSelection();
+        }}
         onCreated={(state) => { setViewport(state); state.scene.background = bg; if (import.meta.env.DEV) window.__r3f = state; }}
       >
         {hasSky
           ? <SkyDome sky={sky} levelId={levelId} rev={skyRev} fallbackColor={bg} />
           : <color attach="background" args={[bg]} />}
         <hemisphereLight args={[hemi.sky ?? '#8797c2', hemi.ground ?? '#2a2620', hemi.intensity ?? 0.35]} />
-        <PickPlane y={ground.enabled ? ground.y : 0} />
+        {!play && <PickPlane y={ground.enabled ? ground.y : 0} />}
         {ground.enabled && <GroundPlane ground={ground} extent={groundExtent(docFootprints(doc, useLevel.getState().catalogue.byRef), { cellSize, margin: ground.margin })} />}
-        {view.grid && (
+        {view.grid && !play && (
           <Grid
             args={[cellSize * 8, cellSize * 8]}
             cellSize={doc.settings?.gridSize ?? 1}
@@ -101,17 +106,23 @@ export function Viewport({ stats }) {
             position={[0, 0.001, 0]}
           />
         )}
-        {view.axes && <axesHelper args={[5]} />}
+        {view.axes && !play && <axesHelper args={[5]} />}
         {doc.placements.map((p) => <PlacementNode key={p.id} placement={p} />)}
         {doc.lights.map((l) => <LightNode key={l.id} light={l} />)}
         {doc.spawns.map((s) => <SpawnNode key={s.id} spawn={s} />)}
-        {view.cells && stats && <CellOverlay stats={stats} cellSize={cellSize} />}
-        <SnapHint />
-        <SelectionGizmo />
-        <OrbitControls makeDefault maxPolarAngle={Math.PI / 2 - 0.01} />
-        <GizmoHelper alignment="bottom-right" margin={[70, 70]}>
-          <GizmoViewport axisColors={['#e2686d', '#4ec98a', '#6ea8fe']} labelColor="white" />
-        </GizmoHelper>
+        {view.cells && stats && !play && <CellOverlay stats={stats} cellSize={cellSize} />}
+        {!play && <SnapHint />}
+        {!play && <SelectionGizmo />}
+        {play && <PlayMode />}
+        {/* OrbitControls is `makeDefault`, so anything still calling update()
+            would fight the character for the camera. It has to be disabled, not
+            merely ignored. */}
+        <OrbitControls makeDefault enabled={!play} maxPolarAngle={Math.PI / 2 - 0.01} />
+        {!play && (
+          <GizmoHelper alignment="bottom-right" margin={[70, 70]}>
+            <GizmoViewport axisColors={['#e2686d', '#4ec98a', '#6ea8fe']} labelColor="white" />
+          </GizmoHelper>
+        )}
       </Canvas>
     </div>
   );

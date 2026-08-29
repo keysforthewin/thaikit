@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { useLevel } from './store.js';
 import { findEntity, ownerOf } from './ids.js';
 import { isStatic } from './cells.js';
+import { isBillboard } from '@thaikit/level-runtime/billboard';
 import { DEFAULT_GROUND } from './ground.js';
 import { SkyPanel } from './SkyPanel.jsx';
 import { peekPrototype } from '../three/instances.js';
@@ -29,10 +30,15 @@ function Vec({ label, value, onCommit, step, scale = 1 }) {
   );
 }
 
-const Tri = ({ label, value, inherit, onChange, hint }) => (
+const Tri = ({ label, value, inherit, onChange, hint, disabled = false }) => (
   <div className="field">
     <label>{label}</label>
-    <select value={value == null ? 'inherit' : value ? 'on' : 'off'} onChange={(e) => onChange(e.target.value === 'inherit' ? null : e.target.value === 'on')} title={hint}>
+    <select
+      value={value == null ? 'inherit' : value ? 'on' : 'off'}
+      onChange={(e) => onChange(e.target.value === 'inherit' ? null : e.target.value === 'on')}
+      title={hint}
+      disabled={disabled}
+    >
       <option value="inherit">auto ({inherit ? 'on' : 'off'})</option>
       <option value="on">on</option>
       <option value="off">off</option>
@@ -138,12 +144,64 @@ export function PropertiesPanel() {
         <Vec label="rotation (°)" value={p.rotation} step={1} scale={180 / Math.PI} onCommit={(v) => edit('rotate', (x) => { x.rotation = v; })} />
         <Vec label="scale" value={p.scale} step={0.05} onCommit={(v) => edit('scale', (x) => { x.scale = v.map((n) => Math.max(0.01, n)); })} />
         <div className="row">
-          <Tri label="static (merged in bake)" value={p.static} inherit={autoStatic} onChange={(v) => edit('static', (x) => { x.static = v; })} hint="auto is off for physics props and anything with destruction groups" />
+          <Tri
+            label={isBillboard(p.billboard) ? 'static (forced off)' : 'static (merged in bake)'}
+            value={p.static}
+            inherit={autoStatic}
+            disabled={isBillboard(p.billboard)}
+            onChange={(v) => edit('static', (x) => { x.static = v; })}
+            hint={isBillboard(p.billboard)
+              ? 'a billboard turns every frame, so it can never be merged into a cell'
+              : 'auto is off for physics props and anything with destruction groups'}
+          />
           <Tri label="physics body" value={p.physics} inherit={Boolean(item?.physics?.enabled)} onChange={(v) => edit('physics', (x) => { x.physics = v; })} hint={item?.colliders ? `${item.colliders.parts.length} collider part(s)` : 'no compound'} />
         </div>
         <div className="row">
           <label className="checkline"><input type="checkbox" checked={p.castShadow !== false} onChange={(e) => edit('cast shadow', (x) => { x.castShadow = e.target.checked; })} /> cast shadow</label>
           <label className="checkline"><input type="checkbox" checked={p.receiveShadow !== false} onChange={(e) => edit('receive shadow', (x) => { x.receiveShadow = e.target.checked; })} /> receive shadow</label>
+        </div>
+        <div className="row">
+          <label className="checkline" title="turn to face the camera every frame">
+            <input
+              type="checkbox"
+              checked={isBillboard(p.billboard)}
+              onChange={(e) => edit('billboard', (x) => { x.billboard = e.target.checked ? 'yaw' : 'none'; })}
+            /> billboard
+          </label>
+          {isBillboard(p.billboard) && (
+            <div className="field">
+              <label>facing</label>
+              <select
+                value={p.billboard}
+                onChange={(e) => edit('billboard axis', (x) => { x.billboard = e.target.value; })}
+                title="yaw keeps the object upright and planted; full aligns it to the screen like a sprite"
+              >
+                <option value="yaw">upright (Y axis)</option>
+                <option value="full">screen-aligned</option>
+              </select>
+            </div>
+          )}
+        </div>
+        {isBillboard(p.billboard) && (
+          <div className="muted small">
+            The camera drives the facing, so the rotation above no longer aims it. A billboard is
+            never merged into a cell — it bakes as a dynamic object.
+          </div>
+        )}
+        <div className="row">
+          <label className="checkline" title="a climbable surface in play mode -- walk into it and hold W, or tap Space to climb faster">
+            <input
+              type="checkbox"
+              checked={(p.tags ?? []).includes('ladder')}
+              onChange={(e) => edit('ladder', (x) => {
+                // The tag IS the flag, so the free-text field below stays the
+                // one source of truth and the two can never disagree.
+                const tags = new Set(x.tags ?? []);
+                if (e.target.checked) tags.add('ladder'); else tags.delete('ladder');
+                x.tags = [...tags];
+              })}
+            /> ladder
+          </label>
         </div>
         <div className="field"><label>tags</label><input value={(p.tags ?? []).join(', ')} onChange={(e) => edit('tags', (x) => { x.tags = e.target.value.split(',').map((t) => t.trim()).filter(Boolean); })} /></div>
       </>

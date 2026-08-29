@@ -5,8 +5,14 @@ const inField = () => {
   return el?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el?.tagName);
 };
 
-export function useHotkeys(handlers) {
+/**
+ * The editor's keyboard. `disabled` is what play mode sets: W, A, S, C and F are
+ * movement there, and firing the gizmo and view toggles under the player's feet
+ * would be a fine way to lose a level.
+ */
+export function useHotkeys(handlers, disabled = false) {
   useEffect(() => {
+    if (disabled) return undefined;
     const onKey = (e) => {
       if (inField()) return;
       const ctrl = e.ctrlKey || e.metaKey;
@@ -35,5 +41,5 @@ export function useHotkeys(handlers) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handlers]);
+  }, [handlers, disabled]);
 }

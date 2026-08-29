@@ -8,6 +8,7 @@ import { CellSet, CASTER_LAYER } from './cells.js';
 import { attachLightmap, eachMaterial } from './materials.js';
 import { applyLights } from './lights.js';
 import { buildSky } from './sky.js';
+import { applyBillboard, isBillboard } from './billboard.js';
 import { buildColliders } from './colliders.js';
 import { LevelRaycaster } from './bvh.js';
 import { NullPhysics } from './physics/null.js';
@@ -44,6 +45,11 @@ export async function loadLevel(source, opts) {
 
   const cells = new CellSet(manifest, root);
   const dynamicNodes = new Map(manifest.dynamic.map((d) => [d.node, root.getObjectByName(d.node)]).filter(([, n]) => n));
+  // Billboards are always dynamic -- a static placement is merged into its
+  // cell's one mesh at bake and can never turn again -- so they are all here.
+  const billboards = manifest.dynamic
+    .filter((d) => isBillboard(d.billboard) && dynamicNodes.get(d.node))
+    .map((d) => ({ node: dynamicNodes.get(d.node), mode: d.billboard }));
 
   // Static geometry: no real-time casting (the bake already has the shadows),
   // receives the small dynamic shadow map. Dynamic objects cast and receive.
@@ -99,7 +105,7 @@ export async function loadLevel(source, opts) {
 
   const followTarget = new THREE.Vector3();
   return {
-    manifest, root, cells, lights, sky, lightmap, colliders, physics, gltf,
+    manifest, root, cells, lights, sky, billboards, lightmap, colliders, physics, gltf,
     spawns: { list: manifest.spawns, pick: (team) => pickSpawn(manifest.spawns, team) },
     raycast: (ray, o) => raycaster.raycast(ray, o),
     /** Step physics, sync dynamic nodes, switch LOD tiers, keep the moon's shadow box around `cameraPosition`. */
@@ -114,6 +120,11 @@ export async function loadLevel(source, opts) {
       if (cameraPosition) {
         cells.update(cameraPosition);
         lights.follow(followTarget.copy(cameraPosition));
+      }
+      // After the physics sync, so a billboard that also has a body keeps its
+      // simulated POSITION and takes its facing from the camera.
+      if (billboards.length && camera) {
+        for (const b of billboards) applyBillboard(b.node, b.mode, camera);
       }
       // The domes ride the camera, so they take the position even on a frame
       // where nothing else moved.

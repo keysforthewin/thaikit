@@ -98,9 +98,13 @@ td.score-bad, .score-bad.mono { color: var(--bad); }
 .tab { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); font-size: 13px; cursor: pointer; }
 .tab.on { border-color: var(--accent); color: var(--accent); }
 
-.field { display: grid; gap: 5px; }
+/* `min-width: 0` on both, or a grid track cannot shrink below its content's
+   min-content width -- and a <select>'s is its LONGEST OPTION. The sky tab's
+   "panoramic (ships as a cubemap)" pushed the rotation field 17px past the
+   properties panel and gave the whole panel a horizontal scrollbar. */
+.field { display: grid; gap: 5px; min-width: 0; }
 .field label { font-size: 12px; color: var(--muted); }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .viewer { height: 380px; background: #0e0f14; border: 1px solid var(--line); border-radius: 8px; position: relative; }
 .viewer .overlay {
   position: absolute; left: 8px; bottom: 8px; font-family: ui-monospace, monospace; font-size: 11px;
@@ -229,3 +233,23 @@ tr.current td { color: var(--accent); }
 .modal footer { padding: 10px 16px; border-top: 1px solid var(--line); display: flex; gap: 8px; justify-content: flex-end; }
 .viewport-wrap { position: relative; min-width: 0; min-height: 0; display: grid; }
 .viewport { height: 100%; width: 100%; }
+
+/* --- play mode -----------------------------------------------------------
+   Both layers are pointer-events: none. The click that re-acquires pointer
+   lock has to reach the canvas, and an overlay that swallows it makes play
+   mode look broken in exactly the moment you are trying to get back into it. */
+.play-hud { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.play-hud .crosshair {
+  position: absolute; left: 50%; top: 50%; width: 14px; height: 14px;
+  margin: -7px 0 0 -7px; opacity: 0.75;
+  background:
+    linear-gradient(#e8ecf5, #e8ecf5) center/2px 14px no-repeat,
+    linear-gradient(#e8ecf5, #e8ecf5) center/14px 2px no-repeat;
+  mix-blend-mode: difference;
+}
+.play-hud .play-keys {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+  background: rgba(0,0,0,.6); padding: 5px 10px; border-radius: 6px;
+}
+.play-hud .play-keys b { color: var(--accent); font-weight: 600; }
