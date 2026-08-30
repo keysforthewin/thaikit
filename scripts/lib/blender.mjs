@@ -52,6 +52,20 @@ function bridgingToWindows() {
  * too, so callers can pass either without thinking about it.
  */
 export function toBlenderPath(repoRelativeOrAbs) {
+  // When Blender shares our filesystem there is nothing to translate, and an
+  // absolute path is ALREADY the answer. Returning early matters because the
+  // repo is bind-mounted TWICE in the container -- /app for the code, /repo for
+  // the data -- so a module resolving a sibling file off import.meta.url gets
+  // /app/scripts/... while REPO_ROOT is /repo, and rebasing one on the other
+  // yields `../app/scripts/...` and trips the guard below. That is not a path
+  // escaping the repo; it is the same directory under its other name.
+  //
+  // The rebase exists only for the Windows bridge, where Blender genuinely
+  // cannot open our paths and every one has to be rewritten to
+  // \\wsl.localhost\<distro>\... -- so do it only when that is what is
+  // happening.
+  if (path.isAbsolute(repoRelativeOrAbs) && !bridgingToWindows()) return repoRelativeOrAbs;
+
   const rel = path.isAbsolute(repoRelativeOrAbs)
     ? toRepoRelative(repoRelativeOrAbs)
     : repoRelativeOrAbs;

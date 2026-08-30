@@ -683,12 +683,45 @@ placed geometry. Export writes a second, self-contained GLB.
 - **`manifest.ibl` is null by default, and null means off.** A level baked before image lighting
   existed parses unchanged and renders identically; only a re-bake opts one in. Same shape as
   `lightmap.range` -- additive with a default, so no schema-version bump.
-- **The Blender bake is batch (`blender.exe -b --python`), not the addon**, over UNC via
-  `toBlenderPath()`; `blenderExe()` finds the Windows install from WSL. Pass vector args as
-  `--moon=-0.4,...`: a value starting with `-` reads as an option to argparse. A 512² / 16-sample
-  test took 30 s on OPTIX on a small level -- but the cost is per OBJECT, not per texel, and the
-  ground plane's per-cell tiles dominate: `thepurge` presents **4142** static meshes across 4099
-  cells and its pass 1 runs for many minutes at the same size and sample count.
+- **The Blender bake is batch (`blender -b --python`), not the addon, and it runs
+  IN THE CONTAINER on a LINUX Blender.** Blender 5.2.1 LTS is installed in the
+  Dockerfile's `base` stage from the official tarball (`ARG BLENDER_VERSION`,
+  sha256-checked against Blender's own published file) -- not Debian's `blender`
+  package, which is 3.4. It has to be in the same image as the web server, because
+  the server SPAWNS the bake: `web/server/src/lib/bake.js` runs
+  `scripts/level/bake-level.mjs` when the editor POSTs to `/api/levels/:id/bake`.
+  It costs ~1.2 GB.
+  It used to be `blender.exe` on Windows reached over UNC, which is what
+  `toBlenderPath()` exists for. Inside the container `WSL_DISTRO_NAME` is unset,
+  so `blenderRepoRoot()` returns `REPO_ROOT` and there is nothing to translate --
+  but the repo is bind-mounted TWICE, `/app` for code and `/repo` for data, so a
+  module resolving a sibling off `import.meta.url` gets `/app/scripts/...` while
+  `REPO_ROOT` is `/repo`, and rebasing one on the other produced
+  `../app/scripts/...` and threw "path escapes the repo". `toBlenderPath` now
+  returns an absolute path unchanged unless it is actually bridging to Windows.
+  Pass vector args as `--moon=-0.4,...`: a value starting with `-` reads as an
+  option to argparse.
+- **The bake runs on the GPU via CUDA, and OPTIX IS UNREACHABLE UNDER WSL2.**
+  `compose.yaml` and `compose.prod.yaml` both reserve the GPU
+  (`deploy.resources.reservations.devices`, `driver: nvidia`) and set
+  `NVIDIA_VISIBLE_DEVICES=all` / `NVIDIA_DRIVER_CAPABILITIES=compute,utility`;
+  the host needs `nvidia-container-toolkit` and
+  `sudo nvidia-ctk runtime configure --runtime=docker`. `docker compose run`
+  honours the reservation, so a one-off bake is a GPU bake.
+  OptiX is a different matter and the answer is NO, permanently -- not a setting
+  that was missed. The nvidia runtime injects the host driver, so `libcuda.so.1`
+  resolves and `bake_lightmap.py`'s `OPTIX -> CUDA -> HIP` probe lands on CUDA --
+  full GPU Cycles on the real card. But on WSL the OptiX implementation is
+  `nvoptix.dll`, a WINDOWS library; the Linux-side `libnvoptix.so.1` is a 14 KB
+  shim exporting `dxcore_init`, `dxcore_adapter_load_library` and four siblings
+  and NOTHING else. `optixQueryFunctionTable` is absent, which is exactly what
+  Cycles prints as `OptiX initialization failed with error code 7805`
+  (OPTIX_ERROR_ENTRY_SYMBOL_NOT_FOUND). Do NOT try to fix it by symlinking
+  `libnvoptix_loader.so.1` to `libnvoptix.so.1` -- that was tried; they are the
+  same hardlinked 14224-byte file, the alias makes `dlopen` succeed, and Cycles
+  fails at 7805 exactly as before, because the name was never the problem. On a
+  native Linux host with a real driver the probe picks OPTIX with nothing added.
+  Read the `cycles device:` line the bake logs rather than assuming either way.
 - **The bake reports progress because it is BATCHED, and batching is free.** Cycles'
   `bpy.ops.object.bake` is one blocking call that says nothing until it returns, so a 4142-object
   level sat silent for many minutes with no way to tell slow from hung. `bake_batched()` hands the
@@ -1016,16 +1049,14 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
 - `compression` buffers SSE forever — that route is excluded.
 - Don't wait for `networkidle0` on the UI; the SSE stream keeps it busy forever.
 
-## Blender: kept, but unused
+## Blender: the bake uses it; blender-mcp does not
 
-Nothing calls it any more — generation is code. `scripts/blender-preflight.mjs`,
-`scripts/lib/blender.mjs`, the `blender` entry in `.mcp.json`, the `blender`
-block in `budgets.json` and the doctor probe all stay for ad-hoc work, so a
-closed Blender is information rather than a failure. If you do use it:
+The LEVEL BAKE drives Blender headlessly in the container -- see the bake bullets
+above. What is unused is the interactive `blender-mcp` route: generation is code,
+so `scripts/blender-preflight.mjs`, the `blender` entry in `.mcp.json`, the
+`blender` block in `budgets.json` and the doctor probe all stay for ad-hoc work,
+and a closed Blender is information rather than a failure. If you use THAT:
 
-- **Blender is on Windows; the scripts are in WSL.** They exchange files over
-  UNC (`\\wsl.localhost\<distro>\...`). `scripts/lib/blender.mjs` `toBlenderPath()`
-  is the ONLY place that translation happens.
 - **`bpy.context.active_object` does not exist under blender-mcp.** The addon
   runs your code from a timer, outside any operator context. Use
   `bpy.context.view_layer.objects.active`, or `bpy.data` and `bmesh`.
@@ -1033,3 +1064,6 @@ closed Blender is information rather than a failure. If you do use it:
   the addon you are talking over. Clear the scene by removing datablocks instead.
 - **Never paste a long Python program into `execute_blender_code`.** Write it to
   a file and execute a one-line `exec(compile(open(...)))` stub.
+- The Windows bridge (`toBlenderPath`, `\\wsl.localhost\...`) is still there and
+  still correct for a Blender running OUTSIDE the container. It is simply not the
+  path the bake takes any more.

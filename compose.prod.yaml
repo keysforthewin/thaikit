@@ -47,6 +47,31 @@ services:
       # generation skills' work at all.
       THAIKIT_WATCH_POLL: "1"
       THAIKIT_WATCH_INTERVAL: "1000"
+      # Blender's Cycles bake runs on the GPU in here. NVIDIA_VISIBLE_DEVICES and
+      # NVIDIA_DRIVER_CAPABILITIES are what the nvidia container runtime reads to
+      # decide what to inject; `compute` is CUDA and OptiX, `utility` is
+      # nvidia-smi. On WSL2 the runtime mounts the Windows driver's own libraries
+      # into the container (/usr/lib/wsl/drivers/...), which is where ldconfig
+      # then finds libcuda.so.1 AND libnvoptix_loader.so.1 -- so bake_lightmap.py's
+      # OPTIX -> CUDA -> HIP probe lands on OPTIX, the same backend the bake used
+      # when Blender ran on Windows.
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      # Blender and npm both want somewhere to write. Without it they land on /,
+      # which the container user cannot write.
+      HOME: /tmp
+    # The GPU reservation. `docker compose run` honours this too, which is what
+    # makes `docker compose run --rm web node scripts/level/bake-level.mjs`
+    # a GPU bake and not a very slow CPU one. Requires nvidia-container-toolkit
+    # on the host and `nvidia` registered as a docker runtime
+    # (`sudo nvidia-ctk runtime configure --runtime=docker`).
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
     volumes:
       # The repo twice, as in compose.yaml: /app is the code the server runs,
       # /repo is the registry and the generated kit it reads and writes. The

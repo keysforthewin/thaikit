@@ -81,6 +81,84 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends /tmp/ktx.deb; \
     rm -rf /tmp/ktx.deb /var/lib/apt/lists/*; \
     ktx --version
+
+# Blender, for the level bake's Cycles lightmap pass (scripts/level/bakers/).
+#
+# It used to be blender.exe on WINDOWS, driven from WSL over UNC at
+# \\wsl.localhost\<distro>\... -- which meant the bake only ran on one machine,
+# on one OS, and `toBlenderPath()` existed solely to translate every path across
+# that boundary. In the container none of that applies: WSL_DISTRO_NAME is
+# unset, so `blenderRepoRoot()` returns REPO_ROOT unchanged and toBlenderPath is
+# a no-op. `blenderExe()` already probes /usr/local/bin/blender, which is where
+# the symlink below puts it.
+#
+# The OFFICIAL tarball, not Debian's `blender` package: bookworm ships 3.4,
+# which is years behind the 5.x this pipeline is written against (CLAUDE.md
+# notes the UNC bridge was verified on 5.2). Pinned by ARG, verified against
+# Blender's own published .sha256.
+#
+# This is the expensive layer -- roughly 1.2 GB extracted -- and it lands in
+# `base`, so dev and prod both carry it. That is deliberate: the bake is not a
+# side tool, it is spawned by the web server itself
+# (web/server/src/lib/bake.js -> scripts/level/bake-level.mjs) when the editor
+# POSTs to /api/levels/:id/bake, so the image serving the app is the image that
+# has to be able to bake. The locale data is dropped; nothing here renders UI.
+ARG BLENDER_VERSION=5.2.1
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      xz-utils libx11-6 libxi6 libxxf86vm1 libxfixes3 libxrender1 libxext6 \
+      libxkbcommon0 libsm6 libice6 libgl1 libegl1 libglu1-mesa libgomp1; \
+    series="$(echo "$BLENDER_VERSION" | cut -d. -f1,2)"; \
+    rel="https://download.blender.org/release/Blender${series}"; \
+    node -e ' \
+      const [url, sums, out] = process.argv.slice(1); \
+      const fs = require("fs"), crypto = require("crypto"); \
+      const get = async (u) => { const r = await fetch(u, { redirect: "follow" }); \
+        if (!r.ok) throw new Error(u + " -> HTTP " + r.status); \
+        return Buffer.from(await r.arrayBuffer()); }; \
+      (async () => { \
+        const name = url.split("/").pop(); \
+        const row = (await get(sums)).toString().split("\n") \
+          .map((l) => l.trim().split(/\s+/)).find((p) => p[1] === name); \
+        if (!row) throw new Error("no sha256 published for " + name); \
+        const bin = await get(url); \
+        const got = crypto.createHash("sha256").update(bin).digest("hex"); \
+        if (got !== row[0]) throw new Error("sha256 mismatch: want " + row[0] + ", got " + got); \
+        fs.writeFileSync(out, bin); \
+        console.log("blender tarball ok, sha256 " + got + ", " + bin.length + " bytes"); \
+      })(); \
+    ' "$rel/blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
+      "$rel/blender-${BLENDER_VERSION}.sha256" /tmp/blender.tar.xz; \
+    mkdir -p /opt/blender; \
+    tar -xJf /tmp/blender.tar.xz -C /opt/blender --strip-components=1; \
+    rm -f /tmp/blender.tar.xz; \
+    rm -rf /opt/blender/*/datafiles/locale; \
+    ln -s /opt/blender/blender /usr/local/bin/blender; \
+    rm -rf /var/lib/apt/lists/*; \
+    blender --version | head -2
+# OPTIX IS NOT AVAILABLE HERE, AND THAT IS NOT A CONFIGURATION MISTAKE.
+#
+# The bake used to run blender.exe on WINDOWS and got OPTIX. A Linux Blender in
+# a container under WSL2 cannot: the nvidia runtime injects the host driver, so
+# libcuda.so.1 resolves and Cycles gets full GPU rendering on CUDA -- but the
+# real OptiX implementation on WSL is nvoptix.dll, a WINDOWS library, and the
+# only Linux-side piece is /usr/lib/wsl/lib/libnvoptix.so.1, a 14 KB shim whose
+# entire exported symbol table is dxcore_init, dxcore_adapter_load_library and
+# four siblings. `optixQueryFunctionTable` is not among them, which is precisely
+# what Cycles reports as "OptiX initialization failed with error code 7805" --
+# OPTIX_ERROR_ENTRY_SYMBOL_NOT_FOUND.
+#
+# Do not try to fix this by aliasing libnvoptix_loader.so.1 to libnvoptix.so.1.
+# It was tried: the two are the same file (hardlinked, 14224 bytes), the alias
+# makes dlopen succeed, and Cycles then fails at 7805 exactly as before, because
+# the symbol was never the problem. On a NATIVE Linux host with a real driver,
+# libnvoptix.so.1 is the genuine article and bake_lightmap.py's
+# OPTIX -> CUDA -> HIP probe picks OPTIX with nothing added here.
+#
+# So under WSL2 the bake runs on CUDA. That is GPU Cycles on the real card, not
+# a CPU fallback -- check the "cycles device:" line bake_lightmap.py logs.
+
 # tini means Ctrl-C on `docker compose up` exits immediately instead of waiting
 # out a 10-second SIGKILL timeout.
 ENTRYPOINT ["/usr/bin/tini", "--"]
