@@ -24,7 +24,20 @@ export class CellSet {
     for (const c of manifest.cells.list) {
       const node = root.getObjectByName(`cell_${c.ix}_${c.iz}`);
       if (!node) continue;
-      const tiers = ['lod0', 'lod1', 'lod2'].map((n) => node.getObjectByName(n) ?? null);
+      // NOT getObjectByName. Every cell names its tiers 'lod0'/'lod1'/'lod2',
+      // and GLTFLoader makes object names unique across the whole file -- so
+      // only the FIRST cell keeps them and every later cell arrives as
+      // 'lod1_7', 'lod2_11'. An exact-name lookup therefore left all three
+      // tiers null for 11 of the 12 cells in `thepurge`, #apply returns early
+      // on a null tier, and lod1/lod2 kept glTF's default visible=true on
+      // layer 0: all three tiers drew ON TOP OF EACH OTHER. It reads as
+      // z-fighting and broken geometry -- the decimated tiers interpenetrate
+      // lod0 and their long triangles cut straight diagonal wedges across a
+      // flat wall -- and it costs ~2.5x the triangles the budget was checked
+      // against. The tiers are direct children of the cell, so match the
+      // prefix there rather than searching the subtree by name.
+      const tierNode = (n) => node.children.find((c) => c.name === n || c.name.startsWith(`${n}_`)) ?? null;
+      const tiers = ['lod0', 'lod1', 'lod2'].map(tierNode);
       const bounds = new THREE.Box3(new THREE.Vector3().fromArray(c.bounds.min), new THREE.Vector3().fromArray(c.bounds.max));
       const cell = { key: c.key, node, tiers, bounds, tier: 0, info: c };
       this.cells.push(cell);
