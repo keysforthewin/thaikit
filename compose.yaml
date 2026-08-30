@@ -48,14 +48,42 @@ services:
       # generated kit it reads and writes.
       - ./:/repo
       - ./:/app
-      # Anonymous volumes masking the mount, so the container keeps the
-      # node_modules that was installed INSIDE it. Without these the host's
-      # tree shadows it, which is the classic bind-mount failure: native
-      # modules built against the wrong platform, or nothing installed at all.
-      - /app/node_modules
-      - /app/web/client/node_modules
-      - /app/web/server/node_modules
-      - /app/packages/registry-core/node_modules
+      # NOTHING masks the mount, and NOTHING is ever run on the host.
+      #
+      # The container is the environment; the host is storage. Every tool this
+      # project builds with -- node, npm, vite, esbuild -- lives in the image
+      # and runs inside a container. The host contributes source files and a
+      # place to keep what the container writes, and nothing else. There is no
+      # Node on the host's critical path, so there is no host Node version to
+      # match, no host glibc to match, and no "works on my machine".
+      #
+      # node_modules is therefore INSTALLED BY THE CONTAINER, INTO THE MOUNT:
+      #
+      #   docker compose run --rm --no-deps -e HOME=/tmp \
+      #     -e npm_config_cache=/tmp/npm-cache web npm ci
+      #
+      # It lands at ./node_modules on the host because /app is this directory,
+      # owned by the host user because the service runs as ${THAIKIT_UID}. That
+      # is the point: it persists across `docker compose down`, it is one tree
+      # rather than one per container, and it was still produced by the image's
+      # own toolchain. Never run `npm` on the host to produce it.
+      #
+      # This used to be four anonymous volumes holding a node_modules installed
+      # inside the image, and the cost was a whole class of failure that only
+      # ever looked like a broken app: an anonymous volume is seeded ONCE and
+      # survives `docker compose build`, so a dependency change on the host
+      # reached the container only after someone remembered
+      # `--renew-anon-volumes` AND rebuilt the image. Renaming two workspace
+      # packages to their published scope left the container crash-looping on
+      # `Cannot find package '@thai-kit/level-schema'` for twelve hours against
+      # a source tree that was already correct.
+      #
+      # What the volumes were guarding against does not apply here: host and
+      # container are both linux-x64-gnu on Node 22 (same module ABI), and the
+      # container's glibc is OLDER than the host's, so every prebuilt binary
+      # the host installs -- sharp/libvips, esbuild, rollup -- runs inside it.
+      # If that ever stops being true, the fix is a devcontainer that installs
+      # on the same base image, not a volume that hides the mount.
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s

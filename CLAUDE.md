@@ -953,12 +953,47 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   100 assets and is correct.
 - **The render harness's clip planes follow the camera fit.** They were a fixed 0.01..100 m, which
   clipped a 300 m tower out of the frame entirely and read as a SwiftShader blank-render fault.
-- **Compose's anonymous `node_modules` volume is seeded ONCE and survives `docker compose
-  build`.** Adding a dependency to package.json and rebuilding the image changes nothing inside the
-  dev container -- the volume from the first `up` still masks `/app/node_modules`. That is how
-  `tar` was present on the host and missing at `/app`, and the pack manager's delete button died on
-  `ERR_MODULE_NOT_FOUND: Cannot find package 'tar' imported from /app/scripts/lib/packs/fetch.mjs`.
-  After any dependency change: `docker compose up -d --force-recreate --renew-anon-volumes web`.
+- **Nothing runs on the host. Ever.** The container is the ENVIRONMENT; the host
+  is storage. Every tool this project builds with -- node, npm, vite, esbuild,
+  the headless chromium -- lives in the image and executes inside a container,
+  and the host contributes source files plus a place to keep what the container
+  writes. That is the whole of Docker's point: run `npm` on the host and you have
+  reintroduced the host's Node version, the host's glibc and the host's global
+  state as inputs to the build, which is the thing the image exists to delete.
+  So:
+  - `compose.yaml` bind-mounts the repo at `/app` and `/repo` and masks NOTHING.
+  - The `dev` stage is `FROM base`: no source, no `node_modules`, only the
+    toolchain `apt` and the base image provide.
+  - `node_modules` is installed BY THE CONTAINER, INTO THE MOUNT:
+    `docker compose run --rm --no-deps -e HOME=/tmp -e npm_config_cache=/tmp/npm-cache web npm ci`
+    It lands at `./node_modules`, owned by the host user (the service runs as
+    `${THAIKIT_UID}`), so it persists across `docker compose down` and is one
+    tree rather than one per container -- while still being the image's own npm
+    and Node that produced it. A dependency change needs no image rebuild and no
+    restart; rerun that line.
+  - Every script in `scripts/` is run the same way
+    (`docker compose run --rm web node scripts/...`), not with a host `node`.
+  This replaced four anonymous `node_modules` volumes, which were wrong twice
+  over: they hid the mount, and an anonymous volume is seeded ONCE and survives
+  `docker compose build`, so a dependency change reached the container only if
+  somebody remembered `--renew-anon-volumes` AND rebuilt -- and since a fresh
+  volume is seeded from the image, forgetting the rebuild silently re-seeded the
+  STALE tree. It cost `tar` missing at `/app` while present on the host (the pack
+  manager's delete button dying on `ERR_MODULE_NOT_FOUND ... 'tar'`), then twelve
+  hours of a crash-looping web container on `Cannot find package
+  '@thai-kit/level-schema'` after `d941da5` renamed two workspace packages to
+  their published scope -- against a source tree that was already correct.
+  **`compose.prod.yaml` behaves identically**, and the Dockerfile now has ONE
+  `RUN` (apt-get) and no `COPY` at all: `runtime` and `dev` are both `FROM base`
+  and differ only in `NODE_ENV` and `CMD`. Production used to bake source and run
+  `npm ci --omit=dev --workspace @thaikit/server --workspace @thaikit/registry-core`,
+  which meant the shipped image had a second, frozen answer to "what is running"
+  -- and it was missing `@thai-kit/level-schema` outright, so every `/level` route
+  in the prod stack died on `ERR_MODULE_NOT_FOUND` against a source tree that was
+  correct. The one thing prod still needs that dev does not is the static client
+  bundle, and that is built the same way as everything else:
+  `docker compose run --rm --no-deps -e HOME=/tmp -e npm_config_cache=/tmp/npm-cache web npm run build --workspace @thaikit/client`,
+  which writes `web/client/dist` into the mount.
 - **`install-pack.mjs` loads its download/bundle stack lazily.** `source.mjs` needs semver,
   `fetch.mjs` needs tar, `wrap.mjs` needs esbuild -- and `--remove` needs none of them, being a
   filesystem delete plus a `packs/index.json` rewrite. Static imports made removal fail on a

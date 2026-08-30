@@ -1,13 +1,27 @@
 name: thaikit
 
-# The PRODUCTION stack: the client is compiled into the image at build time and
-# served as static files, and only the repo's DATA is mounted. This is what the
-# `runtime` stage in the Dockerfile exists for.
+# The PRODUCTION stack. It mounts the project exactly the way the dev stack
+# does, for exactly the same reason: the container is the ENVIRONMENT, the host
+# is storage, and nothing that belongs to the project is ever baked into an
+# image or run on the host.
 #
-#   docker compose -f compose.prod.yaml up -d --build
+# The ONLY differences from compose.yaml are NODE_ENV=production and the build
+# target, which together decide how the client is served: dev mounts Vite as
+# middleware and compiles from source on request, production serves the static
+# bundle at web/client/dist. So production needs that bundle built first --
+# by the container, into the mount:
 #
-# A source edit does NOT appear here until you rebuild -- that is the point of
-# it, and the reason plain `docker compose up` uses the dev stack instead.
+#   docker compose run --rm --no-deps -e HOME=/tmp \
+#     -e npm_config_cache=/tmp/npm-cache web npm ci
+#   docker compose run --rm --no-deps -e HOME=/tmp \
+#     -e npm_config_cache=/tmp/npm-cache web npm run build --workspace @thaikit/client
+#   docker compose -f compose.prod.yaml up -d
+#
+# `--build` is not in that last line and should not need to be: the image holds
+# only the toolchain, so it changes when the Dockerfile does and at no other
+# time. Rebuilding after a source or dependency change is a habit this layout
+# exists to remove.
+#
 # Both stacks claim the same container name and the same port, so run one.
 services:
   web:
@@ -34,7 +48,13 @@ services:
       THAIKIT_WATCH_POLL: "1"
       THAIKIT_WATCH_INTERVAL: "1000"
     volumes:
+      # The repo twice, as in compose.yaml: /app is the code the server runs,
+      # /repo is the registry and the generated kit it reads and writes. The
+      # production stack used to mount /repo ALONE, so the code it ran was a
+      # copy frozen inside the image while the code on disk moved on -- which
+      # is how it came to be missing @thai-kit/level-schema entirely.
       - ./:/repo
+      - ./:/app
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
