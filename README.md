@@ -24,6 +24,10 @@ The module is bundled with `three` left **external**, so you hand it your own
 three instance. That is deliberate: a second copy of three would mean the
 factory's `Mesh` is not your renderer's `Mesh`, and nothing would draw.
 
+Props are assembled into levels in a browser editor, and a baked level loads into
+any three.js game from npm — no clone required. See
+**[Using a level in your game](#using-a-level-in-your-game)**.
+
 ---
 
 ## Quickstart
@@ -183,8 +187,16 @@ npm test                                 # registry concurrency
 
 ## Licence
 
-MIT — code and assets. Every model is fully synthetic and procedurally
-authored; no scanned or scraped third-party geometry.
+MIT — code and assets. Every model is fully synthetic and procedurally authored;
+no scanned or scraped third-party geometry.
+
+**Trademarks are a separate question from copyright.** Eighteen props depict real
+marks — 7-Eleven, Big C, Cafe Amazon, FamilyMart, King Power, Lotus's, Makro, MK
+Restaurants, PTT, SCB, AIS, Bangkok Hospital, Flash Express, and the Honda and
+Toyota vehicles. The MIT licence covers their code; it says nothing about the
+marks, and anyone shipping one needs their own trademark clearance. Each carries
+the caveat in `license.notice` in `registry.json`, and provenance for every asset
+is recorded in `license.generatedBy`.
 
 ## Level editor
 
@@ -204,15 +216,84 @@ npm run level:smoke -- --level <id>           # renders it through the runtime, 
 npm run compress:maps -- --all                # KTX2 siblings for every shipped webp
 ```
 
-Load a baked level in a game with `packages/level-runtime`:
+Requirements for the bake: [KTX-Software](https://github.com/KhronosGroup/KTX-Software/releases)
+for KTX2 (extract the .deb into `~/.local/opt/ktx`, no root needed) and Blender for the lightmap;
+`npm run doctor` checks both.
 
-```js
-import { loadLevel, RapierPhysics } from '@thai-kit/level-runtime';
-const level = await loadLevel('/levels/soi/build/level.glb', { scene, renderer, camera, physics });
-// per frame: level.update(dt, camera.position)   // physics, LOD tiers, moon shadow box
+## Using a level in your game
+
+The runtime is on npm, so a game does not need this repo at all — only the baked
+`level.glb` the editor produced.
+
+| Package | |
+|---|---|
+| [`@thai-kit/level-runtime`](https://www.npmjs.com/package/@thai-kit/level-runtime) | `loadLevel()` for a browser game, `loadLevelHeadless()` for a server |
+| [`@thai-kit/level-schema`](https://www.npmjs.com/package/@thai-kit/level-schema) | the zod schemas for the level and manifest extras (pulled in automatically) |
+
+```bash
+npm i @thai-kit/level-runtime three
+# the Basis transcoder is the one asset you must serve yourself:
+mkdir -p public/basis
+cp node_modules/three/examples/jsm/libs/basis/basis_transcoder.{js,wasm} public/basis/
 ```
 
-`loadLevelHeadless()` (`@thai-kit/level-runtime/node`) builds the same colliders on a server.
-Requirements: [KTX-Software](https://github.com/KhronosGroup/KTX-Software/releases) for KTX2
-(extract the .deb into `~/.local/opt/ktx`, no root needed) and Blender for the lightmap;
-`npm run doctor` checks both.
+**One GLB is the whole map** — geometry, three LOD tiers per cell, the lightmap,
+the sky, the lights, the colliders and the spawn points are all inside it. There
+is nothing else to load and no scene description to write.
+
+```js
+import * as THREE from 'three';
+import { loadLevel } from '@thai-kit/level-runtime';
+
+// far must clear 2000: the sky domes sit at radius 1200
+const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 2000);
+
+const level = await loadLevel('/levels/soi.glb', {
+  scene, renderer, camera,
+  transcoderPath: '/basis/',
+});
+
+const spawn = level.spawns.pick();          // or .pick('red') for a team
+camera.position.fromArray(spawn.position);
+camera.position.y += 1.7;
+
+renderer.setAnimationLoop(() => {
+  level.update(clock.getDelta(), camera.position);   // physics, LOD, shadow box, billboards, sky
+  renderer.render(scene, camera);
+});
+```
+
+`loadLevel` adds the level root to your scene itself, builds the sky as domes and
+sets `scene.environment` from a PMREM probe prefiltered off the sky's own shader.
+
+**The level arrives already lit.** Do not add an ambient or hemisphere light and
+do not add a sun — the bake put sky light and bounce into the lightmap, and the
+manifest's directional light comes back with its shadow settings intact. Adding
+yours on top double-counts the bake, which is the single most common mistake when
+converting a game that lit its own scene. A night level is dark by design.
+
+Physics is your choice: colliders ship as plain shape data, so a
+[Rapier](https://rapier.rs) adapter is included, or you implement four methods on
+`PhysicsAdapter`, or you use none and still get `level.raycast(ray)` — a
+`three-mesh-bvh` query against real lod0 triangles.
+
+```js
+import RAPIER from '@dimforge/rapier3d-compat';
+import { RapierPhysics } from '@thai-kit/level-runtime/physics/rapier';
+
+await RAPIER.init();
+const physics = new RapierPhysics(RAPIER, { gravity: [0, -9.81, 0] });
+const level = await loadLevel(url, { scene, renderer, camera, physics });
+physics.sync();          // make the fresh colliders queryable before the first step
+```
+
+A dedicated server reads the same file without three, and builds the same bodies
+from the same manifest:
+
+```js
+import { loadLevelHeadless } from '@thai-kit/level-runtime/node';
+const level = await loadLevelHeadless('./level.glb', { physics });
+```
+
+Full guide, including migrating a game that currently loads one GLB per prop:
+**[docs/using-a-baked-level.md](docs/using-a-baked-level.md)**.
