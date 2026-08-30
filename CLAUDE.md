@@ -699,10 +699,20 @@ placed geometry. Export writes a second, self-contained GLB.
   per batch would wipe the ones already done. The ETA is recomputed from the WHOLE run, not the
   last batch, because per-batch cost swings with how much of the atlas each object's islands cover,
   and it is suppressed on the first batch where one sample is just noise.
-- **KTX-Software need not be root-installed**: `dpkg-deb -x` the release .deb into
-  `~/.local/opt/ktx`; `scripts/level/pipeline/ktx2.mjs` looks there, on PATH, and at
-  `THAIKIT_KTX_BIN`. gltf-transform 4.x's `toktx()` moved to its CLI package, so the shell-out is
-  ours: `ktx create --format R8G8B8A8_SRGB|UNORM --encode basis-lz|uastc --generate-mipmap`.
+- **`ktx` is IN THE IMAGE, pinned, not on anybody's host.** KTX-Software 4.4.2 is
+  installed in the Dockerfile's `base` stage (`ARG KTX_VERSION`), fetched with
+  the image's own `node` (it has `fetch`; no curl or wget needed), checked
+  against the release's published `.sha1`, and installed with `apt-get install
+  ./ktx.deb` so the deb's own dependencies resolve. It is arch-aware --
+  `dpkg --print-architecture` picks the x86_64 or arm64 asset. It used to be
+  `dpkg-deb -x`'d into `~/.local/opt/ktx` on one machine, which is why
+  `findKtx`'s CANDIDATES list still probes `THAIKIT_KTX_BIN`, PATH,
+  `~/.local/opt/ktx/bin/ktx` and `/usr/local/bin`: harmless now, since PATH
+  answers first. A bake shelling out to a binary only one host has is not
+  reproducible, and a missing `ktx` fails the pipeline at STAGE 4 -- after the
+  Blender bake has already run. gltf-transform 4.x's `toktx()` moved to its CLI
+  package, so the shell-out is ours: `ktx create --format
+  R8G8B8A8_SRGB|UNORM --encode basis-lz|uastc --generate-mipmap`.
 - **A night level fails a brightness gate honestly.** `scripts/level/smoke-level.mjs` measures the
   share of the frame that is not the backdrop, not mean luma.
 - **Judge a bake change by `scripts/level/probe-lightmap.mjs`, never by eye.** The defects push in

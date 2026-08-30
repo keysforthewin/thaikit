@@ -39,6 +39,48 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       tini ca-certificates chromium fonts-liberation \
  && rm -rf /var/lib/apt/lists/*
 ENV CHROME_PATH=/usr/bin/chromium
+
+# KTX-Software's `ktx` CLI, for the level bake's KTX2 / Basis Universal
+# encoding (scripts/level/pipeline/ktx2.mjs shells out to it, because
+# gltf-transform 4.x moved toktx into its CLI package). It is a TOOL, so it
+# belongs in the image beside chromium -- not unpacked into ~/.local/opt/ktx on
+# somebody's host, which is what `findKtx`'s CANDIDATES list and the
+# KTX_INSTALL_HINT were working around. A bake that shells out to a binary only
+# one machine has is not reproducible, and `ktx` missing fails the pipeline at
+# stage 4 after the Blender bake has already run.
+#
+# Installed via apt rather than `dpkg -i` so the deb's own dependencies
+# resolve, and the published .sha1 is checked because this is a binary from
+# outside the image. Fetched with the image's own node -- it has fetch built
+# in, so this needs no curl or wget.
+ARG KTX_VERSION=4.4.2
+RUN set -eux; \
+    case "$(dpkg --print-architecture)" in \
+      amd64) ktxarch=x86_64 ;; \
+      arm64) ktxarch=arm64 ;; \
+      *) echo "no KTX-Software build for $(dpkg --print-architecture)" >&2; exit 1 ;; \
+    esac; \
+    base="https://github.com/KhronosGroup/KTX-Software/releases/download/v${KTX_VERSION}"; \
+    deb="KTX-Software-${KTX_VERSION}-Linux-${ktxarch}.deb"; \
+    node -e ' \
+      const [url, out] = process.argv.slice(1); \
+      const fs = require("fs"), crypto = require("crypto"); \
+      const get = async (u) => { const r = await fetch(u, { redirect: "follow" }); \
+        if (!r.ok) throw new Error(u + " -> HTTP " + r.status); \
+        return Buffer.from(await r.arrayBuffer()); }; \
+      (async () => { \
+        const bin = await get(url); \
+        const want = (await get(url + ".sha1")).toString().trim().split(/\s+/)[0]; \
+        const got = crypto.createHash("sha1").update(bin).digest("hex"); \
+        if (want !== got) throw new Error("sha1 mismatch: want " + want + ", got " + got); \
+        fs.writeFileSync(out, bin); \
+        console.log("ktx deb ok, sha1 " + got + ", " + bin.length + " bytes"); \
+      })(); \
+    ' "$base/$deb" /tmp/ktx.deb; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends /tmp/ktx.deb; \
+    rm -rf /tmp/ktx.deb /var/lib/apt/lists/*; \
+    ktx --version
 # tini means Ctrl-C on `docker compose up` exits immediately instead of waiting
 # out a 10-second SIGKILL timeout.
 ENTRYPOINT ["/usr/bin/tini", "--"]
