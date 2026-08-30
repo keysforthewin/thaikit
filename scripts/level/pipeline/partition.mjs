@@ -105,7 +105,9 @@ export function partitionCells({ bake }) {
           holder = doc.createNode(`dynamic/${p.id}`);
           const m = placementMatrix(p);
           holder.setMatrix(Array.from(m));
-          holder.setExtras({ tk: { kind: 'dynamic', placement: p.id, asset: p.ref } });
+          // Blender's importer keeps node extras as custom properties on the
+          // Empty, which is how bake_lightmap.py learns a caster is switched off.
+          holder.setExtras({ tk: { kind: 'dynamic', placement: p.id, asset: p.ref, castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false } });
           scene.addChild(holder);
           dynamic.set(p.id, holder);
         }

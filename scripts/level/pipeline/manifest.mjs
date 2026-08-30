@@ -179,6 +179,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
       colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p) })),
       dynamic: bake.placements.filter((p) => !p.static).map((p) => ({
         node: `dynamic/${p.id}`, placement: p.id, physics: p.physics, billboard: p.billboard ?? 'none',
+        castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false,
         destructionGroups: p.destructionGroups ?? [], colliders: localShapes(p),
       })),
       spawns: bake.spawns,

@@ -580,6 +580,19 @@ placed geometry. Export writes a second, self-contained GLB.
   equation: the sRGB encode is explicit rather than a scene setting that must first be talked out of
   tone mapping. **Alpha is NOT sRGB-encoded** -- it is a mask, and an sRGB texture stores alpha
   linearly, so encoding it would deform the moon's shadow.
+  **And `Image.pixels` is BOTTOM row first.** The hand-rolled writer that fixed the
+  un-premultiply wrote the pixel array in order, which is a PNG with Blender's bottom row at the
+  top. The glTF exporter writes `v' = 1 - v` on the assumption the image was saved the other way
+  round (`save_render()` did that flip for free), so the whole atlas shipped upside down against
+  its UVs: every ground tile sampled some OTHER island -- roof rectangles, facade strips, the
+  gutter between two tiles -- and read as jagged shadows nothing was casting, on the floor and up
+  the sides of every building. It looked like billboards casting shadows, and it looked like a
+  starved lightmap; it was neither, and a real-time shadow toggle changed nothing. `write_png16`
+  does `u16[::-1]` now. How it was settled: sample the atlas inside each ground tile's `TEXCOORD_1`
+  box under both row orders (`scratch/_lm/flipcheck.mjs` did it) -- the right one reads a flat
+  0.177 +- 0.006 with alpha 1.000 on every open tile, the wrong one reads alpha 0.09..0.5 on tiles
+  with nothing near them. A lightmap that "shows shadows" where no caster stands is a UV/row
+  mismatch before it is anything else.
   How it was caught: `probe-lightmap.mjs` said 2.1% of texels were clipped and the bake said 0.10%.
   A tool and the thing it measures disagreeing by 20x is a fault in one of them, and the way to find
   out which is to bin the disagreement against another channel -- here, clip rate against alpha,
@@ -641,6 +654,16 @@ placed geometry. Export writes a second, self-contained GLB.
   now hides every light that arrived with the glTF, for both passes. The deliberate cost: a
   punctual light's BOUNCE is no longer baked (an emissive SURFACE still lights its wall; a bare
   point light does not), which is the right trade against counting its direct term twice.
+- **A placement's `castShadow` / `receiveShadow` now reach the bake and the runtime -- for DYNAMIC
+  placements only.** They used to stop at the three meshes `buildExportScene` built, which glTF
+  cannot carry, so Cycles saw every billboard -- a kilometre-tall quad standing at its AUTHORED
+  yaw -- as a caster in both passes, and `loadLevel` set `castShadow = true` on every dynamic node
+  regardless. The flags ride on the `bake.placements` rows, on the `dynamic/<id>` holder's node
+  extras (Blender's importer keeps those as custom properties, and `bake_lightmap.py` walks up
+  from each mesh to find `tk.castShadow` and sets `visible_shadow = False`), and on the manifest's
+  `dynamic` entries (defaulted true, so an older level parses). A STATIC placement has no such
+  switch: it is merged into its cell's mesh and its shadow IS the lightmap. If a static prop must
+  not shadow, make it dynamic.
 - **three has no runtime GI; it consumes two kinds of precomputed lighting.** `material.lightMap`
   is the Cycles bake. `scene.environment` is the other half -- ambient specular, and diffuse for
   anything with no lightmap -- and `packages/level-runtime/src/environment.js` (`buildEnvironment`)

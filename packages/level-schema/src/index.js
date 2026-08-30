@@ -532,6 +532,11 @@ export const ManifestExtras = z.object({
         physics: z.object({ enabled: z.boolean(), massKg: num.nullable() }),
         // Defaulted, so a level baked before billboarding still parses.
         billboard: BillboardMode.default('none'),
+        // The placement's own shadow switches. Defaulted for levels baked
+        // before they were carried; static placements have none here because
+        // they are merged per cell and their shadows are the lightmap.
+        castShadow: z.boolean().default(true),
+        receiveShadow: z.boolean().default(true),
         destructionGroups: z.array(z.string()).default([]),
         colliders: z.array(ColliderShape).default([]),
       }),

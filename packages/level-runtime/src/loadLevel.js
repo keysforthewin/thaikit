@@ -55,11 +55,16 @@ export async function loadLevel(source, opts) {
     .map((d) => ({ node: dynamicNodes.get(d.node), mode: d.billboard }));
 
   // Static geometry: no real-time casting (the bake already has the shadows),
-  // receives the small dynamic shadow map. Dynamic objects cast and receive.
+  // receives the small dynamic shadow map. Dynamic objects follow their
+  // placement's own switches -- a skyline billboard with cast shadow off must
+  // stay out of the moon's shadow map, as it stayed out of the bake.
   for (const cell of cells.cells) {
     for (const tier of cell.tiers.slice(0, 2)) tier?.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
   }
-  for (const node of dynamicNodes.values()) node.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  for (const d of manifest.dynamic) {
+    const node = dynamicNodes.get(d.node);
+    node?.traverse((o) => { if (o.isMesh) { o.castShadow = d.castShadow !== false; o.receiveShadow = d.receiveShadow !== false; } });
+  }
 
   // The lightmap and the sky's maps are IMAGES nothing references (glTF has no
   // slot for either), so they have no textures[] entry to load through the

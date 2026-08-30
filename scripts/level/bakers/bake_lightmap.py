@@ -97,6 +97,35 @@ if not static:
 for obj in bpy.data.objects:
     obj.select_set(False)
 
+
+# --- cast shadow OFF: out of Cycles' shadow rays ------------------------------
+#
+# A dynamic placement arrives under a `dynamic/<id>` Empty whose node extras
+# the importer keeps as custom properties. Its `tk.castShadow` is the switch
+# the author set in the editor, and until this it reached nothing: every
+# skyline billboard -- a kilometre-tall quad standing at its AUTHORED yaw --
+# was a shadow caster in both passes. Static placements never carry the flag
+# here; they are merged per cell and their shadows ARE the lightmap.
+def placement_flags(obj):
+    node = obj
+    while node is not None:
+        tk = node.get('tk')
+        if tk is not None and 'castShadow' in tk.keys():
+            return bool(tk['castShadow']), bool(tk.get('receiveShadow', True))
+        node = node.parent
+    return True, True
+
+
+no_cast = 0
+for obj in bpy.data.objects:
+    if obj.type != 'MESH' or obj in static:
+        continue
+    cast, _receive = placement_flags(obj)
+    if not cast:
+        obj.visible_shadow = False
+        no_cast += 1
+log(f'{no_cast} dynamic mesh(es) with cast shadow off are hidden from shadow rays')
+
 # --- one mesh per object, or they share one lightmap island ------------------
 #
 # `dedup({ MESH })` in stage 1 is right for shipping -- twelve identical ground
@@ -552,6 +581,14 @@ def write_png16(path_out, rgba):
     """A 16-bit RGBA PNG, big-endian samples, one IDAT. rgba is (n, 4) in 0..1."""
     h, w = size, size
     u16 = np.clip(rgba, 0.0, 1.0).reshape(h, w, 4)
+    # `Image.pixels` is BOTTOM row first (Blender's UV origin is bottom-left);
+    # a PNG is top row first, and the glTF exporter writes v' = 1 - v on the
+    # assumption that the image was saved that way round. Writing the rows in
+    # array order shipped the whole atlas upside down against its UVs: every
+    # ground tile sampled some other island -- roof rectangles, facade strips
+    # -- and read as jagged shadows nothing was casting. `save_render()` did
+    # this flip for free, and this writer replaced it.
+    u16 = u16[::-1]
     u16 = np.rint(u16 * 65535.0).astype('>u2')
     raw = np.zeros((h, w * 4 * 2 + 1), dtype=np.uint8)
     raw[:, 1:] = u16.reshape(h, w * 4).view(np.uint8)  # filter byte 0 per row
