@@ -3,7 +3,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 
 import { getPrototype, instantiate } from '../../three/instances.js';
 import { buildLight } from './lights.js';
-import { LEVEL_SCHEMA_VERSION } from '@thaikit/level-schema';
+import { LEVEL_SCHEMA_VERSION } from '@thai-kit/level-schema';
 
 /** Wait for every TextureLoader-sourced image so the exporter does not draw a 0x0 image. */
 async function settleImages(root) {
@@ -78,6 +78,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     updatedAt: now,
     settings: doc.settings,
     packs: [...packsInUse.values()],
+    groups: (doc.groups ?? []).map((g) => ({ id: g.id, name: g.name, children: g.children })),
     spawns: doc.spawns.map((s) => ({ name: s.name, position: s.position, yawDeg: s.yawDeg ?? 0, team: s.team ?? null })),
   };
   await settleImages(scene);

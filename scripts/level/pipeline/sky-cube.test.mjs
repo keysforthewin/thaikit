@@ -25,7 +25,7 @@ const LEVELS = await fs.mkdtemp(path.join(os.tmpdir(), 'tk-levels-'));
 process.env.THAIKIT_LEVELS_DIR = LEVELS;
 
 const { prepareSkyImages } = await import('./sky.mjs');
-const { CUBE_FACES } = await import('@thaikit/level-schema');
+const { CUBE_FACES } = await import('@thai-kit/level-schema');
 
 const RGB = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255], [0, 255, 255]];
 const square = (size, [r, g, b]) =>

@@ -15,7 +15,7 @@
  * keeps the exported level self-contained.
  *
  * The dome geometry and the star shader are NOT here -- they come from
- * `@thaikit/level-runtime/sky`, so the editor previews exactly what the game
+ * `@thai-kit/level-runtime/sky`, so the editor previews exactly what the game
  * will render.
  */
 

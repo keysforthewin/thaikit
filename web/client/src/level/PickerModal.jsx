@@ -1,7 +1,35 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Modal } from './Modal.jsx';
 import { useLevel } from './store.js';
+
+const PREFS_KEY = 'thaikit.level.picker';
+const EMPTY_PREFS = { q: '', pack: '', category: '', tag: '', scroll: 0 };
+
+/** The picker unmounts on close, so its filters live outside it -- and across reloads. */
+const loadPrefs = () => {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null');
+    if (!raw || typeof raw !== 'object') return { ...EMPTY_PREFS };
+    return {
+      q: typeof raw.q === 'string' ? raw.q : '',
+      pack: typeof raw.pack === 'string' ? raw.pack : '',
+      category: typeof raw.category === 'string' ? raw.category : '',
+      tag: typeof raw.tag === 'string' ? raw.tag : '',
+      scroll: Number.isFinite(raw.scroll) ? raw.scroll : 0,
+    };
+  } catch {
+    return { ...EMPTY_PREFS };
+  }
+};
+
+const savePrefs = (prefs) => {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch {
+    /* private window, or storage disabled -- the picker still works, it just forgets */
+  }
+};
 
 const histogram = (items, key) => {
   const h = new Map();
@@ -12,10 +40,21 @@ const histogram = (items, key) => {
 /** Search + filter over every installed pack; pick one to place it. */
 export function PickerModal({ onClose, onPick }) {
   const catalogue = useLevel((s) => s.catalogue);
-  const [q, setQ] = useState('');
-  const [pack, setPack] = useState('');
-  const [category, setCategory] = useState('');
-  const [tag, setTag] = useState('');
+  const placements = useLevel((s) => s.doc?.placements);
+  /** ref -> how many of it are in the level right now. */
+  const placed = useMemo(() => {
+    const n = new Map();
+    for (const p of placements ?? []) n.set(p.ref, (n.get(p.ref) ?? 0) + 1);
+    return n;
+  }, [placements]);
+  const [saved] = useState(loadPrefs);
+  const [q, setQ] = useState(saved.q);
+  // An empty catalogue is one still loading, not a pack that is gone.
+  const [pack, setPack] = useState(() =>
+    !catalogue.packs.length || catalogue.packs.some((p) => p.id === saved.pack) ? saved.pack : '');
+  const [category, setCategory] = useState(saved.category);
+  const [tag, setTag] = useState(saved.tag);
+  const gridRef = useRef(null);
 
   const inPack = useMemo(() => catalogue.items.filter((it) => !pack || it.pack === pack), [catalogue, pack]);
   const categories = useMemo(() => histogram(inPack, 'category'), [inPack]);
@@ -30,7 +69,37 @@ export function PickerModal({ onClose, onPick }) {
     });
   }, [inPack, q, category, tag]);
 
-  useEffect(() => { setCategory(''); setTag(''); }, [pack]);
+  // Only a real change of pack clears the narrower filters -- the restored pack must not.
+  const lastPack = useRef(pack);
+  useEffect(() => {
+    if (lastPack.current === pack) return;
+    lastPack.current = pack;
+    setCategory('');
+    setTag('');
+  }, [pack]);
+
+  // A category or tag whose pack is gone would filter everything away with no chip to unset.
+  useEffect(() => {
+    if (!catalogue.items.length) return;
+    if (pack && !catalogue.packs.some((p) => p.id === pack)) { setPack(''); return; }
+    if (category && !categories.some(([k]) => k === category)) setCategory('');
+    if (tag && !inPack.some((it) => it.tags.includes(tag))) setTag('');
+  }, [catalogue, categories, inPack, pack, category, tag]);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    savePrefs({ q, pack, category, tag, scroll: grid ? grid.scrollTop : saved.scroll });
+  }, [q, pack, category, tag]);
+
+  // Restore the scroll position once the grid has the restored filters' cards in it.
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current || !gridRef.current || !visible.length) return;
+    restored.current = true;
+    gridRef.current.scrollTop = saved.scroll;
+  }, [visible]);
+
+  const rememberScroll = (e) => savePrefs({ q, pack, category, tag, scroll: e.currentTarget.scrollTop });
 
   const chips = (list, value, set, all) => (
     <div className="filters compact">
@@ -49,7 +118,7 @@ export function PickerModal({ onClose, onPick }) {
       {chips(catalogue.packs.map((p) => [p.id, p.items]), pack, setPack, 'all packs')}
       {chips(categories, category, setCategory, 'all categories')}
       {chips(tags, tag, setTag, 'any tag')}
-      <div className="picker-grid">
+      <div className="picker-grid" ref={gridRef} onScroll={rememberScroll}>
         {visible.map((it) => (
           <div
             key={it.ref}
@@ -57,7 +126,12 @@ export function PickerModal({ onClose, onPick }) {
             title={it.supported ? it.description : it.error ?? 'unsupported'}
             onClick={() => it.supported && onPick(it)}
           >
-            <div className="thumb">{it.thumb ? <img src={it.thumb} alt={it.title} loading="lazy" /> : <span>no preview</span>}</div>
+            <div className="thumb">
+              {it.thumb ? <img src={it.thumb} alt={it.title} loading="lazy" /> : <span>no preview</span>}
+              {placed.get(it.ref) > 0 && (
+                <span className="count-pill" title={`${placed.get(it.ref)} in this level`}>×{placed.get(it.ref)}</span>
+              )}
+            </div>
             <div className="body">
               <div className="name">{it.title}</div>
               <div className="muted" style={{ fontSize: 12 }}>

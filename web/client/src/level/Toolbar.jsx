@@ -1,11 +1,15 @@
 import { useLevel } from './store.js';
 import { DEFAULT_GROUND } from './ground.js';
+import { isGroupId, selectionRoots } from './groups.js';
+
+/** The two things the gizmo does that nothing on screen can show. */
+const GIZMO_MODS = '\nShift+drag a handle leaves a copy behind.\nHold Ctrl to click through the gizmo to the object behind it.';
 
 const Btn = ({ on, onClick, title, children, disabled }) => (
   <button className={on ? 'primary' : ''} onClick={onClick} title={title} disabled={disabled}>{children}</button>
 );
 
-export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
+export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
   const tool = useLevel((s) => s.tool);
   const space = useLevel((s) => s.space);
   const view = useLevel((s) => s.view);
@@ -15,6 +19,10 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
   const toggleView = useLevel((s) => s.toggleView);
   const setView = useLevel((s) => s.setView);
   const setSetting = useLevel((s) => s.setSetting);
+  const selection = useLevel((s) => s.selection);
+  const unjoinSelection = useLevel((s) => s.unjoinSelection);
+  const joinable = doc ? selectionRoots(doc, selection).length >= 2 : false;
+  const unjoinable = selection.some(isGroupId);
   const snap = doc?.settings?.snap ?? {};
   const ground = { ...DEFAULT_GROUND, ...(doc?.settings?.ground ?? {}) };
   // Read the height from the STORE, not from this render. Two clicks in quick
@@ -29,9 +37,9 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
   return (
     <div className="toolbar">
       <div className="group">
-        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title="move — W">move</Btn>
-        <Btn on={tool === 'rotate'} onClick={() => setTool('rotate')} title="rotate — E">rotate</Btn>
-        <Btn on={tool === 'scale'} onClick={() => setTool('scale')} title="scale — R">scale</Btn>
+        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title={`move — W${GIZMO_MODS}`}>move</Btn>
+        <Btn on={tool === 'rotate'} onClick={() => setTool('rotate')} title={`rotate — E${GIZMO_MODS}`}>rotate</Btn>
+        <Btn on={tool === 'scale'} onClick={() => setTool('scale')} title={`scale — R${GIZMO_MODS}`}>scale</Btn>
         <Btn onClick={() => setSpace(space === 'world' ? 'local' : 'world')} title="gizmo space — Q">{space}</Btn>
       </div>
       <div className="group">
@@ -72,6 +80,16 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn }) {
             <button onClick={() => nudgeGround(0.5)} title="raise the ground by 0.5 m">+</button>
           </>
         )}
+      </div>
+      <div className="group">
+        <Btn
+          onClick={onJoin}
+          disabled={!joinable}
+          title="join the selection into one named group that moves, turns and scales as a unit — Ctrl+G. Nothing is merged."
+        >
+          join
+        </Btn>
+        <Btn onClick={unjoinSelection} disabled={!unjoinable} title="dissolve the selected group — Ctrl+Shift+G">unjoin</Btn>
       </div>
       <div className="group">
         <button className="primary" onClick={onAdd} title="add an object from any installed pack — A">+ object</button>

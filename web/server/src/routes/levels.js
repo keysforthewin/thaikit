@@ -19,7 +19,7 @@ import { z } from 'zod';
 import sharp from 'sharp';
 
 import { LEVELS_DIR, levelDir, writeFileAtomic, etagForText } from '@thaikit/registry-core';
-import { LevelExtras, emptyLevelGltf, CUBE_FACES, faceFromFilename } from '@thaikit/level-schema';
+import { LevelExtras, emptyLevelGltf, CUBE_FACES, faceFromFilename } from '@thai-kit/level-schema';
 
 import { parseGlb, buildGlb, rewriteGlbJson, levelExtrasOf } from '../../../../scripts/lib/glb.mjs';
 import { unzipSync } from '../../../../scripts/lib/unzip.mjs';

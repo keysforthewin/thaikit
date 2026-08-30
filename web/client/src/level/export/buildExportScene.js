@@ -133,7 +133,12 @@ function addGround(doc, scene, placements, cellSize) {
   const ground = groundOf(doc);
   if (!ground.enabled) return;
 
-  const extent = groundExtent(placements.map((p) => p.bounds), { cellSize, margin: ground.margin });
+  // The billboard flag rides along so backdrop imposters do not drag the floor
+  // out under the horizon -- see `groundExtent`.
+  const extent = groundExtent(placements.map((p) => ({ ...p.bounds, billboard: p.billboard })), { cellSize, margin: ground.margin });
+  if (extent.truncated) {
+    console.warn(`[level] the ground wants ${extent.wanted} tiles and is capped at ${extent.tiles.length}; the floor will not cover the whole map`);
+  }
   const geometry = new THREE.PlaneGeometry(cellSize, cellSize);
   // One material for every tile: the pipeline dedups identical materials, and
   // an identical one per tile is what lets the cells merge cleanly.

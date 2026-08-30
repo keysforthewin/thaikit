@@ -3,9 +3,11 @@ import * as THREE from 'three';
 
 import { useLevel } from './store.js';
 import { findEntity, ownerOf } from './ids.js';
+import { expandIds, groupMap, isGroupId, selectionRoots } from './groups.js';
 import { isStatic } from './cells.js';
-import { isBillboard } from '@thaikit/level-runtime/billboard';
+import { isBillboard } from '@thai-kit/level-runtime/billboard';
 import { DEFAULT_GROUND } from './ground.js';
+import { DEFAULT_SETTINGS } from './defaults.js';
 import { SkyPanel } from './SkyPanel.jsx';
 import { peekPrototype } from '../three/instances.js';
 
@@ -55,10 +57,14 @@ export function PropertiesPanel() {
   const [tab, setTab] = useState('object');
   if (!doc) return <aside className="props" />;
 
-  const ids = [...new Set(selection.map(ownerOf))];
+  // A selected group stands for its members: the fields below edit the whole
+  // assembly, and the group itself contributes only its name.
+  const roots = selectionRoots(doc, selection.map(ownerOf));
+  const selectedGroups = roots.filter(isGroupId).map((id) => groupMap(doc).get(id)).filter(Boolean);
+  const ids = expandIds(doc, roots);
   const found = ids.map((id) => findEntity(doc, id)).filter(Boolean);
-  const one = found.length === 1 ? found[0] : null;
-  const showObject = found.length > 0;
+  const one = found.length === 1 && !selectedGroups.length ? found[0] : null;
+  const showObject = found.length > 0 || selectedGroups.length > 0;
 
   const edit = (label, fn) => commit(label, (d) => { for (const id of ids) { const f = findEntity(d, id); if (f) fn(f.entity, f.kind, d); } });
 
@@ -68,6 +74,8 @@ export function PropertiesPanel() {
   } else if (tab === 'level' || !showObject) {
     const s = doc.settings;
     const ground = { ...DEFAULT_GROUND, ...(s.ground ?? {}) };
+    // A project saved before image lighting existed has no `environment.ibl`.
+    const ibl = { ...DEFAULT_SETTINGS.environment.ibl, ...(s.environment?.ibl ?? {}) };
     body = (
       <>
         <div className="field"><label>name</label><input value={doc.name} onChange={(e) => commit('rename level', (d) => { d.name = e.target.value; })} /></div>
@@ -107,12 +115,41 @@ export function PropertiesPanel() {
           <div className="field"><label>sky</label><input type="color" value={s.environment.hemisphere.sky} onChange={(e) => setSetting('environment.hemisphere.sky', e.target.value)} /></div>
           <div className="field"><label>ground</label><input type="color" value={s.environment.hemisphere.ground} onChange={(e) => setSetting('environment.hemisphere.ground', e.target.value)} /></div>
         </div>
+        <div className="row">
+          <div className="field">
+            <label>image lighting</label>
+            <select value={ibl.enabled ? 'on' : 'off'} onChange={(e) => setSetting('environment.ibl.enabled', e.target.value === 'on')}>
+              <option value="on">from the sky</option>
+              <option value="off">off — hemisphere only</option>
+            </select>
+          </div>
+          <div className="field"><label>IBL intensity</label><Num value={ibl.intensity} step={0.05} min={0} onCommit={(n) => setSetting('environment.ibl.intensity', n)} /></div>
+        </div>
+        <div className="row">
+          <div className="field">
+            <label>probe size</label>
+            <select value={ibl.size} onChange={(e) => setSetting('environment.ibl.size', Number(e.target.value))}>
+              {[64, 128, 256, 512].map((v) => <option key={v} value={v}>{v}² — {(3 * Math.max(v, 112) * 4 * v * 8 / 1048576).toFixed(1)} MB</option>)}
+            </select>
+          </div>
+          <div className="field muted" style={{ alignSelf: 'end', fontSize: 11 }}>
+            reflections and ambient specular, prefiltered from this level&rsquo;s sky
+          </div>
+        </div>
         <h4>bake</h4>
         <div className="row">
           <div className="field"><label>lightmap</label><select value={s.lightmap.enabled ? 'on' : 'off'} onChange={(e) => setSetting('lightmap.enabled', e.target.value === 'on')}><option value="on">Blender Cycles</option><option value="off">off</option></select></div>
-          <div className="field"><label>atlas size</label><select value={s.lightmap.size} onChange={(e) => setSetting('lightmap.size', Number(e.target.value))}>{[1024, 2048, 4096, 8192].map((v) => <option key={v} value={v}>{v}²</option>)}</select></div>
+          <div className="field"><label>atlas max</label><select value={s.lightmap.size} onChange={(e) => setSetting('lightmap.size', Number(e.target.value))}>{[1024, 2048, 4096, 8192].map((v) => <option key={v} value={v}>{v}²</option>)}</select></div>
         </div>
         <div className="row">
+          {/*
+            The atlas size is DERIVED from this: the bake measures the UV area
+            each metre of surface actually got and picks the smallest power of
+            two that delivers it, capped by "atlas max". So this is the dial
+            that decides lightmap sharpness, and the select above only bounds
+            what it may spend.
+          */}
+          <div className="field"><label>texels / metre</label><Num value={s.lightmap.texelsPerMeter ?? 8} step={1} min={1} onCommit={(n) => setSetting('lightmap.texelsPerMeter', n)} /></div>
           <div className="field"><label>samples</label><Num value={s.lightmap.samples} step={16} min={8} onCommit={(n) => setSetting('lightmap.samples', n)} /></div>
           <div className="field"><label>lightmap intensity</label><Num value={s.lightmap.intensity} step={0.1} min={0} onCommit={(n) => setSetting('lightmap.intensity', n)} /></div>
         </div>
@@ -269,6 +306,29 @@ export function PropertiesPanel() {
     );
   }
 
+  // The group's own row: a name, what it holds, and the way out of it. Shown
+  // above whatever the members' fields turn out to be.
+  const groupHeader = tab === 'object' && showObject && selectedGroups.length > 0 && (
+    <>
+      <h4>{selectedGroups.length === 1 ? 'group' : `${selectedGroups.length} groups`}</h4>
+      {selectedGroups.length === 1 && (
+        <div className="field">
+          <label>name</label>
+          <input
+            value={selectedGroups[0].name}
+            onChange={(e) => commit('rename group', (d) => { const g = (d.groups ?? []).find((x) => x.id === selectedGroups[0].id); if (g) g.name = e.target.value; })}
+          />
+        </div>
+      )}
+      <div className="muted small">
+        {selectedGroups.reduce((n, g) => n + g.children.length, 0)} direct member
+        {selectedGroups.reduce((n, g) => n + g.children.length, 0) === 1 ? '' : 's'}, {ids.length} object
+        {ids.length === 1 ? '' : 's'} in all. Joined only in the editor — nothing is merged.
+      </div>
+      <button onClick={() => useLevel.getState().unjoinSelection()} title="dissolve the group — Ctrl+Shift+G">unjoin</button>
+    </>
+  );
+
   return (
     <aside className="props">
       <div className="tabs sub">
@@ -276,7 +336,7 @@ export function PropertiesPanel() {
         <span className={`tab ${(tab === 'level' || !showObject) && tab !== 'sky' ? 'on' : ''}`} onClick={() => setTab('level')}>level</span>
         <span className={`tab ${tab === 'sky' ? 'on' : ''}`} onClick={() => setTab('sky')}>sky</span>
       </div>
-      <div className="content">{body}</div>
+      <div className="content">{groupHeader}{body}</div>
     </aside>
   );
 }

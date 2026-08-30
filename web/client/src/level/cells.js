@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { isBillboard } from '@thaikit/level-runtime/billboard';
+import { isBillboard } from '@thai-kit/level-runtime/billboard';
 
 import { peekPrototype } from '../three/instances.js';
 

@@ -3,8 +3,10 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import { useLevel } from './store.js';
+import { rootOf, selectedSet } from './groups.js';
 import { registerNode } from './nodes.js';
 import { targetIdOf } from './ids.js';
+import { gizmoOwnsPointer } from './gizmoRef.js';
 
 const HANDLE = 0xffd36b;
 const SELECTED = 0x7ee787;
@@ -16,7 +18,7 @@ const SELECTED = 0x7ee787;
  * the gizmo moves them like any other node and the commit re-derives direction.
  */
 export function LightNode({ light }) {
-  const selected = useLevel((s) => s.selection.some((id) => id === light.id || id === targetIdOf(light.id)));
+  const selected = useLevel((s) => selectedSet(s).has(light.id) || s.selection.includes(targetIdOf(light.id)));
   const showHelpers = useLevel((s) => s.view.helpers);
   const select = useLevel((s) => s.select);
   const handleRef = useRef(null);
@@ -87,7 +89,18 @@ export function LightNode({ light }) {
   }, [obj, light.type]);
   useEffect(() => { helperRef.current = helper; return () => helper.dispose(); }, [helper]);
 
-  const onPick = (id) => (e) => { if (e.button !== 0) return; e.stopPropagation(); select(id, { toggle: e.shiftKey }); };
+  // The gizmo has first claim on a click; Ctrl reaches past it. A light handle
+  // is drawn with depthTest off, so without this it is ALWAYS in front of the
+  // widget attached to it.
+  const onPick = (id) => (e) => {
+    if (e.button !== 0) return;
+    if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
+    e.stopPropagation();
+    // A joined light picks up its group, like any other member. The aim handle
+    // is always its own: dragging a group by a light's target makes no sense.
+    const st = useLevel.getState();
+    select(e.altKey || id !== light.id ? id : rootOf(st.doc, id), { toggle: e.shiftKey });
+  };
   const color = selected ? SELECTED : HANDLE;
 
   return (
@@ -114,7 +127,7 @@ export function LightNode({ light }) {
 }
 
 export function SpawnNode({ spawn }) {
-  const selected = useLevel((s) => s.selection.includes(spawn.id));
+  const selected = useLevel((s) => selectedSet(s).has(spawn.id));
   const select = useLevel((s) => s.select);
   const ref = useRef(null);
   useLayoutEffect(() => { registerNode(spawn.id, ref.current); return () => registerNode(spawn.id, null); }, [spawn.id]);
@@ -125,7 +138,15 @@ export function SpawnNode({ spawn }) {
   }, [spawn.position, spawn.yawDeg]);
   return (
     <group ref={ref} name={spawn.id}>
-      <mesh position={[0, 0.9, 0]} onPointerDown={(e) => { e.stopPropagation(); select(spawn.id, { toggle: e.shiftKey }); }}>
+      <mesh
+        position={[0, 0.9, 0]}
+        onPointerDown={(e) => {
+          if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
+          e.stopPropagation();
+          const st = useLevel.getState();
+          select(e.altKey ? spawn.id : rootOf(st.doc, spawn.id), { toggle: e.shiftKey });
+        }}
+      >
         <capsuleGeometry args={[0.3, 1.2, 4, 8]} />
         <meshBasicMaterial color={selected ? SELECTED : 0x4ec98a} wireframe transparent opacity={0.8} />
       </mesh>

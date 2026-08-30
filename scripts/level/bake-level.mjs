@@ -83,6 +83,7 @@ async function main() {
   let bake;
   let lodStats = [];
   let lightmapPng = null;
+  let lightmapStats = null;
 
   // ---- stage 1 -------------------------------------------------------------
   if (resumeFrom <= 1) {
@@ -118,15 +119,25 @@ async function main() {
     doc.setLogger(new Logger(Logger.Verbosity.SILENT));
   }
 
+  // The sky's images are needed TWICE: Cycles lights the bake with them (a level
+  // with a rich panorama used to bake as if lit by one flat colour), and stage 4
+  // folds them into the GLB. Resampling a panorama into six faces costs 10-30 s,
+  // so it happens once, here, before the bake that now depends on it.
+  const skySettings = bake.settings?.sky ?? null;
+  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m) });
+  for (const note of skyImages.notes) progress('sky', note);
+
   // ---- stage 2: lightmap -----------------------------------------------------
   if (resumeFrom <= 2) {
     if (lightmapOverride.size || lightmapOverride.samples) {
       bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}) } };
     }
     if (baker === 'blender' && bake.settings?.lightmap?.enabled !== false) {
-      const result = await bakeWithBlender({ io, doc, stage1: stage(1), bake, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m) });
+      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m) });
       doc = result.doc;
       lightmapPng = result.lightmapPng;
+      lightmapStats = result.lightmapStats;
+      if (lightmapStats) await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.json'), JSON.stringify(lightmapStats));
       await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.png'), lightmapPng);
     } else {
       progress('lightmap', 'skipped (baker: none); static geometry will be lit by the real-time moon');
@@ -134,6 +145,7 @@ async function main() {
     await io.write(stage(2), doc);
   } else {
     try { lightmapPng = await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.png')); } catch { lightmapPng = null; }
+    try { lightmapStats = JSON.parse(await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.json'), 'utf8')); } catch { lightmapStats = null; }
   }
 
   // ---- stage 3: LOD ----------------------------------------------------------
@@ -160,9 +172,6 @@ async function main() {
   // The sky's images are sidecars beside the project; the shipped level is one
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
   // arrangement. Both picture modes ship as one KTX2 with faceCount 6.
-  const skySettings = bake.settings?.sky ?? null;
-  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('textures', m) });
-  for (const note of skyImages.notes) progress('textures', `sky: ${note}`);
   const skyIndices = await addSkyTextures(doc, skyImages, {
     colorMode: tex.colorMode ?? 'etc1s', maxSize: tex.maxSize ?? 2048,
     onProgress: (m) => progress('textures', m),
@@ -174,7 +183,7 @@ async function main() {
   progress('compress', 'meshopt (EXT_meshopt_compression, medium)');
   await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 
-  const manifest = writeManifest({ bake, lodStats, lightmapImage, skyIndices, generator: { tool: 'thaikit', version: VERSION } })(doc);
+  const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION } })(doc);
   await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
 
   const outFile = path.join(buildDir, 'level.glb');

@@ -35,7 +35,7 @@
 import * as THREE from 'three';
 // The one import that is not three: what a nadir setting MEANS belongs with the
 // schema that declares it, and the bake resolves it from the same function.
-import { resolveNadirFade } from '@thaikit/level-schema';
+import { resolveNadirFade } from '@thai-kit/level-schema';
 
 /** Comfortably inside the editor's 3000 m far plane, and any sane game's. */
 export const SKY_RADIUS = 1200;

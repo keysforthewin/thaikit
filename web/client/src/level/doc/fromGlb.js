@@ -23,6 +23,10 @@ export async function parseLevelGlb(arrayBuffer) {
   const doc = {
     id: extras.id, name: extras.name, createdAt: extras.createdAt, updatedAt: extras.updatedAt,
     settings: mergeSettings(extras.settings), packs: extras.packs ?? [],
+    // Editor-only grouping. Pruned on the first commit, so a group naming
+    // objects an older file no longer has quietly disappears rather than
+    // showing an empty folder.
+    groups: (extras.groups ?? []).map((g) => ({ id: g.id, name: g.name ?? 'group', children: [...(g.children ?? [])] })),
     placements: [], lights: [], spawns: [],
   };
   const orphans = new Map();

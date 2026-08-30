@@ -7,7 +7,8 @@ import { useLevel } from './store.js';
 import { setViewport } from './viewportRef.js';
 import { groundOf, groundExtent, docFootprints } from './ground.js';
 import { skyOf, skyIsActive } from './sky.js';
-import { SkyDome } from './SkyDome.jsx';
+import { DEFAULT_SETTINGS } from './defaults.js';
+import { SkyRig } from './SkyRig.jsx';
 import { PlacementNode } from './PlacementNode.jsx';
 import { LightNode, SpawnNode } from './Lights.jsx';
 import { SelectionGizmo } from './SelectionGizmo.jsx';
@@ -98,6 +99,8 @@ export function Viewport({ stats }) {
   // what SkyDome restores when one is switched off -- so it goes to the dome
   // rather than being attached here, or the two would fight over the property.
   const hasSky = skyIsActive(sky);
+  // A project saved before image lighting existed has no `environment.ibl`.
+  const ibl = { ...DEFAULT_SETTINGS.environment.ibl, ...(env?.ibl ?? {}) };
 
   return (
     <div className="viewport">
@@ -124,10 +127,23 @@ export function Viewport({ stats }) {
         onCreated={(state) => { setViewport(state); state.scene.background = bg; if (import.meta.env.DEV) window.__r3f = state; }}
       >
         <CameraFov fov={view.fov ?? 90} />
-        {hasSky
-          ? <SkyDome sky={sky} levelId={levelId} rev={skyRev} fallbackColor={bg} />
-          : <color attach="background" args={[bg]} />}
-        <hemisphereLight args={[hemi.sky ?? '#8797c2', hemi.ground ?? '#2a2620', hemi.intensity ?? 0.35]} />
+        {!hasSky && <color attach="background" args={[bg]} />}
+        <SkyRig
+          sky={sky}
+          levelId={levelId}
+          rev={skyRev}
+          fallbackColor={bg}
+          hasSky={hasSky}
+          ibl={ibl}
+          hemisphere={hemi}
+        />
+        {/*
+          The hemisphere light is retired whenever the environment probe is on.
+          An env map's diffuse reproduces it and has directional structure
+          beyond up/down, and running both would count the sky twice -- which is
+          exactly the mistake `attachLightmap` has to undo on baked geometry.
+        */}
+        {!ibl.enabled && <hemisphereLight args={[hemi.sky ?? '#8797c2', hemi.ground ?? '#2a2620', hemi.intensity ?? 0.35]} />}
         {!play && <PickPlane y={ground.enabled ? ground.y : 0} />}
         {ground.enabled && <GroundPlane ground={ground} extent={groundExtent(docFootprints(doc, useLevel.getState().catalogue.byRef), { cellSize, margin: ground.margin })} />}
         {view.grid && !play && (

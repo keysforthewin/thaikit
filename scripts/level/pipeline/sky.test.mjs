@@ -16,7 +16,7 @@ import sharp from 'sharp';
 
 import { cubeToEquirect } from './sky.mjs';
 import { equirectToCube } from '../equirect-to-cube.mjs';
-import { CUBE_FACES, SkyNadir } from '@thaikit/level-schema';
+import { CUBE_FACES, SkyNadir } from '@thai-kit/level-schema';
 
 /** One flat colour per face, in CUBE_FACES order: px, nx, py, ny, pz, nz. */
 const FACES = [

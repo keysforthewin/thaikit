@@ -24,6 +24,8 @@ export function useHotkeys(handlers, disabled = false) {
       else if (ctrl && k === 's') handlers.save?.();
       else if (ctrl && k === 'd') handlers.duplicate?.();
       else if (ctrl && k === 'a') handlers.selectAll?.();
+      else if (ctrl && k === 'g' && e.shiftKey) handlers.unjoin?.();
+      else if (ctrl && k === 'g') handlers.join?.();
       else if (!ctrl && (e.key === 'Delete' || e.key === 'Backspace')) handlers.remove?.();
       else if (!ctrl && k === 'w') handlers.tool?.('translate');
       else if (!ctrl && k === 'e') handlers.tool?.('rotate');

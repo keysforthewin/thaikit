@@ -1,12 +1,14 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { applyBillboard, isBillboard } from '@thaikit/level-runtime/billboard';
+import { applyBillboard, isBillboard } from '@thai-kit/level-runtime/billboard';
 
 import { useLevel } from './store.js';
 import { registerNode } from './nodes.js';
 import { getPrototype, instantiate, releaseInstance } from '../three/instances.js';
 import { unitGeometry, COLLIDER_COLORS } from '../three/colliderGeometry.js';
+import { gizmoOwnsPointer } from './gizmoRef.js';
+import { rootOf, selectedSet } from './groups.js';
 
 const MISSING = 0xe2686d;
 const SELECTED = 0x7ee787;
@@ -27,7 +29,7 @@ const SELECTED = 0x7ee787;
  */
 export function PlacementNode({ placement }) {
   const item = useLevel((s) => s.catalogue.byRef[placement.ref]);
-  const selected = useLevel((s) => s.selection.includes(placement.id));
+  const selected = useLevel((s) => selectedSet(s).has(placement.id));
   const showColliders = useLevel((s) => s.view.colliders);
   const showSockets = useLevel((s) => s.view.sockets);
   const wireframe = useLevel((s) => s.view.wireframe);
@@ -122,8 +124,15 @@ export function PlacementNode({ placement }) {
         scale={size}
         onPointerDown={(e) => {
           if (e.button !== 0) return;
+          // The widget wins the click. A gizmo handle sits inside the thing it
+          // moves as often as not, so depth cannot arbitrate; Ctrl is the way
+          // through to whatever is behind it.
+          if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
           e.stopPropagation();
-          select(placement.id, { toggle: e.shiftKey });
+          // Clicking a joined object picks up the whole assembly; Alt is how
+          // you reach the individual piece inside it.
+          const st = useLevel.getState();
+          select(e.altKey ? placement.id : rootOf(st.doc, placement.id), { toggle: e.shiftKey });
         }}
       >
         <boxGeometry />

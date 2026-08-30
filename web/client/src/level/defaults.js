@@ -13,7 +13,7 @@ export const DEFAULT_SETTINGS = {
   },
   showGrid: true,
   showAxes: true,
-  environment: { background: '#0b0d16', hemisphere: { sky: '#8797c2', ground: '#2a2620', intensity: 0.35 } },
+  environment: { background: '#0b0d16', hemisphere: { sky: '#8797c2', ground: '#2a2620', intensity: 0.35 }, ibl: { enabled: true, intensity: 1, size: 256 } },
   lightmap: { enabled: true, size: 4096, texelsPerMeter: 8, samples: 128, intensity: 1 },
   lod: { lod1Ratio: 0.4, lod2Ratio: 0.15, lod1Distance: 60, lod2Distance: 140, hysteresis: 8 },
   textures: { colorMode: 'etc1s', dataMode: 'uastc', maxSize: 2048 },

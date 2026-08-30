@@ -286,6 +286,23 @@ export const LevelSettings = z.object({
           intensity: num.nonnegative().default(0.35),
         })
         .default({}),
+      /**
+       * Image-based lighting: ambient specular (and, for dynamic objects,
+       * ambient diffuse) prefiltered from the level's own sky.
+       *
+       * `size` is the probe FACE size, not the atlas. three's PMREM packs a
+       * CubeUV atlas of 3*max(size,112) x 4*size at RGBA16F, so the cost is
+       * 0.7 MB at 64, 1.5 at 128, 6 at 256 and 24 at 512. 256 is three's own
+       * default and the level below which a roughness-0 surface -- a shop
+       * window, wet asphalt, chrome -- shows a visibly blocky reflection.
+       */
+      ibl: z
+        .object({
+          enabled: z.boolean().default(true),
+          intensity: num.nonnegative().default(1),
+          size: z.union([z.literal(64), z.literal(128), z.literal(256), z.literal(512)]).default(256),
+        })
+        .default({}),
     })
     .default({}),
   lightmap: z
@@ -328,6 +345,16 @@ export const LevelExtras = z.object({
     .default([]),
   spawns: z
     .array(z.object({ name: z.string().min(1), position: Vec3, yawDeg: num.default(0), team: z.string().nullable().default(null) }))
+    .default([]),
+  /**
+   * Editor-only grouping. A group joins placements, lights, spawns and other
+   * groups so they can be dragged, turned and scaled as one; it has NO
+   * transform of its own and no geometry, so nothing in the bake, the manifest
+   * or the runtime reads it. `children` holds entity ids or other group ids,
+   * and every id appears in at most one group.
+   */
+  groups: z
+    .array(z.object({ id: z.string().min(1), name: z.string().default('group'), children: z.array(z.string()).default([]) }))
     .default([]),
 });
 
@@ -415,12 +442,34 @@ export const ManifestExtras = z.object({
       image: z.number().int().nonnegative(),
       channel: z.number().int().default(1),
       intensity: num.nonnegative().default(1),
+      /**
+       * The scalar the bake divided out so bright bounce would survive an
+       * 8-bit atlas. The runtime multiplies it back into `lightMapIntensity`.
+       * Defaults to 1, so a level baked before this existed reads back exactly
+       * as it did -- no schema-version bump.
+       */
+      range: num.positive().default(1),
       layout: z.string().default('rgb=indirect+sky,a=moonVisibility'),
     })
     .nullable()
     .default(null),
   lights: z.array(ManifestLight).default([]),
   ambient: z.object({ sky: hex, ground: hex, intensity: num.nonnegative() }),
+  /**
+   * Image-based lighting, if the level was baked with it.
+   *
+   * NULL means off, and null is the default -- so a level baked before IBL
+   * existed parses unchanged and renders exactly as it did. Only a re-bake
+   * opts a level in.
+   */
+  ibl: z
+    .object({
+      enabled: z.boolean().default(true),
+      intensity: num.nonnegative().default(1),
+      size: z.number().int().positive().default(256),
+    })
+    .nullable()
+    .default(null),
   /**
    * The sky, if the level has one. Nullable and defaulted so a level baked
    * before the sky existed still parses at schemaVersion 1.

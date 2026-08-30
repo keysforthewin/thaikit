@@ -80,7 +80,7 @@ async function main() {
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(e.message));
     const levelUrl = `/${toRepoRelative(glb)}`;
-    page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}`).catch(() => {});
+    page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}`).catch(() => {});
     const deadline = Date.now() + 120_000;
     let result = null;
     while (Date.now() < deadline) {
@@ -96,7 +96,16 @@ async function main() {
     // frame (SwiftShader silently failing) has nothing in it at all.
     const blank = Object.entries(result.frames).filter(([, f]) => f.coverage < 0.01).map(([k]) => k);
     for (const [tier, f] of Object.entries(result.frames)) log(`${tier}: ${f.calls} draw calls, ${f.triangles.toLocaleString()} triangles, ${(f.coverage * 100).toFixed(1)}% of the frame, mean luma ${f.luma}`);
+    log(result.environment
+      ? `environment: ${result.environment.source} at ${result.environment.size}² (${result.environment.mb} MB, ${result.environment.ms} ms); level loaded in ${result.loadMs} ms`
+      : `environment: none; level loaded in ${result.loadMs} ms`);
     if (blank.length) throw new Error(`frames with nothing drawn in them: ${blank.join(', ')}`);
+    // The runtime warns rather than throws when three's shader source moves
+    // under it, and for years nothing read those warnings -- which is how
+    // `attachLightmap`'s patch could no-op in every shipped level without
+    // anyone noticing. A runtime warning is a failed smoke run now.
+    const runtime = errors.filter((e) => e.includes('[level-runtime]'));
+    if (runtime.length) throw new Error(`the runtime warned: ${[...new Set(runtime)].join(' | ')}`);
     return ok({ level: id, ...result, screenshot: toRepoRelative(shot), consoleErrors: errors.slice(0, 10) });
   } finally {
     await browser.close();

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { TransformControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -7,6 +7,10 @@ import { nodeFor, allNodes } from './nodes.js';
 import { findEntity, ownerOf, isTargetId, kindOf } from './ids.js';
 import { obbFromBox, snapTranslation } from './snap.js';
 import { roundVec, norm } from './defaults.js';
+import { cloneEntities } from './duplicate.js';
+import { mods } from './modifiers.js';
+import { expandIds } from './groups.js';
+import { setGizmo, getGizmo } from './gizmoRef.js';
 
 const _m = new THREE.Matrix4();
 const _delta = new THREE.Matrix4();
@@ -21,6 +25,15 @@ const _scl = new THREE.Vector3();
  * multi-select scales and turns about a common point. Snapping adds a
  * correction to the FOLLOWERS only -- TransformControls rewrites the pivot's
  * own position every pointer move, so writing to it mid-drag is a fight.
+ *
+ * Two modifiers change what a drag means. SHIFT leaves a copy behind: the
+ * duplicates are made at MOUSEDOWN, at the selection's current transform, and
+ * it is the ORIGINAL nodes that go on being dragged -- indistinguishable from
+ * dragging the copy, and the only version that works, because a commit
+ * mid-drag hands every PlacementNode a new doc and each one re-syncs its group
+ * from it, snapping the dragged node back to where it started. CTRL disables
+ * the widget for as long as it is held, so a click reaches the object behind
+ * it.
  */
 export function SelectionGizmo() {
   const selection = useLevel((s) => s.selection);
@@ -30,25 +43,54 @@ export function SelectionGizmo() {
   const pivot = useMemo(() => { const o = new THREE.Object3D(); o.name = '__pivot'; return o; }, []);
   const drag = useRef(null);
 
-  const primary = selection[selection.length - 1] ?? null;
+  // A group carries no transform of its own: it drags as the multi-select of
+  // its leaves, which is the whole of what joining objects does.
+  const leaves = useMemo(() => expandIds(doc, selection), [doc, selection]);
+  const primary = leaves[leaves.length - 1] ?? null;
   const primaryNode = primary ? nodeFor(primary) : null;
 
   // Aim the pivot at the primary object whenever the selection or the doc moves it.
   useEffect(() => {
     if (!primaryNode) return;
     primaryNode.updateMatrixWorld(true);
-    if (selection.length === 1) {
+    if (leaves.length === 1) {
       primaryNode.matrixWorld.decompose(pivot.position, pivot.quaternion, pivot.scale);
     } else {
       const c = new THREE.Vector3();
       let n = 0;
-      for (const id of selection) { const o = nodeFor(id); if (o) { c.add(o.getWorldPosition(new THREE.Vector3())); n += 1; } }
+      for (const id of leaves) { const o = nodeFor(id); if (o) { c.add(o.getWorldPosition(new THREE.Vector3())); n += 1; } }
       pivot.position.copy(c.divideScalar(Math.max(1, n)));
       pivot.quaternion.identity();
       pivot.scale.set(1, 1, 1);
     }
     pivot.updateMatrix();
-  }, [selection, primaryNode, doc, pivot]);
+  }, [leaves, primaryNode, doc, pivot]);
+
+  const registerGizmo = useCallback((c) => setGizmo(c), []);
+
+  /**
+   * Ctrl suspends the widget so a click can reach what is behind it.
+   *
+   * `enabled` is the only switch that stops three's own pointerdown listener
+   * from starting a drag -- ignoring the event downstream is too late, the
+   * gizmo has already grabbed. It is never flipped mid-drag: a disabled
+   * TransformControls drops the pointerup too, and the drag would end with
+   * nothing committed.
+   */
+  useEffect(() => {
+    const apply = () => {
+      const c = getGizmo();
+      if (!c || c.dragging) return;
+      c.enabled = !mods.ctrl;
+    };
+    const types = ['keydown', 'keyup', 'pointerdown', 'pointermove', 'pointerup', 'blur'];
+    for (const t of types) window.addEventListener(t, apply, true);
+    return () => {
+      for (const t of types) window.removeEventListener(t, apply, true);
+      const c = getGizmo();
+      if (c) c.enabled = true;
+    };
+  }, []);
 
   if (!primaryNode) return null;
 
@@ -60,12 +102,26 @@ export function SelectionGizmo() {
   const onMouseDown = () => {
     const s = useLevel.getState();
     s.setDragging(true);
+    // Shift: copy first, drag second. The state the commit overwrites rides
+    // along, so a Shift-click that never became a drag can be taken back
+    // whole -- dirty flag and redo stack included.
+    let duplicated = null;
+    const before = { dirty: s.dirty, future: s.future };
+    if (mods.shift && selection.length) {
+      // Group ids go in whole: cloneEntities copies the assembly and makes a
+      // new group over the copies.
+      const ids = [...new Set(selection.map(ownerOf))];
+      let made = [];
+      s.commit(`duplicate ${ids.length} object${ids.length === 1 ? '' : 's'}`, (d) => { made = cloneEntities(d, ids); });
+      if (made.length) duplicated = made;
+      else s.rollback(before);
+    }
     pivot.updateMatrix();
-    const nodes = selection.map((id) => nodeFor(id)).filter(Boolean);
+    const nodes = leaves.map((id) => nodeFor(id)).filter(Boolean);
     for (const o of nodes) o.updateMatrix();
     const candidates = [];
     if (mode === 'translate' && snapSettings.surface?.enabled !== false && kindOfPrimary === 'placement') {
-      const selected = new Set(selection.map(ownerOf));
+      const selected = new Set(leaves.map(ownerOf));
       for (const [id, o] of allNodes()) {
         if (selected.has(ownerOf(id)) || kindOf(id) !== 'placement' || !o.userData.bbox) continue;
         o.updateMatrixWorld(true);
@@ -77,6 +133,8 @@ export function SelectionGizmo() {
       pivotInv: pivot.matrix.clone().invert(),
       starts: nodes.map((o) => ({ o, m: o.matrix.clone() })),
       candidates,
+      duplicated,
+      before,
     };
   };
 
@@ -111,7 +169,12 @@ export function SelectionGizmo() {
     s.setSnapHint(null);
     if (!d) return;
     const moved = d.starts.filter(({ o, m }) => !o.matrix.equals(m));
-    if (!moved.length) return;
+    if (!moved.length) {
+      // A Shift-click on a handle is not a Shift-drag: the copy it made is
+      // sitting exactly on its original, where nobody would ever find it.
+      if (d.duplicated) s.rollback(d.before);
+      return;
+    }
     s.commit(`${mode} ${moved.length} object${moved.length === 1 ? '' : 's'}`, (doc) => {
       for (const { o } of moved) {
         const id = o.name;
@@ -137,9 +200,10 @@ export function SelectionGizmo() {
         }
       }
     });
+    if (d.duplicated) s.setStatus(`shift-drag: left ${d.duplicated.length} cop${d.duplicated.length === 1 ? 'y' : 'ies'} behind`);
     // Re-aim the pivot at the committed transform.
     primaryNode.updateMatrixWorld(true);
-    if (selection.length === 1) primaryNode.matrixWorld.decompose(pivot.position, pivot.quaternion, pivot.scale);
+    if (leaves.length === 1) primaryNode.matrixWorld.decompose(pivot.position, pivot.quaternion, pivot.scale);
   };
 
   const snap = snapSettings.enabled !== false;
@@ -147,6 +211,7 @@ export function SelectionGizmo() {
     <>
       <primitive object={pivot} />
       <TransformControls
+        ref={registerGizmo}
         object={pivot}
         mode={mode}
         space={space}

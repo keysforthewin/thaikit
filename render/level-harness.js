@@ -10,6 +10,11 @@ import { loadLevel } from '@thaikit/level-runtime';
 const params = new URLSearchParams(location.search);
 const url = params.get('level');
 const size = Number(params.get('size') ?? 768);
+// The r185 prefilter is 256-tap GGX importance sampling per output texel, and
+// this page runs under SwiftShader against a 120 s deadline -- so the smoke run
+// asks for the smallest probe unless told otherwise. It is exercising the CODE
+// PATH, not judging the reflection.
+const iblSize = Number(params.get('iblSize') ?? 64);
 
 const canvas = document.getElementById('c');
 canvas.width = size;
@@ -46,7 +51,12 @@ window.__smoke = { ready: false };
     // No sky. `frameStats` measures the share of the frame that is NOT the
     // backdrop, and a sky makes every pixel foreground -- the coverage gate
     // would read 100% on an empty level. The smoke test is about geometry.
-    const level = await loadLevel(url, { scene, renderer, camera, sky: false, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
+    const t0 = performance.now();
+    // `sky: false` but IBL still on: the environment is prefiltered from the
+    // sky's own texture, which loadLevel reads whether or not a dome is built,
+    // so the geometry here is lit the way the shipped level lights it.
+    const level = await loadLevel(url, { scene, renderer, camera, sky: false, iblSize, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
+    const loadMs = Math.round(performance.now() - t0);
     const spawn = level.spawns.list[0] ?? { position: [0, 0, 0], yawDeg: 0 };
     const b = level.manifest.bounds;
     const center = new THREE.Vector3((b.min[0] + b.max[0]) / 2, 0, (b.min[2] + b.max[2]) / 2);
@@ -64,6 +74,10 @@ window.__smoke = { ready: false };
     renderer.render(scene, camera);
     window.__smoke = {
       ready: true, ok: true, frames, cells: level.cells.cells.length, lightmap: Boolean(level.lightmap),
+      environment: level.environment
+        ? { size: level.environment.size, source: level.environment.source, ms: level.environment.ms, mb: +(level.environment.bytes / 1048576).toFixed(2) }
+        : null,
+      loadMs,
       lights: level.lights.list.map((l) => l.entry.node), textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries,
       colliders: level.colliders.staticShapes.length, dynamic: level.colliders.dynamic.length,
     };

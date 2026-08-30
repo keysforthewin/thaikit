@@ -32,7 +32,7 @@ import sharp from 'sharp';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 
 import { levelDir } from '@thaikit/registry-core';
-import { CUBE_FACES } from '@thaikit/level-schema';
+import { CUBE_FACES } from '@thai-kit/level-schema';
 
 import { encodeKtx2, encodeKtx2Cubemap } from './ktx2.mjs';
 import { equirectToCube } from '../equirect-to-cube.mjs';

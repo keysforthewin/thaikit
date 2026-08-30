@@ -41,7 +41,7 @@
  * round between the editor and the game.
  */
 import * as THREE from 'three';
-import { resolveNadirFade } from '@thaikit/level-schema';
+import { resolveNadirFade } from '@thai-kit/level-schema';
 
 /**
  * The ceiling on a PREVIEW face. The bake's, so the editor shows what ships.

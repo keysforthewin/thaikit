@@ -34,7 +34,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import sharp from 'sharp';
-import { resolveNadirFade } from '@thaikit/level-schema';
+import { resolveNadirFade } from '@thai-kit/level-schema';
 
 /** In the order `cubeToEquirect` indexes them, which is three's cube order. */
 const FACES = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];

@@ -6,7 +6,7 @@
 import { KHRLightsPunctual } from '@gltf-transform/extensions';
 import { getBounds } from '@gltf-transform/functions';
 
-import { MANIFEST_SCHEMA_VERSION, ManifestExtras } from '@thaikit/level-schema';
+import { MANIFEST_SCHEMA_VERSION, ManifestExtras } from '@thai-kit/level-schema';
 
 const hexToRgb = (hex) => {
   const n = parseInt(hex.slice(1), 16);
@@ -89,7 +89,7 @@ export function localShapes(p) {
   }));
 }
 
-export function writeManifest({ bake, lodStats, lightmapImage, skyIndices = null, generator }) {
+export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = null, skyIndices = null, generator }) {
   return (doc) => {
     const root = doc.getRoot();
     const scene = root.listScenes()[0];
@@ -154,9 +154,27 @@ export function writeManifest({ bake, lodStats, lightmapImage, skyIndices = null
       bounds: { min: bounds.min.map((n) => +n.toFixed(3)), max: bounds.max.map((n) => +n.toFixed(3)) },
       cells: { size: cellSize, list: cells },
       lod: { distances: [settings.lod?.lod1Distance ?? 60, settings.lod?.lod2Distance ?? 140], hysteresis: settings.lod?.hysteresis ?? 8 },
-      lightmap: lightmapImage == null ? null : { image: lightmapImage, channel: 1, intensity: settings.lightmap?.intensity ?? 1, layout: 'rgb=indirect+sky,a=moonVisibility' },
+      lightmap: lightmapImage == null ? null : {
+        image: lightmapImage,
+        channel: 1,
+        intensity: settings.lightmap?.intensity ?? 1,
+        // Anything brighter than 1 was divided out before the 8-bit atlas was
+        // written; the runtime folds this back into lightMapIntensity, which is
+        // already a plain multiply in the shader. 1 means the bake was LDR.
+        range: lightmapStats?.range ?? 1,
+        layout: 'rgb=indirect+sky,a=moonVisibility',
+      },
       lights,
       ambient: { sky: settings.environment?.hemisphere?.sky ?? '#8797c2', ground: settings.environment?.hemisphere?.ground ?? '#2a2620', intensity: settings.environment?.hemisphere?.intensity ?? 0.35 },
+      // Image-based lighting. Emitted only when the level asks for it, because
+      // null is what tells the runtime to render an older level unchanged.
+      ibl: settings.environment?.ibl?.enabled === false
+        ? null
+        : {
+            enabled: true,
+            intensity: settings.environment?.ibl?.intensity ?? 1,
+            size: settings.environment?.ibl?.size ?? 256,
+          },
       sky: skyBlock(settings.sky, skyIndices),
       colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p) })),
       dynamic: bake.placements.filter((p) => !p.static).map((p) => ({

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { LevelExtras, PlacementExtras, NodeExtras, ManifestExtras, SkySettings, emptyLevelGltf } from '../src/index.js';
+import { LevelExtras, PlacementExtras, NodeExtras, ManifestExtras, SkySettings, emptyLevelGltf, LevelSettings } from '../src/index.js';
 
 test('an empty level validates and carries one moon', () => {
   const gltf = emptyLevelGltf({ id: 'soi-1', name: 'Soi 1' });
@@ -28,6 +28,29 @@ test('a manifest round-trips its defaults', () => {
   });
   assert.equal(m.lightmap, null);
   assert.equal(m.units, 'm');
+  // IBL defaults to NULL, meaning off. A level baked before image-based
+  // lighting existed must keep parsing and must keep rendering exactly as it
+  // did -- only a re-bake opts one in.
+  assert.equal(m.ibl, null);
+});
+
+test('a manifest that opts into IBL fills in the probe defaults', () => {
+  const m = ManifestExtras.parse({
+    schemaVersion: 1, id: 'soi-1', name: 'Soi 1', generatedAt: new Date().toISOString(),
+    generator: { tool: 'thaikit', version: '0' },
+    bounds: { min: [0, 0, 0], max: [1, 1, 1] },
+    cells: { size: 24, list: [] }, lod: { distances: [60, 140], hysteresis: 8 },
+    ambient: { sky: '#8797c2', ground: '#2a2620', intensity: 0.35 },
+    ibl: {},
+  });
+  assert.deepEqual(m.ibl, { enabled: true, intensity: 1, size: 256 });
+});
+
+test('the IBL probe size is one of the four the UI offers', () => {
+  const s = LevelSettings.parse({});
+  assert.equal(s.environment.ibl.size, 256);
+  assert.equal(s.environment.ibl.enabled, true);
+  assert.throws(() => LevelSettings.parse({ environment: { ibl: { size: 300 } } }));
 });
 
 test('a level with no sky settings still gets the defaults, off', () => {

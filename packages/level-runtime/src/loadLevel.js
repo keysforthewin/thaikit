@@ -8,6 +8,7 @@ import { CellSet, CASTER_LAYER } from './cells.js';
 import { attachLightmap, eachMaterial } from './materials.js';
 import { applyLights } from './lights.js';
 import { buildSky } from './sky.js';
+import { buildEnvironment, applyEnvironment } from './environment.js';
 import { applyBillboard, isBillboard } from './billboard.js';
 import { buildColliders } from './colliders.js';
 import { LevelRaycaster } from './bvh.js';
@@ -30,9 +31,11 @@ import { pickSpawn } from './spawns.js';
  * @param {string}         [opts.transcoderPath] where basis_transcoder.{js,wasm} are served (default 'https://unpkg.com/three@0.185.0/examples/jsm/libs/basis/')
  * @param {KTX2Loader}     [opts.ktx2Loader]     a configured loader, if you already have one
  * @param {boolean}        [opts.sky]            build the level's sky (default true); false leaves `scene.background` alone
+ * @param {boolean}        [opts.ibl]            image-based lighting from the sky (default true, when the manifest carries an `ibl` block)
+ * @param {number}         [opts.iblSize]        override the probe size the level was baked with
  */
 export async function loadLevel(source, opts) {
-  const { scene, renderer, camera = null, physics = new NullPhysics(), transcoderPath, ktx2Loader: givenKtx2, lightmapIntensity = null, hemisphere = true, sky: wantSky = true } = opts;
+  const { scene, renderer, camera = null, physics = new NullPhysics(), transcoderPath, ktx2Loader: givenKtx2, lightmapIntensity = null, hemisphere = true, sky: wantSky = true, ibl: wantIbl = true, iblSize = null } = opts;
   if (!scene || !renderer) throw new Error('loadLevel needs { scene, renderer }');
 
   const ktx2 = givenKtx2 ?? new KTX2Loader().setTranscoderPath(transcoderPath ?? 'https://unpkg.com/three@0.185.0/examples/jsm/libs/basis/').detectSupport(renderer);
@@ -77,11 +80,13 @@ export async function loadLevel(source, opts) {
     lightmap.flipY = false;
     lightmap.generateMipmaps = false;
     lightmap.minFilter = THREE.LinearFilter;
-    const intensity = lightmapIntensity ?? manifest.lightmap.intensity ?? 1;
+    // `range` is the scalar the bake divided out to fit bright bounce into an
+    // 8-bit atlas. Folding it into the intensity costs nothing: three's
+    // `lights_fragment_maps` already multiplies the lightmap by this uniform.
+    const intensity = (lightmapIntensity ?? manifest.lightmap.intensity ?? 1) * (manifest.lightmap.range ?? 1);
     for (const cell of cells.cells) for (const tier of cell.tiers) if (tier) eachMaterial(tier, (m) => { if (!m.userData.thaikitLightmap) attachLightmap(m, lightmap, { intensity }); });
   }
 
-  const lights = applyLights(manifest, root, { hemisphere });
   if (camera) camera.layers.disable(CASTER_LAYER);
   scene.add(root);
 
@@ -89,23 +94,58 @@ export async function loadLevel(source, opts) {
   // anything under root is fair game for the cell sweep and the LOD tiers. It
   // is all domes, so `scene.background` is left exactly as the game set it --
   // it shows only if every sky layer is off.
+  // The base texture is read whether or not a DOME is wanted: the environment
+  // is prefiltered from the same pixels, and `smoke-level.mjs` deliberately
+  // passes `sky: false` (a backdrop makes every pixel foreground for its
+  // coverage measurement) while still needing the level lit the shipped way.
+  const wantEnv = wantIbl && manifest.ibl?.enabled !== false && Boolean(manifest.ibl);
+  let skyBase = null;
+  let skyClouds = null;
+  if (manifest.sky?.base && (wantSky || wantEnv)) skyBase = await readEmbedded(manifest.sky.base.image, 'sky.base.image');
+  if (manifest.sky?.clouds && wantSky) skyClouds = await readEmbedded(manifest.sky.clouds.image, 'sky.clouds.image');
+
   let sky = null;
   if (manifest.sky && wantSky) {
-    const base = manifest.sky.base ? await readEmbedded(manifest.sky.base.image, 'sky.base.image') : null;
-    const clouds = manifest.sky.clouds ? await readEmbedded(manifest.sky.clouds.image, 'sky.clouds.image') : null;
     // No flipY to set: KTX2Loader hands back CompressedTextures, which ignore
     // the flag because WebGL cannot flip a compressed upload. The bake writes
     // these images already flipped so this path matches what the editor showed.
-    sky = buildSky(manifest.sky, { base, clouds, owned: true });
+    // `owned: true`: the dome disposes the textures it was given.
+    sky = buildSky(manifest.sky, { base: skyBase, clouds: skyClouds, owned: true });
     scene.add(sky.group);
   }
+
+  // Image-based lighting. Prefiltered from the sky's own dome, so it carries the
+  // nadir cut and the elevation remap rather than a second reading of the same
+  // image; falls back to the hemisphere ramp when the level has no sky picture.
+  let environment = null;
+  let restoreEnvironment = null;
+  if (wantEnv) {
+    environment = buildEnvironment(renderer, manifest.sky, {
+      base: skyBase,
+      hemisphere: manifest.ambient,
+      size: iblSize ?? manifest.ibl.size ?? 256,
+    });
+    if (environment) {
+      restoreEnvironment = applyEnvironment(scene, environment.texture, {
+        intensity: manifest.ibl.intensity ?? 1,
+        rotationDeg: manifest.sky?.base?.rotationDeg ?? 0,
+      });
+    }
+  }
+
+  // The HemisphereLight is retired whenever IBL is live. It is already zeroed
+  // on static materials (the bake holds the sky), and for dynamic objects an
+  // environment's diffuse is strictly better: it has directional structure
+  // beyond up/down, and it costs no light uniform block and no loop iteration
+  // in every shader in the level.
+  const lights = applyLights(manifest, root, { hemisphere: hemisphere && !environment });
 
   const colliders = buildColliders(manifest, physics, { nodes: dynamicNodes });
   const raycaster = new LevelRaycaster(cells);
 
   const followTarget = new THREE.Vector3();
   return {
-    manifest, root, cells, lights, sky, billboards, lightmap, colliders, physics, gltf,
+    manifest, root, cells, lights, sky, environment, billboards, lightmap, colliders, physics, gltf,
     spawns: { list: manifest.spawns, pick: (team) => pickSpawn(manifest.spawns, team) },
     raycast: (ray, o) => raycaster.raycast(ray, o),
     /** Step physics, sync dynamic nodes, switch LOD tiers, keep the moon's shadow box around `cameraPosition`. */
@@ -135,9 +175,16 @@ export async function loadLevel(source, opts) {
       root.traverse((o) => { if (o.isMesh) { o.geometry.boundsTree?.dispose?.(); o.geometry.dispose(); } });
       eachMaterial(root, (m) => { for (const v of Object.values(m)) if (v?.isTexture) v.dispose(); m.dispose(); });
       lightmap?.dispose();
+      restoreEnvironment?.();
+      environment?.dispose();
       if (sky) {
         scene.remove(sky.group);
         sky.dispose();
+      } else {
+        // Nothing owns the base texture when there is no dome -- the probe read
+        // it only to prefilter from, and the prefilter does not keep it.
+        skyBase?.dispose();
+        skyClouds?.dispose();
       }
       physics.dispose();
       if (!givenKtx2) ktx2.dispose();

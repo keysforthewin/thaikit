@@ -12,13 +12,16 @@ import { TexturesPanel } from './TexturesPanel.jsx';
 import { Modal } from './Modal.jsx';
 import { LevelsModal } from './LevelsModal.jsx';
 import { PickerModal } from './PickerModal.jsx';
+import { JoinModal } from './JoinModal.jsx';
 import { PackManagerModal } from './PackManagerModal.jsx';
 import { ExportModal } from './ExportModal.jsx';
 import { useHotkeys } from './useHotkeys.js';
 import { parseLevelGlb } from './doc/fromGlb.js';
 import { buildProjectScene, exportGlb } from './doc/toGlb.js';
 import { levelStats } from './cells.js';
-import { findEntity, ownerOf, newPlacementId, newSpawnId } from './ids.js';
+import { ownerOf, newPlacementId, newSpawnId } from './ids.js';
+import { expandIds, selectionRoots } from './groups.js';
+import { cloneEntities } from './duplicate.js';
 import { defaultMoon, defaultPointLight, defaultSpotLight, round4 } from './defaults.js';
 import { nodeFor } from './nodes.js';
 import { placementPoint } from './placement.js';
@@ -139,7 +142,9 @@ export default function LevelEditor({ initialId }) {
 
   const removeSelected = useCallback(() => {
     const st = useLevel.getState();
-    const ids = new Set(st.selection.map(ownerOf));
+    // A selected group means everything under it: deleting an assembly deletes
+    // its pieces, and `commit` drops the group itself once it names nothing.
+    const ids = new Set(expandIds(st.doc, st.selection.map(ownerOf)));
     if (!ids.size) return;
     st.commit(`delete ${ids.size} object${ids.size === 1 ? '' : 's'}`, (d) => {
       d.placements = d.placements.filter((p) => !ids.has(p.id));
@@ -153,20 +158,13 @@ export default function LevelEditor({ initialId }) {
 
   const duplicateSelected = useCallback(() => {
     const st = useLevel.getState();
+    // Group ids go in whole -- cloneEntities copies the assembly and rebuilds
+    // the group over the copies.
     const ids = [...new Set(st.selection.map(ownerOf))];
-    const copies = [];
+    let copies = [];
     st.commit(`duplicate ${ids.length}`, (d) => {
       const step = d.settings?.snap?.translate ?? 0.5;
-      for (const id of ids) {
-        const f = findEntity(d, id);
-        if (!f) continue;
-        const clone = structuredClone(f.entity);
-        clone.id = f.kind === 'placement' ? newPlacementId() : f.kind === 'spawn' ? newSpawnId() : `l-${crypto.randomUUID().slice(0, 8)}`;
-        if (f.kind === 'light' && clone.role === 'moon') continue;
-        clone.position = [clone.position[0] + step, clone.position[1], clone.position[2]];
-        (f.kind === 'placement' ? d.placements : f.kind === 'light' ? d.lights : d.spawns).push(clone);
-        copies.push(clone.id);
-      }
+      copies = cloneEntities(d, ids, [step, 0, 0]);
     });
     if (copies.length) st.select(copies);
   }, []);
@@ -192,6 +190,8 @@ export default function LevelEditor({ initialId }) {
     frame: () => frame(),
     escape: () => { const st = useLevel.getState(); if (st.modal) st.setModal(null); else st.clearSelection(); },
     selectAll: () => { const st = useLevel.getState(); if (st.doc) st.select(st.doc.placements.map((p) => p.id)); },
+    join: () => { const st = useLevel.getState(); if (st.doc && selectionRoots(st.doc, st.selection).length >= 2) setModal('join'); },
+    unjoin: () => useLevel.getState().unjoinSelection(),
   }), [save, duplicateSelected, removeSelected, frame]);
   useHotkeys(hotkeys, s.play);
 
@@ -225,7 +225,7 @@ export default function LevelEditor({ initialId }) {
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
         <button disabled={!doc} title="bake and export a self-contained GLB (cells, LOD, KTX2, lightmap)" onClick={() => setModal('export')}>export…</button>
       </div>
-      {doc ? <Toolbar onAdd={() => setModal('picker')} onAddLight={addLight} onAddSpawn={addSpawn} /> : <div className="toolbar" />}
+      {doc ? <Toolbar onAdd={() => setModal('picker')} onAddLight={addLight} onAddSpawn={addSpawn} onJoin={() => setModal('join')} /> : <div className="toolbar" />}
       {(error || s.catalogueError) && (
         <div className="banner">{error ?? s.catalogueError} <button onClick={() => { setError(null); useLevel.setState({ catalogueError: null }); }}>dismiss</button></div>
       )}
@@ -252,6 +252,13 @@ export default function LevelEditor({ initialId }) {
         />
       )}
       {modal === 'picker' && <PickerModal onClose={() => setModal(null)} onPick={addItem} />}
+      {modal === 'join' && doc && (
+        <JoinModal
+          count={selectionRoots(doc, selection).length}
+          onClose={() => setModal(null)}
+          onJoin={(name) => { useLevel.getState().joinSelection(name); setModal(null); }}
+        />
+      )}
       {modal === 'packs' && <PackManagerModal onClose={() => setModal(null)} onChanged={onPackChanged} />}
       {modal === 'export' && <ExportModal onClose={() => setModal(null)} />}
       {texturesOpen && stats && (

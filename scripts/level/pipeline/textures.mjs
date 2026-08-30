@@ -42,7 +42,12 @@ export function compressTextures({ colorMode = 'etc1s', dataMode = 'uastc', maxS
 export async function addLightmapTexture(doc, pngBytes, { onProgress } = {}) {
   doc.createExtension(KHRTextureBasisu).setRequired(true);
   onProgress?.('encoding lightmap (UASTC, linear, no mips)');
-  const out = await encodeKtx2(pngBytes, { mode: 'uastc', srgb: false, mipmaps: false, maxSize: 8192, uastcLevel: 2, zstd: 18 });
+  // sRGB, because that is what the file HOLDS. Blender saves the atlas through
+  // view_transform 'Standard', which is sRGB display encoding, and the runtime
+  // has always tagged the transcoded texture SRGBColorSpace -- so the pixels
+  // were right and only the container was lying, `--assign-tf linear`
+  // relabelling without converting. Two wrongs cancelled; this removes both.
+  const out = await encodeKtx2(pngBytes, { mode: 'uastc', srgb: true, mipmaps: false, maxSize: 8192, uastcLevel: 2, zstd: 18 });
   const tex = doc.createTexture('lightmap').setImage(out.bytes).setMimeType('image/ktx2').setExtras({ tk: { kind: 'lightmap' } });
   return doc.getRoot().listTextures().indexOf(tex);
 }

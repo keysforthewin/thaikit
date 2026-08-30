@@ -14,6 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { toBlenderPath, blenderExe } from '../../lib/blender.mjs';
+import { cubeToEquirect } from '../pipeline/sky.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const SCRIPT = path.join(here, 'bake_lightmap.py');
@@ -27,8 +28,25 @@ const hexToLinear = (hex) => {
  * One node per primitive, uniquely named, so Blender's importer makes one
  * object per material and the exporter hands each back under the same name.
  */
+/**
+ * One node, one primitive, nothing shared.
+ *
+ * A lightmap UV set is a position in ONE atlas, so it belongs to a surface at a
+ * place in the world -- never to a mesh that several nodes reuse. Stage 1's
+ * `dedup({ MESH })` is right for shipping (twelve identical ground tiles have no
+ * business being twelve copies of a quad) but it leaves twelve nodes pointing at
+ * one primitive, and this map is keyed by NODE. Without the clone below, the
+ * swap-back writes twelve different UV sets into the same buffer and the last
+ * one wins, so eleven tiles get another tile's lighting. In Blender the same
+ * sharing appears as twelve objects on one mesh datablock, which is why
+ * `bake_lightmap.py` un-shares them too -- the two halves have to agree.
+ *
+ * The cost is a handful of duplicated quads in the shipped GLB, which is what
+ * correct per-tile lighting is worth.
+ */
 function splitForBlender(doc) {
   const map = new Map(); // name -> { node, prim }
+  const claimed = new Set();
   for (const cell of doc.getRoot().listNodes()) {
     if (!cell.getName().startsWith('cell_')) continue;
     const lod0 = cell.listChildren().find((n) => n.getName() === 'lod0');
@@ -38,20 +56,35 @@ function splitForBlender(doc) {
       const mesh = source.getMesh();
       if (!mesh) continue;
       const prims = mesh.listPrimitives();
-      if (prims.length === 1) {
+      if (prims.length === 1 && !claimed.has(prims[0])) {
+        claimed.add(prims[0]);
         source.setName(`lm_${cell.getName().slice(5)}.${i++}`);
         map.set(source.getName(), { node: source, prim: prims[0] });
         continue;
       }
+      if (prims.length === 1) {
+        // Already spoken for by another node: this one needs its own copy.
+        const own = prims[0].clone();
+        claimed.add(own);
+        const m = doc.createMesh().addPrimitive(own);
+        source.setMesh(m);
+        source.setName(`lm_${cell.getName().slice(5)}.${i++}`);
+        map.set(source.getName(), { node: source, prim: own });
+        continue;
+      }
       for (const prim of prims) {
-        const m = doc.createMesh().addPrimitive(prim);
+        const own = claimed.has(prim) ? prim.clone() : prim;
+        claimed.add(own);
+        const m = doc.createMesh().addPrimitive(own);
         const n = doc.createNode(`lm_${cell.getName().slice(5)}.${i++}`).setMesh(m).setMatrix(source.getMatrix());
         lod0.addChild(n);
-        map.set(n.getName(), { node: n, prim });
+        map.set(n.getName(), { node: n, prim: own });
       }
       lod0.removeChild(source);
       source.dispose();
-      mesh.dispose();
+      // Only if nothing else still points at it -- a deduped mesh can be shared
+      // with a node in another cell, and disposing it there would empty that one.
+      if (mesh.listParents().every((p) => p.propertyType !== 'Node')) mesh.dispose();
     }
   }
   return map;
@@ -80,7 +113,7 @@ function runBlender(exe, args, onLine) {
   });
 }
 
-export async function bakeWithBlender({ io, doc, bake, outDir, onProgress }) {
+export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir, onProgress }) {
   const exe = await blenderExe();
   if (!exe) throw new Error('no Blender executable found (set THAIKIT_BLENDER_EXE); export with --baker none to skip the lightmap');
   await fs.mkdir(outDir, { recursive: true });
@@ -100,13 +133,52 @@ export async function bakeWithBlender({ io, doc, bake, outDir, onProgress }) {
   const args = [
     '-b', '--python', toBlenderPath(SCRIPT), '--',
     '--glb', toBlenderPath(inFile), '--out', toBlenderPath(outDir),
+    // `--size` is the CEILING now; the atlas is derived from the density below.
     '--size', String(lm.size ?? 4096), '--samples', String(lm.samples ?? 128),
+    `--texels-per-meter=${lm.texelsPerMeter ?? 8}`,
     // '=' form: a value starting with '-' (a downward moon) reads as an option otherwise.
     `--moon=${[...moonDir, ...moonRgb, moon?.intensity ?? 0.6].map((n) => n.toFixed(4)).join(',')}`,
     `--sky=${[...skyRgb, hemi.intensity ?? 0.35].map((n) => n.toFixed(4)).join(',')}`,
+    `--ground=${hexToLinear(hemi.ground ?? '#2a2620').map((n) => n.toFixed(4)).join(',')}`,
     '--exposure', String(lm.exposure ?? 1),
   ];
-  onProgress?.(`running ${path.basename(exe)} (${lm.size ?? 4096}², ${lm.samples ?? 128} samples)`);
+
+  // THE SKY LIGHTS THE BAKE.
+  //
+  // Until now Cycles saw a flat `Background` colour, so a level with a rich
+  // panoramic backdrop baked as though lit by one average tone -- the whole
+  // point of an authored sky was absent from the lighting it should dominate.
+  //
+  // Both picture modes converge on the SAME six faces `prepareSkyImages` has
+  // already produced: `panoramic` is resampled there (which is where
+  // `base.elevation` and `resolveNadirFade`'s cut are applied) and `cube` ships
+  // its authored faces. Folding them back to the equirect Blender's world wants
+  // therefore introduces no second interpretation of the source -- the bake is
+  // lit by exactly the pixels the player will see behind the geometry.
+  const faces = skyImages?.baseFaces ?? null;
+  if (faces) {
+    const envFile = path.join(outDir, 'env.png');
+    // 1024 is plenty: diffuse GI is a low-pass filter, and the world dome is
+    // only ever integrated over hemispheres. Paying for 2048 buys nothing.
+    const equirect = await cubeToEquirect(faces, { width: 1024 });
+    await fs.writeFile(envFile, equirect);
+    const skyIntensity = (hemi.intensity ?? 0.35) * (bake.settings?.sky?.base?.intensity ?? 1);
+    args.push(`--env=${toBlenderPath(envFile)}`);
+    args.push(`--env-strength=${skyIntensity.toFixed(4)}`);
+    // NEGATED on purpose. The runtime turns the DOME by +rotationDeg, which
+    // moves the image with it; Blender's Mapping node (type POINT) rotates the
+    // LOOKUP VECTOR instead, and rotating the lookup by +phi makes the content
+    // appear to turn by -phi. glTF's +Y and Blender's +Z agree in handedness
+    // under the (x, y, z) -> (x, -z, y) swizzle used for the moon, so the only
+    // correction needed is the sign. `thepurge` bakes at rotationDeg 0, so this
+    // is derived rather than measured -- check it against a picture the first
+    // time a level actually turns its sky.
+    args.push(`--env-rotation=${(-(bake.settings?.sky?.base?.rotationDeg ?? 0)).toFixed(3)}`);
+    onProgress?.(`world lit by the level's own sky (1024x512 equirect, strength ${skyIntensity.toFixed(3)})`);
+  } else {
+    onProgress?.('no sky image; the world is the hemisphere ramp');
+  }
+  onProgress?.(`running ${path.basename(exe)} (up to ${lm.size ?? 4096}², ${lm.texelsPerMeter ?? 8} texels/m, ${lm.samples ?? 128} samples)`);
   await runBlender(exe, args, (line) => onProgress?.(line));
 
   const outFile = path.join(outDir, 'out.glb');
@@ -147,5 +219,11 @@ export async function bakeWithBlender({ io, doc, bake, outDir, onProgress }) {
   onProgress?.(`${swapped} meshes carry lightmap UVs${missing ? `, ${missing} came back without them` : ''}`);
   if (!swapped) throw new Error('Blender returned no lightmap UVs');
   const lightmapPng = await fs.readFile(path.join(outDir, 'lightmap.png'));
-  return { doc, lightmapPng, swapped, missing };
+  // The atlas is LDR, so anything brighter than 1 was divided by `range` before
+  // it was written and has to be multiplied back at runtime. Absent (an older
+  // bake) means 1, which is exactly what it used to be.
+  let stats = null;
+  try { stats = JSON.parse(await fs.readFile(path.join(outDir, 'lightmap.json'), 'utf8')); } catch { stats = null; }
+  if (stats) onProgress?.(`lightmap range ${stats.range}, ${(stats.clipRate * 100).toFixed(2)}% of covered texels still clipped`);
+  return { doc, lightmapPng, lightmapStats: stats, swapped, missing };
 }

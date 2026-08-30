@@ -149,6 +149,18 @@ placed geometry. Export writes a second, self-contained GLB.
   STATIC placement per cell (`ground_<ix>_<iz>`, `@thaikit/ground`), which is the whole trick:
   partition, join, LOD, the lightmap and the manifest's collider list all key off the placement
   rows, so the floor needs no special case in any of them and the runtime needs no change at all.
+  **Billboards are not ground.** The extent comes from world bounds, and a skyline imposter is a
+  backdrop quad standing kilometres away -- so `levels/thepurge`, 20 placements of which 14 are
+  yaw-billboarded imposters up to 3.1 km out, derived a floor of **5496 x 5568 m**. That is 53,128
+  cells, so `MAX_TILES` silently clipped it to a lopsided 4096 that did not even cover the walkable
+  map, and every one of those tiles was a separate Cycles bake target, an atlas island and a share
+  of the lightmap's texels: **4142 bake objects for a level with 6 static props**, three hours at
+  512²/16, the cheapest settings there are. `groundExtent` now skips any box whose `billboard` is
+  not `none` -- 12 tiles, 72 x 96 m, 18 bake objects. The test is the billboard flag rather than a
+  distance cutoff because that is what actually separates backdrop from level, and the flag is
+  carried on the footprint boxes so ALL THREE callers agree: the editor's preview quad
+  (`Viewport`), play mode's collider (`collisionWorld`) and the bake's tiles (`addGround`). The
+  `truncated` flag existed all along and nothing read it; `addGround` warns on it now.
   A single 400 m quad would instead land in ONE cell, take one lightmap island for the level and
   simplify to nothing at LOD2. The collider is a box a quarter-metre THICK hanging below the
   surface, not a zero-height sheet: a plane is a knife edge to a character controller. Its default
@@ -486,6 +498,17 @@ placed geometry. Export writes a second, self-contained GLB.
   `placementPoint`'s forward ray meets the sky first and every object lands on it;
   and `smoke-level.mjs` passes `sky: false`, because `frameStats` measures the share
   of the frame that is not the backdrop and a sky makes every pixel foreground.
+- **A group is a remembered multi-select, not a transform node.** "Join" names a set of
+  placements, lights, spawns and other groups so they drag, turn and scale as one unit; nothing is
+  merged and nothing is reparented. Every member keeps its own WORLD transform, so the bake, the
+  cells, the colliders, the manifest and the runtime never learn that groups exist -- which is why
+  `groups: [{id, name, children}]` can ride flat on `scene.extras.thaikitLevel` beside `placements`
+  and children can be entity ids OR other group ids, to any depth. `web/client/src/level/groups.js`
+  is the whole model: `expandIds` turns the selection into the leaves the gizmo actually moves (it
+  drags them exactly as a hand-made multi-select), `rootOf` is what a viewport click resolves to
+  (Alt-click reaches the piece inside), and `pruneGroups` -- run inside `commit` -- drops any group
+  a delete has emptied, so the outliner never grows folders that name nothing. A group id is only
+  ever `g-`-prefixed, which is how `kindOf` and `findEntity` stay unbothered by them.
 - **A new object lands under the CROSSHAIR, not under the pointer.** `placementPoint` casts the
   camera's forward ray through the centre of the frame and takes the first thing it meets -- another
   object's surface, or the ground plane -- and with neither, puts the item in front of the camera at
@@ -507,22 +530,191 @@ placed geometry. Export writes a second, self-contained GLB.
 - **`prune()` strips `TEXCOORD_0` from untextured meshes, and Blender then makes the lightmap layer
   the FIRST UV layer** -- exported as `TEXCOORD_0` where the pipeline expects `TEXCOORD_1`. Keep
   attributes through prune and give every mesh a base UV layer before adding `lightmap`.
+- **The sky LIGHTS the bake, and the world is never a flat colour.** Cycles used to see one
+  `Background` node holding `environment.hemisphere.sky`, so a level with an authored panorama baked
+  as though lit by its average tone -- the art direction was absent from the lighting it should
+  dominate -- and `hemisphere.ground` never reached Blender at all, so everything was lit from below
+  as though the floor glowed. `prepareSkyImages` is hoisted ahead of stage 2 now (it also stops the
+  10-30 s panorama resample happening twice), its six faces are folded back to a 1024x512 equirect
+  with `cubeToEquirect`, and that drives a `ShaderNodeTexEnvironment`. Both picture modes converge
+  on the SAME faces the level ships, so the bake is lit by the pixels the player sees, with no
+  second interpretation of the source. 1024 is plenty -- diffuse GI is a low-pass filter integrated
+  over hemispheres. With no sky picture the world becomes `Generated -> Z -> MapRange -> ColorRamp`,
+  which is three's own `mix(ground, sky, y*0.5+0.5)`, so it matches what dynamic objects still get
+  from the HemisphereLight. **The guard that protects everything already tuned** is that a FLAT
+  image at a given linear value must bake identically to the flat colour it replaces --
+  `levels/<id>/build/calib` and `probe-lightmap --compare`. `cubeToEquirect` was dead code kept
+  alive only by `sky.test.mjs`; this is what it is for.
+  **The yaw is NEGATED.** The runtime turns the DOME by `+rotationDeg`; Blender's Mapping node
+  (type POINT) rotates the LOOKUP VECTOR, and rotating the lookup by +phi turns the content by
+  -phi. glTF +Y and Blender +Z agree in handedness under the `(x, y, z) -> (x, -z, y)` swizzle the
+  moon already uses, so the sign is the only correction. Derived, not measured -- `thepurge` bakes
+  at rotation 0 -- so check it against a picture the first time a level actually turns its sky.
+- **The atlas is LDR, so bright bounce is DIVIDED OUT rather than clipped.** `clip(lin, 0, 1)` left
+  7.5% of covered texels pinned at full scale on a real bake -- one in thirteen, and precisely the
+  emissive-lit surfaces the RGB channel exists to carry. The bake now divides by a `range` scalar
+  (the 99.9th percentile of the PER-CHANNEL PEAK over covered texels, quantised to quarters, capped
+  at 16) and records it on `manifest.lightmap.range`; `loadLevel` folds it into `lightMapIntensity`, which
+  three's `lights_fragment_maps` already multiplies by, so it costs NOTHING at runtime. p99.9 rather
+  than the max so one runaway specular texel cannot dim the level. `range` defaults to 1 and a bake
+  with nothing above 1 gets exactly 1, so an LDR level is byte-identical to before. RGBM was
+  rejected: three's lightmap chunk has no decode hook, it loses the hardware sRGB decode, and
+  bilinear filtering across texels with different exponents is wrong.
+  **The percentile must follow the CHANNEL, not the luminance.** Clipping happens channel by
+  channel and luminance weights blue at 0.0722, so a blue night sky pegs its B channel at full scale
+  while its luminance sits at 0.07 -- nowhere near any luminance percentile. The first version used
+  luminance and reported `range 1, 0.03% clipped` on an atlas where **2.1%** of covered texels were
+  actually at full scale, two thirds of them in blue alone. What caught it was
+  `probe-lightmap.mjs` disagreeing with the bake's own number: the probe counts stored bytes at full
+  scale, the bake was computing a percentile, and when a tool and the thing it measures disagree one
+  of them is wrong. Never reconcile that by picking the more convenient number.
+- **Blender's image writer UN-PREMULTIPLIES, and `CHANNEL_PACKED` does not stop it.** The lightmap
+  packs the moon's visibility into alpha, so `img_out.save_render()` was dividing every texel's
+  sky-and-bounce RGB by that mask -- approaching a divide by zero wherever the moon was fully
+  occluded. Measured on a real bake: **24% of fully shadowed texels pinned at full scale**, and
+  shadowed texels averaging **13.5x BRIGHTER** than lit ones in a channel the moon is not part of,
+  with the per-bin means falling off as 1/alpha. That is physically backwards -- a moon-shadowed
+  spot is usually under something and sees LESS sky -- and it shipped in every level ever baked,
+  because a too-bright shadow still looks like a shadow. `bake_lightmap.py` writes the 16-bit RGBA
+  PNG itself now (numpy + zlib + struct, ~20 lines), which also takes the view transform out of the
+  equation: the sRGB encode is explicit rather than a scene setting that must first be talked out of
+  tone mapping. **Alpha is NOT sRGB-encoded** -- it is a mask, and an sRGB texture stores alpha
+  linearly, so encoding it would deform the moon's shadow.
+  How it was caught: `probe-lightmap.mjs` said 2.1% of texels were clipped and the bake said 0.10%.
+  A tool and the thing it measures disagreeing by 20x is a fault in one of them, and the way to find
+  out which is to bin the disagreement against another channel -- here, clip rate against alpha,
+  which came out 24% in the shadowed bin and 0.00% in every middle bin.
+- **A lightmap UV set belongs to a PLACE, so nothing may share a primitive.** Stage 1's
+  `dedup({ MESH })` is right for shipping -- twelve identical ground tiles have no business being
+  twelve copies of a quad -- but it leaves twelve NODES pointing at one primitive, and both halves
+  of the bake key off nodes. `splitForBlender`'s map then held twelve entries aimed at the same
+  buffer, so the swap-back wrote twelve UV sets over each other and eleven tiles shipped with
+  another tile's lighting; in Blender the same sharing arrives as twelve objects on one mesh
+  datablock, and a UV layer lives on the MESH, so all twelve baked to one island. It renders as a
+  perfectly plausible floor that is simply lit wrong, which is why it survived. Both halves now
+  un-share: `splitForBlender` clones a primitive that another node has already claimed (and only
+  disposes a source mesh when no Node still references it), and `bake_lightmap.py` copies any
+  datablock with `users > 1`. **The thing that caught it was arithmetic, not looking**: the summed
+  UV areas came to 115% of an atlas, and a correct pack cannot exceed 100%. That check is a warning
+  in the bake now, and it is the standing test for this class of fault.
+- **`texelsPerMeter` is real, and `--size` is now the CEILING.** It sat in the schema and the
+  editor's defaults read by NOTHING, so the density a level got was an accident of how much surface
+  it contained -- a small level wasted most of a 4096 atlas and a big one starved every prop.
+  The bake measures `sqrt(uv_area / world_area)` per triangle, takes the MEDIAN (the mean lets one
+  enormous island -- the ground -- size the atlas for everything) and picks the smallest power of
+  two delivering the requested density, capped by `--size`. It logs achieved density with p10/p90,
+  which is also the measurement that settles whether `pack_islands(scale=True)` preserves relative
+  island scale: a p90/p10 above ~2 says it does not and `average_islands_scale()` before packing is
+  the follow-up. Do not add that pre-emptively -- measured on `thepurge` it is **1.64**, so the
+  packer IS preserving relative scale and the follow-up is not needed.
+- **The lightmap KTX2 said `linear` and held sRGB, and both wrongs cancelled.** Blender saves
+  through view_transform `Standard`, which IS sRGB encoding; `--assign-tf linear` relabelled without
+  converting; the runtime tagged the transcoded texture `SRGBColorSpace` and got the right pixels
+  from a container that was lying. It is `srgb: true` now. **Proven a no-op before shipping**:
+  encoding the same PNG both ways gives identical container size and an identical payload SHA, with
+  only the DFD `transferFunction` differing (1 -> 2). No baked level changes brightness.
 - **The lightmap is an image nothing references.** glTF has no lightmap slot, so it is written as
   a KTX2 `images[]` entry (index in `manifest.lightmap.image`) with no `textures[]` entry; the
   runtime reads its bufferView and hands it to `KTX2Loader.parse`. `parser.loadTexture(i)` on it
   fails with "reading 'source'". RGB = sky + bounce + emissive (moon off), A = the moon's
   visibility (Cycles SHADOW bake), and `attachLightmap` masks the real-time moon's direct term
   with A so the moon stays a live light for dynamic objects and a small dynamic shadow map.
+- **`onBeforeCompile` runs BEFORE `resolveIncludes()`, so patch the CHUNK and substitute it for the
+  token.** The shader handed to `onBeforeCompile` still says `#include <lights_fragment_begin>` and
+  contains none of the code you want to edit -- `ShaderLib.physical.fragmentShader` does not even
+  contain the string `getHemisphereLightIrradiance`. `attachLightmap` shipped two `replace()` calls
+  against the RESOLVED text and both matched nothing for the life of the file, so every level
+  rendered with the sky counted TWICE (baked, plus the live hemisphere that was never zeroed) and
+  the moon lighting static geometry UNSHADOWED, discarding Cycles' soft shadows. Its `DIRECT_LINE`
+  was wrong a second way -- an extra outer paren pair three does not have -- and its replacement
+  text was `irradiance += 0.0`, a `vec3 += float` type error that would not have compiled had it
+  ever matched. Take `THREE.ShaderChunk[name]`, edit that, then
+  `fragmentShader.replace('#include <name>', body)`. A `replace()` that matches nothing is silent,
+  which is why `packages/level-runtime/test/materials.test.mjs` asserts all three anchor strings
+  exist verbatim AND that the patch lands in the shader a real compile would see, and why
+  `smoke-level.mjs` now FAILS on any `[level-runtime]` console warning.
+- **Every authored light was baked AND re-created live.** `buildExportScene` writes each one as
+  `KHR_lights_punctual`, and nothing strips them before stage 2 -- `writeManifest` disposes them at
+  stage 4, after Blender has already imported the lot. `bake_lightmap.py`'s `sun.hide_render` hid
+  only the sun the script builds, so the MOON was baked a second time as an imported sun and every
+  point and spot light was baked too, then all of them added again at runtime. `bake_lightmap.py`
+  now hides every light that arrived with the glTF, for both passes. The deliberate cost: a
+  punctual light's BOUNCE is no longer baked (an emissive SURFACE still lights its wall; a bare
+  point light does not), which is the right trade against counting its direct term twice.
+- **three has no runtime GI; it consumes two kinds of precomputed lighting.** `material.lightMap`
+  is the Cycles bake. `scene.environment` is the other half -- ambient specular, and diffuse for
+  anything with no lightmap -- and `packages/level-runtime/src/environment.js` (`buildEnvironment`)
+  is it, shared verbatim by `loadLevel()` and the editor's `EnvironmentProbe` the way `buildSky`
+  is. What it cost:
+  - **Never assign the sky cubemap to `scene.environment`.** `WebGLEnvironments.getPMREM`
+    auto-prefilters any `CubeReflectionMapping` texture and `PMREMGenerator._setSize` reads the
+    SOURCE face width, so a 3072 face gives `_cubeSize` 2048 and a 6144x8192 RGBA16F atlas: 384 MB,
+    doubled while `_allocateTargets` holds an equal ping-pong target. `fromScene` is the ONLY entry
+    point that takes an explicit `size` (`fromCubemap`/`fromEquirectangular` have none), so it is
+    the only way to ask for a 256 probe -- 768x1024, **6 MB**. If `scene.environment.image.width`
+    ever reads 6144, that is what happened.
+  - **Prefilter from a real `buildSky` dome, not from the texture.** `fromScene` over a dedicated
+    probe dome puts the sky's own shader in the loop -- nadir cut, elevation remap, sRGB decode --
+    rather than a second reading of the same pixels, and it is what gives the no-sky case somewhere
+    to go: a gradient dome carrying three's own `mix(ground, sky, y*0.5+0.5)`. That fallback is why
+    the **HemisphereLight can be retired outright** whenever IBL is live: the probe reproduces its
+    diffuse and adds grey specular, leaving one ambient path instead of two. Do NOT hand `fromScene`
+    an empty scene expecting `scene.background` to stand in -- `_sceneToCubeUV` will fill it with
+    one flat colour and lose the ground darkening. Pass `far` explicitly; the default is 100 and the
+    dome sits at 1224. Build a SEPARATE dome: reparenting the live one tears a frame in the editor.
+  - **Only the env DIFFUSE may be cut on lightmapped materials.** One line in
+    `lights_fragment_maps`: `iblIrradiance += getIBLIrradiance( geometryNormal )` scaled by a
+    `THAIKIT_IBL_DIFFUSE` define. `lights_fragment_end` hands `iblIrradiance` only to
+    `RE_IndirectSpecular`, where it feeds `diffuse * cosineWeightedIrradiance`; the specular we want
+    arrives separately as `radiance` from `getIBLRadiance`. Cutting both would be the same as having
+    no IBL. Dynamic objects never pass through `attachLightmap`, so they keep both halves -- which
+    is right, they have no baked diffuse to double.
+  - **Key the probe effect on VALUES, not on the settings objects.** Every `setSetting` commits a
+    new document, so an effect depending on `sky` or `hemisphere` re-prefilters when you nudge the
+    lightmap samples. Intensity and bearing ride on `scene.environmentIntensity` and
+    `scene.environmentRotation` and must never rebuild; only the pixels and the probe size may.
+    Measured live: rotation, intensity and an unrelated edit all leave the texture uuid alone.
+  - `scene.environment` also OVERRIDES per-material `envMapIntensity` with
+    `scene.environmentIntensity` (`WebGLRenderer.js`), so the values the asset factories author stay
+    dead. glTF cannot carry the property anyway and `GLTFLoader` gives every material 1.0.
+  - The sky is LDR, so the IBL is a soft ambient shell with no sun glint; `ibl.intensity` is the
+    only lever. And the editor over-lights static geometry relative to the ship, because it has no
+    lightmap so the diffuse suppression never fires there.
+- **`manifest.ibl` is null by default, and null means off.** A level baked before image lighting
+  existed parses unchanged and renders identically; only a re-bake opts one in. Same shape as
+  `lightmap.range` -- additive with a default, so no schema-version bump.
 - **The Blender bake is batch (`blender.exe -b --python`), not the addon**, over UNC via
   `toBlenderPath()`; `blenderExe()` finds the Windows install from WSL. Pass vector args as
   `--moon=-0.4,...`: a value starting with `-` reads as an option to argparse. A 512² / 16-sample
-  test took 30 s on OPTIX.
+  test took 30 s on OPTIX on a small level -- but the cost is per OBJECT, not per texel, and the
+  ground plane's per-cell tiles dominate: `thepurge` presents **4142** static meshes across 4099
+  cells and its pass 1 runs for many minutes at the same size and sample count.
+- **The bake reports progress because it is BATCHED, and batching is free.** Cycles'
+  `bpy.ops.object.bake` is one blocking call that says nothing until it returns, so a 4142-object
+  level sat silent for many minutes with no way to tell slow from hung. `bake_batched()` hands the
+  operator `--batch` objects at a time (default 128) and logs percent, count, elapsed and a
+  measured ETA per batch. It does NOT change the result: selection decides what is baked TO, while
+  every object stays in the scene and still contributes its indirect light, shadows and emissive
+  bounce. The one requirement is `use_clear = False` -- the batches share one atlas and clearing
+  per batch would wipe the ones already done. The ETA is recomputed from the WHOLE run, not the
+  last batch, because per-batch cost swings with how much of the atlas each object's islands cover,
+  and it is suppressed on the first batch where one sample is just noise.
 - **KTX-Software need not be root-installed**: `dpkg-deb -x` the release .deb into
   `~/.local/opt/ktx`; `scripts/level/pipeline/ktx2.mjs` looks there, on PATH, and at
   `THAIKIT_KTX_BIN`. gltf-transform 4.x's `toktx()` moved to its CLI package, so the shell-out is
   ours: `ktx create --format R8G8B8A8_SRGB|UNORM --encode basis-lz|uastc --generate-mipmap`.
 - **A night level fails a brightness gate honestly.** `scripts/level/smoke-level.mjs` measures the
   share of the frame that is not the backdrop, not mean luma.
+- **Judge a bake change by `scripts/level/probe-lightmap.mjs`, never by eye.** The defects push in
+  opposite directions -- hiding the double-counted lights DARKENS the atlas, feeding it the real sky
+  BRIGHTENS it -- so a render of the whole stack says nothing about either step. It prints coverage,
+  per-channel linear percentiles, the CLIP RATE (whether the LDR clamp is destroying bounce) and a
+  10-bin alpha histogram, plus `--compare <png>` against a saved earlier bake. A correct moon mask
+  is BIMODAL; a smear across the middle bins is another light contaminating the SHADOW pass.
+  **sharp silently squashes a 16-bit PNG to byte values** unless `toColourspace('rgb16')` is set
+  before `.raw({ depth: 'ushort' })` -- Blender's 40000 comes back as 156 -- and it IGNORES
+  `depth: 'ushort'` on raw INPUT, so a fixture round-tripped through sharp cannot prove the 16-bit
+  path works. `probe-lightmap.test.mjs` hand-builds its PNGs over `node:zlib` for that reason.
 - **A 4 ms bake with `--baker none` is a 4 s one in Blender at 4096²/128 samples per minute of
   level** -- use `--lightmap-size 512 --samples 16` to test the round trip.
 

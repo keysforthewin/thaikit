@@ -15,6 +15,8 @@
  * merges, lightmaps, LODs and culls exactly like the props standing on it.
  */
 
+import { isBillboard } from '@thai-kit/level-runtime/billboard';
+
 /** Skirt below the surface, so the collider is a solid rather than a knife edge. */
 export const GROUND_THICKNESS = 0.25;
 /** Beyond this the extent is almost certainly one stray placement, not a map. */
@@ -30,15 +32,33 @@ export const groundOf = (doc) => ({ ...DEFAULT_GROUND, ...(doc?.settings?.ground
 /**
  * The cell rectangle the ground covers.
  *
- * @param boxes  [{ min:[x,y,z], max:[x,y,z] }] -- every placement's footprint.
- * @returns { ix0, iz0, ix1, iz1, minX, minZ, maxX, maxZ, width, depth, tiles }
+ * BILLBOARDS ARE NOT GROUND. A yaw-billboarded quad is backdrop -- a skyline
+ * imposter standing kilometres away to fill the horizon -- and nobody walks to
+ * it, so extending the floor out under it buys nothing and costs a great deal.
+ * `thepurge` is the case that proved it: 14 of its 20 placements are imposters
+ * up to 3.1 km out, which stretched the ground to 5.5 x 5.5 km. That is
+ * ~52,000 cells, so the MAX_TILES cap silently clipped it to a lopsided 64x64
+ * rectangle that did not even cover the walkable map -- and every one of those
+ * 4096 tiles was a separate Cycles bake target, an atlas island and a share of
+ * the lightmap's texels. The bake was 4142 objects for a level with 6 static
+ * props, and ran for three hours at the CHEAPEST settings.
+ *
+ * The test is the billboard flag rather than a distance cutoff, because that is
+ * what actually distinguishes backdrop from level. All three callers -- the
+ * editor's preview quad, play mode's collider and the bake's tiles -- go
+ * through here, so they cannot disagree about where the floor is.
+ *
+ * @param boxes  [{ min:[x,y,z], max:[x,y,z], billboard? }] -- every placement's footprint.
+ * @returns { ix0, iz0, ix1, iz1, minX, minZ, maxX, maxZ, width, depth, tiles, truncated, excluded }
  */
 export function groundExtent(boxes, { cellSize = 24, margin = 8 } = {}) {
   let minX = Infinity;
   let minZ = Infinity;
   let maxX = -Infinity;
   let maxZ = -Infinity;
+  let excluded = 0;
   for (const b of boxes) {
+    if (isBillboard(b.billboard)) { excluded += 1; continue; }
     if (!Number.isFinite(b.min[0]) || !Number.isFinite(b.max[0])) continue;
     minX = Math.min(minX, b.min[0]); maxX = Math.max(maxX, b.max[0]);
     minZ = Math.min(minZ, b.min[2]); maxZ = Math.max(maxZ, b.max[2]);
@@ -66,6 +86,8 @@ export function groundExtent(boxes, { cellSize = 24, margin = 8 } = {}) {
     depth: (iz1 - iz0 + 1) * cellSize,
     tiles,
     truncated: count > MAX_TILES,
+    wanted: count,
+    excluded,
   };
 }
 
@@ -82,6 +104,8 @@ export function docFootprints(doc, byRef) {
     return {
       min: [p.position[0] - hw, 0, p.position[2] - hd],
       max: [p.position[0] + hw, 0, p.position[2] + hd],
+      // Carried so `groundExtent` can drop backdrop imposters; see there.
+      billboard: p.billboard,
     };
   });
 }

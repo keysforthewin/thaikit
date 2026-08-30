@@ -17,11 +17,18 @@ export const targetIdOf = (lightId) => `${lightId}:target`;
 export const isTargetId = (id) => typeof id === 'string' && id.endsWith(':target');
 export const ownerOf = (id) => (isTargetId(id) ? id.slice(0, -':target'.length) : id);
 
+/**
+ * The doc decides an id's kind, not its prefix. A light loaded from a GLB keeps
+ * the id written into its node name -- the template's moon is `moon`, with no
+ * `l-` on it -- so a prefix lookup found no entity and every gizmo drag on it
+ * committed nothing, which reads as the light snapping back on mouse-up.
+ */
 export function findEntity(doc, id) {
   const base = ownerOf(id);
-  const kind = kindOf(base);
-  if (!doc || !kind) return null;
-  const list = kind === 'placement' ? doc.placements : kind === 'light' ? doc.lights : doc.spawns;
-  const entity = list.find((e) => e.id === base);
-  return entity ? { kind, entity } : null;
+  if (!doc || !base) return null;
+  for (const [kind, list] of [['placement', doc.placements], ['light', doc.lights], ['spawn', doc.spawns]]) {
+    const entity = list?.find((e) => e.id === base);
+    if (entity) return { kind, entity };
+  }
+  return null;
 }

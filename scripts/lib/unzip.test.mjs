@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { unzipSync } from './unzip.mjs';
-import { faceFromFilename } from '@thaikit/level-schema';
+import { faceFromFilename } from '@thai-kit/level-schema';
 
 /** A real archive from the `zip` CLI -- the point is to read what tools write. */
 function makeZip(files, args = []) {
