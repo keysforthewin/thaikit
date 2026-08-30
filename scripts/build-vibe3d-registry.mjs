@@ -14,9 +14,11 @@
  * What does not survive the trip, by design: their `modelMetadataSchema` is
  * `.strict()`, so pivots, colliders, destruction groups, the four budget
  * ceilings, declared/measured metres, placement, pivot origin, the measured
- * stats, the img2threejs review, `nameTh` and the per-asset licence notice have
- * nowhere to go. This script does not smuggle them into `tags` or `description`
- * -- a consumer wanting them reads thaikit's own registry.
+ * stats, the img2threejs review and `nameTh` have nowhere to go. This script
+ * does not smuggle them into `tags` or `description` -- a consumer wanting them
+ * reads thaikit's own registry. The single exception is a non-default
+ * `license.notice`, which leads the description: see below for why a trademark
+ * caveat is not the same kind of loss as a dropped pivot list.
  *
  * Emits schemaVersion 1, which is what their reference kit (registries/scifi-kit)
  * ships and what their loader union accepts unconditionally. Version 2 adds
@@ -43,6 +45,12 @@ const DEFAULT_OUT = 'dist/vibe3d/registry.json';
  * after anyone has installed is a breaking change.
  */
 const DEFAULT_NAMESPACE = '@thai-kit';
+/**
+ * The schema default for `license.notice`. Anything else is a real notice a
+ * human wrote and must survive the export; this value carries no information.
+ */
+const DEFAULT_LICENSE_NOTICE = 'Fully synthetic. No third-party scanned or scraped geometry.';
+
 /** Matches this repo's own `three` dependency, and Vibe3D's scifi-kit floor. */
 const DEFAULT_THREE = '>=0.185.0';
 
@@ -430,10 +438,21 @@ async function buildItem(asset, previewTarget) {
 
   // Their schema wants both non-empty. thaikit's `description` is routinely blank
   // because `notes` is where the asset-list skill actually writes.
-  const description =
+  const body =
     asset.description?.trim() ||
     asset.notes?.trim() ||
     `${asset.name}: a procedural Three.js prop built as source, not a mesh.`;
+
+  // The ONE piece of dropped metadata that gets carried anyway: a trademark
+  // notice. Eighteen props depict real marks -- 7-Eleven, Big C, PTT, the
+  // Toyotas -- and `modelMetadataSchema` being `.strict()` means there is
+  // nowhere structured to put that. Losing it is not the same kind of loss as
+  // losing a pivot list: a consumer who never sees it ships someone else's
+  // mark believing MIT covered it. So a non-default `license.notice` leads the
+  // description. It used to reach consumers by accident, as the first sentence
+  // of `notes`; that is now a deliberate line rather than a lucky one.
+  const notice = asset.license?.notice?.trim();
+  const description = notice && notice !== DEFAULT_LICENSE_NOTICE ? `${notice} ${body}` : body;
 
   const category = titleCase(asset.category);
 

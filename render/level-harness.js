@@ -5,7 +5,7 @@
  * frame per LOD tier from the first spawn, and reports what the renderer drew.
  */
 import * as THREE from 'three';
-import { loadLevel } from '@thaikit/level-runtime';
+import { loadLevel } from '@thai-kit/level-runtime';
 
 const params = new URLSearchParams(location.search);
 const url = params.get('level');

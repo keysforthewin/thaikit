@@ -2,7 +2,7 @@
  * The baked level's manifest, read without three: from a parsed glTF scene's
  * userData in the browser, or straight from the GLB's JSON chunk on a server.
  */
-import { ManifestExtras } from '@thaikit/level-schema';
+import { ManifestExtras } from '@thai-kit/level-schema';
 
 const MAGIC = 0x46546c67;
 

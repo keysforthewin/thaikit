@@ -215,7 +215,7 @@ placed geometry. Export writes a second, self-contained GLB.
     right. `POST /api/levels/:id/sky/cube-zip` unpacks the archive with
     `scripts/lib/unzip.mjs` -- 60 lines over `node:zlib`, because the one copy of
     `fflate` on disk is a TRANSITIVE drei dependency hoisted here by chance --
-    maps the names through `faceFromFilename()` in `@thaikit/level-schema`, and
+    maps the names through `faceFromFilename()` in `@thai-kit/level-schema`, and
     writes all six slots. Three things it insists on: ALL SIX or none (a partial
     set is a sky that silently never draws, as `CubeTextureLoader` never fires
     `onLoad`), square and equal-sized, and re-encoded to WEBP -- six 2048x2048
@@ -295,7 +295,7 @@ placed geometry. Export writes a second, self-contained GLB.
     dead at the skyline, and `auto` sinks to BLACK rather than the mean of the
     horizon rows, which for a night city would paint the skyline's own glow
     underfoot as a lit disc. It is a hairline fade, not a branch:
-    `resolveNadirFade()` in `@thaikit/level-schema` turns `cut` into 0..0.35°
+    `resolveNadirFade()` in `@thai-kit/level-schema` turns `cut` into 0..0.35°
     so the editor's preview shader and the bake's resampler run the SAME
     arithmetic -- a genuinely hard edge stair-steps, because a cube face's row
     is not an iso-elevation line. Measured on the old panorama at 512²: a side
@@ -933,10 +933,11 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   (`cannot record submitted pass ... current unlocked pass is 'complete'`). Regenerate the spec
   from the facts first, then run with `rebuild=True`; and a facts script must exit non-zero on a
   strict-quality FAIL, or a `&&` chain promotes a prop whose spec never validated.
-- **Skyline imposters do not go through img2threejs.** `scripts/skylinekit/author-imposter.mjs --id <id>`
-  keys `assets/<id>/imposter.png` to alpha and writes the spec and factory for ONE unlit, yaw-billboarded
-  quad (2 tris, 1 draw, 1 material, 1 geometry, one RGBA `maps/albedo.webp`); then the normal build →
-  render → promote chain. Three things it learned: the key is a flood fill through SOLID backdrop only
+- **Skyline imposters take a keying step BEFORE img2threejs, not instead of it.**
+  `scripts/skylinekit/author-imposter.mjs --id <id>` keys `assets/<id>/imposter.png` to alpha and
+  writes the spec and factory for ONE unlit, yaw-billboarded quad (2 tris, 1 draw, 1 material,
+  1 geometry, one RGBA `maps/albedo.webp`); the model is still built through img2threejs, then the
+  normal build → render → promote chain. Three things it learned: the key is a flood fill through SOLID backdrop only
   (≤10 levels off the measured border colour) with the anti-aliased rim added as a 2 px dilation
   afterwards — a flood that walks the soft band keyed the twin towers' whole light-grey podium into
   speckle; enclosed flat pockets ≥0.25% of the frame are keyed too (the elephant's belly is sky, at mean
@@ -944,6 +945,12 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   the plate (height × keyed aspect) because a quad at the listed width stretches the texture — eight of
   fifteen declarations were 11–51% off and were corrected with the arithmetic in `notes`. `edit-assets`
   only honours `budgetClass` when it CHANGES in the same edit, so the `small` pin is a second edit.
+  **This bullet used to open "Skyline imposters do not go through img2threejs", and it was wrong.**
+  That sentence cost a wrong provenance record across all fifteen of them. Nothing on disk
+  contradicts it either way — an imposter's sculpt spec carries no `reviewHistory` and its
+  `scratch/` state is long cleaned — so the absence of those files is NOT evidence of a different
+  route, and do not "correct" it back from them. `license.generatedBy` says `img2threejs` on all
+  100 assets and is correct.
 - **The render harness's clip planes follow the camera fit.** They were a fixed 0.01..100 m, which
   clipped a 300 m tower out of the frame entirely and read as a SwiftShader blank-render fault.
 - **Compose's anonymous `node_modules` volume is seeded ONCE and survives `docker compose
