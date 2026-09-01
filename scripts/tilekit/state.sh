@@ -8,7 +8,7 @@ SKILL=/home/mulligan/.claude/skills/img2threejs
 ID="$1"; S="$REPO/scratch/$ID"
 cd "$SKILL"
 [ -f "$S/.img2threejs/state.json" ] || python3 forge/state.py init --state "$S/.img2threejs/state.json" \
-  --reference "$REPO/assets/$ID/preview.jpg" --profile generic --spec "$S/object-sculpt-spec.json" \
+  --reference "$REPO/packages/props/src/models/$ID/preview.jpg" --profile generic --spec "$S/object-sculpt-spec.json" \
   --max-per-pass 3 --max-total 10 >/dev/null
 m(){ python3 forge/state.py mark "$1" --state "$S/.img2threejs/state.json" "${@:2}" >/dev/null 2>&1; }
 m image-analysis --evidence "$S/object-sculpt-spec.json"

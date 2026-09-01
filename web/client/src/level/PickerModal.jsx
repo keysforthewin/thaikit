@@ -142,7 +142,8 @@ export function PickerModal({ onClose, onPick }) {
                 {it.stats?.triangles != null && <span className="badge mono">{(it.stats.triangles / 1000).toFixed(1)}k</span>}
                 {it.stats?.drawCalls != null && <span className="badge mono">{it.stats.drawCalls} dc</span>}
                 {it.physics?.enabled && <span className="badge">physics</span>}
-                {it.maps?.length > 0 && !it.maps.every((m) => m.ktx2) && <span className="badge score-mid" title="ships images that are not KTX2">not ktx2</span>}
+                {it.collidersSource === 'hand-tuned' && <span className="badge" title="its collider compound was placed by hand">hand-tuned</span>}
+                {it.override && <span className="badge" title="a local override changes what this pack says about it">override</span>}
                 {!it.supported && <span className="badge score-bad">unsupported</span>}
               </div>
             </div>

@@ -85,9 +85,10 @@ export function PackManagerModal({ onClose, onChanged }) {
                 ) : null}
               </td>
               <td style={{ whiteSpace: 'nowrap' }}>
-                {p.builtin ? <span className="muted">built-in</span> : (
+                {p.editable && <span className="muted" title={`installed from the source tree ${p.tree}; edit its props in the object editor`}>source tree · </span>}
+                {(
                   <>
-                    <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.refresh(p.id))} title="re-resolve the source, download the latest version and rebuild">refresh</button>{' '}
+                    <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.refresh(p.id))} title={p.editable ? 'rebuild every item from the source tree' : 're-resolve the source, download the latest version and rebuild'}>refresh</button>{' '}
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.previews(p.id))} title="re-render every item's thumbnail from the bundles already on disk — nothing is downloaded">previews</button>{' '}
                     <button className="danger" disabled={Boolean(busy)} onClick={() => { if (window.confirm(`Remove ${p.id}?${usedRefs.has(p.id) ? ' The open level uses it; its objects will become orphans.' : ''}`)) start(() => packsApi.remove(p.id)); }}>remove</button>
                   </>

@@ -15,9 +15,13 @@
  * loading (CORS), which is what the importmap in the harness needs.
  *
  * Usage:
- *   node scripts/render-model.mjs --id <id> [--module <file.js>] [--out <dir>]
+ *   node scripts/render-model.mjs --id <id> [--from scratch|pack] [--module <file.js>] [--out <dir>]
  *                                 [--angles 0,90,180,270] [--modes beauty,clay]
  *                                 [--elevation 20]
+ *
+ * `--from` defaults to scratch: this runs during authoring, on the bundle
+ * build-model-module.mjs just wrote. `--from pack` renders the installed pack
+ * bundle instead (packs/@thai-kit/<tag>/<id>/), which is what ships.
  */
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -27,6 +31,7 @@ import puppeteer from 'puppeteer-core';
 import { REPO_ROOT, workDir, toRepoRelative, readRegistry, updateAsset } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
+import { resolveBundle } from './lib/bundle-for.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage } from './lib/budget.mjs';
 
 const SIZE = 1024;
@@ -96,18 +101,16 @@ async function main() {
   if (!modulePath) {
     if (!asset) return fail('need --id or --module');
     exportName = args.export ?? asset.model.export ?? 'createObjectModel';
-    const recorded = asset.model.file;
-    modulePath = recorded
-      ? path.resolve(REPO_ROOT, recorded)
-      : path.join(workDir(id), 'model.bundle.js');
+    try {
+      modulePath = await resolveBundle(id, args.from ?? 'scratch');
+    } catch (err) {
+      return fail(`${err.message}. Run scripts/build-model-module.mjs first.`);
+    }
   }
   try {
     await fs.access(modulePath);
   } catch {
-    return fail(
-      `no built module at ${toRepoRelative(modulePath)}. ` +
-        'Run scripts/build-model-module.mjs first.',
-    );
+    return fail(`no built module at ${toRepoRelative(modulePath)}.`);
   }
 
   const outDir = args.out

@@ -9,9 +9,29 @@ that still says "mesh" means the model.
 
 ## Non-negotiables
 
-- **The artefact is code.** `assets/<id>/model.bundle.js` exports
-  `createObjectModel(spec, options): THREE.Group`. The TypeScript behind it and
-  the sculpt spec behind that ship alongside it. Nothing exports a GLB.
+- **The artefact is code, and the store is a vibe3d-shaped source tree.**
+  `packages/props/src/models/<id>/createObjectModel.ts` builds a `THREE.Group`
+  (it exports both `createObjectModel(spec, options)` and vibe3d's
+  `createModel(options)`); `model.ts` beside it is the vibe3d entry, the sculpt
+  spec and images sit beside those, and **`thaikit.json`** is the asset record
+  that used to be one row of `registry.json`. The CommonJS bundle is a BUILD
+  PRODUCT of the pack installer, at `packs/@thai-kit/<tag>/<id>/model.bundle.js`,
+  never committed and found only through `packItemBundle()`. Nothing exports a GLB.
+- **thaikit's own props are a vibe3d pack, and that is the only way they ship or
+  are consumed.** vibe3d's `meta` schema is `.strict()` (title, description,
+  category, tags, preview, controls, materialSlots, parts, sockets as bare
+  names) and has no extension slot -- verified against their schema, not
+  assumed. But a `files[]` entry can be any file, so `thaikit.json` and
+  `colliders.json` ride in the pack as ordinary files: a consumer's `vibe3d add`
+  installs them verbatim, and thaikit's installer reads them back to fill
+  physics, placement, pivot, destruction groups, budgets, the review score and a
+  hand-tuned compound. The web app has ONE catalogue source, `packs/index.json`;
+  `install-pack.mjs --source tree:packages/props` installs thaikit's kit
+  straight from the tree, and `--refresh-item @thai-kit/<id>` rebuilds one item
+  (promote runs it). An item's `version` hashes its `*.ts` and `maps/*` only, so
+  a metadata edit never invalidates the level editor's prototype cache. Foreign
+  pack items take LOCAL OVERRIDES (physics, placement, hand-tuned colliders,
+  budgets) from the tracked `overrides/<ns>/<name>.json`.
 - **`three` is external, always.** The bundle is CommonJS with a bare
   `require("three")`, and the host page injects its OWN three instance. A second
   copy of three means the factory's `Mesh` is not the renderer's `Mesh` and
@@ -47,9 +67,9 @@ that still says "mesh" means the model.
   `destructionGroup` is design intent — the assemblies the prop must break into,
   empty meaning not breakable — and `promote-model.mjs` checks built against
   declared as an EQUALITY in both directions. A collider is a MEASUREMENT:
-  `scripts/derive-colliders.mjs` evaluates the shipped module under Node,
+  `scripts/derive-colliders.mjs` evaluates the installed pack bundle under Node,
   voxelises its triangles and writes a compound of boxes and cylinders to
-  `assets/<id>/colliders.json` in root-local metres, with `scale` as half-extents.
+  `packages/props/src/models/<id>/colliders.json` in root-local metres, with `scale` as half-extents.
   The old `collider: 'box' | 'cylinder' | 'convex' | 'none'` enum is gone: it
   published one word to consumers, the harness discarded the shapes and kept the
   names, and the gate could only assert the count was not zero — so a hundred
@@ -81,12 +101,16 @@ that still says "mesh" means the model.
   drawer's separate **pivots** and **sockets** toggles carry their counts, which is
   the fastest way to see both a marker in the wrong place and a static prop that
   was given axes nothing will ever turn.
-- **One reference image per prop, never a turnaround.** `assets/<id>/preview.jpg`,
+- **One reference image per prop, never a turnaround.** `packages/props/src/models/<id>/preview.jpg`,
   recorded as `image`. `thaikit-preview-image` is the only thing that writes it;
   everything downstream consumes it.
-- **Never write `registry.json` directly.** Always go through
-  `@thaikit/registry-core`, which holds the lock the web UI also respects. A
-  direct write will be silently lost or will corrupt a concurrent one.
+- **Never write a `thaikit.json` directly.** Always go through
+  `@thaikit/registry-core`, which holds ONE directory lock
+  (`packages/props/src/models/.lock`) the web UI also respects, and whose
+  `updateRegistry` diffs and writes only the records that changed -- so
+  `updateAsset` touches one file. A direct write will be silently lost or will
+  corrupt a concurrent one. A record whose `schemaVersion` is not the current one,
+  or whose `id` disagrees with its directory, is refused by name.
 
 ## The level editor, packs, bake and runtime
 
@@ -805,8 +829,8 @@ placed geometry. Export writes a second, self-contained GLB.
 
 ## Layout
 
-- `packages/registry-core/` — schema, lock, atomic write, ETag. Imported by the
-  server *and* the host-side skills. The shared import is the interface between
+- `packages/registry-core/` — schema, the per-item store under one lock, atomic
+  write, ETag. Imported by the server *and* the host-side skills. The shared import is the interface between
   them; there is deliberately no HTTP write path for generation.
 - `scripts/` — the engine. One JSON line on stdout, human logs on stderr.
 - `web/` — Express + Vite/React on port 3733.
@@ -828,12 +852,14 @@ placed geometry. Export writes a second, self-contained GLB.
 
 `thaikit-model` is thin by design: it checks the gates, composes a prompt, and
 invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
-`render-model.mjs` (puppeteer) → `promote-model.mjs` → `build-registry.mjs`.
+`render-model.mjs` (puppeteer) → `promote-model.mjs`, which ends by refreshing
+the prop's `@thai-kit` pack item. `build-vibe3d-registry.mjs` is the PUBLISH step.
 
 ## Conventions
 
 - ES modules everywhere, Node ≥ 22, no build step for server or scripts.
-- Registry paths are **repo-relative with POSIX separators**, so the same file
+- Paths in a `thaikit.json` are **repo-relative with POSIX separators**
+  (`packages/props/src/models/<id>/...` or `scratch/...`), so the same record
   works on the host and inside the container.
 - Scripts take paths and URLs as arguments. Generation calls fal only through
   the `fal-ai` MCP server or through img2threejs's own `--provider fal` — there
@@ -975,11 +1001,13 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   shows a shrine wider than deep and the declared 10 x 12 makes it deeper than wide. Where the
   residual is the DECLARED aspect ratio rather than the build, say so with the arithmetic:
   re-normalising by width instead of height turned the mosque's 0.269 mean divergence into 1.6%.
-- **`build-model-module.mjs` builds from `scratch/<id>/src`, not from `assets/<id>/src`, and writes
+- **`build-model-module.mjs` builds from `scratch/<id>/src`, not from the tree, and writes
   to `scratch/<id>/model.bundle.js`.** Editing a promoted asset's shipped TypeScript and rebuilding
   does nothing at all — it recompiles the old scratch source over the old scratch bundle, and the
   comparison that "proves" the shipped file is unchanged is comparing a file nothing wrote to. Emit
-  into scratch, build, then promote; promote is what copies source, bundle and spec into `assets/`.
+  into scratch, build, then promote; promote is what copies source and spec into the tree and then
+  refreshes the pack item, which is the only place a shipped bundle exists. A hand edit to a tree
+  `createObjectModel.ts` is picked up by the server's watcher, which runs the same refresh.
 - **Meshy's fal endpoint refuses some innocuous plates as `422 content_policy_violation`** (the
   sleeping soi dog, twice), and `--fal-arg enable_safety_checker=false` is echoed back as `true` —
   the endpoint forces it. There is then no proxy and no band table: build from the plate alone,
@@ -1041,7 +1069,7 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   from the facts first, then run with `rebuild=True`; and a facts script must exit non-zero on a
   strict-quality FAIL, or a `&&` chain promotes a prop whose spec never validated.
 - **Skyline imposters take a keying step BEFORE img2threejs, not instead of it.**
-  `scripts/skylinekit/author-imposter.mjs --id <id>` keys `assets/<id>/imposter.png` to alpha and
+  `scripts/skylinekit/author-imposter.mjs --id <id>` keys `packages/props/src/models/<id>/imposter.png` to alpha and
   writes the spec and factory for ONE unlit, yaw-billboarded quad (2 tris, 1 draw, 1 material,
   1 geometry, one RGBA `maps/albedo.webp`); the model is still built through img2threejs, then the
   normal build → render → promote chain. Three things it learned: the key is a flood fill through SOLID backdrop only

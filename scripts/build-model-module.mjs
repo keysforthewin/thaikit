@@ -23,14 +23,16 @@
  *
  * Usage:
  *   node scripts/build-model-module.mjs --id <id> [--src <entry.ts>] [--out <file>]
- *   node scripts/build-model-module.mjs --src <entry.ts> --out <file>   (no registry write)
+ *   node scripts/build-model-module.mjs --src <entry.ts> --out <file>
+ *
+ * Writes nothing to the asset record: the bundle is a build product. The
+ * scratch bundle is what render-model.mjs and the img2threejs gates read during
+ * authoring; the one that ships is the pack installer's, made at promotion.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import {
-  ASSETS_DIR, SCRATCH_DIR, assetDir, workDir, toRepoRelative, updateAsset,
-} from '@thaikit/registry-core';
+import { workDir, toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { buildModule } from './lib/bundle.mjs';
@@ -90,18 +92,6 @@ async function main() {
   log(`out    : ${toRepoRelative(outFile)} (${(built.bytes / 1024).toFixed(1)} KB)`);
   log(`sources: ${built.inputs.length}`);
 
-  // Only record it when the bundle landed somewhere the registry can point at.
-  // A --src/--out one-off (the smoke test) must not touch the registry.
-  const inTree = outFile.startsWith(ASSETS_DIR) || outFile.startsWith(SCRATCH_DIR);
-  if (id && inTree) {
-    await updateAsset(id, (asset) => {
-      asset.model.file = toRepoRelative(outFile);
-      asset.model.source = toRepoRelative(entry);
-      asset.model.fileBytes = built.bytes;
-      return asset;
-    });
-  }
-
   return ok({
     id: id ?? null,
     entry: toRepoRelative(entry),
@@ -109,7 +99,6 @@ async function main() {
     bytes: built.bytes,
     sources: built.inputs,
     warnings: built.warnings,
-    recorded: Boolean(id && inTree),
   });
 }
 

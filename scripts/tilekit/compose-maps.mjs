@@ -56,7 +56,7 @@ const SUBSTRATE_METRES = 4;
  * measured mean rather than a tint, so the substrate's own variation survives it.
  *
  * Measured with scripts/tilekit/sample-palette.mjs against
- * assets/road-straight-tile/preview.jpg, and verified with crop-overlay.mjs that
+ * packages/props/src/models/road-straight-tile/preview.jpg, and verified with crop-overlay.mjs that
  * each crop sits on the surface it claims -- the first sidewalk crop landed on
  * asphalt and would have carried the road's tone onto the pavement.
  */
@@ -66,7 +66,7 @@ export const PALETTE = {
   // crop 0.10,0.36,0.22,0.44 -- the left sidewalk slab top, clear of the kerb face
   sidewalk: { target: [210, 195, 175], from: [207, 208, 206] },
   // crop 0.44,0.40,0.58,0.52 -- the alley paving between the two lid runs, on
-  // assets/soi-alley-straight-tile/preview.jpg. Its slabs are markedly warmer and
+  // packages/props/src/models/soi-alley-straight-tile/preview.jpg. Its slabs are markedly warmer and
   // dirtier than the road's sidewalk; the substrate came back near-white, which
   // read as fresh concrete rather than a back lane.
   alley:    { target: [152, 139, 119], from: [201, 203, 200] },

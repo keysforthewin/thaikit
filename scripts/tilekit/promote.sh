@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Walk the on-disk state, promote, then check for coplanar pairs on the PROMOTED bundle
-# (check-coplanar reads assets/, so it can only run after promotion).
+# (check-coplanar reads the installed pack bundle, so it can only run after promotion).
 set -u
 REPO=/home/mulligan/code/thaikit
 for ID in "$@"; do

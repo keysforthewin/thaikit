@@ -1,8 +1,7 @@
 const mb = (n) => `${(n / 1048576).toFixed(1)} MB`;
 
-export function StatsHud({ stats, onOpenTextures, shippingNotKtx2 = 0 }) {
+export function StatsHud({ stats, onOpenTextures }) {
   if (!stats) return null;
-  const nonKtx = shippingNotKtx2;
   const cells = [...stats.cells.values()];
   const worst = cells.reduce((m, c) => Math.max(m, c.mergedDrawCalls), 0);
   return (
@@ -12,11 +11,6 @@ export function StatsHud({ stats, onOpenTextures, shippingNotKtx2 = 0 }) {
       </div>
       <div onClick={onOpenTextures} style={{ cursor: 'pointer' }} title="every texture in the level">
         {stats.textures} textures · {mb(stats.gpuBytes)} VRAM
-        {nonKtx > 0 && (
-          <span className="score-mid" title="assets in this level that ship image files with no KTX2 sibling — click to compress them" onClick={onOpenTextures} style={{ cursor: 'pointer' }}>
-            {' '}· ⚠ {nonKtx} asset{nonKtx === 1 ? '' : 's'} not KTX2
-          </span>
-        )}
       </div>
       <div className="muted">
         {cells.length} cell{cells.length === 1 ? '' : 's'}{cells.length ? ` · worst ${worst} dc after merge` : ''}

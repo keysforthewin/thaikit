@@ -3,7 +3,7 @@
  *  confidence score gave it away; a picture is cheaper than that. */
 import sharp from 'sharp';
 const [, , id, out, ...regions] = process.argv;
-const src = `assets/${id}/preview.jpg`;
+const src = `packages/props/src/models/${id}/preview.jpg`;
 const { width, height } = await sharp(src).metadata();
 const COLORS = ['#ff0055', '#00ff88', '#ffcc00', '#00ccff', '#ff8800', '#cc66ff', '#ffffff', '#ff2222'];
 const rects = regions.map((spec, i) => {

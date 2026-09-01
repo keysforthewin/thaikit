@@ -3,10 +3,19 @@
  * Move a finished build out of scratch/ and into the kit.
  *
  * scratch/ is gitignored, so until this runs the only copy of a shipped prop
- * lives in a directory nobody backs up. Three things move: the built browser
- * module, the TypeScript it was generated from, and the sculpt spec behind
- * that. The spec matters most -- it is what a later refinement edits, and
- * generated code must never be the only copy of a reconstruction decision.
+ * lives in a directory nobody backs up. What moves into
+ * packages/props/src/models/<id>/ is SOURCE: the TypeScript factory, the sculpt
+ * spec behind it, the authored maps and the thumbnail -- plus `model.ts`, the
+ * vibe3d entry emitted beside the factory. The spec matters most -- it is what
+ * a later refinement edits, and generated code must never be the only copy of a
+ * reconstruction decision.
+ *
+ * The BUNDLE does not move. It is a build product: once the source is in the
+ * tree this spawns the pack installer's per-item refresh, which bundles, probes
+ * and photographs the prop into packs/@thai-kit/<tag>/<id>/ -- the one bundle
+ * every Node-side gate and both editors read. The scratch bundle is still
+ * constructed under Node first, so a factory that will not build headlessly is
+ * refused before anything is copied.
  *
  * The browse thumbnail is the hero render resized, so the tile in the grid is
  * literally the frame the review looked at.
@@ -20,18 +29,22 @@
  * Usage:
  *   node scripts/promote-model.mjs --id <id> [--from <scratchdir>] [--thumb-size 512]
  *                                  [--allow-over-budget] [--allow-contract-drift] [--allow-no-colliders]
+ *                                  [--no-pack-refresh]
  */
 import fs from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
 
 import sharp from 'sharp';
 import {
-  assetDir, workDir, toRepoRelative, readRegistry, updateAsset,
+  modelDir, workDir, toRepoRelative, readRegistry, updateAsset, REPO_ROOT,
 } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
+import { entrySource } from './lib/vibe3d-entry.mjs';
+import { THAIKIT_PACK } from './lib/bundle-for.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict, colliderVerdict } from './lib/budget.mjs';
 import { readSkillReview } from './lib/review.mjs';
 
@@ -200,7 +213,7 @@ async function main() {
   }
 
   const from = args.from ? path.resolve(args.from) : workDir(id);
-  const to = assetDir(id);
+  const to = modelDir(id);
   await fs.mkdir(to, { recursive: true });
 
   const bundleFrom = path.join(from, 'model.bundle.js');
@@ -223,10 +236,11 @@ async function main() {
   log('node   : module constructs headlessly');
 
   const moved = {};
-  moved.file = await copyIfPresent(bundleFrom, path.join(to, 'model.bundle.js'));
+  // Flattened: the tree is vibe3d-shaped, one directory per prop with the
+  // factory and its entry side by side. No bundle is copied -- see the header.
   moved.source = await copyIfPresent(
     path.join(from, 'src/createObjectModel.ts'),
-    path.join(to, 'src/createObjectModel.ts'),
+    path.join(to, 'createObjectModel.ts'),
   );
   moved.spec = await copyIfPresent(
     path.join(from, 'object-sculpt-spec.json'),
@@ -294,7 +308,17 @@ async function main() {
   }
   if (!thumb) log('warn   : no render to make a thumbnail from; the grid will fall back to the plate');
 
-  const bytes = (await fs.stat(moved.file)).size;
+  // The vibe3d entry beside the factory: what a consumer's `vibe3d add` imports
+  // and what the pack installer bundles. Regenerated on every promotion so it
+  // always matches the look-dev helpers the factory currently exports; the
+  // exporter refuses a stale one rather than silently shipping it.
+  let entryFile = null;
+  if (moved.source) {
+    const source = await fs.readFile(moved.source, 'utf8');
+    entryFile = path.join(to, 'model.ts');
+    await fs.writeFile(entryFile, entrySource(asset, source, mapEntries.length > 0), 'utf8');
+    log(`entry  : ${toRepoRelative(entryFile)}`);
+  }
 
   // The skill's own verdict, carried across at the moment the prop enters the
   // kit. thaikit does not judge models -- it reads the judgement img2threejs
@@ -317,12 +341,10 @@ async function main() {
   }
 
   await updateAsset(id, (a) => {
-    a.model.file = toRepoRelative(moved.file);
     a.model.source = moved.source ? toRepoRelative(moved.source) : a.model.source;
     a.model.spec = moved.spec ? toRepoRelative(moved.spec) : a.model.spec;
     a.model.thumb = thumb ? toRepoRelative(thumb) : a.model.thumb;
     a.model.maps = mapEntries;
-    a.model.fileBytes = bytes;
     // img2threejs's state file stays in scratch/: it is a resume index, not a
     // shipped artefact, and pointing at it keeps a rebuild resumable.
     a.model.state = toRepoRelative(path.join(from, '.img2threejs/state.json'));
@@ -332,13 +354,54 @@ async function main() {
     return a;
   });
 
+  // The bundle that ships. The pack installer builds it from the tree, probes
+  // it under Node (the second headless construct, on the file the gates read),
+  // photographs it, and records the item in packs/index.json. `--add` because a
+  // first promotion has no item to replace. Its JSON line carries the bytes.
+  let pack = null;
+  if (args['no-pack-refresh']) {
+    log(`pack   : skipped on --no-pack-refresh; run node scripts/install-pack.mjs --refresh-item ${THAIKIT_PACK}/${id} --add`);
+  } else {
+    log(`pack   : refreshing ${THAIKIT_PACK}/${id}`);
+    let line;
+    try {
+      line = execFileSync(
+        process.execPath,
+        ['scripts/install-pack.mjs', '--refresh-item', `${THAIKIT_PACK}/${id}`, '--add'],
+        { cwd: REPO_ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
+      );
+    } catch (err) {
+      return fail(`pack refresh failed for ${THAIKIT_PACK}/${id}: ${err.stdout?.trim() || err.message}`);
+    }
+    let result;
+    try {
+      result = JSON.parse(line.trim().split('\n').pop());
+    } catch {
+      return fail(`pack refresh printed no JSON result line:\n${line}`);
+    }
+    if (!result.ok || !result.item?.supported) {
+      return fail(
+        `${asset.name} does not construct in the pack build: ${result.item?.error ?? result.error ?? 'unknown'}. ` +
+          'The source is in the tree but no bundle ships until this is fixed.',
+      );
+    }
+    pack = result.item;
+    if (pack.bytes != null) {
+      await updateAsset(id, (a) => {
+        a.model.fileBytes = pack.bytes;
+        return a;
+      });
+    }
+    log(`pack   : ${pack.bundle ?? '(bundle)'} (${pack.bytes != null ? `${(pack.bytes / 1024).toFixed(1)} KB` : 'size unknown'}, version ${pack.version ?? '?'})`);
+  }
+
   return ok({
     id,
-    file: toRepoRelative(moved.file),
     source: moved.source ? toRepoRelative(moved.source) : null,
+    entry: entryFile ? toRepoRelative(entryFile) : null,
     spec: moved.spec ? toRepoRelative(moved.spec) : null,
     thumb: thumb ? toRepoRelative(thumb) : null,
-    bytes,
+    pack,
   });
 }
 

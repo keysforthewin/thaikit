@@ -71,9 +71,12 @@ export function describeClassBriefly(name, budget) {
  */
 export function budgetRows(asset, classes) {
   const base = classes?.[asset.budgetClass] ?? {};
-  const model = asset.model ?? {};
+  // Either shape: an asset record (`asset.targetTriangles`, `asset.model.triangles`)
+  // or a catalogue item (`asset.budget.targetTriangles`, `asset.stats.triangles`).
+  const model = asset.model ?? asset.stats ?? {};
   return BUDGET_AXES.map(({ key, measured, label }) => {
-    const limit = asset[key] ?? base[key] ?? null;
+    const own = asset[key] ?? asset.budget?.[key] ?? null;
+    const limit = own ?? base[key] ?? null;
     const value = model[measured] ?? null;
     return {
       key,
@@ -81,7 +84,7 @@ export function budgetRows(asset, classes) {
       limit,
       measured: value,
       /** True only when the asset overrides its class -- worth showing as such. */
-      overridden: asset[key] != null,
+      overridden: own != null,
       over: limit != null && value != null && value > limit,
     };
   });

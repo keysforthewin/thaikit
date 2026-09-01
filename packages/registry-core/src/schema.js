@@ -7,7 +7,13 @@
  */
 import { z } from 'zod';
 
-export const SCHEMA_VERSION = 5;
+/**
+ * Version of the on-disk record. Bumped to 6 when `registry.json` became one
+ * `thaikit.json` per prop under packages/props/src/models/: every path field
+ * moved and `model.file` went away, so a v5 record is refused rather than
+ * re-read with paths that point at a deleted tree.
+ */
+export const SCHEMA_VERSION = 6;
 
 /** A stage that generation moves through. Every stage tracks its own state. */
 export const StageState = z.enum([
@@ -177,7 +183,7 @@ const Runtime = z.object({
  * taken with a pair of eyes, and the script cannot see what they saw.
  */
 const ColliderSummary = z.object({
-  /** assets/<id>/colliders.json, repo-relative POSIX. Null means never derived. */
+  /** packages/props/src/models/<id>/colliders.json, repo-relative POSIX. Null means never derived. */
   file: z.string().nullable().default(null),
   parts: z.number().int().nonnegative().default(0),
   handTuned: z.boolean().default(false),
@@ -329,45 +335,39 @@ const TextureMap = z.object({
   /** Material id in object-sculpt-spec.json that this map belongs to. */
   material: z.string().min(1),
   role: MapRole,
-  /** Repo-relative: assets/<id>/maps/<file>. */
+  /** Repo-relative: packages/props/src/models/<id>/maps/<file>. */
   file: z.string().min(1),
   bytes: z.number().int().nonnegative().nullable().default(null),
   width: z.number().int().positive().nullable().default(null),
   height: z.number().int().positive().nullable().default(null),
-  /**
-   * A GPU-compressed sibling of `file`, written by scripts/compress-maps.mjs.
-   * The webp stays the source of truth; `sourceSha256` says which webp this
-   * was made from, so a regenerated map reads as stale rather than current.
-   */
-  ktx2: z
-    .object({
-      file: z.string().min(1),
-      mode: z.enum(['uastc', 'etc1s']),
-      bytes: z.number().int().nonnegative(),
-      sourceSha256: z.string(),
-      generatedAt: z.string(),
-    })
-    .nullable()
-    .default(null),
 });
 
 const Model = ModelStats.extend({
   status: StageState.default('pending'),
-  /** Built browser module: assets/<id>/model.bundle.js */
-  file: z.string().nullable().default(null),
-  /** Authored TypeScript factory: assets/<id>/src/createObjectModel.ts */
+  /**
+   * Authored TypeScript factory: packages/props/src/models/<id>/createObjectModel.ts
+   *
+   * There is no `file` (bundle) field any more. The CommonJS bundle is a BUILD
+   * PRODUCT of the pack installer, at packs/@thai-kit/<tag>/<id>/model.bundle.js,
+   * found through `packItemBundle()` -- the buildTag is in that path, which is
+   * exactly why the record must not carry it.
+   */
   source: z.string().nullable().default(null),
-  /** The sculpt spec behind it: assets/<id>/object-sculpt-spec.json */
+  /** The sculpt spec behind it: packages/props/src/models/<id>/object-sculpt-spec.json */
   spec: z.string().nullable().default(null),
   /** img2threejs's checklist state, left in scratch/ for a resume. */
   state: z.string().nullable().default(null),
-  /** Named export the bundle exposes. */
+  /**
+   * Named export of the factory in `source`, and of the scratch bundle the
+   * harness renders during authoring. The installed pack wrapper always
+   * normalises to `createObjectModel` regardless.
+   */
   export: z.string().default('createObjectModel'),
   /** Browse-grid thumbnail, rendered from the built module. */
   thumb: z.string().nullable().default(null),
   /**
-   * Authored PBR maps shipped in assets/<id>/maps/. Empty for a fully
-   * procedural prop, which is most of them.
+   * Authored PBR maps shipped in packages/props/src/models/<id>/maps/. Empty
+   * for a fully procedural prop, which is most of them.
    */
   maps: z.array(TextureMap).default([]),
   runtime: Runtime.default({}),
@@ -381,7 +381,11 @@ const Model = ModelStats.extend({
 });
 
 export const AssetSchema = z.object({
-  /** Slug. Immutable, unique, and the folder name under assets/. */
+  /**
+   * Slug. Immutable, unique, the folder name under packages/props/src/models/
+   * and the vibe3d item name. The store refuses a record whose id disagrees
+   * with its directory.
+   */
   id: z
     .string()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'id must be a lowercase kebab-case slug'),
@@ -479,6 +483,30 @@ export const RegistrySchema = z.object({
   license: z.string().default('MIT'),
   assets: z.array(AssetSchema).default([]),
 });
+
+/**
+ * One record as it sits on disk (`thaikit.json`): the asset plus the version
+ * of the schema that wrote it. `AssetSchema` is the in-memory shape and has no
+ * such field. The literal is the point: zod strips unknown keys, so without it
+ * a v5 record with `assets/...` paths would parse clean.
+ */
+export const AssetFileSchema = AssetSchema.extend({
+  schemaVersion: z.literal(SCHEMA_VERSION),
+});
+
+/**
+ * The one "does this prop ship" predicate: promoted, visible, not quarantined.
+ * Used by the pack export, the collider batch and the catalogue alike, so that
+ * a prop cannot ship in one and be missing from another.
+ */
+export function shipsAsset(asset) {
+  return (
+    !asset.hidden &&
+    asset.model?.status === 'done' &&
+    Boolean(asset.model?.source) &&
+    !asset.model?.quarantine
+  );
+}
 
 export function emptyRegistry() {
   return {

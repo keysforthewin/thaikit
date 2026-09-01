@@ -1,7 +1,7 @@
 /**
  * Path resolution and traversal guards.
  *
- * Every path stored in the registry is repo-relative with POSIX separators, so
+ * Every path stored in an asset record is repo-relative with POSIX separators, so
  * the same registry works on the host and inside the container (where the repo
  * is bind-mounted at a different absolute path).
  */
@@ -14,11 +14,19 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT =
   process.env.THAIKIT_REPO_ROOT || path.resolve(here, '../../..');
 
-export const REGISTRY_PATH =
-  process.env.THAIKIT_REGISTRY_PATH || path.join(REPO_ROOT, 'registry.json');
+/**
+ * The published prop kit, `@thai-kit/props`, and the source tree inside it.
+ *
+ * One directory per prop under `src/models/<id>/`, laid out the way vibe3d's
+ * own kits are: the factory (`createObjectModel.ts`), its vibe3d entry
+ * (`model.ts`), the images beside them, and `thaikit.json` -- the asset record
+ * that used to be one row of `registry.json`. The tree IS the registry; the
+ * vibe3d `dist/registry.json` is built from it and never read back.
+ */
+export const PROPS_PKG_DIR = path.join(REPO_ROOT, 'packages', 'props');
 
-export const ASSETS_DIR =
-  process.env.THAIKIT_ASSETS_DIR || path.join(REPO_ROOT, 'assets');
+export const MODELS_DIR =
+  process.env.THAIKIT_MODELS_DIR || path.join(PROPS_PKG_DIR, 'src', 'models');
 
 export const SCRATCH_DIR =
   process.env.THAIKIT_SCRATCH_DIR || path.join(REPO_ROOT, 'scratch');
@@ -50,9 +58,19 @@ export function safeResolve(root, candidate) {
   return resolved;
 }
 
-/** Where a given asset's files live. */
-export function assetDir(id) {
-  return safeResolve(ASSETS_DIR, id);
+/** Where a given asset's files live: packages/props/src/models/<id>/. */
+export function modelDir(id) {
+  return safeResolve(MODELS_DIR, id);
+}
+
+/** The asset record itself. Never hand-edit: go through `updateAsset`. */
+export function assetFile(id) {
+  return path.join(modelDir(id), 'thaikit.json');
+}
+
+/** The derived (or hand-tuned) physics compound beside it. */
+export function collidersFile(id) {
+  return path.join(modelDir(id), 'colliders.json');
 }
 
 /**

@@ -33,17 +33,33 @@ export async function writeFileAtomic(filePath, contents) {
   }
 }
 
-/** Remove temp files orphaned by a killed writer. Called on server boot. */
-export async function sweepTempFiles(filePath) {
-  const dir = path.dirname(filePath);
-  const prefix = `${path.basename(filePath)}.tmp-`;
-  const entries = await fs.readdir(dir).catch(() => []);
+/**
+ * Remove temp files orphaned by a killed writer. Called on server boot.
+ *
+ * Given a FILE, sweeps `<file>.tmp-*` beside it. Given the models DIRECTORY,
+ * sweeps `<dir>/*.tmp-*` and every `<dir>/<id>/*.tmp-*` -- one level down,
+ * which is where every `thaikit.json` and `colliders.json` lives.
+ */
+export async function sweepTempFiles(target) {
+  const stat = await fs.stat(target).catch(() => null);
   const swept = [];
-  for (const entry of entries) {
-    if (entry.startsWith(prefix)) {
-      await fs.unlink(path.join(dir, entry)).catch(() => {});
-      swept.push(entry);
+  const sweepDir = async (dir, prefix) => {
+    const entries = await fs.readdir(dir).catch(() => []);
+    for (const entry of entries) {
+      if (entry.startsWith(prefix) && /\.tmp-\d+-[0-9a-f]+$/.test(entry)) {
+        await fs.unlink(path.join(dir, entry)).catch(() => {});
+        swept.push(path.join(dir, entry));
+      }
     }
+  };
+  if (stat?.isDirectory()) {
+    await sweepDir(target, '');
+    const entries = await fs.readdir(target, { withFileTypes: true }).catch(() => []);
+    for (const entry of entries) {
+      if (entry.isDirectory() && !entry.name.startsWith('.')) await sweepDir(path.join(target, entry.name), '');
+    }
+    return swept;
   }
+  await sweepDir(path.dirname(target), `${path.basename(target)}.tmp-`);
   return swept;
 }

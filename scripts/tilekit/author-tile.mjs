@@ -196,7 +196,7 @@ function factory(id, asset, tile) {
   const nodes = sign ? 4 : 2;
   // No colliders on sculptRuntime any more. A tile's physics compound is derived
   // from the built geometry by scripts/derive-colliders.mjs and lives in
-  // assets/<id>/colliders.json -- the names emitted here carried no extents and
+  // packages/props/src/models/<id>/colliders.json -- the names emitted here carried no extents and
   // nothing ever read them.
   const colliders = '[]';
 

@@ -394,7 +394,7 @@ export function Viewer({ url, version, exportName, colliders: parts, onColliders
   });
 
   /**
-   * A rebuilt prop always lands at the SAME path (`assets/<id>/model.bundle.js`),
+   * A rebuilt prop always lands at the SAME path (`packs/@thai-kit/<tag>/<id>/model.bundle.js`),
    * so without a version in the URL the browser serves the old bytes from its
    * own cache and the new build appears only after a full reload. `no-cache` on
    * the static mount does not help with a cache that sits in front of fetch.

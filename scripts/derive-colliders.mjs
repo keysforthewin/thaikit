@@ -3,7 +3,7 @@
  * Derive a prop's physics compound from the geometry it actually ships.
  *
  * The output is a handful of boxes and cylinders in root-local metres, written
- * to assets/<id>/colliders.json, that approximate the prop's OUTER SHELL closely
+ * to packages/props/src/models/<id>/colliders.json, that approximate the prop's OUTER SHELL closely
  * enough that a player can walk up to it and stand on its ledges. Cheap by
  * construction: this kit targets low-end PCs, so a compound is 1-8 parts, never
  * a trimesh.
@@ -75,11 +75,12 @@ import {
   readRegistry,
   updateAsset,
   writeFileAtomic,
-  assetDir,
+  collidersFile, shipsAsset,
   toRepoRelative,
 } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
+import { resolveBundle } from './lib/bundle-for.mjs';
 import {
   RECORD_SCHEMA_VERSION,
   GENERATOR_VERSION,
@@ -92,8 +93,11 @@ import {
 
 export { RECORD_SCHEMA_VERSION };
 
-async function run(asset, opts) {
-  const file0 = path.join(assetDir(asset.id), 'colliders.json');
+async function run(asset, baseOpts) {
+  // The geometry measured is the bundle that SHIPS: the pack installer's build
+  // under packs/@thai-kit/, or the scratch bundle with --from scratch.
+  const opts = { ...baseOpts, bundle: await resolveBundle(asset.id, baseOpts.from) };
+  const file0 = collidersFile(asset.id);
   const existing = existsSync(file0) ? JSON.parse(readFileSync(file0, 'utf8')) : null;
 
   // --measure keeps the parts exactly as they are and only records what the rays
@@ -121,7 +125,7 @@ async function run(asset, opts) {
 }
 
 async function writeRecord(asset, existing, { record, meta }, opts, { measuring }) {
-  const file = path.join(assetDir(asset.id), 'colliders.json');
+  const file = collidersFile(asset.id);
   const relative = toRepoRelative(file);
 
   const doc = measuring
@@ -213,7 +217,7 @@ async function main() {
   const registry = await readRegistry();
 
   const opts = {
-    from: args.from ?? 'assets',
+    from: args.from ?? 'pack',
     maxParts: args['max-parts'] ? Number(args['max-parts']) : null,
     voxel: args.voxel ?? 'auto',
     maxCells: Number(args['max-cells'] ?? 6e6),
@@ -233,11 +237,11 @@ async function main() {
   };
 
   const targets = args.all
-    ? registry.assets.filter((a) => a.model?.file)
+    ? registry.assets.filter(shipsAsset)
     : registry.assets.filter((a) => a.id === args.id);
 
   if (!targets.length) {
-    return fail(args.all ? 'no assets have a built module' : `no asset with id "${args.id}"`);
+    return fail(args.all ? 'no assets ship' : `no asset with id "${args.id}"`);
   }
 
   const results = [];

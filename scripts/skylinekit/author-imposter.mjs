@@ -34,7 +34,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 import sharp from 'sharp';
-import { readRegistry, assetDir, workDir, toRepoRelative, REPO_ROOT } from '@thaikit/registry-core';
+import { readRegistry, modelDir, workDir, toRepoRelative, REPO_ROOT } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from '../lib/out.mjs';
 
@@ -220,7 +220,7 @@ function spec(asset, quad, key, mapFile) {
           confidence: 0.95,
           estimatedFidelity: 0.95,
           verdict: 'pass',
-          source: `${toRepoRelative(path.join(assetDir(asset.id), 'imposter.png'))} keyed to alpha by flood fill from the border against measured backdrop rgb(${key.backdrop.join(',')})`,
+          source: `${toRepoRelative(path.join(modelDir(asset.id), 'imposter.png'))} keyed to alpha by flood fill from the border against measured backdrop rgb(${key.backdrop.join(',')})`,
           maps: {
             albedo: { url: mapFile, channel: 'albedo', source: 'skylinekit-key' },
           },
@@ -246,7 +246,7 @@ function spec(asset, quad, key, mapFile) {
     },
     imposter: {
       billboard: 'yaw',
-      plate: toRepoRelative(path.join(assetDir(asset.id), 'imposter.png')),
+      plate: toRepoRelative(path.join(modelDir(asset.id), 'imposter.png')),
       key: { backdrop: key.backdrop, solidBelow: KEY_SOLID, edgeAbove: KEY_EDGE, keyedFraction: Number(key.keyedFraction.toFixed(4)), enclosedPockets: key.pockets },
       silhouette: { bbox: key.bbox, aspect: Number(key.aspect.toFixed(4)) },
       texture: key.texture,
@@ -386,7 +386,7 @@ async function main() {
   if (!asset) return fail(`no asset with id ${id}`);
   if (!asset.tags.includes('imposter')) return fail(`${id} is not tagged imposter; this route is for skyline imposters only`);
 
-  const plate = path.join(assetDir(id), 'imposter.png');
+  const plate = path.join(modelDir(id), 'imposter.png');
   try { await fs.access(plate); } catch { return fail(`${toRepoRelative(plate)} is missing: the raw plate is the texture and must be kept beside the asset`); }
 
   const work = workDir(id);

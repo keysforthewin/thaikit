@@ -1,9 +1,5 @@
 import express from 'express';
 import fs from 'node:fs/promises';
-import path from 'node:path';
-import { createHash } from 'node:crypto';
-import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
 import {
@@ -13,8 +9,11 @@ import {
   AssetSchema,
   etagFor,
   etagForAsset,
-  assetDir,
+  modelDir,
+  assetFile,
 } from '@thaikit/registry-core';
+
+import { afterTreeEdit } from '../lib/refresh.js';
 
 /** What a client may send when creating an asset; the server fills the rest. */
 const CreateInput = z.object({
@@ -137,54 +136,9 @@ function guardReadOnly(state) {
   };
 }
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const COMPRESS_SCRIPT = path.resolve(here, '../../../../scripts/compress-maps.mjs');
-
-/** current | stale | null per shipped map: is there a KTX2 made from THIS webp? */
-async function ktx2Status(asset) {
-  const maps = [];
-  for (const m of asset.model?.maps ?? []) {
-    let status = null;
-    if (m.ktx2) {
-      try {
-        const bytes = await fs.readFile(path.resolve(here, '../../../..', m.file));
-        const sha = createHash('sha256').update(bytes).digest('hex');
-        status = sha === m.ktx2.sourceSha256 ? 'current' : 'stale';
-      } catch { status = 'stale'; }
-    }
-    maps.push({ role: m.role, file: m.file, ktx2: status, ktx2File: m.ktx2?.file ?? null, bytes: m.bytes ?? null, ktx2Bytes: m.ktx2?.bytes ?? null });
-  }
-  return maps;
-}
-
 export function assetsRouter(state) {
   const router = express.Router();
 
-  router.get('/assets/:id/ktx2-status', async (req, res, next) => {
-    try {
-      const registry = await readRegistry();
-      const asset = registry.assets.find((a) => a.id === req.params.id);
-      if (!asset) return res.status(404).json({ error: `no asset with id "${req.params.id}"` });
-      res.json({ id: asset.id, maps: await ktx2Status(asset) });
-    } catch (err) { next(err); }
-  });
-
-  /** Runs scripts/compress-maps.mjs for one asset; answers when it is done. */
-  router.post('/assets/:id/compress-maps', async (req, res, next) => {
-    if (state.readOnly) return res.status(503).json({ error: 'registry is read-only', reason: state.readOnlyReason });
-    try {
-      const child = spawn(process.execPath, [COMPRESS_SCRIPT, '--id', req.params.id], { env: process.env });
-      let out = '';
-      let err = '';
-      child.stdout.on('data', (d) => { out += d; });
-      child.stderr.on('data', (d) => { err += d; });
-      child.on('close', () => {
-        let result;
-        try { result = JSON.parse(out.trim().split('\n').pop()); } catch { result = { ok: false, error: err.trim().split('\n').pop() || 'compress-maps produced no result' }; }
-        res.status(result.ok ? 200 : 500).json(result);
-      });
-    } catch (err) { next(err); }
-  });
   const noWrites = guardReadOnly(state);
 
   router.get('/assets', async (req, res, next) => {
@@ -281,6 +235,7 @@ export function assetsRouter(state) {
         registry.assets.push(created);
         return registry;
       });
+      afterTreeEdit(state, { id: created.id, kind: 'meta', path: assetFile(created.id) }).catch(() => {});
       res.status(201).set('ETag', etag).location(`/api/assets/${created.id}`).json(created);
     } catch (err) {
       if (err instanceof z.ZodError) err.status = 400;
@@ -302,6 +257,7 @@ export function assetsRouter(state) {
         },
         { ifMatch },
       );
+      afterTreeEdit(state, { id: req.params.id, kind: 'meta', path: assetFile(req.params.id) }).catch(() => {});
       res.set('ETag', etag).json(asset);
     } catch (err) {
       if (err instanceof z.ZodError) err.status = 400;
@@ -325,9 +281,10 @@ export function assetsRouter(state) {
       let purged = false;
       if (req.query.purgeFiles === 'true') {
         // Deleting generated files is destructive and opt-in, never the default.
-        await fs.rm(assetDir(req.params.id), { recursive: true, force: true });
+        await fs.rm(modelDir(req.params.id), { recursive: true, force: true });
         purged = true;
       }
+      afterTreeEdit(state, { id: req.params.id, kind: 'meta', path: assetFile(req.params.id) }).catch(() => {});
       res.json({ deleted: removed, purgedFiles: purged });
     } catch (err) {
       next(err);

@@ -29,19 +29,37 @@ export function targetToPath(srcDir, target) {
   throw new Error(`file target uses an unknown root: ${target}`);
 }
 
-export async function materialise(registry, srcDir, { templatesDir, warn }) {
-  await fs.rm(srcDir, { recursive: true, force: true });
+/**
+ * @param {object} registry
+ * @param {string} srcDir
+ * @param {{ templatesDir?: string, warn?: (m: string) => void, wipe?: boolean }} opts
+ *   `wipe` (default true) clears `srcDir` first. A one-item refresh passes
+ *   false and writes only that item's files into the existing tree.
+ * @returns {{ files: number, artifacts: number, hashes: Record<string, string> }}
+ *   `hashes` is sha256 by target for everything written, which is what an
+ *   item's version is computed from.
+ */
+export async function materialise(registry, srcDir, { templatesDir, warn, wipe = true }) {
+  if (wipe) await fs.rm(srcDir, { recursive: true, force: true });
   let files = 0;
   let artifacts = 0;
+  const hashes = {};
   for (const item of registry.items ?? []) {
     for (const f of item.files ?? []) {
-      if (typeof f.content !== 'string') continue;
       const abs = targetToPath(srcDir, f.target);
-      if (f.hash) {
-        const actual = createHash('sha256').update(f.content).digest('hex');
-        if (actual !== f.hash) warn?.(`${item.name}: ${f.target} hash mismatch (registry says ${f.hash.slice(0, 12)}…, content is ${actual.slice(0, 12)}…)`);
-      }
       await fs.mkdir(path.dirname(abs), { recursive: true });
+      if (typeof f.src === 'string') {
+        // A source-backed entry (thaikit's own tree): copy, and hash the bytes.
+        const bytes = await fs.readFile(f.src);
+        hashes[f.target] = createHash('sha256').update(bytes).digest('hex');
+        await fs.writeFile(abs, bytes);
+        files += 1;
+        continue;
+      }
+      if (typeof f.content !== 'string') continue;
+      const actual = createHash('sha256').update(f.content).digest('hex');
+      if (f.hash && actual !== f.hash) warn?.(`${item.name}: ${f.target} hash mismatch (registry says ${f.hash.slice(0, 12)}…, content is ${actual.slice(0, 12)}…)`);
+      hashes[f.target] = actual;
       await fs.writeFile(abs, f.content, 'utf8');
       files += 1;
     }
@@ -50,16 +68,23 @@ export async function materialise(registry, srcDir, { templatesDir, warn }) {
     // image on disk; do the same, so a corrupt pack fails here instead of
     // rendering as an inexplicably wrong texture later.
     for (const a of item.artifacts ?? []) {
-      if (typeof a.content !== 'string') continue;
       const abs = targetToPath(srcDir, a.target);
+      if (typeof a.src === 'string') {
+        const bytes = await fs.readFile(a.src);
+        hashes[a.target] = createHash('sha256').update(bytes).digest('hex');
+        await fs.mkdir(path.dirname(abs), { recursive: true });
+        await fs.writeFile(abs, bytes);
+        artifacts += 1;
+        continue;
+      }
+      if (typeof a.content !== 'string') continue;
       const bytes = Buffer.from(a.content, 'base64');
       if (typeof a.byteLength === 'number' && bytes.byteLength !== a.byteLength) {
         throw new Error(`${item.name}: artifact ${a.path} decodes to ${bytes.byteLength} bytes, declares ${a.byteLength}`);
       }
-      if (a.hash) {
-        const actual = createHash('sha256').update(bytes).digest('hex');
-        if (actual !== a.hash) throw new Error(`${item.name}: artifact ${a.path} has a stale hash`);
-      }
+      const actual = createHash('sha256').update(bytes).digest('hex');
+      if (a.hash && actual !== a.hash) throw new Error(`${item.name}: artifact ${a.path} has a stale hash`);
+      hashes[a.target] = actual;
       await fs.mkdir(path.dirname(abs), { recursive: true });
       await fs.writeFile(abs, bytes);
       artifacts += 1;
@@ -77,5 +102,5 @@ export async function materialise(registry, srcDir, { templatesDir, warn }) {
       files += 1;
     }
   }
-  return { files, artifacts };
+  return { files, artifacts, hashes };
 }

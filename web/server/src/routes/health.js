@@ -1,5 +1,5 @@
 import express from 'express';
-import { readRegistry, REGISTRY_PATH, etagFor } from '@thaikit/registry-core';
+import { readRegistry, MODELS_DIR, etagFor } from '@thaikit/registry-core';
 
 export function healthRouter(state) {
   const router = express.Router();
@@ -10,7 +10,7 @@ export function healthRouter(state) {
       res.json({
         ok: true,
         mode: process.env.NODE_ENV ?? 'development',
-        registryPath: REGISTRY_PATH,
+        modelsDir: MODELS_DIR,
         assetCount: registry.assets.length,
         etag: etagFor(registry),
         writable: state.writable,
@@ -24,7 +24,7 @@ export function healthRouter(state) {
       res.json({
         ok: false,
         mode: process.env.NODE_ENV ?? 'development',
-        registryPath: REGISTRY_PATH,
+        modelsDir: MODELS_DIR,
         assetCount: null,
         readOnly: true,
         readOnlyReason: err.message,

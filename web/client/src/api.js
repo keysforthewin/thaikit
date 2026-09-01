@@ -29,11 +29,12 @@ async function request(path, options = {}, etagKey = 'registry') {
 export const api = {
   health: () => request('/api/health'),
   meta: () => request('/api/meta'),
+  /** The catalogue: every installed pack's items, records and overrides merged in. */
   list: (params = {}) => {
     const q = new URLSearchParams(
       Object.entries(params).filter(([, v]) => v !== '' && v != null),
     );
-    return request(`/api/assets?${q}`);
+    return request(`/api/items?${q}`, {}, 'items');
   },
   get: (id) => request(`/api/assets/${id}`, {}, `asset:${id}`),
   create: (body) => request('/api/assets', { method: 'POST', body: JSON.stringify(body) }),
@@ -54,37 +55,64 @@ export const api = {
   bulk: (assets, mode = 'merge') =>
     request('/api/assets/bulk', { method: 'POST', body: JSON.stringify({ mode, assets }) }),
 
-  /**
-   * The physics compound, which lives in a file beside the module rather than in
-   * the registry -- so it gets its own ETag key. A prop that was never derived
-   * answers 404, which is a state the drawer shows rather than an error.
-   */
-  colliders: (id) => request(`/api/assets/${id}/colliders`, {}, `colliders:${id}`),
-  saveColliders: (id, doc) =>
+  /** Thai-kit aliases of the ref-addressed collider routes below. */
+  colliders: (id) => itemsApi.colliders(`@thai-kit/${id}`),
+  saveColliders: (id, doc) => itemsApi.saveColliders(`@thai-kit/${id}`, doc),
+};
+
+const refPath = (ref) => ref.split('/').map(encodeURIComponent).join('/');
+
+/**
+ * Items by ref -- `@thai-kit/oil-drum`, `@scifi-kit/crate` -- which is how both
+ * editors see a prop. A foreign item's editable half is its local override; the
+ * physics compound lives beside the source (thai-kit) or in that override, and
+ * either way gets its own ETag key. A prop nobody derived answers 404, which is
+ * a state the drawer shows rather than an error.
+ */
+export const itemsApi = {
+  get: (ref) => request(`/api/items/${refPath(ref)}`, {}, `item:${ref}`),
+  override: (ref) => request(`/api/items/${refPath(ref)}/override`, {}, `override:${ref}`),
+  saveOverride: (ref, doc) =>
     request(
-      `/api/assets/${id}/colliders`,
+      `/api/items/${refPath(ref)}/override`,
       {
         method: 'PUT',
-        headers: etags.has(`colliders:${id}`)
-          ? { 'If-Match': etags.get(`colliders:${id}`) }
-          : {},
+        headers: etags.has(`override:${ref}`) ? { 'If-Match': etags.get(`override:${ref}`) } : {},
         body: JSON.stringify(doc),
       },
-      `colliders:${id}`,
+      `override:${ref}`,
     ),
+  clearOverride: (ref) => {
+    etags.delete(`override:${ref}`);
+    return request(`/api/items/${refPath(ref)}/override`, { method: 'DELETE' }, null);
+  },
+  colliders: (ref) => request(`/api/items/${refPath(ref)}/colliders`, {}, `colliders:${ref}`),
+  saveColliders: (ref, doc) =>
+    request(
+      `/api/items/${refPath(ref)}/colliders`,
+      {
+        method: 'PUT',
+        headers: etags.has(`colliders:${ref}`) ? { 'If-Match': etags.get(`colliders:${ref}`) } : {},
+        body: JSON.stringify(doc),
+      },
+      `colliders:${ref}`,
+    ),
+  refresh: (ref) => request(`/api/items/${refPath(ref)}/refresh`, { method: 'POST' }, null),
 };
 
 /**
- * Repo-relative registry paths map onto the server's static mounts: shipped
- * files under assets/ are served at /media, in-flight attempt artefacts under
- * scratch/ at /scratch. Anything else keeps the original assets-relative
- * behaviour.
+ * Repo-relative record paths map onto the server's static mounts: the source
+ * tree under packages/props/src/models/ is served at /media, in-flight attempt
+ * artefacts under scratch/ at /scratch, and an installed pack's files under
+ * packs/ at /packs. An absolute URL passes through untouched.
  */
 export function mediaUrl(repoPath) {
   if (!repoPath) return null;
+  if (String(repoPath).startsWith('/')) return repoPath;
   const p = String(repoPath).replace(/^\.?\//, '');
   if (p.startsWith('scratch/')) return '/scratch/' + p.slice('scratch/'.length);
-  return '/media/' + p.replace(/^assets\//, '');
+  if (p.startsWith('packs/')) return '/' + p;
+  return '/media/' + p.replace(/^packages\/props\/src\/models\//, '').replace(/^assets\//, '');
 }
 
 /**
@@ -186,9 +214,4 @@ levelsApi.sky = {
     );
     return res.json();
   },
-};
-
-export const ktx2Api = {
-  status: (id) => request(`/api/assets/${id}/ktx2-status`, {}, null),
-  compress: (id) => request(`/api/assets/${id}/compress-maps`, { method: 'POST' }, null),
 };

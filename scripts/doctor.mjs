@@ -7,12 +7,14 @@ import fs from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-import { REGISTRY_PATH, ASSETS_DIR, SCRATCH_DIR, readRegistry } from '@thaikit/registry-core';
+import { MODELS_DIR, SCRATCH_DIR, readRegistry, shipsAsset, toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { budgets, styleProfiles, categories } from './lib/config.mjs';
 import { blenderRepoRoot, probeAddon, BLENDER_HOST, BLENDER_PORT, blenderExe } from './lib/blender.mjs';
 import { findKtx, KTX_INSTALL_HINT } from './level/pipeline/ktx2.mjs';
+import { readIndex, packItemBundle } from './lib/packs/index.mjs';
+import { THAIKIT_PACK } from './lib/bundle-for.mjs';
 
 const run = promisify(execFile);
 
@@ -39,18 +41,31 @@ async function main() {
       return `${r.assets.length} assets`;
     }, { fatal: true }),
 
-    check('registry writable', async () => {
-      await fs.access(REGISTRY_PATH, fs.constants.W_OK);
-      return REGISTRY_PATH;
-    }, { fatal: true }),
-
-    check('assets/ and scratch/ writable', async () => {
-      for (const dir of [ASSETS_DIR, SCRATCH_DIR]) {
+    check('models tree and scratch/ writable', async () => {
+      for (const dir of [MODELS_DIR, SCRATCH_DIR]) {
         await fs.mkdir(dir, { recursive: true });
         await fs.access(dir, fs.constants.W_OK);
       }
-      return 'ok';
+      return toRepoRelative(MODELS_DIR);
     }, { fatal: true }),
+
+    // The source tree carries no bundle; every Node-side gate reads the pack
+    // installer's build. A shipped prop with no pack item cannot be measured.
+    check('@thai-kit pack installed with a bundle per shipped prop', async () => {
+      const r = await readRegistry();
+      const index = await readIndex();
+      const missing = [];
+      for (const a of r.assets.filter(shipsAsset)) {
+        if (!(await packItemBundle(THAIKIT_PACK, a.id, index))) missing.push(a.id);
+      }
+      if (missing.length) {
+        throw new Error(
+          `${missing.length} shipped prop(s) have no pack bundle (${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ', ...' : ''}); ` +
+            `run node scripts/install-pack.mjs --source tree:packages/props`,
+        );
+      }
+      return `${r.assets.filter(shipsAsset).length} bundles`;
+    }),
 
     check('config files parse', async () => {
       const b = await budgets();

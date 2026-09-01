@@ -30,7 +30,7 @@
  * So: find the DOM references, then find whether the file establishes a DOM or
  * baseUrl predicate at all. This is still a heuristic and still only warns --
  * the real proof is construction, which `promote-model.mjs` already performs
- * headlessly before any prop is allowed into `assets/`, and which the pack
+ * headlessly before any prop is allowed into the models tree, and which the pack
  * installer repeats on every item it builds. What this catches is a source that
  * touches the DOM having never established a guard anywhere, which is the shape
  * of the bug worth looking at.

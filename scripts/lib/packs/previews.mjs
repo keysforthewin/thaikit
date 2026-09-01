@@ -27,7 +27,7 @@ import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
 const THUMB = 512;
 /** The harness renders square at this; the screenshot is downsampled from it. */
 const RENDER = 1024;
-/** The hero angle build-registry's tiles use. Evidence is the turntable; this is the tile. */
+/** The hero angle the browse grid's tiles use. Evidence is the turntable; this is the tile. */
 const HERO = { azimuth: 45, elevation: 20 };
 /** Per item. A factory that has already been probed is not slow; a hung one must not stall the pack. */
 const ITEM_TIMEOUT_MS = 60_000;

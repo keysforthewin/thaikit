@@ -10,7 +10,7 @@
 import sharp from 'sharp';
 
 const [, , id, ...regions] = process.argv;
-const src = `assets/${id}/preview.jpg`;
+const src = `packages/props/src/models/${id}/preview.jpg`;
 const meta = await sharp(src).metadata();
 
 const out = {};

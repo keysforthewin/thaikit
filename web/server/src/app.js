@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ASSETS_DIR, SCRATCH_DIR, LEVELS_DIR, PACKS_DIR, readRegistry, etagFor, REGISTRY_PATH } from '@thaikit/registry-core';
+import { MODELS_DIR, SCRATCH_DIR, LEVELS_DIR, PACKS_DIR } from '@thaikit/registry-core';
 
 import { healthRouter } from './routes/health.js';
 import { assetsRouter } from './routes/assets.js';
@@ -12,6 +12,8 @@ import { collidersRouter } from './routes/colliders.js';
 import { eventsRouter } from './routes/events.js';
 import { levelsRouter } from './routes/levels.js';
 import { packsRouter } from './routes/packs.js';
+import { itemsRouter } from './routes/items.js';
+import { catalogue, facets } from './lib/catalogue.js';
 import { errorHandler } from './errors.js';
 import { CLIENT_DIST, IS_DEV } from './paths.js';
 import { budgets } from '../../../scripts/lib/config.mjs';
@@ -38,20 +40,11 @@ export async function createApp(state) {
   app.use('/api', eventsRouter(state));
   app.use('/api', levelsRouter(state));
   app.use('/api', packsRouter(state));
+  app.use('/api', itemsRouter(state));
 
   app.get('/api/meta', async (req, res, next) => {
     try {
-      const registry = await readRegistry();
-      const categories = {};
-      const tags = {};
-      const status = { image: {}, mesh: {}, critic: {} };
-      for (const a of registry.assets) {
-        categories[a.category] = (categories[a.category] ?? 0) + 1;
-        for (const t of a.tags) tags[t] = (tags[t] ?? 0) + 1;
-        for (const k of Object.keys(status)) {
-          status[k][a.status[k]] = (status[k][a.status[k]] ?? 0) + 1;
-        }
-      }
+      const { packs, items } = await catalogue();
       // The budget classes ride along so the UI can say what a class MEANS. A
       // select that offers "small / medium / large / hero" and nothing else asks
       // you to remember four numbers that live in a file you are not looking at.
@@ -60,25 +53,31 @@ export async function createApp(state) {
         Object.entries(classes).filter(([name]) => !name.startsWith('$')),
       );
       res.json({
-        categories,
-        tags,
-        status,
+        ...facets(items),
+        packList: packs,
         budgetClasses,
-        total: registry.assets.length,
-        etag: etagFor(registry),
+        total: items.length,
+        etag: state.lastEtag,
       });
     } catch (err) {
       next(err);
     }
   });
 
-  // Generated media. Explicit MIME types matter: without model/gltf-binary some
-  // loaders refuse the response. no-cache rather than immutable, because a GLB
-  // at a stable path is overwritten on every regeneration attempt -- caching it
-  // hard would show a stale mesh and cost an hour of confusion.
+  // The source tree's images and records: preview plates, thumbnails, sculpt
+  // specs, shipped maps. Not the TypeScript -- the pack copy under /packs is
+  // where a bundle and its source are served from -- so /media stays an
+  // image-and-JSON mount. no-cache rather than immutable, because a file at a
+  // stable path is overwritten on every regeneration.
+  app.use('/media', (req, res, next) => {
+    if (/\.(ts|js|mjs)$/i.test(req.path)) return res.status(404).json({ error: 'source is not served from /media' });
+    next();
+  });
   app.use(
     '/media',
-    express.static(ASSETS_DIR, {
+    express.static(MODELS_DIR, {
+      index: false,
+      dotfiles: 'ignore',
       etag: true,
       cacheControl: true,
       maxAge: 0,
@@ -168,4 +167,3 @@ export async function createApp(state) {
   return app;
 }
 
-export { REGISTRY_PATH };

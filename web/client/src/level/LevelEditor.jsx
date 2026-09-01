@@ -47,6 +47,21 @@ export default function LevelEditor({ initialId }) {
   }, []);
   useEffect(() => { loadCatalogue(); }, [loadCatalogue]);
 
+  // The object editor and the host-side skills change what the catalogue says
+  // -- a physics flag, a hand-tuned compound, a rebuilt bundle -- so an open
+  // level tab re-reads it on those events rather than only when a pack job
+  // finishes in this tab's own pack manager.
+  useEffect(() => {
+    const source = new EventSource('/api/events');
+    let timer = null;
+    const reload = () => { clearTimeout(timer); timer = setTimeout(loadCatalogue, 300); };
+    source.addEventListener('catalogue', reload);
+    source.addEventListener('pack', (e) => {
+      try { if (JSON.parse(e.data).phase === 'done') reload(); } catch { /* not ours */ }
+    });
+    return () => { clearTimeout(timer); source.close(); };
+  }, [loadCatalogue]);
+
   const openLevel = useCallback(async (id) => {
     useLevel.setState({ loading: true, error: null });
     try {
@@ -95,11 +110,6 @@ export default function LevelEditor({ initialId }) {
 
   // Stats recompute when the doc, the catalogue, or a prototype changes.
   const stats = useMemo(() => (doc ? levelStats(doc, catalogue) : null), [doc, catalogue, s.protoRev]);
-  const shippingNotKtx2 = useMemo(() => {
-    if (!doc) return 0;
-    const refs = new Set(doc.placements.map((p) => p.ref));
-    return [...refs].filter((r) => catalogue.byRef[r]?.maps?.some((m) => !m.ktx2)).length;
-  }, [doc, catalogue]);
 
   useEffect(() => {
     if (!doc) return;
@@ -233,7 +243,7 @@ export default function LevelEditor({ initialId }) {
         <Outliner onFrame={frame} />
         <div className="viewport-wrap" style={{ position: 'relative', minWidth: 0 }}>
           <Viewport stats={stats} />
-          {doc && <StatsHud stats={stats} shippingNotKtx2={shippingNotKtx2} onOpenTextures={() => setTexturesOpen(true)} />}
+          {doc && <StatsHud stats={stats} onOpenTextures={() => setTexturesOpen(true)} />}
           {s.play && <PlayHud />}
           {s.status && <div className="status">{s.status}</div>}
           {s.loading && <div className="status">loading level…</div>}
@@ -263,7 +273,7 @@ export default function LevelEditor({ initialId }) {
       {modal === 'export' && <ExportModal onClose={() => setModal(null)} />}
       {texturesOpen && stats && (
         <Modal title="Textures in this level" onClose={() => setTexturesOpen(false)} width="min(900px, 94vw)">
-          <TexturesPanel stats={stats} onCompressed={loadCatalogue} />
+          <TexturesPanel stats={stats} />
         </Modal>
       )}
     </div>

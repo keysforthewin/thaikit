@@ -12,7 +12,7 @@
  * That is reported as a warning, and --requeue turns it into a re-run.
  *
  * Usage:
- *   node scripts/set-preview-image.mjs --id oil-drum --file assets/oil-drum/preview.png \
+ *   node scripts/set-preview-image.mjs --id oil-drum --file packages/props/src/models/oil-drum/preview.jpg \
  *     --model fal-ai/flux/schnell --seed 12345 --prompt-file scratch/oil-drum/preview/prompt.txt \
  *     [--uploaded-url https://...] [--requeue]
  */
@@ -21,7 +21,7 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { updateAsset, toRepoRelative } from '@thaikit/registry-core';
+import { updateAsset, toRepoRelative, modelDir } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 
@@ -38,6 +38,12 @@ async function main() {
   });
   const rel = toRepoRelative(abs);
   if (rel.startsWith('..')) throw new Error(`image lives outside the repo: ${args.file}`);
+  // The plate lives in the prop's own directory: the pack export and the web
+  // both assume `preview.<ext>` beside the factory, and nothing else is shipped.
+  const expectedDir = toRepoRelative(modelDir(args.id));
+  if (path.posix.dirname(rel) !== expectedDir || !/^preview\.(jpe?g|png)$/i.test(path.posix.basename(rel))) {
+    throw new Error(`the plate must be ${expectedDir}/preview.jpg (or .png), not ${rel}`);
+  }
 
   const meta = await sharp(abs).metadata();
   if (meta.format !== 'png' && meta.format !== 'jpeg') {

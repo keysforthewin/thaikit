@@ -11,10 +11,15 @@ npx vibe3d add @thai-kit/props        # the whole kit
 npx vibe3d add @thai-kit/oil-drum     # one prop
 ```
 
-Each installed prop is two files:
+Each installed prop is four files:
 
 - `createObjectModel.ts` — the factory, byte-identical to the one in the thaikit repo.
 - `model.ts` — the vibe3d entry point: `createModel(options)` and `createPreview()`.
+- `thaikit.json` — thaikit's full asset record: declared and measured metres, pivot and
+  placement rules, physics (`enabled`, `massKg`), destruction groups, the four scene-budget
+  ceilings, the named pivots and sockets the factory exposes, and the generation review.
+- `colliders.json` — the physics compound: a handful of boxes and cylinders in root-local
+  metres (`scale` is half-extents), with the ray-cast self-check that measured it.
 
 ```ts
 import { createModel } from './models/oil-drum/model';
@@ -28,17 +33,15 @@ scene.add(createModel({ castShadow: true, textureSize: 512 }));
 supplies it, and there must be exactly one copy — a second instance means the factory's
 `Mesh` is not the renderer's `Mesh` and nothing draws.
 
-## What this pack does not carry
+## What this pack carries beyond vibe3d's metadata
 
-vibe3d's model metadata schema is strict, so the export drops thaikit's own extras:
-named pivots, derived collider compounds, destruction groups, the four budget ceilings
-(triangles, draw calls, materials, unique geometries), declared and measured metres, and
-the generation review history. Sockets, parts, material slots, tags, category and a
-preview image do survive.
-
-If you want any of that, read
-[thaikit's own registry](https://github.com/keysforthewin/thaikit) directly — it is the
-source of truth, and this pack is a derived repackaging of it.
+vibe3d's model metadata schema is strict — title, description, category, tags, preview,
+controls, material slots, parts and socket names — so thaikit's extras ride in
+`thaikit.json` and `colliders.json` instead, installed beside `model.ts` like any other
+file. vibe3d itself never reads them; they are plain JSON for your game to load if it wants
+a prop's mass, its walkable shell or its budget. The source of truth is the tree at
+[`packages/props/src/models/`](https://github.com/keysforthewin/thaikit) in the thaikit
+repo; this registry is built from it.
 
 ## Licence and trademarks
 

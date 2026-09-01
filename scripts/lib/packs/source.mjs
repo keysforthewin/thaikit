@@ -1,8 +1,8 @@
 /**
  * Where a pack comes from, and which version of it.
  *
- * `npm:<name>[@range]`, a bare `@scope/name`, `https://…registry.json`, or
- * `file:…`. Versions are resolved against the npm registry directly -- one GET
+ * `npm:<name>[@range]`, a bare `@scope/name`, `https://…registry.json`,
+ * `file:…`, or `tree:<package dir>` for a kit whose source is on disk. Versions are resolved against the npm registry directly -- one GET
  * for the packument, one for the tarball -- rather than through npm or pacote:
  * a pack is a JSON file with source inlined, it has no lifecycle scripts, and
  * it never enters node_modules.
@@ -13,6 +13,9 @@ export function parseSource(raw) {
   const s = String(raw).trim();
   if (/^https?:\/\//.test(s)) return { kind: 'https', url: s, spec: s };
   if (s.startsWith('file:')) return { kind: 'file', path: s.slice(5).replace(/^\/\//, '/'), spec: s };
+  // thaikit's own kit, read from its source tree: `tree:packages/props` (a
+  // package directory holding package.json and src/models/<id>/).
+  if (s.startsWith('tree:')) return { kind: 'tree', path: s.slice(5), spec: s };
   const body = s.startsWith('npm:') ? s.slice(4) : s;
   // '@scope/name@^1.2' -> name '@scope/name', range '^1.2'.
   const at = body.lastIndexOf('@');

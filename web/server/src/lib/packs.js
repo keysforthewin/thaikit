@@ -26,9 +26,23 @@ export function jobStatus(id) {
   return jobs.get(id) ?? null;
 }
 
-export function runPackJob(state, { source, refresh = false, remove = false, previews = false, pack = null }) {
+/**
+ * Start (or join) a pack job.
+ *
+ * `refreshItem` rebuilds ONE item of an editable pack from the source tree --
+ * bundle, probe, thumbnail, index entry -- which is what a promote or a source
+ * edit needs and a 134-item reinstall is not. Two refreshes of the same ref
+ * queued back to back are one job: the watcher fires per file, and a save that
+ * touches the factory and its maps must not rebuild the prop twice.
+ */
+export function runPackJob(state, { source, refresh = false, remove = false, previews = false, pack = null, refreshItem = null, add = false }) {
+  if (refreshItem) {
+    for (const queued of jobs.values()) {
+      if (queued.status === 'queued' && queued.refreshItem === refreshItem) return queued;
+    }
+  }
   const id = crypto.randomUUID().slice(0, 8);
-  const job = { id, source, pack, refresh, remove, previews, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
+  const job = { id, source, pack, refresh, remove, previews, refreshItem, add, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
   jobs.set(id, job);
 
   queue = queue.then(
@@ -36,10 +50,13 @@ export function runPackJob(state, { source, refresh = false, remove = false, pre
       new Promise((resolve) => {
         job.status = 'running';
         job.startedAt = new Date().toISOString();
-        broadcast(state, 'pack', { jobId: id, phase: 'start', message: remove ? `removing ${pack}` : previews ? `rendering previews for ${pack}` : `installing ${source}` });
+        broadcast(state, 'pack', { jobId: id, phase: 'start', item: refreshItem ?? undefined, message: refreshItem ? `rebuilding ${refreshItem}` : remove ? `removing ${pack}` : previews ? `rendering previews for ${pack}` : `installing ${source}` });
 
         const args = [SCRIPT];
-        if (remove) args.push('--remove', pack);
+        if (refreshItem) {
+          args.push('--refresh-item', refreshItem);
+          if (add) args.push('--add');
+        } else if (remove) args.push('--remove', pack);
         else if (previews) args.push('--previews', pack, '--force');
         else {
           args.push('--source', source);
@@ -79,7 +96,8 @@ export function runPackJob(state, { source, refresh = false, remove = false, pre
           }
           job.result = result;
           job.status = result.ok ? 'done' : 'failed';
-          broadcast(state, 'pack', { jobId: id, phase: job.status, message: result.ok ? 'done' : result.error, result });
+          broadcast(state, 'pack', { jobId: id, phase: job.status, item: refreshItem ?? undefined, message: result.ok ? 'done' : result.error, result });
+          if (refreshItem) broadcast(state, 'catalogue', { ref: refreshItem, kind: 'rebuilt', ok: Boolean(result.ok) });
           resolve();
         });
       }),

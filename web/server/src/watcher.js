@@ -1,20 +1,29 @@
 import chokidar from 'chokidar';
 
-import { readRegistry, etagFor, REGISTRY_PATH, ASSETS_DIR } from '@thaikit/registry-core';
+import { readRegistry, etagFor, MODELS_DIR } from '@thaikit/registry-core';
 import { WATCH_POLL, WATCH_INTERVAL } from './paths.js';
+import { OVERRIDES_DIR } from './lib/overrides.js';
+import { INDEX_FILE, classifyChange, afterTreeEdit } from './lib/refresh.js';
 
 /**
- * Watch the registry and generated assets for changes made outside the server.
+ * Watch the source tree, the overrides and the pack index for changes made
+ * outside the server -- the generation skills write the tree from the host
+ * while a tab is open, and the installer rewrites packs/index.json.
+ *
+ * What a change MEANS is decided in lib/refresh.js: a record or image change is
+ * announced and re-read, a source change queues a one-item pack refresh. The
+ * registry ETag is still tracked so the browse page's health poll can tell a
+ * real change from an echo of the server's own write.
  *
  * usePolling is mandatory inside Docker on WSL2: inotify events from host writes
  * do not reliably cross a bind mount, so without it the UI never notices the
  * generation skills' work at all.
  */
 export function startWatcher(state) {
-  const watcher = chokidar.watch([REGISTRY_PATH, ASSETS_DIR], {
+  const watcher = chokidar.watch([MODELS_DIR, INDEX_FILE, OVERRIDES_DIR], {
     ignoreInitial: true,
-    ignored: (p) => /node_modules|\.git|\.tmp-|\.lock/.test(p),
-    // A GLB is written progressively; reading it half-formed yields garbage.
+    ignored: (p) => /node_modules|\.git|\.tmp-|\.lock|model\.bundle\.js|\.img2threejs/.test(p),
+    // A file is written progressively; reading it half-formed yields garbage.
     awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 },
     usePolling: WATCH_POLL,
     interval: WATCH_INTERVAL,
@@ -22,34 +31,31 @@ export function startWatcher(state) {
     depth: 3,
   });
 
-  let timer = null;
+  const timers = new Map();
   const onChange = (event, changedPath) => {
-    clearTimeout(timer);
-    timer = setTimeout(async () => {
-      try {
-        const registry = await readRegistry();
-        const etag = etagFor(registry);
-
-        // Our own writes come back through the watcher too. Comparing the hash
-        // is what stops the server echoing them at every connected client.
-        //
-        // But the hash covers the REGISTRY ONLY, so on its own it also swallows
-        // a generated file changing under assets/ while the JSON stays byte
-        // identical -- re-running the module build or promote over an existing build
-        // rewrites the GLB without necessarily moving anything the registry
-        // records. That is exactly the "my new mesh will not show up" case, so
-        // asset-file changes are always forwarded.
-        const registryChanged = etag !== state.lastEtag;
-        const underAssets = typeof changedPath === 'string' && changedPath.startsWith(ASSETS_DIR);
-        if (!registryChanged && !underAssets) return;
-        if (registryChanged) state.lastEtag = etag;
-        for (const send of state.clients) {
-          send('registry', { etag, assetCount: registry.assets.length, event, path: changedPath });
+    const change = classifyChange(changedPath);
+    if (!change) return;
+    // Coalesce per file: a save is a temp file plus a rename, two events.
+    const key = changedPath;
+    clearTimeout(timers.get(key));
+    timers.set(
+      key,
+      setTimeout(async () => {
+        timers.delete(key);
+        try {
+          if (change.kind === 'meta') {
+            // Our own writes come back through the watcher too. Comparing the
+            // hash is what stops the server echoing them at every client.
+            const etag = etagFor(await readRegistry());
+            if (etag === state.lastEtag) return;
+            state.lastEtag = etag;
+          }
+          await afterTreeEdit(state, { ...change, path: changedPath });
+        } catch (err) {
+          for (const send of state.clients) send('error', { message: err.message });
         }
-      } catch (err) {
-        for (const send of state.clients) send('error', { message: err.message });
-      }
-    }, 250);
+      }, 250),
+    );
   };
 
   watcher.on('all', onChange);

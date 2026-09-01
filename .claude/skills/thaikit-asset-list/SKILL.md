@@ -46,7 +46,7 @@ texture set, with surface detail carried by normal maps rather than geometry.
 
 ```bash
 cat prompts/categories.json          # taxonomy + real-world size priors
-node -e "const r=require('./registry.json');console.log(r.assets.map(a=>a.id+' :: '+a.name).join('\n'))"
+node -e "import('@thaikit/registry-core').then(async m=>{const r=await m.readRegistry();console.log(r.assets.map(a=>a.id+' :: '+a.name).join('\n'))})"
 ```
 
 You must know what already exists before proposing anything.
@@ -55,11 +55,11 @@ When you are editing or auditing rather than adding, dump the authoring fields
 too — you cannot improve a prompt you have not read:
 
 ```bash
-node -e "const r=require('./registry.json');for(const a of r.assets)console.log(
+node -e "import('@thaikit/registry-core').then(async m=>{const r=await m.readRegistry();for(const a of r.assets)console.log(
   [a.id,a.category,a.budgetClass,
    \`\${a.scale.declared.w}x\${a.scale.declared.h}x\${a.scale.declared.d}m\`,
    \`img:\${a.status.image}/model:\${a.status.model}\`,a.tags.join('+'),
-   JSON.stringify(a.prompts.image)].join(' | '))"
+   JSON.stringify(a.prompts.image)].join(' | '))})"
 ```
 
 ### 2. Brainstorm wide, then cut hard
@@ -185,7 +185,7 @@ than about ten edits, as with adding.
 
 Anything else is refused by the script, deliberately:
 
-- `id` is immutable — it is the folder name under `assets/`. A prop that needs a
+- `id` is immutable — it is the folder name under `packages/props/src/models/` and the vibe3d item name. A prop that needs a
   different slug is a delete plus a re-add, which is the user's call, not yours.
 - `status`, `image` and everything under `model` -- the built file, the review,
   the runtime hierarchy, the reference mesh, the quarantine -- belong to
@@ -267,7 +267,7 @@ Then tell the user they can browse and edit the result at
 ## Do not
 
 - Do not call fal.ai or generate images. That is skill 2.
-- Do not edit `registry.json` directly — always go through `new-assets.mjs` or
+- Do not edit `packages/props/src/models/<id>/thaikit.json` directly — always go through `new-assets.mjs` or
   `edit-assets.mjs`, which hold the lock the web UI also respects.
 - Do not invent categories. Use the taxonomy, or tell the user it needs extending.
 - Do not delete assets. Hide one with `{"hidden": true}` if it should drop out of

@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readRegistry, etagFor, REGISTRY_PATH, REPO_ROOT } from '@thaikit/registry-core';
+import { readRegistry, etagFor, MODELS_DIR, REPO_ROOT } from '@thaikit/registry-core';
 
 import { createApp } from './app.js';
 import { startWatcher } from './watcher.js';
@@ -12,7 +12,7 @@ import { PORT, IS_DEV, WATCH_POLL } from './paths.js';
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 async function main() {
-  // Make a fresh clone work: create the registry, sweep dead temp files, and
+  // Make a fresh clone work: create the models tree, sweep dead temp files, and
   // report a UID mismatch loudly rather than 500-ing on the first write.
   const bootstrap = spawnSync(
     process.execPath,
@@ -37,9 +37,9 @@ async function main() {
     readOnly: boot.valid === false || boot.writable === false,
     readOnlyReason:
       boot.valid === false
-        ? 'registry.json does not validate against the schema'
+        ? 'an asset record (packages/props/src/models/*/thaikit.json) does not validate against the schema'
         : boot.writable === false
-          ? 'registry.json is not writable by this process (check THAIKIT_UID)'
+          ? 'packages/props/src/models is not writable by this process (check THAIKIT_UID)'
           : null,
     httpServer: null,
   };
@@ -67,7 +67,7 @@ async function main() {
     }
     console.log('');
     console.log(`  thaikit -> http://localhost:${PORT}`);
-    console.log(`  registry: ${REGISTRY_PATH} (${count} assets)`);
+    console.log(`  models:   ${MODELS_DIR} (${count} assets)`);
     console.log(`  repo:     ${REPO_ROOT}`);
     console.log(`  mode:     ${IS_DEV ? 'development (Vite middleware, HMR)' : 'production'}`);
     console.log(`  watch:    ${WATCH_POLL ? 'polling (bind-mount safe)' : 'inotify'}`);

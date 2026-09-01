@@ -9,14 +9,18 @@
  */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+
+import { resolveBundle } from '../lib/bundle-for.mjs';
+
 const require = createRequire(import.meta.url);
 const THREE = require('three');
 
 const STEP = 0.01;
-export function profile(id) {
+/** Reads the bundle that ships (the pack build); `from: 'scratch'` for an unpromoted tile. */
+export async function profile(id, from = 'pack') {
   const mod = { exports: {} };
   new Function('module', 'exports', 'require',
-    readFileSync(`assets/${id}/model.bundle.js`, 'utf8'))(mod, mod.exports,
+    readFileSync(await resolveBundle(id, from), 'utf8'))(mod, mod.exports,
     (n) => { if (n === 'three') return THREE; throw new Error(n); });
   const root = mod.exports.createObjectModel(null, {});
   root.updateMatrixWorld(true);
@@ -48,4 +52,4 @@ export function profile(id) {
   return { id, footprint: [+(hx * 2).toFixed(3), +(hz * 2).toFixed(3)], edges };
 }
 
-if (process.argv[2]) console.log(JSON.stringify(profile(process.argv[2]), null, 1));
+if (process.argv[2]) console.log(JSON.stringify(await profile(process.argv[2], process.argv[3] ?? 'pack'), null, 1));

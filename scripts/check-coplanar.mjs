@@ -14,11 +14,15 @@
  * and had to be read off a zoomed render. A clean report here means the envelopes are clear, not
  * that the prop is.
  *
- *   node scripts/check-coplanar.mjs --id <asset-id> [--eps 0.001] [--min-area 0.02]
+ *   node scripts/check-coplanar.mjs --id <asset-id> [--from pack|scratch] [--eps 0.001] [--min-area 0.02]
+ *
+ * Reads the bundle that SHIPS -- the pack installer's build under packs/@thai-kit/ --
+ * or the scratch bundle with --from scratch. The source tree carries no bundle.
  */
 import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import { createRequire } from 'node:module';
+
+import { resolveBundle } from './lib/bundle-for.mjs';
 
 const require = createRequire(import.meta.url);
 const THREE = require('three');
@@ -34,8 +38,7 @@ const EPS = Number(arg('eps', 0.001));
 const MIN_AREA = Number(arg('min-area', 0.02));
 const MIN_EDGE = 0.05;   // ignore edge-on slivers; only real AREA fights are worth a person's time
 
-const REPO = path.resolve(import.meta.dirname, '..');
-const file = path.join(REPO, 'assets', id, 'model.bundle.js');
+const file = await resolveBundle(id, arg('from', 'pack'));
 const mod = { exports: {} };
 new Function('module', 'exports', 'require', readFileSync(file, 'utf8'))(mod, mod.exports, (n) => {
   if (n === 'three') return THREE;

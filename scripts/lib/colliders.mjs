@@ -12,7 +12,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-import { assetDir, workDir, toRepoRelative } from '@thaikit/registry-core';
+import { toRepoRelative } from '@thaikit/registry-core';
 
 import { colliderPartCeiling } from './budget.mjs';
 
@@ -937,10 +937,18 @@ export function ledgeInventory(grid, parts) {
 // The pass
 // ---------------------------------------------------------------------------
 
+/**
+ * `opts.bundle` is the absolute path of the CommonJS bundle to evaluate. The
+ * caller resolves it (scripts/lib/bundle-for.mjs): a promoted prop's only bundle
+ * is the pack installer's, under packs/@thai-kit/<tag>/<id>/, and the source
+ * tree never carries one. `generator.bundleSha256` in the record hashes THAT
+ * file, so a re-derivation can tell whether the geometry it measured is the
+ * geometry that ships.
+ */
 export function deriveOne(asset, opts) {
   const started = Date.now();
-  const dir = opts.from === 'scratch' ? workDir(asset.id) : assetDir(asset.id);
-  const bundle = path.join(dir, 'model.bundle.js');
+  const bundle = opts.bundle;
+  if (!bundle) throw new Error(`${asset.id}: no bundle resolved (opts.bundle)`);
   if (!existsSync(bundle)) throw new Error(`no bundle at ${toRepoRelative(bundle)}`);
 
   const source = readFileSync(bundle);
@@ -1112,8 +1120,8 @@ export function suggestMass(asset, parts) {
  */
 export function measureOne(asset, doc, opts) {
   const started = Date.now();
-  const dir = opts.from === 'scratch' ? workDir(asset.id) : assetDir(asset.id);
-  const bundle = path.join(dir, 'model.bundle.js');
+  const bundle = opts.bundle;
+  if (!bundle) throw new Error(`${asset.id}: no bundle resolved (opts.bundle)`);
   if (!existsSync(bundle)) throw new Error(`no bundle at ${toRepoRelative(bundle)}`);
 
   const { parts: rawParts, triangles } = loadParts(bundle, opts.maxTriangles);

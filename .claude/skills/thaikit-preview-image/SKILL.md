@@ -45,7 +45,7 @@ this path three times and the user has agreed to spend it.
 ### 1. Pick the work
 
 ```bash
-node -e "const r=require('./registry.json');console.log(JSON.stringify(r.assets.filter(a=>a.status.image==='pending').map(a=>a.id)))"
+node -e "import('@thaikit/registry-core').then(async m=>{const r=await m.readRegistry();console.log(JSON.stringify(r.assets.filter(a=>a.status.image==='pending').map(a=>a.id)))})"
 ```
 
 Regenerating an asset that already has an image is fine when asked — it just
@@ -61,7 +61,7 @@ paragraph that is the cheapest poly-count control in the repo — lives in
 mkdir -p scratch/<id>/preview
 node -e "
 import('./scripts/lib/config.mjs').then(async m=>{
-  const r=require('./registry.json'); const a=r.assets.find(x=>x.id===process.argv[1]);
+  const r=await (await import('@thaikit/registry-core')).readRegistry(); const a=r.assets.find(x=>x.id===process.argv[1]);
   require('fs').writeFileSync('scratch/'+a.id+'/preview/prompt.txt', await m.composeImagePrompt(a));
 })" <id>
 ```
@@ -90,7 +90,7 @@ curl -sfo scratch/<id>/preview/raw.png "<result.images[0].url>"
 ### 4. Validate and reframe
 
 ```bash
-node scripts/prepare-image.mjs --in scratch/<id>/preview/raw.png --out assets/<id>/preview.jpg
+node scripts/prepare-image.mjs --in scratch/<id>/preview/raw.png --out packages/props/src/models/<id>/preview.jpg
 ```
 
 This measures the backdrop, refuses a plate that would melt a reconstruction, and
@@ -116,8 +116,8 @@ whatever arrived and pads with it, so both are fine.
 read the JSON line back:
 
 ```bash
-npm run --silent upload -- assets/<id>/preview.jpg
-node scripts/set-preview-image.mjs --id <id> --file assets/<id>/preview.jpg \
+npm run --silent upload -- packages/props/src/models/<id>/preview.jpg
+node scripts/set-preview-image.mjs --id <id> --file packages/props/src/models/<id>/preview.jpg \
   --model fal-ai/flux/schnell --seed <seed> \
   --prompt-file scratch/<id>/preview/prompt.txt \
   --uploaded-url "<url from npm run upload>"
@@ -129,7 +129,7 @@ touching the bytes again.
 
 The registry write goes through `set-preview-image.mjs` because
 `@thaikit/registry-core` holds the lock the web UI also respects. **Never write
-`registry.json` directly** — the write is silently lost, or it corrupts a
+`packages/props/src/models/<id>/thaikit.json` directly** — the write is silently lost, or it corrupts a
 concurrent one.
 
 **Replacing an existing image stales the model.** Every stage downstream reads

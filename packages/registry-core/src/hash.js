@@ -27,6 +27,15 @@ export function serializeRegistry(registry) {
   return JSON.stringify(sortValue(normalized), null, 2) + '\n';
 }
 
+/**
+ * Canonical form of ONE asset record as it sits on disk: `thaikit.json` beside
+ * the prop's source. `schemaVersion` rides in every file so a stale record is
+ * self-describing and `readRegistry` can refuse it by name.
+ */
+export function serializeAsset(asset, schemaVersion) {
+  return JSON.stringify(sortValue({ schemaVersion, ...asset }), null, 2) + '\n';
+}
+
 export function hashRegistry(registry) {
   return crypto.createHash('sha256').update(serializeRegistry(registry)).digest('hex');
 }

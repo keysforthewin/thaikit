@@ -199,8 +199,6 @@ FROM base AS runtime
 ENV NODE_ENV=production \
     PORT=3733 \
     THAIKIT_REPO_ROOT=/repo \
-    THAIKIT_REGISTRY_PATH=/repo/registry.json \
-    THAIKIT_ASSETS_DIR=/repo/assets \
     THAIKIT_SCRATCH_DIR=/repo/scratch \
     THAIKIT_CLIENT_DIST=/app/web/client/dist
 EXPOSE 3733
@@ -238,8 +236,6 @@ FROM base AS dev
 ENV NODE_ENV=development \
     PORT=3733 \
     THAIKIT_REPO_ROOT=/repo \
-    THAIKIT_REGISTRY_PATH=/repo/registry.json \
-    THAIKIT_ASSETS_DIR=/repo/assets \
     THAIKIT_SCRATCH_DIR=/repo/scratch \
     THAIKIT_CLIENT_DIST=/app/web/client/dist
 EXPOSE 3733

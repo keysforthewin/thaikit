@@ -33,7 +33,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import sharp from 'sharp';
-import { readRegistry, workDir, assetDir, toRepoRelative } from '@thaikit/registry-core';
+import { readRegistry, workDir, modelDir, toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from '../lib/out.mjs';
 import { TILES } from './regions.mjs';
@@ -239,7 +239,7 @@ async function authorOne(asset) {
   // The plate IS the albedo, so it is transcoded and not reinterpreted: no
   // resize, no tone correction, no sharpening. Anything done to it here would be
   // a second opinion about a surface that was already measured once.
-  const plate = path.join(assetDir(asset.id), 'preview.jpg');
+  const plate = path.join(modelDir(asset.id), 'preview.jpg');
   const image = sharp(plate);
   const meta = await image.metadata();
   const albedoPath = path.join(dir, 'maps/albedo.webp');

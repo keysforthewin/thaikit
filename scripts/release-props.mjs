@@ -4,8 +4,9 @@
  *
  * One command, because this is run every time the prop kit grows. It is the
  * only thing that should ever write `packages/props/dist/`: that directory is
- * gitignored and derived, and thaikit's `registry.json` stays the source of
- * truth (see scripts/build-vibe3d-registry.mjs, which does the actual export).
+ * gitignored and derived, and the source tree packages/props/src/models/ stays
+ * the source of truth (see scripts/build-vibe3d-registry.mjs, which does the
+ * actual export).
  *
  * Ordered so nothing is half-done: the tree is checked, the pack is built and
  * VERIFIED, and only then is a version written or a tarball pushed. A failed
@@ -32,6 +33,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import semver from 'semver';
+
+import { AssetFileSchema } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 
@@ -70,8 +73,11 @@ async function assertUnpublished(name, version) {
  * Check the built pack the way a consumer's installer would, before it can
  * reach one. `build-vibe3d-registry.mjs` validates its own schema output; what
  * is added here is everything that is only true ON DISK -- that the previews
- * the registry promises actually exist, and that the file inlined for each item
- * hashes to what its entry claims.
+ * the registry promises actually exist, that the file inlined for each item
+ * hashes to what its entry claims, that every item carries the four files
+ * thaikit's own installer reads back (factory, entry, record, compound), that
+ * the record parses and names the item, and that every map the record declares
+ * ships as an artifact.
  */
 async function verifyPack(absolute) {
   const { createHash } = await import('node:crypto');
@@ -101,6 +107,27 @@ async function verifyPack(absolute) {
     for (const file of item.files ?? []) {
       const actual = createHash('sha256').update(file.content).digest('hex');
       if (actual !== file.hash) problems.push(`${item.name}: ${file.target} hash does not match its content`);
+    }
+    const targets = new Set((item.files ?? []).map((f) => f.target));
+    for (const required of ['createObjectModel.ts', 'model.ts', 'thaikit.json']) {
+      if (!targets.has(`{models}/${item.name}/${required}`)) problems.push(`${item.name}: missing file ${required}`);
+    }
+    if (!targets.has(`{models}/${item.name}/colliders.json`)) log(`  ! ${item.name}: ships without colliders.json`);
+    const recordFile = (item.files ?? []).find((f) => f.target === `{models}/${item.name}/thaikit.json`);
+    if (recordFile) {
+      let record = null;
+      try {
+        record = AssetFileSchema.safeParse(JSON.parse(recordFile.content));
+      } catch {
+        problems.push(`${item.name}: thaikit.json is not JSON`);
+      }
+      if (record && !record.success) problems.push(`${item.name}: thaikit.json does not validate (${record.error.issues[0]?.path.join('.')})`);
+      if (record?.success && record.data.id !== item.name) problems.push(`${item.name}: thaikit.json names ${record.data.id}`);
+      const artifactTargets = new Set((item.artifacts ?? []).map((a) => a.target));
+      for (const map of record?.success ? record.data.model.maps ?? [] : []) {
+        const want = `{models}/${item.name}/maps/${path.basename(map.file)}`;
+        if (!artifactTargets.has(want)) problems.push(`${item.name}: declared map ${map.file} has no artifact`);
+      }
     }
     // Decode every artifact exactly as their installer will, and check what it
     // checks. It throws on a stale hash rather than writing a bad image, so a

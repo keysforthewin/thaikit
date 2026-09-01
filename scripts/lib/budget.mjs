@@ -93,7 +93,7 @@ export async function judgeAsset(asset, stats) {
  * rely on.
  *
  * Colliders used to be checked here too, against a declared `collider` word on
- * the asset. They are not any more: the compound lives in assets/<id>/colliders.json
+ * the asset. They are not any more: the compound lives in packages/props/src/models/<id>/colliders.json
  * and is judged by colliderVerdict() below, on measurements rather than on a count.
  */
 export function runtimeVerdict(asset, runtime) {

@@ -8,17 +8,21 @@
  * the same bet thaikit makes -- the artefact is code -- so the export is a
  * repackaging, not a conversion. No geometry is touched and no GLB is produced.
  *
- * thaikit's registry stays the source of truth. This writes a SECOND, derived
- * file; nothing here reads back into `registry.json`.
+ * The source tree, packages/props/src/models/<id>/, is the source of truth --
+ * laid out the way vibe3d's own kits are, one directory per prop, and read here
+ * through registry-core's `readRegistry()`, which IS the tree scan. This writes
+ * the derived `dist/registry.json`; nothing here reads back into the tree.
  *
- * What does not survive the trip, by design: their `modelMetadataSchema` is
- * `.strict()`, so pivots, colliders, destruction groups, the four budget
- * ceilings, declared/measured metres, placement, pivot origin, the measured
- * stats, the img2threejs review and `nameTh` have nowhere to go. This script
- * does not smuggle them into `tags` or `description` -- a consumer wanting them
- * reads thaikit's own registry. The single exception is a non-default
- * `license.notice`, which leads the description: see below for why a trademark
- * caveat is not the same kind of loss as a dropped pivot list.
+ * EVERYTHING survives the trip. Their `modelMetadataSchema` is `.strict()`, so
+ * pivots, colliders, destruction groups, the four budget ceilings, declared and
+ * measured metres, placement, physics, the review and `nameTh` have no home in
+ * `meta` -- but a `files[]` entry may be any file at all, so each item ships
+ * FOUR: the factory, its vibe3d entry, `thaikit.json` (the whole asset record,
+ * byte-for-byte the file in the tree) and `colliders.json` (the physics
+ * compound). vibe3d's installer writes them beside `model.ts` without reading
+ * them; thaikit's own installer reads them back. A non-default
+ * `license.notice` still leads the description as well, because a consumer who
+ * never opens thaikit.json must still see a trademark caveat.
  *
  * Emits schemaVersion 2, for `artifacts`. Fifteen skyline imposters and fifteen
  * ground tiles are mostly TEXTURE -- an imposter is two triangles and a keyed
@@ -44,9 +48,10 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { readRegistry, REPO_ROOT } from '@thaikit/registry-core';
+import { readRegistry, shipsAsset, modelDir, REPO_ROOT } from '@thaikit/registry-core';
 
 import { domReport } from './lib/dom-guard.mjs';
+import { entryModule, previewHelpers } from './lib/vibe3d-entry.mjs';
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 
 /**
@@ -141,281 +146,10 @@ const titleCase = (slug) =>
 const posix = (p) => p.split(path.sep).join('/');
 
 /**
- * Vibe3D's `createModel` contract, wrapping thaikit's `createObjectModel`.
- *
- * Written as a separate file rather than patched into the factory so the
- * generated source ships byte-for-byte identical to what this repo holds and
- * what img2threejs reviewed. Named `model.ts` because that is where the
- * vibe-model skill looks for `createModel`.
+ * Their v2 artifact media types, by extension. Only the maps a factory loads
+ * ship: webp (and png/jpeg should a prop ever author one). No .ktx2 -- the
+ * per-asset KTX2 siblings are gone; the level bake encodes its own.
  */
-/**
- * The per-asset look-dev helpers the generated factory already exports.
- *
- * Their names carry the prop's own name (`createOilDrumLookDevLights`,
- * `frameOilDrumCamera`), so they are discovered rather than assumed. A prop that
- * exports neither still gets a working preview from the fallbacks below.
- */
-function previewHelpers(source) {
-  return {
-    lookDevLights: source.match(/export function (create\w*LookDevLights)\s*\(/)?.[1] ?? null,
-    frameCamera: source.match(/export function (frame\w*Camera)\s*\(/)?.[1] ?? null,
-  };
-}
-
-/**
- * Vibe3D's two entry points, wrapping thaikit's `createObjectModel`.
- *
- * `createModel` is what their CLI installs and a game calls. `createPreview` is
- * what their docs gallery calls -- `apps/docs/src/catalog.ts` types it as
- * `{ scene, root, camera, update(dt), dispose() }` -- and it is where all
- * preview-only scene setup belongs, per the vibe-model skill. Nothing here
- * reaches into the prop: the lights and camera come from helpers the factory
- * already exports, so a preview cannot drift from the model.
- *
- * Written as a separate file rather than patched into the factory so the
- * generated source ships byte-for-byte identical to what this repo holds and
- * what img2threejs reviewed. Named `model.ts` because that is where the
- * vibe-model skill looks for `createModel`.
- */
-function entryModule(asset, helpers, hasArtifacts) {
-  // Their catalog types the preview against `three/webgpu`, and their own models
-  // import from it. That is safe to cross: three's `three.module.js` and
-  // `three.webgpu.js` both re-export the scene graph from a shared
-  // `three.core.js`, so `Mesh` from 'three' IS `Mesh` from 'three/webgpu' --
-  // verified by identity, not assumed. Importing plain 'three' keeps the wrapper
-  // matched to the factory beside it, which imports 'three' too.
-  const named = ['createModel as createBaseModel'];
-  if (helpers.lookDevLights) named.push(helpers.lookDevLights);
-  if (helpers.frameCamera) named.push(helpers.frameCamera);
-
-  const imports = `import {\n${named.map((n) => `  ${n},`).join('\n')}\n  type ProceduralModelOptions,\n} from './createObjectModel';`;
-
-  // Fallbacks, emitted only when the factory did not export the real thing.
-  const lightsFallback = helpers.lookDevLights
-    ? ''
-    : `
-/** This prop's factory exports no look-dev rig, so the preview brings a neutral one. */
-function defaultLookDevLights(): Group {
-  const lights = new Group();
-  lights.name = 'preview lights';
-  lights.userData.excludeFromExport = true;
-  lights.add(new HemisphereLight(0xf2f4ff, 0x363b42, 0.85));
-  const key = new DirectionalLight(0xfff4e8, 2.15);
-  key.position.set(4, 6, 5);
-  lights.add(key);
-  return lights;
-}
-`;
-
-  const cameraFallback = helpers.frameCamera
-    ? ''
-    : `
-/** This prop's factory exports no framing helper, so the preview frames it here. */
-function defaultFrameCamera(
-  camera: PerspectiveCamera,
-  object: Object3D,
-  options: { margin?: number; azimuthDeg?: number; elevationDeg?: number } = {},
-): void {
-  const box = new Box3().setFromObject(object);
-  if (box.isEmpty()) return;
-  const size = box.getSize(new Vector3());
-  const center = box.getCenter(new Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z) * (options.margin ?? 1.15);
-  const fov = (camera.fov * Math.PI) / 180;
-  const distance = maxDim / 2 / Math.tan(fov / 2);
-  const az = ((options.azimuthDeg ?? 0) * Math.PI) / 180;
-  const el = ((options.elevationDeg ?? 0) * Math.PI) / 180;
-  camera.position.copy(center).addScaledVector(
-    new Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)),
-    distance,
-  );
-  camera.near = Math.max(0.01, distance - maxDim);
-  camera.far = distance + maxDim * 2;
-  camera.lookAt(center);
-  camera.updateProjectionMatrix();
-}
-`;
-
-  // Only import what this prop's variant actually uses -- an unused import is a
-  // build error under noUnusedLocals, which a consumer is entitled to have on.
-  const threeNames = new Set(['Color', 'Group', 'Object3D', 'PerspectiveCamera', 'Scene']);
-  if (!helpers.lookDevLights) for (const n of ['HemisphereLight', 'DirectionalLight']) threeNames.add(n);
-  if (!helpers.frameCamera) for (const n of ['Box3', 'Vector3']) threeNames.add(n);
-  const threeImports = [...threeNames].sort().map((n) => `  ${n},`).join('\n');
-
-  // A prop whose images ship as v2 `artifacts` needs to find them at runtime.
-  // In thaikit the bundle is EVALUATED and cannot see its own URL, which is why
-  // the factories take bare filenames plus a `baseUrl`; here the wrapper is an
-  // ordinary ES module sitting beside its own installed `maps/`, so
-  // `import.meta.url` IS that answer, and bundlers resolve it to an emitted
-  // asset. Defaulted rather than forced: a consumer who relocates the images
-  // passes their own baseUrl and this stops applying.
-  const baseUrlConst = hasArtifacts
-    ? [
-        '',
-        "/**",
-        " * Where this prop's shipped images live: beside this module, installed",
-        ' * from this item\'s `artifacts`.',
-        ' *',
-        ' * Wrapped, because `import.meta` is EMPTY in a CommonJS bundle -- esbuild',
-        " * rewrites it to `{}`, so `new URL('.', undefined)` throws `Invalid URL`",
-        ' * and takes the whole factory down at construction. thaikit\'s own pack',
-        ' * installer bundles to CJS and hit exactly that. Falling back to',
-        ' * undefined is safe: the caller\'s own baseUrl still wins below, and a',
-        ' * factory with no baseUrl simply skips its texture load.',
-        ' */',
-        'const BASE_URL: string | undefined = (() => {',
-        '  try {',
-        "    return new URL('.', import.meta.url).href;",
-        '  } catch {',
-        '    return undefined;',
-        '  }',
-        '})();',
-        '',
-      ].join('\n')
-    : '';
-  // `options` spreads LAST, so a caller who passes their own baseUrl wins.
-  const baseUrlArg = hasArtifacts ? 'BASE_URL ? { baseUrl: BASE_URL, ...options } : options' : 'options';
-
-  const lightsCall = helpers.lookDevLights ? `${helpers.lookDevLights}('neutral')` : 'defaultLookDevLights()';
-  const frameCall = helpers.frameCamera ? helpers.frameCamera : 'defaultFrameCamera';
-
-  return `/**
- * ${asset.name} -- Vibe3D entry point.
- *
- * Generated by thaikit's scripts/build-vibe3d-registry.mjs. Once installed this
- * file is yours: editing it is the point of a source-first registry.
- *
- * The model itself is in ./createObjectModel, unmodified.
- */
-import {
-${threeImports}
-} from 'three';
-import type { Material, Mesh, Texture } from 'three';
-
-${imports}
-
-export type { ProceduralModelOptions } from './createObjectModel';
-
-/**
- * The prop's own one-argument factory, re-exported under vibe3d's name.
- *
- * thaikit's factories export BOTH \`createObjectModel(spec, options)\` -- its
- * historical shape, kept for the render harness and the level editor -- and
- * \`createModel(options)\`, which is what this wraps. So this file no longer
- * knows the two-argument form exists, and the only thing it adds is the
- * baseUrl default below.
- */
-${baseUrlConst}
-export function createModel(options: ProceduralModelOptions = {}): Group {
-  return createBaseModel(${baseUrlArg});
-}
-
-/** The shape Vibe3D's docs catalogue expects back from \`createPreview\`. */
-export interface ModelPreview {
-  scene: Scene;
-  root: Group;
-  camera: PerspectiveCamera;
-  update(deltaSeconds: number): void;
-  dispose(): void;
-}
-
-export interface PreviewOptions extends ProceduralModelOptions {
-  /** Viewport aspect ratio. */
-  aspect?: number;
-  /** Seconds into the turntable, so a captured frame is reproducible. */
-  time?: number;
-  /** Turntable speed. Zero holds the opening three-quarter view. */
-  degreesPerSecond?: number;
-  elevationDeg?: number;
-  margin?: number;
-}
-${lightsFallback}${cameraFallback}
-/**
- * A preview scene for the docs gallery. Everything it adds is preview-only and
- * never reaches the installed model root.
- *
- * The turntable moves the CAMERA rather than the prop: these props are pivoted
- * base-center, not bounding-box-center, so spinning the root would swing it
- * around an off-centre axis and wobble in frame.
- */
-export function createPreview(options: PreviewOptions = {}): ModelPreview {
-  const {
-    aspect = 16 / 9,
-    time = 0,
-    degreesPerSecond = 18,
-    elevationDeg = 20,
-    margin = 1.25,
-    ...modelOptions
-  } = options;
-
-  const root = createModel(modelOptions);
-
-  const scene = new Scene();
-  // The backdrop the model's own look-dev targets were authored against, so the
-  // gallery tile matches the render the review looked at.
-  const lookDev = root.userData.lookDevTargets as { backgroundColor?: string } | undefined;
-  scene.background = new Color(lookDev?.backgroundColor ?? '#3A3A3A');
-  scene.add(root);
-
-  const lights = ${lightsCall};
-  lights.userData.excludeFromExport = true;
-  scene.add(lights);
-
-  const camera = new PerspectiveCamera(35, aspect, 0.01, 1000);
-  let elapsed = time;
-  const aim = () => {
-    ${frameCall}(camera, root, {
-      margin,
-      elevationDeg,
-      azimuthDeg: 35 + elapsed * degreesPerSecond,
-    });
-  };
-  aim();
-
-  let disposed = false;
-
-  return {
-    scene,
-    root,
-    camera,
-    update(deltaSeconds: number): void {
-      if (disposed || degreesPerSecond === 0) return;
-      elapsed += deltaSeconds;
-      aim();
-    },
-    dispose(): void {
-      if (disposed) return;            // idempotent, per the vibe-model contract
-      disposed = true;
-      const geometries = new Set<{ dispose(): void }>();
-      const materials = new Set<Material>();
-      scene.traverse((node: Object3D) => {
-        const mesh = node as Mesh;
-        if (!mesh.isMesh) return;
-        geometries.add(mesh.geometry);
-        for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
-          if (material) materials.add(material);
-        }
-      });
-      for (const geometry of geometries) geometry.dispose();
-      for (const material of materials) {
-        // Textures are synthesised per material, so nothing else holds them.
-        for (const value of Object.values(material as unknown as Record<string, unknown>)) {
-          const texture = value as Texture | null;
-          if (texture && (texture as { isTexture?: boolean }).isTexture) texture.dispose();
-        }
-        material.dispose();
-      }
-      scene.clear();
-    },
-  };
-}
-
-export default createModel;
-`;
-}
-
-/** Their v2 artifact media types, by extension. Images only: nothing else ships. */
 const MEDIA_TYPES = {
   '.webp': 'image/webp',
   '.png': 'image/png',
@@ -433,12 +167,10 @@ const MEDIA_TYPES = {
  *
  * `maps/` is taken WHOLESALE rather than by parsing the source for filenames:
  * the tiles build theirs from a MAPS array (`loadMap(base, `${name}.webp`)`),
- * so there is no literal to match. The .ktx2 siblings are deliberately left
- * behind -- those exist for the level bake's GPU upload path, and nothing in a
- * factory loads them.
+ * so there is no literal to match.
  */
 async function collectArtifacts(asset) {
-  const dir = path.join(REPO_ROOT, 'assets', asset.id, 'maps');
+  const dir = path.join(modelDir(asset.id), 'maps');
   let names;
   try {
     names = await fs.readdir(dir);
@@ -453,7 +185,7 @@ async function collectArtifacts(asset) {
     if (!mediaType) continue;
     const bytes = await fs.readFile(path.join(dir, name));
     artifacts.push({
-      path: posix(path.join('assets', asset.id, 'maps', name)),
+      path: posix(path.relative(REPO_ROOT, path.join(dir, name))),
       target: `{models}/${asset.id}/maps/${name}`,
       mediaType,
       encoding: 'base64',
@@ -493,7 +225,31 @@ async function buildItem(asset, previewTarget) {
   }
 
   const artifacts = await collectArtifacts(asset);
-  const entry = entryModule(asset, previewHelpers(source), artifacts.length > 0);
+  const dir = modelDir(asset.id);
+  const relDir = posix(path.relative(REPO_ROOT, dir));
+
+  // `model.ts` is a COMMITTED file beside the factory, written by promote. It is
+  // read from disk and checked against what this repo would emit for the
+  // factory's current exports: a stale entry (a renamed look-dev helper, say)
+  // would compile in nobody's project, so drift is a hard stop, not a warning.
+  const entryOnDisk = await readIfPresent(path.join(dir, 'model.ts'));
+  if (!entryOnDisk) throw new Error(`${asset.id}: no model.ts beside the factory; re-run promote-model.mjs`);
+  const entryExpected = entryModule(asset, previewHelpers(source), artifacts.length > 0);
+  if (entryOnDisk.toString('utf8') !== entryExpected) {
+    throw new Error(`${asset.id}: model.ts is stale against its factory; re-run promote-model.mjs --id ${asset.id}`);
+  }
+  const entry = entryOnDisk.toString('utf8');
+
+  // The record and the compound, byte-for-byte the files in the tree, so a
+  // consumer's install hashes to exactly what git holds.
+  const record = await readIfPresent(path.join(dir, 'thaikit.json'));
+  if (!record) throw new Error(`${asset.id}: no thaikit.json in ${relDir}`);
+  const collidersDoc = await readIfPresent(path.join(dir, 'colliders.json'));
+  if (!collidersDoc) log(`  ! ${asset.id}: no colliders.json; the pack ships without a compound for it`);
+
+  // createObjectModel.ts FIRST: thaikit's installer takes files[0].hash as the
+  // item hash, and the JSON files can never be picked as the entry (pickEntry
+  // only considers .ts/.js).
   const files = [
     {
       path: posix(sourceRelative),
@@ -502,13 +258,25 @@ async function buildItem(asset, previewTarget) {
       hash: sha256(source),
     },
     {
-      // No such file on disk: `path` is provenance only -- their installer writes
-      // to `target`. Marked so nobody goes looking for it in this repo.
-      path: `<generated>/${asset.id}/model.ts`,
+      path: `${relDir}/model.ts`,
       target: `{models}/${asset.id}/model.ts`,
       content: entry,
       hash: sha256(entry),
     },
+    {
+      path: `${relDir}/thaikit.json`,
+      target: `{models}/${asset.id}/thaikit.json`,
+      content: record.toString('utf8'),
+      hash: sha256(record.toString('utf8')),
+    },
+    ...(collidersDoc
+      ? [{
+          path: `${relDir}/colliders.json`,
+          target: `{models}/${asset.id}/colliders.json`,
+          content: collidersDoc.toString('utf8'),
+          hash: sha256(collidersDoc.toString('utf8')),
+        }]
+      : []),
   ];
 
   // Part and material names come from the sculpt spec rather than the built
@@ -622,17 +390,12 @@ async function main() {
   const outDir = path.dirname(outAbsolute);
 
   const registry = await readRegistry();
-  if (registry.license?.spdx && registry.license.spdx !== 'MIT') {
-    throw new Error(
-      `Vibe3D registries must be MIT; thaikit declares ${registry.license.spdx}`,
-    );
+  if (registry.license && registry.license !== 'MIT') {
+    throw new Error(`Vibe3D registries must be MIT; thaikit declares ${registry.license}`);
   }
 
-  // Same gate as build-registry.mjs: only props that actually ship.
-  const ships = (a) =>
-    !a.hidden && a.model.status === 'done' && Boolean(a.model.file) && !a.model.quarantine;
-
-  let assets = registry.assets.filter(ships);
+  // Only props that actually ship -- the one predicate every gate shares.
+  let assets = registry.assets.filter(shipsAsset);
   if (typeof args.id === 'string') {
     assets = assets.filter((a) => a.id === args.id);
     if (!assets.length) throw new Error(`no shipped asset with id "${args.id}"`);
@@ -645,15 +408,18 @@ async function main() {
   const items = [];
   const previews = [];
   for (const asset of assets) {
-    // The preview plate is a JPEG next to the asset. Copied beside the registry
+    // The preview is the RENDERED thumbnail (the hero frame the review looked at,
+    // at the same 45/20 angle the pack installer would photograph), falling back
+    // to the reference plate for a prop that has none. Copied beside the registry
     // so the emitted directory is self-contained, and referenced relatively.
     let previewTarget = null;
-    if (asset.image?.file) {
-      const bytes = await readIfPresent(path.join(REPO_ROOT, asset.image.file));
-      if (bytes) {
-        previewTarget = `previews/${asset.id}${path.extname(asset.image.file)}`;
-        previews.push({ target: previewTarget, bytes });
-      }
+    for (const candidate of [asset.model?.thumb, asset.image?.file]) {
+      if (!candidate) continue;
+      const bytes = await readIfPresent(path.join(REPO_ROOT, candidate));
+      if (!bytes) continue;
+      previewTarget = `previews/${asset.id}${path.extname(candidate)}`;
+      previews.push({ target: previewTarget, bytes });
+      break;
     }
     items.push(await buildItem(asset, previewTarget));
     log(`  ${asset.id}`);
@@ -700,6 +466,10 @@ async function main() {
     throw new Error(`${problems.length} schema problem(s); nothing written`);
   }
 
+  // previews/ is rebuilt from scratch: a preview the registry no longer names
+  // (a prop renamed, or the .jpg plates a previous export used) would otherwise
+  // ride into the tarball forever, and release-props counts them.
+  await fs.rm(path.join(outDir, 'previews'), { recursive: true, force: true });
   await fs.mkdir(path.join(outDir, 'previews'), { recursive: true });
   for (const preview of previews) {
     await fs.writeFile(path.join(outDir, preview.target), preview.bytes);

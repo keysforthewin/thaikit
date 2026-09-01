@@ -29,7 +29,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import sharp from 'sharp';
-import { readRegistry, workDir, assetDir, toRepoRelative } from '@thaikit/registry-core';
+import { readRegistry, workDir, modelDir, toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from '../lib/out.mjs';
 
@@ -418,7 +418,7 @@ async function authorOne(asset) {
   const dir = workDir(asset.id);
   await fs.mkdir(path.join(dir, 'src'), { recursive: true });
   await fs.mkdir(path.join(dir, 'maps'), { recursive: true });
-  const src = path.join(assetDir(asset.id), 'preview.jpg');
+  const src = path.join(modelDir(asset.id), 'preview.jpg');
   const { width: PW, height: PH } = await sharp(src).metadata();
 
   let buf, outW, outH, footprint, provenance, measured = {};

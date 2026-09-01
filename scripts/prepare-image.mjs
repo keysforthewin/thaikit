@@ -26,8 +26,8 @@
  * the same reason, never crops: any crop of a tiling image destroys the tiling.
  *
  * Usage:
- *   node scripts/prepare-image.mjs --in raw.png --out assets/<id>/preview.jpg
- *   node scripts/prepare-image.mjs --in raw.png --out assets/<id>/preview.jpg --flat
+ *   node scripts/prepare-image.mjs --in raw.png --out packages/props/src/models/<id>/preview.jpg
+ *   node scripts/prepare-image.mjs --in raw.png --out packages/props/src/models/<id>/preview.jpg --flat
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';

@@ -2,20 +2,19 @@
 /**
  * Makes a fresh clone work. Run on server boot and by `npm run bootstrap`.
  *
- * Deliberately does NOT crash on a malformed registry -- it reports the problem
- * and lets the server start read-only, because a malformed registry is exactly
+ * Deliberately does NOT crash on a malformed record -- it reports the problem
+ * and lets the server start read-only, because a malformed record is exactly
  * when you most need the UI to look at it.
+ *
+ * The registry is the models tree, packages/props/src/models/<id>/thaikit.json.
+ * An empty (or absent) tree is the empty registry; nothing needs creating.
  */
 import fs from 'node:fs/promises';
 
 import {
-  REGISTRY_PATH,
-  ASSETS_DIR,
+  MODELS_DIR,
   SCRATCH_DIR,
-  emptyRegistry,
-  RegistrySchema,
-  serializeRegistry,
-  writeFileAtomic,
+  AssetFileSchema,
   sweepTempFiles,
   readRegistryRaw,
 } from '@thaikit/registry-core';
@@ -23,58 +22,48 @@ import {
 import { ok, fail, log } from './lib/out.mjs';
 
 async function main() {
-  await fs.mkdir(ASSETS_DIR, { recursive: true });
+  await fs.mkdir(MODELS_DIR, { recursive: true });
   await fs.mkdir(SCRATCH_DIR, { recursive: true });
 
-  const swept = await sweepTempFiles(REGISTRY_PATH);
+  const swept = await sweepTempFiles(MODELS_DIR);
   if (swept.length) log(`swept ${swept.length} orphaned temp file(s) from a killed writer`);
-
-  let created = false;
-  const raw = await readRegistryRaw(REGISTRY_PATH);
-  if (raw === null) {
-    await writeFileAtomic(REGISTRY_PATH, serializeRegistry(emptyRegistry()));
-    created = true;
-    log(`created empty registry at ${REGISTRY_PATH}`);
-  }
 
   // Writability is the number one thing that breaks clone-and-run for other
   // people, because the container runs as uid 1000 and their host may not.
   let writable = true;
   try {
-    await fs.access(REGISTRY_PATH, fs.constants.W_OK);
+    await fs.access(MODELS_DIR, fs.constants.W_OK);
   } catch {
     writable = false;
     log('');
-    log('  registry.json is NOT writable by this process.');
+    log('  packages/props/src/models is NOT writable by this process.');
     log('  Inside Docker this almost always means a UID mismatch.');
     log(`  Fix: echo "THAIKIT_UID=$(id -u)" >> .env && echo "THAIKIT_GID=$(id -g)" >> .env`);
     log('  then: docker compose up --force-recreate');
     log('');
   }
 
-  const parsed = RegistrySchema.safeParse(await readRegistryRaw(REGISTRY_PATH));
-  if (!parsed.success) {
-    log('registry.json is present but does not validate:');
-    for (const issue of parsed.error.issues.slice(0, 10)) {
-      log(`  ${issue.path.join('.') || '<root>'}: ${issue.message}`);
+  const records = (await readRegistryRaw({ modelsDir: MODELS_DIR })) ?? [];
+  let issues = 0;
+  for (const { dir, file, raw } of records) {
+    const parsed = AssetFileSchema.safeParse(raw);
+    if (parsed.success && parsed.data.id === dir) continue;
+    issues += 1;
+    if (issues <= 10) {
+      if (!parsed.success) {
+        const first = parsed.error.issues[0];
+        log(`${file}: ${first.path.join('.') || '<root>'}: ${first.message}`);
+      } else {
+        log(`${file}: id "${parsed.data.id}" does not match its directory "${dir}"`);
+      }
     }
-    return ok({
-      created,
-      writable,
-      valid: false,
-      assetCount: null,
-      issues: parsed.error.issues.length,
-      registryPath: REGISTRY_PATH,
-    });
+  }
+  if (issues) {
+    log(`${issues} record(s) do not validate; the server will start read-only`);
+    return ok({ created: false, writable, valid: false, assetCount: null, issues, modelsDir: MODELS_DIR });
   }
 
-  return ok({
-    created,
-    writable,
-    valid: true,
-    assetCount: parsed.data.assets.length,
-    registryPath: REGISTRY_PATH,
-  });
+  return ok({ created: false, writable, valid: true, assetCount: records.length, modelsDir: MODELS_DIR });
 }
 
 main().catch(fail);

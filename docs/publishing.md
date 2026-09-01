@@ -16,7 +16,7 @@ Two separate releases that people confuse for one:
 | --- | --- | --- |
 | `@thai-kit/level-runtime` | **yes** | The point of the exercise. A game imports this. |
 | `@thai-kit/level-schema` | **yes** | level-runtime depends on it; it must resolve on npm. |
-| `@thaikit/registry-core` | **later, or never** | Authoring-side: it holds a filesystem lock over `registry.json`. No game needs it. Publish only if you want third parties writing tooling against the registry. |
+| `@thaikit/registry-core` | **later, or never** | Authoring-side: it holds a filesystem lock over the models tree (`packages/props/src/models/`). No game needs it. Publish only if you want third parties writing tooling against the registry. |
 
 The repo now carries **two scopes on purpose**: `@thai-kit/*` is what is
 published, and `@thaikit/*` (`registry-core`, `client`, `server`) is internal and
@@ -52,7 +52,7 @@ Needs a decision before you flip the switch:
   | --- | --- | --- |
   | `levels/thepurge/level.glb` | 43 MB | the editable project; a demo level |
   | `levels/thepurge/sky/panorama.png` | 22 MB | authoring input to the sky bake |
-  | `assets/*/imposter.png` (×25) | **86 MB** | **authoring input only** — the shipped texture is `maps/albedo.webp` (~1 MB each) |
+  | `packages/props/src/models/*/imposter.png` (×15) | **86 MB** | **authoring input only** — the shipped texture is `maps/albedo.webp` (~1 MB each) |
 
   The imposter plates alone are more than a third of the repo, and
   `author-imposter.mjs` is the only thing that reads them. If you want the repo
@@ -61,7 +61,7 @@ Needs a decision before you flip the switch:
 
   ```sh
   pipx install git-filter-repo
-  git filter-repo --path-glob 'assets/*/imposter.png' --invert-paths
+  git filter-repo --path-glob 'assets/*/imposter.png' --path-glob 'packages/props/src/models/*/imposter.png' --invert-paths
   git filter-repo --path levels/thepurge/sky/panorama.png --invert-paths
   ```
 
@@ -73,9 +73,9 @@ Needs a decision before you flip the switch:
 
 * **`z2/`** is an empty untracked directory in the working tree. Delete it or
   gitignore it.
-* **`dist/`** is tracked (`registry.json`, `dist/vibe3d/`). Intentional — it is
-  the published registry — but say so in the README, because a tracked `dist/`
-  usually means a mistake.
+* **`packages/props/dist/`** is generated and gitignored (`registry.json` +
+  `previews/`): it is the published vibe3d pack, rebuilt by
+  `scripts/release-props.mjs`. The root `dist/` is gone.
 
 ---
 
@@ -176,55 +176,45 @@ automation token.
 
 ---
 
-## 5. Distributing the 100 props
+## 5. Distributing the props
 
-Do not put `assets/` on npm as one package. It is 159 MB, most of it authoring
-plates, and nobody wants all hundred props to get one drum.
+thaikit's props ARE a vibe3d pack, and that is the only way they ship.
+`packages/props/src/models/<id>/` is a vibe3d-shaped source tree (the factory,
+its `model.ts` entry, the images, and `thaikit.json` -- the asset record --
+beside it), `scripts/build-vibe3d-registry.mjs` scans it into
+`packages/props/dist/registry.json`, and `scripts/release-props.mjs` publishes
+that as `@thai-kit/props`. Every consumer of vibe3d can install it, thaikit's own
+pack installer included (`node scripts/install-pack.mjs --source tree:packages/props`
+installs straight from the tree with no export at all).
 
-Three routes, and they are not exclusive:
-
-**A. As a vibe3d registry — the one that already exists.** `scripts/build-vibe3d-registry.mjs`
-emits `dist/vibe3d/registry.json`, which inlines each prop's TypeScript source
-plus a sha256, and vibe3d's CLI installs those files shadcn-style. This is the
-format **thaikit's own pack installer already consumes**, so publishing this way
-makes your kit installable by anything that speaks vibe3d — including thaikit
-itself. Total inlined source across 100 props is 7.8 MB, so the whole registry
-is one modest JSON.
+What rides in the pack that vibe3d's own `meta` cannot express: `thaikit.json`
+and `colliders.json` are shipped as ordinary `files[]` entries per item, so
+physics, pivots, budgets, the review score and a hand-tuned compound survive the
+trip. A vibe3d consumer that does not know them installs two extra files and
+ignores them.
 
 ```sh
-npm run export:vibe3d                       # → dist/vibe3d/registry.json
+npm run export:vibe3d                       # -> packages/props/dist/registry.json
+node scripts/release-props.mjs --dry-run    # export + verify + tarball check
 ```
 
 Note it emits namespace `@thai-kit` (matching vibe3d's own `@scifi-kit`), which
 is baked into every installed address and into consumers' `models.lock.json`.
-Settle that string **before** anyone installs — `--namespace` overrides it.
-Right now the export carries only 3 items; run it over the full registry before
-publishing.
+`--namespace` overrides it; changing it after anyone has installed is breaking.
 
-**B. As a thin npm package per consumer taste.** If you want plain
-`npm i @thai-kit/props`, publish only what a game actually loads —
-`model.bundle.js`, `maps/`, `colliders.json`, `thumb.webp`, `registry.json` —
-and exclude `imposter.png`, `preview.jpg`, `src/` and
-`object-sculpt-spec.json`. That is roughly 30 MB rather than 159 MB. Use a
-`files` allowlist, and be aware npm has no partial install: everyone gets all
-hundred props.
-
-**C. Baked levels as GitHub Releases.** A shipped level is one 8 MB GLB
+**Baked levels go on GitHub Releases, not npm.** A shipped level is one 8 MB GLB
 (`levels/<id>/build/level.glb`, per `docs/using-a-baked-level.md`). Levels are
 build artefacts, not source — attach them to a release rather than tracking
 them.
 
-My recommendation: **A as the primary**, because the format already exists, is
-source-first the way the whole project is, and needs no new infrastructure. Add
-B only if people ask for a plain npm install.
 
 ---
 
 ## 6. The two licence gaps — done
 
-Both findings from the first pass are fixed. `scripts/backfill-license.mjs`
-applied them through `updateRegistry` (same lock the web UI takes), and
-`--dry-run` reproduces the report without writing.
+Both findings from the first pass are fixed. A one-off backfill script applied
+them through `updateRegistry` (same lock the web UI takes) and has since been
+deleted; the notices now live in each prop's `thaikit.json`.
 
 ### Trademark notices — 18 assets, not 14
 

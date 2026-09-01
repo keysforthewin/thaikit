@@ -84,11 +84,11 @@ test('ignores DOM words inside comments', () => {
  * plain Node -- promote-model.mjs gates on exactly that, and the pack installer
  * built all 134 from the published tarball -- so not one of them may warn.
  */
-test('no shipped prop warns', { skip: !fs.existsSync('registry.json') }, () => {
-  const registry = JSON.parse(fs.readFileSync('registry.json', 'utf8'));
-  const ships = (a) => !a.hidden && a.model.status === 'done' && a.model.file && !a.model.quarantine;
+test('no shipped prop warns', { skip: !fs.existsSync('packages/props/src/models') }, async () => {
+  const { readRegistry, shipsAsset } = await import('@thaikit/registry-core');
+  const registry = await readRegistry();
   const offenders = [];
-  for (const asset of registry.assets.filter(ships)) {
+  for (const asset of registry.assets.filter(shipsAsset)) {
     if (!asset.model.source || !fs.existsSync(asset.model.source)) continue;
     const source = fs.readFileSync(asset.model.source, 'utf8');
     const { hits, guarded } = domReport(source);

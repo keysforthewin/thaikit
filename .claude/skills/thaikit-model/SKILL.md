@@ -32,10 +32,12 @@ A prop is a **JavaScript module**, not a GLB:
 
 | File | What it is |
 |---|---|
-| `assets/<id>/model.bundle.js` | The factory, bundled for the browser |
-| `assets/<id>/src/createObjectModel.ts` | The TypeScript it was generated from |
-| `assets/<id>/object-sculpt-spec.json` | The spec behind that — **edit this to refine** |
-| `assets/<id>/thumb.webp` | Grid thumbnail, rendered from the module |
+| `packages/props/src/models/<id>/createObjectModel.ts` | The TypeScript factory — the artefact |
+| `packages/props/src/models/<id>/model.ts` | Its vibe3d entry (`createModel`, `createPreview`); emitted by promote, never hand-edited |
+| `packages/props/src/models/<id>/thaikit.json` | The asset record (budgets, scale, physics, review, stages). Never hand-edit: go through the scripts |
+| `packages/props/src/models/<id>/object-sculpt-spec.json` | The spec behind the factory — **edit this to refine** |
+| `packages/props/src/models/<id>/thumb.webp` | Grid thumbnail, rendered from the module |
+| `packs/@thai-kit/<tag>/<id>/model.bundle.js` | The CommonJS bundle. A BUILD PRODUCT of the pack installer, never committed |
 | `scratch/<id>/reference.glb` | The Meshy mesh. **Evidence. Never ships.** |
 
 ## Step 0 — gates
@@ -67,7 +69,7 @@ preview-image problem.
 what the reference-mesh call needs. Re-upload only when it is null:
 
 ```bash
-npm run --silent upload -- assets/<id>/preview.jpg
+npm run --silent upload -- packages/props/src/models/<id>/preview.jpg
 ```
 
 Never hand-encode an image to base64 to get it to fal.
@@ -107,7 +109,7 @@ never invent it.
 > - **Subject class:** this is a **`<prop | animal | person/character>`**.
 >   `<animal/character: it is a living figure — anatomy, proportion and pose are
 >   identity-defining, and every left/right pair is a reflection, not a rotation.>`
-> - **Reference image:** `assets/<id>/preview.jpg` — the single authoritative
+> - **Reference image:** `packages/props/src/models/<id>/preview.jpg` — the single authoritative
 >   plate. There is no turnaround, so report per-region confidence for anything
 >   the one view cannot show rather than inventing a back side.
 > - **Reference mesh — use the fal provider, not the TRELLIS Space:**
@@ -258,8 +260,7 @@ restart precisely so you do not have to.
 ```bash
 node scripts/build-model-module.mjs --id <id>
 node scripts/render-model.mjs --id <id>
-node scripts/promote-model.mjs --id <id>
-node scripts/build-registry.mjs
+node scripts/promote-model.mjs --id <id>     # ends by refreshing the @thai-kit pack item
 ```
 
 - **build** compiles the TypeScript to CommonJS with `three` external. If it
@@ -289,8 +290,11 @@ node scripts/build-registry.mjs
   `notes`. `--allow-over-budget` exists, ships a prop knowingly over, and says so
   in the log; it is not the way past a first failure.
 - Feed that turntable back to img2threejs's gates if its review is still open.
-- **promote** moves the module, TypeScript and spec into `assets/<id>/`, makes
-  the thumbnail from the hero, and flips the status to `done`.
+- **promote** copies the TypeScript, spec, maps and thumbnail into `packages/props/src/models/<id>/`,
+  emits the vibe3d `model.ts` beside them, flips the status to `done`, and then
+  runs `install-pack.mjs --refresh-item @thai-kit/<id>` so the pack under
+  `packs/` -- the only place a bundle exists -- carries the new build. Nothing
+  else needs running; `build-vibe3d-registry.mjs` is the PUBLISH step only.
 
 ## Step 4 — report
 

@@ -10,7 +10,8 @@ pivoted, and every prop editable as source rather than as opaque geometry.
 
 ```js
 import * as THREE from 'three';
-const code = await fetch('assets/oil-drum/model.bundle.js').then((r) => r.text());
+// From the installed pack (thaikit's own props are a vibe3d pack; the bundle is a build product)
+const code = await fetch('/packs/@thai-kit/<tag>/oil-drum/model.bundle.js').then((r) => r.text());
 const mod = { exports: {} };
 new Function('module', 'exports', 'require', code)(
   mod, mod.exports, (n) => { if (n === 'three') return THREE; throw new Error(n); });
@@ -53,7 +54,8 @@ npm run dev
 ## How it fits together
 
 ```
-                    registry.json  <-- single source of truth, committed, diffable
+   packages/props/src/models/<id>/thaikit.json  <-- one record per prop, committed, diffable
+   (a vibe3d-shaped source tree; the vibe3d registry.json is BUILT from it)
                      ^          ^
       web UI (Docker)|          |host-side Claude Code skills
       browse / edit  |          |generate
@@ -106,17 +108,22 @@ through img2threejs's own `--provider fal` for the reference mesh, which needs
 ```
 pending -> reference image -> validated -> Meshy v7 reference mesh
         -> sculpt spec -> factory, pass by pass, gated at each one
-        -> bundled -> rendered -> promoted to assets/<id>/ -> shipped
+        -> bundled -> rendered -> promoted to packages/props/src/models/<id>/ -> pack item refreshed -> shipped
 ```
 
-Each build leaves four files behind:
+Each build leaves these behind in `packages/props/src/models/<id>/`:
 
 | File | What it is |
 |---|---|
-| `model.bundle.js` | The factory, bundled for the browser |
-| `src/createObjectModel.ts` | The TypeScript it was generated from |
-| `object-sculpt-spec.json` | The spec behind that — **edit this to refine** |
+| `createObjectModel.ts` | The TypeScript factory — the artefact |
+| `model.ts` | Its vibe3d entry (`createModel`, `createPreview`) |
+| `thaikit.json` | The asset record: budgets, scale, physics, colliders summary, review, stages |
+| `colliders.json` | The physics compound, derived from the geometry |
+| `object-sculpt-spec.json` | The spec behind the factory — **edit this to refine** |
 | `thumb.webp` | Grid thumbnail, rendered from the module |
+
+The CommonJS bundle is a build product of the pack installer, under
+`packs/@thai-kit/<tag>/<id>/model.bundle.js`, and is never committed.
 
 The spec matters most. Generated code must never be the only copy of a
 reconstruction decision, so a refinement edits the spec and regenerates.
@@ -161,13 +168,13 @@ Every script prints **one JSON line on stdout** and human logs on stderr.
 ```bash
 node scripts/doctor.mjs                  # preflight
 node scripts/new-assets.mjs --file x.json --dry-run
-node scripts/prepare-image.mjs --in raw.png --out assets/<id>/preview.jpg
-node scripts/set-preview-image.mjs --id <id> --file assets/<id>/preview.jpg
+node scripts/prepare-image.mjs --in raw.png --out packages/props/src/models/<id>/preview.jpg
+node scripts/set-preview-image.mjs --id <id> --file packages/props/src/models/<id>/preview.jpg
 node scripts/build-model-module.mjs --id <id>   # TypeScript -> browser bundle
 node scripts/render-model.mjs      --id <id>   # turntable + hero, and measure it
-node scripts/promote-model.mjs     --id <id>   # scratch/ -> assets/, + thumbnail
-node scripts/migrate-registry.mjs --dry-run
-node scripts/build-registry.mjs --report
+node scripts/promote-model.mjs     --id <id>   # scratch/ -> the tree, + thumbnail, + pack refresh
+node scripts/install-pack.mjs --source tree:packages/props   # (re)install thaikit's own pack from the tree
+node scripts/build-vibe3d-registry.mjs         # publish step: emit packages/props/dist/registry.json
 npm test                                 # registry concurrency
 ```
 
@@ -195,7 +202,7 @@ marks — 7-Eleven, Big C, Cafe Amazon, FamilyMart, King Power, Lotus's, Makro, 
 Restaurants, PTT, SCB, AIS, Bangkok Hospital, Flash Express, and the Honda and
 Toyota vehicles. The MIT licence covers their code; it says nothing about the
 marks, and anyone shipping one needs their own trademark clearance. Each carries
-the caveat in `license.notice` in `registry.json`, and provenance for every asset
+the caveat in `license.notice` in the prop's `thaikit.json`, and provenance for every asset
 is recorded in `license.generatedBy`.
 
 ## Level editor

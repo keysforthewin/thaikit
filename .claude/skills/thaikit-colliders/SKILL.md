@@ -7,7 +7,7 @@ description: >-
   the triangles, cuts the prop into horizontal layers at the heights where its
   footprint changes, covers each layer with rectangles, and measures the result
   by casting rays down onto both the real geometry and the compound. Writes
-  assets/<id>/colliders.json and records the numbers on the asset. Use when the
+  packages/props/src/models/<id>/colliders.json and records the numbers on the asset. Use when the
   user wants colliders, collision, physics shapes, a collision mesh, hitboxes or
   a walkable shell for a prop -- including "make this standable", "the player
   falls through X", "re-derive the colliders", or setting a prop up to be kicked
@@ -32,13 +32,13 @@ zero. All 100 props shipped exactly one collider, and one primitive cannot
 express a ledge: a box to the 7-Eleven's parapet leaves the canopy at 3 m with
 nothing to stand on, and a box to the canopy leaves the parapet gone.
 
-What ships now is `assets/<id>/colliders.json`: boxes and cylinders in
-**root-local metres**, `scale` as HALF-EXTENTS, inlined into `dist/registry.json`
+What ships now is `packages/props/src/models/<id>/colliders.json`: boxes and cylinders in
+**root-local metres**, `scale` as HALF-EXTENTS, shipped inside the vibe3d pack as a `files[]` entry
 so a consumer gets them in the same fetch as the module.
 
 | | |
 |---|---|
-| `assets/<id>/colliders.json` | the compound, and the measurements taken off it |
+| `packages/props/src/models/<id>/colliders.json` | the compound, and the measurements taken off it |
 | `model.colliders` on the asset | file, part count, `handTuned`, coverage, max ledge error |
 | `physics` on the asset | whether it is a dynamic body, and what it weighs |
 
@@ -141,8 +141,13 @@ is not.
 
 ```bash
 node scripts/promote-model.mjs --id <id>     # gates the compound, if re-promoting
-node scripts/build-registry.mjs              # inlines it into dist/registry.json
 ```
+
+The derivation reads the prop's bundle from the installed `@thai-kit` pack
+(`packs/@thai-kit/<tag>/<id>/model.bundle.js`), which promote refreshes; a prop
+that was never promoted has no pack bundle, so use `--from scratch`. The
+catalogue reads the compound live off the tree, so nothing needs re-exporting
+for the level editor to see it.
 
 Promotion refuses a prop with no compound, one over its part ceiling, one with no
 self-check, coverage under **0.95**, or a max ledge error over the 0.30 m step
