@@ -26,7 +26,7 @@
  *
  * Usage:
  *   node scripts/build-vibe3d-registry.mjs
- *   node scripts/build-vibe3d-registry.mjs --out dist/vibe3d/registry.json
+ *   node scripts/build-vibe3d-registry.mjs --out somewhere/else/registry.json
  *   node scripts/build-vibe3d-registry.mjs --id 7-eleven-store-building
  *   node scripts/build-vibe3d-registry.mjs --namespace @thai-kit --three '>=0.185.0'
  */
@@ -38,7 +38,12 @@ import { readRegistry, REPO_ROOT } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 
-const DEFAULT_OUT = 'dist/vibe3d/registry.json';
+/**
+ * Inside the package that publishes it, `@thai-kit/props`, whose package.json
+ * points `vibe3d.registry` here. Generated and gitignored: a pack is
+ * re-downloadable, from npm or by re-running this script.
+ */
+const DEFAULT_OUT = 'packages/props/dist/registry.json';
 /**
  * Matches Vibe3D's own kit naming (`@scifi-kit`). It is baked into every address
  * in the emitted registry AND into consumers' models.lock.json, so changing it
