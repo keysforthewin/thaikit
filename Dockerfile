@@ -49,8 +49,18 @@ WORKDIR /app
 # trimesh -- belong to img2threejs's character/CS2 tracks, which thaikit never
 # takes. If a route ever needs one, add it explicitly here rather than pip
 # installing into a running container, where it would vanish on the next `up`.
+#
+# fonts-thai-tlwg is not decoration. Several props in this kit bake their legend
+# into a canvas texture at construction time -- a kilometre stone IS its distance
+# and its province name -- and the canvas draws with whatever fontconfig can
+# resolve. fonts-liberation alone answers Latin and nothing else, so every Thai
+# glyph came back as a tofu box in the render harness and in the thumbnail it
+# writes, on a prop whose whole subject is a Thai road sign. TLWG is the Debian
+# Thai family (Loma, Garuda, Norasi) and costs about 5 MB; it also gives
+# fontconfig a Thai answer for the generic `sans-serif` fallback, so a factory
+# that names "Noto Sans Thai" and never finds it still draws real glyphs.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      tini ca-certificates chromium fonts-liberation python3 \
+      tini ca-certificates chromium fonts-liberation fonts-thai-tlwg python3 \
  && rm -rf /var/lib/apt/lists/*
 ENV CHROME_PATH=/usr/bin/chromium
 

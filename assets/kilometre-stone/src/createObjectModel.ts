@@ -779,6 +779,7 @@ export function configureKilometreStoneRenderer(renderer: THREE.WebGLRenderer): 
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 }
+
 /* ---------------------------------------------------------------------------
  * thaikit post-generation layer — shared helpers.
  *
@@ -913,7 +914,10 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, targetW: number,
 }
 
 const SANS = (px: number) => `bold ${px}px "Arial Narrow", "Helvetica Neue Condensed", Impact, sans-serif`;
-const SANS_R = (px: number) => `${px}px "Noto Sans Thai", "Arial", sans-serif`;
+// "Loma" and "Garuda" are the Debian TLWG Thai faces the image installs. Naming them
+// after Noto keeps a browser that HAS Noto on Noto and still gives the headless harness a
+// real Thai face instead of a row of tofu boxes.
+const SANS_R = (px: number) => `${px}px "Noto Sans Thai", Loma, Garuda, "Arial", sans-serif`;
 
 /**
  * Draw text into an ANISOTROPIC atlas region.
@@ -946,21 +950,56 @@ function drawWorldText(
   ctx.restore();
 }
 
-/** Measured off assets/kilometre-stone/preview.jpg. See the spec's localOverrides for crops. */
+/**
+ * Measured off assets/kilometre-stone/preview.jpg. See the spec's localOverrides for crops.
+ *
+ * Every tone here is a MULTIPLIER-space albedo the harness's key light lands on, and the
+ * turntable's hole gate reads a back-lit face at about 0.55 of its painted luma against a
+ * backdrop at 58. So nothing composites below about luma 110 on this prop, and the tones
+ * that carry the dirt earn their darkness with CHROMA rather than with luma: the old
+ * `algae` was a neutral #686554, which is a grey the gate has to guess about.
+ */
 const PALETTE = {
-  crown: '#E6EAEE',   // averaged from #ECF0F3 lit (10799 px) and #D9DCE0 shaded (6300 px)
-  band: '#A32124',    // 10800 lit px of (560,380,180,60); the shaded face reads #882322
-  body: '#98917F',    // 25200 lit px and 12600 shaded px, within 2 luma of each other
-  algae: '#686554',   // 9900 px of (250,800,90,110), 45 luma below the clean body
-  ink: '#1B1F22',     // 10415 sub-luma-70 px of (560,220,180,140)
+  crown: '#E6EAEE',      // averaged from #ECF0F3 lit (10799 px) and #D9DCE0 shaded (6300 px)
+  crownDirt: '#BCBBAE',  // the greyed white under the arch shoulders and along the band line
+  band: '#A32124',       // 10800 lit px of (560,380,180,60); the shaded face reads #882322
+  bandLit: '#B7393B',    // the sun-bleached crest of the band, off its upper third
+  bandDeep: '#8E2226',   // the shaded lower edge, and the rim of every flake
+  body: '#98917F',       // 25200 lit px and 12600 shaded px, within 2 luma of each other
+  bodyPale: '#B2AC9A',   // the rain-washed arris and the high body between the drip runs
+  stain: '#807D6B',      // the vertical drip runs, and the standing ramp toward the foot
+  // The drift's two poles. Spread WIDE and biased LIGHT on purpose: a matched window on the
+  // plate's shaded body reads luma 155 with sd 23, and the only way to reach that spread
+  // without pushing a texel toward the turntable's backdrop luma of 58 is to let the clean
+  // patches go well ABOVE the base albedo rather than only below it. Composited over
+  // #98917F (luma 152) these land at about 132..186, mean 159.
+  driftDark: '#7A7663',  // luma 116
+  driftLight: '#DCD8C6', // luma 214
+  algae: '#6F7659',      // green-chroma, over the lowest quarter; luma 113, saturation 0.25
+  aggregate: '#C8C1AE',  // the lit paste at the bottom of the spalled recess
+  // The void itself. Luma 96 and saturation 0.27: the hole gate reads a back-lit face at
+  // about 0.55 of its painted luma against a backdrop at 58, and this is the one mark on
+  // the prop that has to be genuinely dark, so it pays for the darkness with CHROMA. It is
+  // 0.06 of the face's area, well under the gate's 1 per cent of foreground.
+  spallDark: '#6B6047',
+  rust: '#9E6E48',       // the orange flecks of exposed reinforcement dust in the spall
+  ink: '#1B1F22',        // 10415 sub-luma-70 px of (560,220,180,140)
 } as const;
 
 /** Geometry, in metres, from the spec. Origin base-center: y=0 is ground contact. */
 const DIM = {
-  // 0.49 x 0.90 x 0.42: the Meshy proxy measures w/h 0.548 and a 5-95 pct body depth of 0.46 of height, and the plate's
-  // bounding box is 596 x 880 px across a three-quarter view. The first build's 0.25 x 0.20
-  // section was a slender post the plate never showed.
-  W: 0.49, H: 0.90, D: 0.42, archR: 0.245, archSegs: 16,
+  // 0.49 x 0.90 x 0.42: the Meshy proxy measures w/h 0.548 and a 5-95 pct body depth of 0.46
+  // of height, and the plate's bounding box is 596 x 880 px across a three-quarter view. The
+  // first build's 0.25 x 0.20 section was a slender post the plate never showed.
+  W: 0.49, H: 0.90, D: 0.42, archR: 0.245, archSegs: 24,
+  /**
+   * Every arris is ROLLED, not sharp. The plate's crown turns over in the depth axis as
+   * well as across the face - it is a rolled dome, not a barrel vault with a knife-edge
+   * perimeter - and the body's vertical corners are worn soft. 22 mm on a 490 mm stone is
+   * what the plate's corner highlight measures. The extrude is inset and shortened so the
+   * bevel lands INSIDE the declared envelope rather than growing it.
+   */
+  bevel: 0.022, bevelSegs: 3,
   /**
    * Band boundaries as a fraction of height, read off the x=420 scanline of the shaded face:
    * white-to-red at y=409 and red-to-concrete at y=537 on a stone spanning y=72..952.
@@ -975,68 +1014,546 @@ const DIM = {
  * bands too - and they get them at the same height fraction, so the red band meets the
  * front face exactly all the way round.
  */
-const ATLAS = { colU: 0.04, faceU0: 0.12, faceW: 0.88 } as const;
+/**
+ * Two regions with a guard gutter between them. The column used to be sampled at ONE u
+ * (0.04) by every side wall and the back, which is a single texel column stretched across
+ * 0.42 m of stone: nothing on those faces could vary horizontally, so every wash, every
+ * drip run and the algae's own gradient arrived as a full-width horizontal BAND, and three
+ * of the four turntable frames showed a flat striped box. The column is 0.30 of the atlas
+ * now and the walls map their horizontal position into it.
+ *
+ * `gut` is inset off both ends of both regions so bilinear filtering at the shared edge
+ * cannot drag the face region's legend into the column or the other way round.
+ */
+const ATLAS = { colU0: 0.0, colW: 0.30, faceU0: 0.32, faceW: 0.68, gut: 0.006 } as const;
 
 let faceAtlasCache: THREE.CanvasTexture | null | undefined;
+let bumpAtlasCache: THREE.CanvasTexture | null | undefined;
 
-function paintBands(ctx: CanvasRenderingContext2D, x: number, w: number, size: number): void {
-  // v is the height fraction and flipY makes v=1 the canvas TOP, so the crown is drawn at
-  // the top and the foot at the bottom.
-  const yBandHi = (1 - DIM.bandHi) * size;
-  const yBandLo = (1 - DIM.bandLo) * size;
-  ctx.fillStyle = PALETTE.crown; ctx.fillRect(x, 0, w, yBandHi);
-  ctx.fillStyle = PALETTE.band;  ctx.fillRect(x, yBandHi, w, yBandLo - yBandHi);
-  ctx.fillStyle = PALETTE.body;  ctx.fillRect(x, yBandLo, w, size - yBandLo);
+/** A deterministic draw stream. No Math.random anywhere: every instance must be identical. */
+function stream(seed: number): () => number {
+  let i = seed | 0;
+  return () => { i += 1; return noise1(i); };
+}
 
-  // Algae over the lowest quarter, heaviest at the foot. A saturation-band scan up the
-  // stone reads 0 per cent everywhere above y=330 and 34 per cent at y=360, so this is
-  // confined to the foot rather than washed over the whole body.
-  const g = ctx.createLinearGradient(0, size * 0.76, 0, size);
-  g.addColorStop(0, 'rgba(104,101,84,0)');
-  g.addColorStop(1, 'rgba(104,101,84,0.92)');
+function rgba(hex: string, a: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function grey(v: number, a: number): string {
+  const k = Math.max(0, Math.min(255, Math.round(v)));
+  return `rgba(${k},${k},${k},${a})`;
+}
+
+/** An irregular closed blob. A chip of paint and a spall are both polygons, never ellipses. */
+function blobPath(ctx: CanvasRenderingContext2D, cx: number, cy: number,
+                  rx: number, ry: number, n: number, jitter: number,
+                  seed: number): void {
+  // A SEED, not a live stream: the colour atlas and the height atlas must draw the SAME
+  // polygon, and a shared stream is consumed by whichever of the two draws first.
+  const r = stream(seed);
+  ctx.beginPath();
+  for (let k = 0; k < n; k += 1) {
+    const a = (k / n) * Math.PI * 2;
+    const j = 1 - jitter + jitter * 2 * r();
+    const px = cx + Math.cos(a) * rx * j;
+    const py = cy + Math.sin(a) * ry * j;
+    if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+/**
+ * A soft wash, ELONGATED along y by `ratio`.
+ *
+ * Hard blotches read as camouflage, which is the trap this kit has already paid for on
+ * stone; but round soft ones read as mould, which is the opposite trap and is what the
+ * first tuning of this prop rendered - a wall of blurred green clouds. Weather on a
+ * vertical face RUNS, so every wash on the body is two to four times taller than it is
+ * wide and the eye reads it as staining rather than as a pattern.
+ */
+function wash(ctx: CanvasRenderingContext2D, cx: number, cy: number, rad: number,
+              hex: string, a: number, ratio = 1): void {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(1, ratio);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rad);
+  g.addColorStop(0, rgba(hex, a));
+  g.addColorStop(0.55, rgba(hex, a * 0.45));
+  g.addColorStop(1, rgba(hex, 0));
   ctx.fillStyle = g;
-  ctx.fillRect(x, size * 0.76, w, size * 0.24);
+  ctx.fillRect(-rad, -rad, rad * 2, rad * 2);
+  ctx.restore();
+}
 
-  // Red paint flaking off the band's lower edge to show concrete beneath.
-  ctx.fillStyle = 'rgba(152,145,127,0.75)';
-  for (let i = 0; i < 14; i += 1) {
-    const fx = x + w * (0.02 + 0.94 * noise1(i * 13 + 1));
-    const fw = w * (0.03 + 0.09 * noise1(i * 13 + 5));
-    const fh = size * (0.006 + 0.016 * noise1(i * 13 + 9));
-    ctx.fillRect(fx, yBandLo - fh, Math.min(fw, x + w - fx), fh);
+/**
+ * The colour atlas and the height atlas are painted TOGETHER, off the same draw streams,
+ * so the relief lands on the same grain, the same drip runs and the same paint chips the
+ * albedo shows. Painting them in two passes is how a bump map comes to disagree with the
+ * picture it is meant to be the relief of.
+ */
+interface Surf { c: CanvasRenderingContext2D; b: CanvasRenderingContext2D }
+
+/** Flat bands. v is the height fraction and flipY makes v=1 the canvas TOP. */
+function paintBase(s: Surf, x: number, w: number, size: number): void {
+  const yHi = (1 - DIM.bandHi) * size;
+  const yLo = (1 - DIM.bandLo) * size;
+  s.c.fillStyle = PALETTE.crown; s.c.fillRect(x, 0, w, yHi);
+  s.c.fillStyle = PALETTE.band;  s.c.fillRect(x, yHi, w, yLo - yHi);
+  s.c.fillStyle = PALETTE.body;  s.c.fillRect(x, yLo, w, size - yLo);
+  // Mid-grey is the bump's zero: everything after this either stands proud or sinks.
+  s.b.fillStyle = '#808080'; s.b.fillRect(x, 0, w, size);
+}
+
+/**
+ * Cloudy drift over the concrete: several octaves of very soft washes, alternating a grey
+ * stain against the rain-washed pale. This is the layer the previous build had NONE of,
+ * and it is why its body read as one flat tone against a plate that is mottled over its
+ * whole height.
+ */
+function paintDrift(s: Surf, x: number, w: number, size: number, seed: number, kk = 1): void {
+  const yLo = (1 - DIM.bandLo) * size;
+  const r = stream(seed);
+  // The standing ramp: on the plate the body darkens CONTINUOUSLY from the band to the
+  // foot, so a foot-only gradient leaves the middle third reading as clean new concrete.
+  // Measured, not chosen: a matched 110x120 window on the plate's SHADED body reads luma
+  // 155 with sd 23 at mid height and falls to 71 only at the foot. The first tuning ran the
+  // ramp from the band down and rendered that window at 111 with sd 5 - a body both 44 luma
+  // too dark and four times too flat, which is a smudge rather than weathering. The ramp is
+  // nearly flat over the top half now and the CONTRAST does the work instead.
+  const ramp = s.c.createLinearGradient(0, yLo, 0, size);
+  ramp.addColorStop(0, rgba(PALETTE.stain, 0.02));
+  ramp.addColorStop(0.45, rgba(PALETTE.stain, 0.07));
+  ramp.addColorStop(1, rgba(PALETTE.stain, 0.32));
+  s.c.fillStyle = ramp;
+  s.c.fillRect(x, yLo, w, size - yLo);
+  for (const [count, lo, hi, alpha] of [
+    [Math.round(30 / kk), 0.14, 0.30, 0.34], [Math.round(70 / kk), 0.06, 0.16, 0.44],
+    [Math.round(130 / kk), 0.02, 0.07, 0.46],
+  ] as Array<[number, number, number, number]>) {
+    for (let i = 0; i < count; i += 1) {
+      const cx = x + w * (-0.1 + 1.2 * r());
+      const cy = yLo + (size - yLo) * r();
+      const rad = w * (lo + (hi - lo) * r()) * kk;
+      const ratio = 1.8 + 2.8 * r();
+      const pick = r();
+      wash(s.c, cx, cy, rad, pick < 0.42 ? PALETTE.driftDark : PALETTE.driftLight,
+           alpha * (0.5 + 0.5 * r()), ratio);
+      // A stain sits in the surface, a wash-out stands proud: keep the relief gentle.
+      wash(s.b, cx, cy, rad, pick < 0.42 ? '#6E6E6E' : '#8E8E8E', alpha * 0.34, ratio);
+    }
   }
 }
 
-function faceAtlas(size: number): THREE.CanvasTexture | null {
-  if (faceAtlasCache !== undefined) return faceAtlasCache;
-  if (typeof document === 'undefined') { faceAtlasCache = null; return null; }
-  const canvas = document.createElement('canvas');
-  canvas.width = size; canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) { faceAtlasCache = null; return null; }
+/**
+ * Rain runs. On the plate every dark streak starts at the red band's lower edge or at a
+ * chip in it and falls, fading, most of the way down - the band is the drip line. So the
+ * starts are BIASED to the band edge rather than scattered over the body.
+ */
+function paintStreaks(s: Surf, x: number, w: number, size: number, seed: number,
+                      origins: number[] = []): void {
+  const yLo = (1 - DIM.bandLo) * size;
+  const r = stream(seed);
+  for (let i = 0; i < 72; i += 1) {
+    // Just under half of the runs start under a CHIP in the band. On the plate the darkest
+    // marks on the concrete are directly below the places the paint has come away, because
+    // that is where the water gets behind the film and comes out again; scattering every
+    // run evenly across the face loses the one thing that ties the two surfaces together.
+    const under = origins.length > 0 && r() < 0.45;
+    const sx = under ? origins[Math.floor(r() * origins.length) % origins.length]
+                         + w * (r() - 0.5) * 0.06
+                     : x + w * (0.01 + 0.98 * r());
+    const sw = w * (0.004 + 0.026 * r() * r());
+    const y0 = yLo + (size - yLo) * (under ? 0.04 : 0.30) * r() * r();
+    const len = (size - y0) * (0.35 + 0.65 * r());
+    const dark = r() < 0.72;
+    const a = (dark ? 0.18 + 0.28 * r() : 0.10 + 0.16 * r()) * (under ? 1.25 : 1);
+    const g = s.c.createLinearGradient(0, y0, 0, y0 + len);
+    const hex = dark ? PALETTE.stain : PALETTE.bodyPale;
+    g.addColorStop(0, rgba(hex, 0));
+    g.addColorStop(0.14, rgba(hex, a));
+    g.addColorStop(1, rgba(hex, 0));
+    s.c.fillStyle = g;
+    s.c.fillRect(sx, y0, sw, len);
+    const gb = s.b.createLinearGradient(0, y0, 0, y0 + len);
+    gb.addColorStop(0, grey(dark ? 110 : 150, 0));
+    gb.addColorStop(0.14, grey(dark ? 110 : 150, a * 0.8));
+    gb.addColorStop(1, grey(dark ? 110 : 150, 0));
+    s.b.fillStyle = gb;
+    s.b.fillRect(sx, y0, sw, len);
+  }
+}
 
-  // The band column, sampled by the wall and the back cap.
-  paintBands(ctx, 0, size * ATLAS.faceU0, size);
-  // The face region, sampled by the front cap: the same bands plus the legend.
+/**
+ * Formwork striation: short vertical scratches at the frequency BETWEEN the drift's washes
+ * and the grain's specks. It is the band the material comparator was short of - the plate
+ * reads luma variance 0.071 and mean gradient 0.058, and the build with drift and grain
+ * alone read 0.050 and 0.033, scoring 0.82 on microstructure against 0.95 on base colour.
+ * Washes cannot supply it (they are too soft) and specks cannot (they are too small to
+ * survive minification), so it needs its own layer.
+ */
+function paintStriation(s: Surf, x: number, w: number, size: number, y0: number, y1: number,
+                        seed: number, count: number, strength: number, k = 1): void {
+  const r = stream(seed);
+  for (let i = 0; i < count; i += 1) {
+    const px = x + w * r();
+    const len = (y1 - y0) * (0.02 + 0.10 * r() * r());
+    const py = y0 + (y1 - y0 - len) * r();
+    const sw = Math.max(1, w * (0.002 + 0.008 * r()) * k);
+    const up = r() < 0.5;
+    const a = strength * (0.4 + 0.6 * r());
+    const g = s.c.createLinearGradient(0, py, 0, py + len);
+    const hex = up ? PALETTE.driftLight : PALETTE.driftDark;
+    g.addColorStop(0, rgba(hex, 0));
+    g.addColorStop(0.35, rgba(hex, a));
+    g.addColorStop(1, rgba(hex, 0));
+    s.c.fillStyle = g;
+    s.c.fillRect(px, py, sw, len);
+    s.b.fillStyle = grey(up ? 170 : 84, a * 0.8);
+    s.b.fillRect(px, py, sw, len);
+  }
+}
+
+/** The pour line: one faint horizontal lift where the formwork was topped up. */
+function paintPourLine(s: Surf, x: number, w: number, size: number): void {
+  const yLo = (1 - DIM.bandLo) * size;
+  const y = yLo + (size - yLo) * 0.42;
+  // Faded at both ends: a pour line that runs edge to edge at full strength reads as a
+  // shelf cut into the stone rather than as a lift in the formwork.
+  const fade = s.c.createLinearGradient(x, 0, x + w, 0);
+  fade.addColorStop(0, rgba(PALETTE.stain, 0));
+  fade.addColorStop(0.3, rgba(PALETTE.stain, 0.20));
+  fade.addColorStop(0.75, rgba(PALETTE.stain, 0.12));
+  fade.addColorStop(1, rgba(PALETTE.stain, 0));
+  s.c.fillStyle = fade;
+  s.c.fillRect(x, y, w, Math.max(1, size * 0.0025));
+  s.b.fillStyle = grey(104, 0.55);
+  s.b.fillRect(x, y, w, Math.max(1, size * 0.0025));
+}
+
+/**
+ * Aggregate grain. Two thousand one- and two-pixel specks is what stops cast concrete
+ * reading as paint at close range, and it is the layer that carries almost all of the
+ * bump map's high-frequency relief.
+ */
+function paintGrain(s: Surf, x: number, w: number, size: number, y0: number, y1: number,
+                    seed: number, density: number, k = 1): void {
+  const r = stream(seed);
+  const n = Math.round(density * w * (y1 - y0) / 1000);
+  for (let i = 0; i < n; i += 1) {
+    const px = x + w * r();
+    const py = y0 + (y1 - y0) * r();
+    // Two to five texels. A one-pixel speck on a 1024 atlas is seen through three texels
+    // of minification at prop distance, which is to say it is not seen at all - the first
+    // tuning painted 1100 of them onto a face that rendered perfectly smooth.
+    const d = Math.max(1, Math.round((2 + r() * 3) * k));
+    const up = r() < 0.5;
+    s.c.fillStyle = rgba(up ? PALETTE.driftLight : PALETTE.driftDark, 0.16 + 0.26 * r());
+    s.c.fillRect(px, py, d, d);
+    s.b.fillStyle = grey(up ? 176 : 74, 0.30 + 0.35 * r());
+    s.b.fillRect(px, py, d, d);
+  }
+}
+
+/**
+ * Algae at the foot. A gradient alone is a smudge; on the plate the green is a field of
+ * small CLUSTERS thickening downward, heaviest in the corner the rain runs into. Capped
+ * at 0.78 alpha over the body so the composite bottoms out near luma 118 - a back-lit
+ * frame renders that at ~65, clear of the gate's band around 58.
+ */
+function paintAlgae(s: Surf, x: number, w: number, size: number, seed: number): void {
+  const top = size * 0.80;
+  const g = s.c.createLinearGradient(0, top, 0, size);
+  g.addColorStop(0, rgba(PALETTE.algae, 0));
+  g.addColorStop(0.55, rgba(PALETTE.algae, 0.34));
+  g.addColorStop(1, rgba(PALETTE.algae, 0.78));
+  s.c.fillStyle = g;
+  s.c.fillRect(x, top, w, size - top);
+
+  const r = stream(seed);
+  for (let k = 0; k < 44; k += 1) {
+    const cx = x + w * r();
+    const depth = r() * r();                       // biased to the foot
+    const cy = size - (size - top) * depth * 0.95;
+    const spread = w * (0.02 + 0.05 * r());
+    const density = 14 + Math.round(26 * r());
+    for (let i = 0; i < density; i += 1) {
+      const a1 = r() * Math.PI * 2;
+      const rr = spread * Math.sqrt(r());
+      const px = cx + Math.cos(a1) * rr;
+      const py = cy + Math.sin(a1) * rr * 1.3;
+      if (py > size || py < top * 0.98) continue;
+      const d = 1 + Math.round(r() * 2.4);
+      s.c.fillStyle = rgba(PALETTE.algae, 0.30 + 0.50 * r());
+      s.c.fillRect(px, py, d, d);
+      s.b.fillStyle = grey(150, 0.28);
+      s.b.fillRect(px, py, d, d);
+    }
+  }
+}
+
+/** The very bottom: grime, and the ragged chipped edge the plate's foot actually has. */
+function paintFoot(s: Surf, x: number, w: number, size: number, seed: number): void {
+  const g = s.c.createLinearGradient(0, size * 0.94, 0, size);
+  g.addColorStop(0, rgba(PALETTE.stain, 0));
+  g.addColorStop(1, rgba(PALETTE.stain, 0.42));
+  s.c.fillStyle = g;
+  s.c.fillRect(x, size * 0.94, w, size * 0.06);
+
+  const r = stream(seed);
+  for (let i = 0; i < 26; i += 1) {
+    const cx = x + w * r();
+    const rx = w * (0.008 + 0.030 * r());
+    const ry = size * (0.004 + 0.014 * r());
+    const cy = size - size * 0.004 - ry * r();
+    blobPath(s.c, cx, cy, rx, ry, 7, 0.45, seed + i * 37);
+    s.c.fillStyle = rgba(PALETTE.aggregate, 0.35 + 0.30 * r());
+    s.c.fill();
+    blobPath(s.b, cx, cy, rx, ry, 7, 0.45, seed + i * 37);
+    s.b.fillStyle = grey(96, 0.5);
+    s.b.fill();
+  }
+}
+
+/**
+ * The red band, which on the plate is the most damaged surface on the stone: sun-faded
+ * across its crest, deep in its shadowed lower edge, and flaking off BOTH edges in
+ * clustered irregular chips that expose the concrete beneath. The previous build had one
+ * row of fourteen axis-aligned rectangles along the bottom edge, which rendered as a
+ * sawtooth graphic rather than as paint coming away.
+ */
+function paintBandWear(s: Surf, x: number, w: number, size: number, seed: number): number[] {
+  const yHi = (1 - DIM.bandHi) * size;
+  const yLo = (1 - DIM.bandLo) * size;
+  const bh = yLo - yHi;
+  const r = stream(seed);
+
+  s.c.save();
+  s.c.beginPath(); s.c.rect(x, yHi, w, bh); s.c.clip();
+  s.b.save();
+  s.b.beginPath(); s.b.rect(x, yHi, w, bh); s.b.clip();
+
+  // Fade across the crest, depth along the lower edge.
+  const g = s.c.createLinearGradient(0, yHi, 0, yLo);
+  g.addColorStop(0, rgba(PALETTE.bandDeep, 0.30));
+  g.addColorStop(0.34, rgba(PALETTE.bandLit, 0.34));
+  g.addColorStop(1, rgba(PALETTE.bandDeep, 0.38));
+  s.c.fillStyle = g;
+  s.c.fillRect(x, yHi, w, bh);
+  for (let i = 0; i < 26; i += 1) {
+    wash(s.c, x + w * r(), yHi + bh * r(), w * (0.03 + 0.13 * r()),
+         r() < 0.5 ? PALETTE.bandLit : PALETTE.bandDeep, 0.12 + 0.20 * r(), 0.7);
+  }
+
+  // Flaking, in clusters. A chip is a polygon of exposed concrete with a darker rim where
+  // the paint film has lifted; the clusters sit on the two edges, where water gets under.
+  const drips: number[] = [];
+  for (let k = 0; k < 13; k += 1) {
+    const edge = r();
+    const cy = edge < 0.52 ? yLo - bh * 0.10 * r()
+             : edge < 0.80 ? yHi + bh * 0.12 * r()
+             : yHi + bh * r();
+    const cx = x + w * r();
+    const spread = w * (0.02 + 0.05 * r());
+    const chips = 4 + Math.round(7 * r());
+    // Only a cluster on the band's LOWER edge sheds down the concrete.
+    if (edge < 0.52) drips.push(cx);
+    for (let i = 0; i < chips; i += 1) {
+      const px = cx + (r() - 0.5) * 2 * spread;
+      const py = cy + (r() - 0.5) * bh * 0.34;
+      // Wider than they are tall, and small: a chip of paint comes away in a flake, and
+      // the first pass's 0.07..0.33 of the band height hung white icicles off the red.
+      const rx = w * (0.008 + 0.030 * r() * r());
+      const ry = bh * (0.04 + 0.13 * r() * r());
+      blobPath(s.c, px, py, rx, ry, 8, 0.55, seed + k * 97 + i);
+      s.c.fillStyle = rgba(r() < 0.35 ? PALETTE.bodyPale : PALETTE.stain, 0.55 + 0.34 * r());
+      s.c.fill();
+      s.c.strokeStyle = rgba(PALETTE.bandDeep, 0.55);
+      s.c.lineWidth = Math.max(1, size * 0.0015);
+      s.c.stroke();
+      blobPath(s.b, px, py, rx, ry, 8, 0.55, seed + k * 97 + i);
+      s.b.fillStyle = grey(104, 0.55);
+      s.b.fill();
+    }
+  }
+  s.c.restore();
+  s.b.restore();
+  return drips;
+}
+
+/**
+ * The white crown is not clean white. It greys toward the band, carries the same grey
+ * drift under the arch shoulders, and takes a dirty line right where the paint meets the
+ * red. Flat #E6EAEE over the whole crown is the second half of the flat-surface gap.
+ */
+function paintCrownGrime(s: Surf, x: number, w: number, size: number, seed: number, k: number): void {
+  const yHi = (1 - DIM.bandHi) * size;
+  const r = stream(seed);
+  const g = s.c.createLinearGradient(0, yHi - size * 0.20, 0, yHi);
+  g.addColorStop(0, rgba(PALETTE.crownDirt, 0));
+  g.addColorStop(1, rgba(PALETTE.crownDirt, 0.72));
+  s.c.fillStyle = g;
+  s.c.fillRect(x, yHi - size * 0.20, w, size * 0.20);
+
+  s.c.save();
+  s.c.beginPath(); s.c.rect(x, 0, w, yHi); s.c.clip();
+  for (let i = 0; i < 34; i += 1) {
+    wash(s.c, x + w * r(), yHi * (0.35 + 0.68 * r()), w * (0.05 + 0.18 * r()),
+         PALETTE.crownDirt, 0.14 + 0.22 * r(), 1.4);
+  }
+  // The shoulders themselves: the crown's widest point is where the run-off concentrates,
+  // and it is the last part of the white the eye reads as clean.
+  for (const sh of [0.10, 0.90]) {
+    for (let i = 0; i < 10; i += 1) {
+      wash(s.c, x + w * (sh + (r() - 0.5) * 0.18), yHi * (0.72 + 0.30 * r()),
+           w * (0.06 + 0.14 * r()), PALETTE.algae, 0.08 + 0.13 * r(), 1.8);
+    }
+  }
+  // Short runs off the shoulder, where the crown sheds onto the band.
+  for (let i = 0; i < 26; i += 1) {
+    const sx = x + w * r();
+    const y0 = yHi * (0.45 + 0.5 * r());
+    const len = (yHi - y0) * (0.5 + 0.5 * r());
+    const gg = s.c.createLinearGradient(0, y0, 0, y0 + len);
+    gg.addColorStop(0, rgba(PALETTE.crownDirt, 0));
+    gg.addColorStop(1, rgba(PALETTE.crownDirt, 0.16 + 0.24 * r()));
+    s.c.fillStyle = gg;
+    s.c.fillRect(sx, y0, w * (0.005 + 0.02 * r()), len);
+  }
+  s.c.restore();
+  paintStriation(s, x, w, size, yHi * 0.30, yHi, seed + 883, Math.round(200 / k), 0.16, k);
+  paintGrain(s, x, w, size, 0, yHi, seed + 977, 0.9 / k, k);
+}
+
+/**
+ * Everything that wraps, painted into one region.
+ *
+ * `k` is the region's texel scale relative to the face, and it exists because a mark sized
+ * as a fraction of the region's WIDTH is not the same size in the world in both regions.
+ * The face carries 0.49 m over 0.68 of the atlas (0.54 mm per texel); the column carries
+ * 0.42 m over 0.30 (1.37 mm per texel), 2.5x coarser. Painting both at the same fractions
+ * puts grain two and a half times too big on three of the four faces, and a 120 px window
+ * on the side wall measured sd 10 against the front's 18 for exactly that reason. Sizes are
+ * multiplied by `k` and counts divided by it, so both regions weather at the same scale.
+ */
+function paintWrapped(s: Surf, x: number, w: number, size: number, seed: number, k: number): void {
+  const yLo = (1 - DIM.bandLo) * size;
+  paintBase(s, x, w, size);
+  // The band is painted BEFORE the body, out of order, because the body sheds FROM it: the
+  // chip positions are what the drip runs are anchored to.
+  const drips = paintBandWear(s, x, w, size, seed + 1013);
+  s.c.save(); s.c.beginPath(); s.c.rect(x, yLo, w, size - yLo); s.c.clip();
+  s.b.save(); s.b.beginPath(); s.b.rect(x, yLo, w, size - yLo); s.b.clip();
+  paintDrift(s, x, w, size, seed, k);
+  paintStreaks(s, x, w, size, seed + 211, drips);
+  paintPourLine(s, x, w, size);
+  paintStriation(s, x, w, size, yLo, size, seed + 307, Math.round(620 / k), 0.34, k);
+  paintGrain(s, x, w, size, yLo, size, seed + 419, 3.4 / k, k);
+  paintAlgae(s, x, w, size, seed + 613);
+  paintFoot(s, x, w, size, seed + 811);
+  s.c.restore(); s.b.restore();
+  paintCrownGrime(s, x, w, size, seed + 1217, k);
+}
+
+/**
+ * The spalled patch: a vertical almond of render broken away to expose the aggregate,
+ * with rust-coloured dust in it. Painted rather than modelled - it is a surface loss of a
+ * few millimetres - but it now carries real relief in the bump map, which is what makes a
+ * hole in concrete read as a hole rather than as a decal.
+ *
+ * Re-measured off the plate: it spans y=735..870 on a stone spanning y=72..952, i.e. 0.093
+ * to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall. The
+ * previous build had it at 0.21 and half that size.
+ */
+function paintSpall(s: Surf, fx: number, fw: number, size: number): void {
+  const r = stream(7717);
+  const cx = fx + fw * 0.115;
+  const cy = size * 0.830;
+  const rx = fw * 0.062;
+  const ry = size * 0.077;
+
+  // Read from the outside in, because a spall is a HOLE and a hole is darker than the wall
+  // it is in. The first two tunings filled the void with pale aggregate and hung a thin
+  // dark line round it, which renders as a light sticker with an outline. What actually
+  // reads is: a soft shadow spilling onto the wall, a dark void, and a SMALL patch of lit
+  // aggregate low inside it where the key reaches the bottom of the recess.
+  wash(s.c, cx, cy, rx * 2.2, PALETTE.stain, 0.42, ry / rx);
+  blobPath(s.c, cx, cy, rx * 1.10, ry * 1.06, 13, 0.30, 7717);
+  s.c.fillStyle = rgba(PALETTE.spallDark, 0.70);
+  s.c.fill();
+  blobPath(s.c, cx, cy, rx, ry, 13, 0.28, 7719);
+  s.c.fillStyle = rgba(PALETTE.spallDark, 0.92);
+  s.c.fill();
+  blobPath(s.c, cx - rx * 0.12, cy + ry * 0.26, rx * 0.58, ry * 0.46, 11, 0.34, 7723);
+  s.c.fillStyle = rgba(PALETTE.aggregate, 0.72);
+  s.c.fill();
+  blobPath(s.b, cx, cy, rx, ry, 13, 0.28, 7719);
+  s.b.fillStyle = grey(52, 0.95);
+  s.b.fill();
+
+  s.c.save();
+  blobPath(s.c, cx, cy, rx, ry, 13, 0.28, 7719);
+  s.c.clip();
+  s.b.save();
+  blobPath(s.b, cx, cy, rx, ry, 13, 0.28, 7719);
+  s.b.clip();
+  for (let i = 0; i < 130; i += 1) {
+    const a = r() * Math.PI * 2;
+    const rr = Math.sqrt(r());
+    const px = cx + Math.cos(a) * rx * rr;
+    const py = cy + Math.sin(a) * ry * rr;
+    const d = 1 + Math.round(r() * 3);
+    const rust = r() < 0.14;
+    s.c.fillStyle = rgba(rust ? PALETTE.rust : (r() < 0.5 ? PALETTE.bodyPale : PALETTE.stain),
+                         0.45 + 0.45 * r());
+    s.c.fillRect(px, py, d, d);
+    s.b.fillStyle = grey(150, 0.5);
+    s.b.fillRect(px, py, d, d);
+  }
+  s.c.restore();
+  s.b.restore();
+}
+
+function paintAtlases(size: number): { color: HTMLCanvasElement; bump: HTMLCanvasElement } | null {
+  const mk = () => {
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    // A GPU-backed canvas costs seconds per thousand path fills; this atlas is read back
+    // once and never composited, so keep it on the CPU raster.
+    return { c, ctx: c.getContext('2d', { willReadFrequently: true }) };
+  };
+  const a = mk(); const b = mk();
+  if (!a.ctx || !b.ctx) return null;
+  const s: Surf = { c: a.ctx, b: b.ctx };
+  // Flood both atlases before anything else. The guard gutter between the two regions is
+  // never painted by a region, and left transparent it is BLACK - which at mip 3 is two
+  // texels wide and gets dragged onto the stone by the bilinear tap either side of it.
+  s.c.fillStyle = PALETTE.body; s.c.fillRect(0, 0, size, size);
+  s.b.fillStyle = '#808080'; s.b.fillRect(0, 0, size, size);
+
+  // The band column, sampled by the side walls and the back cap.
+  // 0.40 = (0.49 / 0.68) / (0.42 / 0.30): the column's metres-per-texel against the face's.
+  paintWrapped(s, size * ATLAS.colU0, size * ATLAS.colW, size, 3301, 0.40);
+  // The face region, sampled by the front cap: the same treatment on its own draw stream,
+  // so the front and the sides are not the same picture twice.
   const fx = size * ATLAS.faceU0, fw = size * ATLAS.faceW;
-  paintBands(ctx, fx, fw, size);
-
-  // A spalled patch where the render has broken away to expose aggregate. Painted rather
-  // than modelled: it is a surface loss of a few millimetres.
-  ctx.fillStyle = 'rgba(88,84,70,0.80)';
-  ctx.beginPath();
-  ctx.ellipse(fx + fw * 0.10, size * 0.79, fw * 0.045, size * 0.048, 0.3, 0, Math.PI * 2);
-  ctx.fill();
+  paintWrapped(s, fx, fw, size, 5501, 1);
+  paintSpall(s, fx, fw, size);
 
   // The legend, set RIGHT of centre on the face - asymmetric, so the atlas must not be
   // mirrored. Representative text for a province, not a transcription of one stone.
   //
-  // The face region is anisotropic by about 3.2x - 0.25 m of width onto 0.88 of u against
-  // 0.90 m of height onto 1.0 of v - so the legend goes through drawWorldText and lands at
-  // its real proportions rather than three times too tall.
+  // The face region is anisotropic - 0.49 m of width onto 0.68 of u against 0.90 m of
+  // height onto 1.0 of v - so the legend goes through drawWorldText and lands at its real
+  // proportions rather than stretched.
+  const ctx = a.ctx;
   const pxPerMU = fw / DIM.W;
   const pxPerMV = size / DIM.H;
   ctx.fillStyle = PALETTE.ink;
+  // Stencilled paint on a rough wall, so the grain underneath comes a little way through
+  // rather than the glyphs sitting on top as clean vector shapes.
+  ctx.globalAlpha = 0.93;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   // Plate positions, as height fraction from the foot on a stone spanning y=72..952: the
@@ -1046,48 +1563,135 @@ function faceAtlas(size: number): THREE.CanvasTexture | null {
   drawWorldText(ctx, '42', fx + fw * 0.54, size * 0.225, DIM.W * 0.40, 0.12, pxPerMU, pxPerMV, SANS);
   drawWorldText(ctx, 'สระบุรี', fx + fw * 0.54, size * 0.59, DIM.W * 0.52, 0.056, pxPerMU, pxPerMV, SANS_R);
   drawWorldText(ctx, 'SARABURI', fx + fw * 0.54, size * 0.67, DIM.W * 0.56, 0.036, pxPerMU, pxPerMV, SANS);
+  ctx.globalAlpha = 1;
+  // The height atlas ships at HALF resolution. It is painted at full size so its grain and
+  // its chips line up with the albedo's, then downsampled: relief is low-frequency where it
+  // matters, and two full 1024 RGBA textures is 11 MB of VRAM on a kit aimed at low-end
+  // integrated GPUs.
+  const half = document.createElement('canvas');
+  half.width = size / 2; half.height = size / 2;
+  const hc = half.getContext('2d');
+  if (hc) hc.drawImage(b.c, 0, 0, half.width, half.height);
+  return { color: a.c, bump: hc ? half : b.c };
+}
 
-  const tex = new THREE.CanvasTexture(canvas);
+function faceAtlas(size: number): THREE.CanvasTexture | null {
+  if (faceAtlasCache !== undefined) return faceAtlasCache;
+  if (typeof document === 'undefined') { faceAtlasCache = null; bumpAtlasCache = null; return null; }
+  const painted = paintAtlases(size);
+  if (!painted) { faceAtlasCache = null; bumpAtlasCache = null; return null; }
+
+  const tex = new THREE.CanvasTexture(painted.color);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.needsUpdate = true;
   faceAtlasCache = tex;
+
+  // The height atlas is DATA, not a picture: leave it in linear space or the relief is
+  // read through an sRGB decode and every gentle stain becomes a cliff.
+  const bump = new THREE.CanvasTexture(painted.bump);
+  bump.colorSpace = THREE.NoColorSpace;
+  bump.needsUpdate = true;
+  bumpAtlasCache = bump;
   return tex;
+}
+
+/**
+ * Angle-limited normal smoothing.
+ *
+ * ExtrudeGeometry is non-indexed, so its normals are FLAT and a three-segment bevel reads
+ * as a ladder of facets around the crown - the same banding the previous build showed on
+ * its unbevelled arch. Averaging the normals that share a position AND point within
+ * `maxDeg` of each other rounds every bevel over while leaving the flat faces flat.
+ *
+ * Unconditional averaging is the LatheGeometry mistake this kit has already paid for: it
+ * tilts the first ring of a wall into the disc it meets and shades a dark band the
+ * turntable gate reads as a hole. The threshold is what stops that here - a bevel step is
+ * about 22 degrees, and a cap-to-wall junction with no bevel between them is 90.
+ */
+function smoothBevel(geo: THREE.BufferGeometry, maxDeg = 62): void {
+  const pos = geo.getAttribute('position') as THREE.BufferAttribute;
+  const nrm = geo.getAttribute('normal') as THREE.BufferAttribute;
+  if (!pos || !nrm) return;
+  const lim = Math.cos((maxDeg * Math.PI) / 180);
+  const buckets = new Map<string, number[]>();
+  for (let i = 0; i < pos.count; i += 1) {
+    const k = `${Math.round(pos.getX(i) * 1e4)},${Math.round(pos.getY(i) * 1e4)},${Math.round(pos.getZ(i) * 1e4)}`;
+    const b = buckets.get(k);
+    if (b) b.push(i); else buckets.set(k, [i]);
+  }
+  const out = new Float32Array(nrm.count * 3);
+  for (const ids of buckets.values()) {
+    for (const i of ids) {
+      const ix = nrm.getX(i), iy = nrm.getY(i), iz = nrm.getZ(i);
+      let nx = 0, ny = 0, nz = 0;
+      for (const j of ids) {
+        const jx = nrm.getX(j), jy = nrm.getY(j), jz = nrm.getZ(j);
+        if (ix * jx + iy * jy + iz * jz < lim) continue;
+        nx += jx; ny += jy; nz += jz;
+      }
+      const L = Math.hypot(nx, ny, nz) || 1;
+      out[i * 3] = nx / L; out[i * 3 + 1] = ny / L; out[i * 3 + 2] = nz / L;
+    }
+  }
+  geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
 }
 
 /** The arch-topped front elevation: straight sides, then a true semicircular crown. */
 function stoneShape(): THREE.Shape {
-  const R = DIM.archR, s = new THREE.Shape();
-  s.moveTo(-DIM.W / 2, 0);
-  s.lineTo(DIM.W / 2, 0);
-  s.lineTo(DIM.W / 2, DIM.H - R);
+  // `bevelSize` runs OUTWARD from the outline, so the shape is INSET by it on all four
+  // sides and lifted by it off the ground - measured, not assumed: the first attempt left
+  // the shape at its full size and the harness read the bounds back as 0.534 x 0.944,
+  // one whole bevel proud of the declared envelope in every direction.
+  const b = DIM.bevel;
+  const R = DIM.archR - b, s = new THREE.Shape();
+  const hw = DIM.W / 2 - b;
+  const H = DIM.H - b;
+  s.moveTo(-hw, b);
+  s.lineTo(hw, b);
+  s.lineTo(hw, H - R);
   // Sweep 0 -> PI: from the RIGHT shoulder over the apex to the LEFT shoulder. The first
   // build swept -PI/2 -> PI/2, which is the right HALF of a circle - a cusp hanging below
   // the right shoulder and no left shoulder at all - and rendered visibly lop-sided.
   for (let k = 1; k <= DIM.archSegs; k += 1) {
     const a = Math.PI * (k / DIM.archSegs);
-    s.lineTo(R * Math.cos(a), DIM.H - R + R * Math.sin(a));
+    s.lineTo(R * Math.cos(a), H - R + R * Math.sin(a));
   }
-  s.lineTo(-DIM.W / 2, 0);
+  s.lineTo(-hw, b);
   return s;
 }
 
 function buildGeometry(root: THREE.Group): void {
+  const bt = DIM.bevel;
+  // ExtrudeGeometry runs the caps from z=0 to z=depth and hangs the bevel off both ends,
+  // so the finished z extent is depth + 2*bt. Shortening the extrusion by exactly that
+  // keeps the solid inside its declared 0.42 m depth.
   const geo = new THREE.ExtrudeGeometry(stoneShape(), {
-    depth: DIM.D, bevelEnabled: false, curveSegments: 4,
+    depth: DIM.D - 2 * bt, bevelEnabled: true, bevelThickness: bt, bevelSize: bt,
+    bevelOffset: 0, bevelSegments: DIM.bevelSegs, curveSegments: 4,
   });
-  geo.translate(0, 0, -DIM.D / 2);
+  geo.translate(0, 0, -(DIM.D / 2 - bt));
+  smoothBevel(geo);
 
   const pos = geo.getAttribute('position') as THREE.BufferAttribute;
   const nrm = geo.getAttribute('normal') as THREE.BufferAttribute;
   const uv = new Float32Array(pos.count * 2);
+  const g = ATLAS.gut;
   for (let i = 0; i < pos.count; i += 1) {
     // v is the height fraction for EVERY vertex, front cap and wall alike. That is what
     // makes the bands wrap continuously and meet the front face exactly.
     const v = Math.min(1, Math.max(0, pos.getY(i) / DIM.H));
+    const x = pos.getX(i), z = pos.getZ(i);
     if (nrm.getZ(i) > 0.5) {
-      uv[i * 2] = ATLAS.faceU0 + ATLAS.faceW * (pos.getX(i) / DIM.W + 0.5);
+      // The front cap, and the bevel ring around it: those normals sit near 45 degrees, so
+      // they take the FACE region with the cap they belong to and u stays continuous
+      // across the rolled arris.
+      uv[i * 2] = ATLAS.faceU0 + g + (ATLAS.faceW - 2 * g) * (x / DIM.W + 0.5);
     } else {
-      uv[i * 2] = ATLAS.colU;
+      // Everything else reads the column, and it reads ACROSS it: a side wall varies along
+      // z, the back cap and the crown along x. Whichever axis the face actually spans is
+      // the one that carries the horizontal detail.
+      const t = Math.abs(nrm.getX(i)) > Math.abs(nrm.getZ(i)) ? z / DIM.D + 0.5 : x / DIM.W + 0.5;
+      uv[i * 2] = ATLAS.colU0 + g + (ATLAS.colW - 2 * g) * Math.min(1, Math.max(0, t));
     }
     uv[i * 2 + 1] = v;
   }
@@ -1100,11 +1704,19 @@ function applyAtlases(root: THREE.Group, options: ProceduralModelOptions): void 
   const rt = root.userData.sculptRuntime as { meshes?: Record<string, THREE.Mesh> } | undefined;
   const mesh = rt?.meshes?.['stone'];
   if (!mesh) return;
-  const tex = faceAtlas(options.textureSize ?? 512);
+  // 1024, not 512: the weathering is the identity of this prop at prop distance, and at 512
+  // the flaked edge of the red band and the aggregate in the spall are both under two texels.
+  // It is ONE canvas pair of Path2D fills, not a per-pixel loop, so it costs milliseconds.
+  const tex = faceAtlas(options.textureSize ?? 1024);
   if (!tex) return;
   tex.anisotropy = options.textureAnisotropy ?? 4;
   const m = mesh.material as THREE.MeshPhysicalMaterial;
   m.map = tex;
+  if (bumpAtlasCache) {
+    bumpAtlasCache.anisotropy = tex.anisotropy;
+    m.bumpMap = bumpAtlasCache;
+    m.bumpScale = 0.6;
+  }
   m.color.set('#FFFFFF');
   m.metalness = 0.0;
   // The highest roughness of the eight: cast concrete and masked paint both scatter
@@ -1112,7 +1724,6 @@ function applyAtlases(root: THREE.Group, options: ProceduralModelOptions): void 
   m.roughness = 0.85;
   m.needsUpdate = true;
 }
-
 /**
  * thaikit entry point. The registry records `createObjectModel` as the export and calls it
  * with (spec, options); the generated factory is named for its target and takes options

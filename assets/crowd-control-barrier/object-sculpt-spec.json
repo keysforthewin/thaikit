@@ -72,10 +72,11 @@
       "formLanguage": [
         "round-tube-frame",
         "rounded-top-corners",
-        "sheet-infill-bays",
+        "pressed-sheet-infill-bays",
         "one-open-bay",
-        "flat-swivel-feet",
-        "hook-and-eye-ends"
+        "stub-mounted-flat-feet",
+        "hook-and-eye-ends",
+        "rusted-weld-beads"
       ],
       "structureKind": [
         "post-and-rail",
@@ -87,7 +88,7 @@
       "materialFamilies": [
         "galvanised-steel"
       ],
-      "notes": "A welded galvanised barrier panel: one rigid frame on two fixed feet. Nothing opens, turns or swings on the prop itself -- the feet swivel in life but ship fixed across the run -- and the hook and eye are silhouette, not sockets, since linking is done by placing the next panel. One root pivot and zero sockets. Event fronts, temple fairs, motorcade routes, road closures; links into runs. Cloudy zinc with rust at every weld, flat bar feet scuffed pale."
+      "notes": "A welded galvanised barrier panel: one rigid frame on two fixed feet. Nothing opens, turns or swings on the prop itself -- the feet swivel in life but ship fixed across the run -- and the hook and eye are silhouette, not sockets, since linking is done by placing the next panel. One root pivot and zero sockets. Event fronts, temple fairs, motorcade routes, road closures; links into runs. Spangled zinc scratched all over, rust bled from every weld and down the ends, flat bar feet scuffed pale."
     },
     "complexity": {
       "tier": "moderate",
@@ -109,9 +110,10 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE tube frame -- top rail with 0.12 m rounded corners as one polyline tube, bottom rail, two uprights, five bar tubes, two foot stubs, an eye and two hooks, rust collars at the welds -- merged on one material, plus ONE component of five 3 mm sheet panels in the bays: TWO draw calls (the proxy occupancy reads the top rail at 0.92-0.98 H, the bottom rail at 0.34-0.40 H, solid infill).",
-        "One material: galvanised steel as vertex colours on white -- zinc, a paler sheet, rust-brown collars -- with a soft grime mottle canvas.",
-        "No repetition system: five sheet panels differ in width (the open bay breaks the rhythm), so they are five boxes in one merge rather than an InstancedMesh.",
+        "ONE tube frame -- the uprights and top rail with 0.12 m rounded corners as a single SWEPT polyline, the bottom rail, five bar tubes, two foot stubs, an eye ring and two hook brackets, and twelve conical weld beads -- merged on one material; ONE component of five pressed infill panels, each a returned rim over a recessed face; and ONE component of two flat feet. THREE draw calls of four.",
+        "The feet are their own component because the UV mode, not the material, forces it: height UVs write v = y / scale, so every vertex of a foot top face lands on the same row of the tile and the whole face samples one texel line. The feet shipped flat and khaki because of it. Triplanar world UVs on that component alone fix it, at one draw call and no second material.",
+        "One material: galvanised steel as vertex colours on white -- zinc, a paler sheet, grey foot bar, rust-brown weld beads -- with one 1024 px hot-dip zinc canvas after construction.",
+        "No repetition system: five panels differ in width (the open bay breaks the rhythm), so they are five rim-and-face pairs in one merge rather than an InstancedMesh.",
         "Action readiness: one root pivot, zero sockets, one box collider on the root, not breakable."
       ]
     },
@@ -126,7 +128,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the rounded-corner tube frame with flat feet and the bay pattern the plate shows -- five sheet panels and one open bay near the +X end; the tubes are real cylinders because their round highlight is what reads galvanised at distance."
+      "rationale": "The identity is the rounded-corner tube frame with stub-mounted flat feet and the bay pattern the plate shows -- five sheeted bays and one open one near the +X end; the tubes are real swept cylinders because their round highlight is what reads galvanised at distance, and the panels are pressed pans rather than flat plates because the returned rim's shadow line is what says sheet metal rather than card."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -150,7 +152,7 @@
           "zone": "panel",
           "kind": "linework",
           "identityDefining": true,
-          "description": "five sheet bays and one open bay",
+          "description": "five pressed sheet bays with returned rims, and one open bay",
           "mapsTo": {
             "ref": "panels"
           },
@@ -183,7 +185,19 @@
           "zone": "frame",
           "kind": "stain",
           "identityDefining": false,
-          "description": "rust at the welds",
+          "description": "rust bled from every weld bead and down the ends",
+          "mapsTo": {
+            "ref": "d5-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-spangle",
+          "zone": "panel",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "hot-dip spangle, fine grain and drip streaks",
           "mapsTo": {
             "ref": "d5-rust"
           },
@@ -231,8 +245,9 @@
     "sourceImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
     "resolvedUnknowns": [
       "The bay pattern follows the plate (five sheets, one open bay) rather than the proxy (two open bays).",
+      "The leg structure follows the +X end of the plate -- uprights dying into the bottom rail, two stubs into centred feet -- because the -X end of the same plate draws it differently and only one of the two can be true. The +X reading is the standard barrier.",
       "The feet are 0.55 m flat bars, 0.05 m over the declared depth each side; the collider stays at the declared 0.45.",
-      "The sheets are 3 mm boxes 1 cm clear of the tubes on every edge; the plate's wrapped-edge sheets are below the resolvable band."
+      "The panels are pressed pans: a 13 mm returned rim standing 6 mm proud of a face recessed 4 mm behind it, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The exact press depth is below the resolvable band; the rim itself is not, and the plate shows its shadow line in every bay."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -247,8 +262,8 @@
     ],
     "minimumSpecDepth": {
       "macroComponents": 1,
-      "mesoComponents": 1,
-      "microFeatureGroups": 3,
+      "mesoComponents": 2,
+      "microFeatureGroups": 4,
       "materialLayers": 1,
       "repetitionSystems": 0,
       "reviewViewpoints": 4
@@ -294,8 +309,8 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Flat feet",
-          "Eye and hooks",
+          "Flat feet on stubs",
+          "Eye and hook brackets",
           "Rust at the welds"
         ],
         "evidenceRefs": [
@@ -304,7 +319,27 @@
         ],
         "failureModes": [
           "no hooks",
-          "clean welds"
+          "clean welds",
+          "weld marks that read as stickers"
+        ]
+      },
+      {
+        "id": "zinc-surface",
+        "name": "Galvanised surface",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Rendered tone and spread match the plate's own crops",
+          "Spangle blooms rather than scatters",
+          "Fine grain and scratches at the plate's spatial frequency"
+        ],
+        "evidenceRefs": [
+          "region-zinc"
+        ],
+        "failureModes": [
+          "flat grey with no variation",
+          "variation only downward from the base",
+          "isolated white specks reading as snow"
         ]
       }
     ],
@@ -471,8 +506,7 @@
       "name": "Bay pattern",
       "tier": "critical",
       "passIds": [
-        "form-refinement",
-        "surface-pass"
+        "form-refinement"
       ],
       "minimumScore": 0.8,
       "mustPass": true,
@@ -493,11 +527,29 @@
       "minimumScore": 0.75,
       "mustPass": true,
       "componentRefs": [
-        "frame"
+        "frame",
+        "feet"
       ],
       "evidenceRefs": [
         "region-foot",
         "region-rail"
+      ]
+    },
+    {
+      "id": "zinc-surface",
+      "name": "Galvanised surface",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "panels",
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-zinc"
       ]
     }
   ],
@@ -597,7 +649,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 3,
     "pivotInventory": [
       {
         "name": "root",
@@ -631,8 +683,9 @@
   },
   "assumptions": [
     "The bay pattern follows the plate (five sheets, one open bay) rather than the proxy (two open bays).",
+    "The leg structure follows the +X end of the plate -- uprights dying into the bottom rail, two stubs into centred feet -- because the -X end of the same plate draws it differently and only one of the two can be true. The +X reading is the standard barrier.",
     "The feet are 0.55 m flat bars, 0.05 m over the declared depth each side; the collider stays at the declared 0.45.",
-    "The sheets are 3 mm boxes 1 cm clear of the tubes on every edge; the plate's wrapped-edge sheets are below the resolvable band."
+    "The panels are pressed pans: a 13 mm returned rim standing 6 mm proud of a face recessed 4 mm behind it, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The exact press depth is below the resolvable band; the rim itself is not, and the plate shows its shadow line in every bay."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -648,9 +701,9 @@
       "h": 1.1,
       "d": 0.45
     },
-    "description": "A 1.84 m wide, 1.10 m tall tube rectangle with 0.12 m rounded top corners on two 0.55 m flat feet; a bottom rail at 0.30 m; five vertical bar tubes dividing the frame into six bays, five of them sheeted; an eye at 0.55 m on -X, hooks at 0.55 and 0.86 m on +X.",
-    "envelopeDerivation": "x spans -1.043..+0.987: the uprights at +-0.92 with the eye reaching -1.043 and the hooks +0.987; y 0.00 to 1.10 at the top rail crown; z +-0.275 at the 0.55 m feet (declared 0.45: the feet overrun the declared depth by 0.05 m each side, and the collider is set to the declared). The proxy normalises to w:h 1:0.635 including the hooks, i.e. 1.33 H for the panel itself; the DECLARED 2.00 x 1.10 (1.82 H) is the registry contract for a standard panel and is what is built, so the band table's +0.33 H width residual is the declared aspect, not the build.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.901 x 1.208 x 0.554 hooks included. Occupancy map (scratch/_mon/occupancy.mjs): top rail 0.92-0.98 H, bottom rail 0.34-0.40 H, two open bays -- the plate shows ONE, at the fifth position, and the plate is the authority for the pattern. Band table: mean |delta depth| 0.0175 H; width +0.33 H by the declared aspect (arithmetic above)."
+    "description": "A 1.84 m wide, 1.10 m tall closed tube rectangle with 0.12 m rounded top corners, standing on two stubs at +-0.67 that drop to 0.55 m flat feet; a bottom rail at 0.30 m closing the frame; five vertical bar tubes dividing it into six bays, five of them sheeted; an eye at 0.55 m on -X, hook brackets at 0.53 and 0.885 m on +X.",
+    "envelopeDerivation": "x spans -1.043..+0.987: the uprights at +-0.92 with the eye reaching -1.043 and the hooks +0.987; y 0.00 to 1.10 at the top rail crown; z +-0.275 at the 0.55 m feet (declared 0.45: the feet overrun the declared depth by 0.05 m each side, and the collider is set to the declared). The frame is a CLOSED tube rectangle: the uprights and the five bars die into the bottom rail at 0.30 m and stop there, and the panel stands on two stubs at +-0.67 that drop into the centre of each foot. That is read off the +X end of the plate, where the crown, the ground and the rail are all legible at one x (ground y=745 px, crown y=86, so 0.001669 m/px; rail underside 578 and foot top 718 give a 0.234 m stub, i.e. a rail centre at 0.045 + 0.234 + 0.021 = 0.30). The -X end of the same plate draws the upright running past the rail to the foot instead; a generated plate is not projectively consistent, and the +X reading is the one that agrees with the class. Stub x from the plate fraction 0.15 at the near end and 0.88 at the far, which bound the model fraction from either side of the perspective. The proxy normalises to w:h 1:0.635 including the hooks, i.e. 1.33 H for the panel itself; the DECLARED 2.00 x 1.10 (1.82 H) is the registry contract for a standard panel and is what is built, so the band table's +0.33 H width residual is the declared aspect, not the build.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.901 x 1.208 x 0.554 hooks included. Occupancy map (scratch/_mon/occupancy.mjs): top rail 0.92-0.98 H, bottom rail 0.34-0.40 H, two open bays -- the plate shows ONE, at the fifth position, and the plate is the authority for the pattern. The rail is built at 0.30 m (0.27 H) on the plate measurement above rather than the proxy band, which is a reconstruction of the same ambiguity the plate has at its near end. Band table: mean |delta depth| 0.0175 H; width +0.33 H by the declared aspect (arithmetic above)."
   },
   "viewEvidence": [
     {
@@ -695,12 +748,12 @@
       "confidence": 0.9,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One polyline tube for the rounded-corner top rail, the bottom rail, five bars, two foot stubs, the hooks, the eye lathe, two foot boxes and ten collar boxes: one merge, one draw call.",
+      "topologyRationale": "One SWEPT polyline for the uprights and rounded-corner top rail, the bottom rail, five bars, two foot stubs, two hook brackets and the eye stem, plus the eye ring lathe and twelve conical weld beads: one merge, one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Tubes r 0.021 (frame) and 0.016 (bars); uprights at x +-0.92 from 0.045 to 1.079 m; corners r 0.12; bottom rail at 0.30 m; feet 0.07 x 0.045 x 0.55 m under each upright.",
+        "topologyIntent": "Tubes r 0.021 (frame), 0.019 (bars), 0.0231 (bottom rail) and 0.0164 (stubs); uprights at x +-0.92 from the rail at 0.30 up to 1.079 m; corners r 0.12; stubs at +-0.67 from 0.018 to the rail.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -709,40 +762,35 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Bar ends stop 1 cm inside the rails as interpenetrating solids; the collars wrap the bars; foot stubs enter the feet from above. Nothing planar meets.",
-        "mergeNote": "One merged BufferGeometry with height UVs at 0.5 m."
+        "zFightingNote": "No two tubes that meet share a radius. The bottom rail is FATTER than the uprights that die into it and the stubs are THINNER than the rail they hang from, so every end cap is swallowed with millimetres to spare -- equal radii are tangent, and tangent surfaces z-fight into a white sliver that reads as a hole at the weld. Bar ends stop inside both rails as interpenetrating solids; the beads straddle the rail surface. Nothing planar meets.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.15 m, which is what puts the tile's rust bands at the feet and along the crown."
       },
       "localFeatures": [
         {
           "id": "d1-frame",
           "description": "frame",
-          "delivery": "polyline tube"
-        },
-        {
-          "id": "d3-feet",
-          "description": "feet",
-          "delivery": "boxes"
+          "delivery": "swept polyline tube"
         },
         {
           "id": "d4-hooks",
           "description": "hooks and eye",
-          "delivery": "tubes and a ring lathe"
+          "delivery": "swept tubes and a ring lathe"
         },
         {
           "id": "d5-rust",
           "description": "rust",
-          "delivery": "collar boxes"
+          "delivery": "conical weld beads"
         },
         {
           "id": "d6-rail",
           "description": "rail",
-          "delivery": "tube"
+          "delivery": "swept tube"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
         "baseColor": "#9a9d9e",
-        "recipe": "Zinc as vertex colour on white steel with a grime mottle; feet #8d8c87; rust collars #8a6a4a.",
+        "recipe": "Zinc as vertex colour on white steel with a hot-dip spangle canvas; weld beads #826e58.",
         "evidenceRef": "region-zinc",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(154, 157, 158, 1.0)",
@@ -797,19 +845,19 @@
     },
     {
       "id": "panels",
-      "name": "Sheet infill panels",
+      "name": "Pressed sheet infill panels",
       "level": "meso",
       "role": "identity",
       "importance": 0.9,
       "confidence": 0.85,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Five 3 mm sheets of differing widths in one merge on the frame's material: one draw call, and separable for part coverage.",
+      "topologyRationale": "Five pressed pans of differing widths in one merge on the frame's material: one draw call, and separable for part coverage.",
       "materialId": "steel",
       "material": "steel",
       "parent": "frame",
       "geometryDescriptor": {
-        "topologyIntent": "Each sheet fills its bay from the bottom rail to the top rail, 1 cm clear of every tube, centred in the frame plane at z 0.",
+        "topologyIntent": "Each pan fills its bay from the bottom rail to the top rail, 8 mm clear of every tube: a 13 mm returned rim extruded from z -0.007 to +0.006, and a face 4 mm thick recessed to z -0.005..-0.001.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -818,26 +866,92 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Sheets are 1 cm clear of the tubes on every edge and 3 mm thick; no face shares a plane with any tube.",
-        "mergeNote": "One merged BufferGeometry with panel UVs at 0.6 m."
+        "zFightingNote": "The face OVERLAPS the rim opening by 7 mm rather than meeting its reveal, and no bounding plane of the two coincides in any axis. The pans are 8 mm clear of every tube. check-coplanar reports clean at 1 mm.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.15 m."
       },
       "localFeatures": [
         {
           "id": "d2-bays",
           "description": "bays",
-          "delivery": "five boxes"
+          "delivery": "five extruded rims over five recessed faces"
+        },
+        {
+          "id": "d7-spangle",
+          "description": "spangle and grain",
+          "delivery": "shared canvas tile"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#a4a7a8",
-        "recipe": "Paler zinc sheet as vertex colour on the same white steel.",
+        "baseColor": "#9ba0a0",
+        "recipe": "Zinc sheet as vertex colour on the same white steel, carrying the same spangle canvas.",
         "evidenceRef": "region-zinc",
         "confidence": 0.85,
-        "dominantAlbedo": "rgba(164, 167, 168, 1.0)",
-        "secondaryAlbedo": "rgba(164, 167, 168, 1.0)",
+        "dominantAlbedo": "rgba(155, 160, 160, 1.0)",
+        "secondaryAlbedo": "rgba(155, 160, 160, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "feet",
+      "name": "Flat bar feet",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.7,
+      "confidence": 0.82,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two flat bars in their own merge -- not for the material, which they share, but for the UV MODE: height UVs give a horizontal face one texel row, and the feet shipped flat and khaki because of it. World (triplanar) UVs on this component alone, at one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "0.075 x 0.045 x 0.55 m bars centred under the stubs at x +-0.67, on the ground.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The stubs enter the feet from above as interpenetrating solids and the beads straddle the top face; nothing planar meets.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.55 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-feet",
+          "description": "feet",
+          "delivery": "two boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#787a78",
+        "recipe": "Foot bar tone as vertex colour on the same white steel.",
+        "evidenceRef": "region-foot",
+        "confidence": 0.82,
+        "dominantAlbedo": "rgba(120, 122, 120, 1.0)",
+        "secondaryAlbedo": "rgba(120, 122, 120, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.82
       },
       "actionProfile": {
         "animationRole": "child",
@@ -876,29 +990,30 @@
         "dominant": "#9a9d9e",
         "secondary": [
           "#9a9d9e",
-          "#a4a7a8",
-          "#8a6a4a"
+          "#9ba0a0",
+          "#826e58"
         ],
         "samplingNotes": "Measured as the mean of crops/zinc.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d5-rust",
-          "region": "weld collars at every bar end",
+          "region": "weld beads at every bar and stub end, and the ground and crown bands",
           "roughness": 0.7,
           "palette": [
-            "#8A6A4A"
+            "#826E58"
           ],
-          "evidence": "crops/rust.png -- rust bloom at the bar-to-rail welds; carried as brown collar boxes, not as a tile."
+          "evidence": "Measured over the whole plate: pixels with R-B > 26 are 2.2%% of the frame at mean #826e58. Carried as twelve conical weld beads at that tone plus the tile's own rust bands, which height UVs at 1.15 m put at the feet and along the top rail -- the two places the plate has it. The first build carried it as ten flat #8a6a4a boxes 42 x 20 mm, which rendered as orange stickers."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-zinc (0.86) at #8f9394 sd 35 (cloudy zinc) and region-rail at #939391; carried at #9a9d9e on the tubes and #a4a7a8 on the sheets as vertex colours on a WHITE material; feet #8d8c87 off region-foot #7c7b75; rust collars #8a6a4a.",
+          "Measured on viewEvidence region-zinc (0.86) at #8f9394 sd 35 (cloudy zinc) and region-rail at #939391; matched flat panel crops of the plate read mean luma 157-159 at sd 12-16 with p5..p95 of 139..181.",
+          "Albedo is authored for the HARNESS TRANSFER, not copied from the plate. The panel face measures R = 0.89 A (albedo 164 rendered 146 with the tile at 1.0), and the canvas is a MULTIPLY map whose mean multiplier measures 0.72, so a target luma T wants an albedo of T / 0.64. Every tone below is the plate measurement times that factor, written as hex x factor so a re-measure is one number: zinc #9a9d9e x1.48, sheet #9ba0a0 x1.55, feet #787a78 x1.62, weld beads #826e58 x1.10. Rendered back: panel mean 152-164, sd 9-13, p5..p95 131..179 against the plate's 157-159 / 12-16 / 139..181.",
           "Metalness 0.30, not physical: the thaikit harness has no environment map and a full metal renders black.",
-          "Textureless as DECLARED: a 256 px grime mottle canvas after construction (wash 0.74/0.72/0.68 at 0.35)."
+          "Textureless as DECLARED: one 1024 px hot-dip zinc canvas after construction -- drift, clustered spangle, fine grain, scratches, drip streaks and rust bled from the ground and crown bands -- built in 117 ms for 5.3 MB of texture VRAM. 1024 rather than 512 because the tile spans 1.15 m and the plate resolves the panels at ~4.5 px/cm; 512 gives 2.2 and reads as smooth grey with snow on it however the histogram is tuned."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1019,27 +1134,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:45:14.212304+00:00",
+      "timestamp": "2026-09-01T01:44:16.830964+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
@@ -1050,102 +1165,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:14.291058+00:00",
+      "timestamp": "2026-09-01T01:44:16.913978+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.370681+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "bays",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.452017+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "hardware",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Flat 0.55 m feet, an eye ring on -X, two hooks on +X, rust collars at ten welds; zinc #9a9d9e off region-zinc (0.86).",
-          "notes": "Rust polka-dot tile of the first build replaced by a soft mottle."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.532709+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1158,26 +1180,117 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:14.611511+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T01:44:16.996166+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.077244+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.155756+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.237571+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.318226+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.399234+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "bays",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
+          "evidence": "Five sheeted bays and one open bay at the fifth position as the plate shows (the proxy read two open). Each is now a PRESSED PAN rather than a flat plate: a 13 mm returned rim extruded z -0.007..+0.006 over a face recessed to z -0.005..-0.001, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The rim's shadow line is what the plate shows in every bay. 8 mm clear of every tube; check-coplanar clean at 1 mm.",
           "notes": ""
         }
       ],
@@ -1189,17 +1302,154 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:14.690789+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T01:44:17.482936+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.565537+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Flat 0.55 m feet on stubs at +-0.67, an eye ring on -X, and two hook brackets on +X at 0.53 and 0.885 m by the plate's own vertical scale. The brackets are PRESSED FLAT STRAP with the broad face turned out, not the 0.011 m tube of the first build, which shaded to a narrow highlight and read as wire. Twelve conical weld beads straddle the rail SURFACE at the plate's measured rust tone (#826e58, the mean over the 2.2% of the frame with R-B > 26); the first build put ten flat 42 x 20 mm boxes at the rail's CENTRELINE, where a 28 mm flare on a 21 mm rail poked clean out of it and rendered as bronze washers threaded onto the bars.",
+          "notes": "Every joint radius is differentiated -- rail 0.0231 fatter than the 0.021 uprights that die into it, stubs 0.0164 thinner than the rail -- so no two meeting tubes are tangent."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.647001+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.729489+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.812296+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.893427+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "zinc-surface",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "MEASURED against the plate over matched flat panel crops. Plate: mean luma 157-159, sd 12-16, p5..p95 139..181. First build: mean 142, sd 8-10, span 21, and CLIPPED at the top (p75 = p95 = 147 -- the grime tile did nothing over the upper half of the panel). This build: mean 157/163/158, sd 12.2/11.5/7.5, p5..p95 137..179. A new hot-dip zinc tile carries drift, CLUSTERED spangle, fine 1-2 px grain, scratches, drip streaks and rust bled from the ground and crown bands; the tile is a multiply map authored about mid 0.98 with every albedo divided by the measured 0.64 transfer, so the surface varies in BOTH directions about its mean instead of only downward.",
+          "notes": "Two crops with the same histogram can look nothing alike: the grain and scratch layer was added on a matched-magnification comparison, not on sd. The right-hand crop's 7.5 is the narrow end panel seen near edge-on."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.973964+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:44:18.058616+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
@@ -1210,17 +1460,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:14.770191+00:00",
+      "timestamp": "2026-09-01T01:44:18.143445+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
@@ -1231,45 +1481,54 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:14.850244+00:00",
+      "timestamp": "2026-09-01T01:44:18.230224+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
         },
         {
           "id": "bays",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
+          "evidence": "Five sheeted bays and one open bay at the fifth position as the plate shows (the proxy read two open). Each is now a PRESSED PAN rather than a flat plate: a 13 mm returned rim extruded z -0.007..+0.006 over a face recessed to z -0.005..-0.001, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The rim's shadow line is what the plate shows in every bay. 8 mm clear of every tube; check-coplanar clean at 1 mm.",
           "notes": ""
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Flat 0.55 m feet, an eye ring on -X, two hooks on +X, rust collars at ten welds; zinc #9a9d9e off region-zinc (0.86).",
-          "notes": "Rust polka-dot tile of the first build replaced by a soft mottle."
+          "evidence": "Flat 0.55 m feet on stubs at +-0.67, an eye ring on -X, and two hook brackets on +X at 0.53 and 0.885 m by the plate's own vertical scale. The brackets are PRESSED FLAT STRAP with the broad face turned out, not the 0.011 m tube of the first build, which shaded to a narrow highlight and read as wire. Twelve conical weld beads straddle the rail SURFACE at the plate's measured rust tone (#826e58, the mean over the 2.2% of the frame with R-B > 26); the first build put ten flat 42 x 20 mm boxes at the rail's CENTRELINE, where a 28 mm flare on a 21 mm rail poked clean out of it and rendered as bronze washers threaded onto the bars.",
+          "notes": "Every joint radius is differentiated -- rail 0.0231 fatter than the 0.021 uprights that die into it, stubs 0.0164 thinner than the rail -- so no two meeting tubes are tangent."
+        },
+        {
+          "id": "zinc-surface",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "MEASURED against the plate over matched flat panel crops. Plate: mean luma 157-159, sd 12-16, p5..p95 139..181. First build: mean 142, sd 8-10, span 21, and CLIPPED at the top (p75 = p95 = 147 -- the grime tile did nothing over the upper half of the panel). This build: mean 157/163/158, sd 12.2/11.5/7.5, p5..p95 137..179. A new hot-dip zinc tile carries drift, CLUSTERED spangle, fine 1-2 px grain, scratches, drip streaks and rust bled from the ground and crown bands; the tile is a multiply map authored about mid 0.98 with every albedo divided by the measured 0.64 transfer, so the surface varies in BOTH directions about its mean instead of only downward.",
+          "notes": "Two crops with the same histogram can look nothing alike: the grain and scratch layer was added on a matched-magnification comparison, not on sd. The right-hand crop's 7.5 is the narrow end panel seen near edge-on."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
@@ -1282,31 +1541,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:45:14.212304+00:00",
+      "timestamp": "2026-09-01T01:44:16.830964+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 4; frame and sheets at the proxy stations.",
+      "summary": "Blockout: three components at 3 draw calls of 4 -- frame, pressed panels, feet -- at the stations the plate measures.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1323,135 +1582,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:14.291058+00:00",
+      "timestamp": "2026-09-01T01:44:16.913978+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
-        }
-      ],
-      "action": "continue",
-      "summary": "Structural pass: uprights at +-0.92, top rail at 1.079 with 0.12 m corners, bottom rail at 0.30, feet 0.55 m across the run.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.370681+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "bays",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: five bar tubes, eye ring, two hooks, weld collars, five sheets.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.452017+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "hardware",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Flat 0.55 m feet, an eye ring on -X, two hooks on +X, rust collars at ten welds; zinc #9a9d9e off region-zinc (0.86).",
-          "notes": "Rust polka-dot tile of the first build replaced by a soft mottle."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: one galvanised steel at PBR confidence 0.86, textureless with measured albedo; sheet, feet and rust as vertex colours; metalness held at 0.30 for a harness with no environment map.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T09:45:14.532709+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Rust blotch tile on the sheets read as polka dots; replaced by a soft grime mottle with rust only at the weld collars, and the panel UV scale set to one tile per sheet to remove a wash seam.",
+      "summary": "Leg structure re-read off the plate's +X end: the uprights and bars die into the bottom rail at a measured 0.30 m and two stubs at +-0.67 carry centred feet, against the first build's uprights run to the ground with the feet directly under them. The plate's -X end draws it the other way and only one can be true.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1467,31 +1606,167 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:14.611511+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T01:44:16.996166+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The 0.12 m top corners rebuilt as a swept polyline. The per-segment tube builder extends each cylinder by 1.2 r to close its joints, so a 0.038 m corner chord overshot by two thirds of its length and the bend rendered as an accordion of pleats.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.077244+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: a CLOSED tube rectangle. Uprights at +-0.92 from the bottom rail at 0.30 to the top rail at 1.079 with 0.12 m swept corners; two stubs at +-0.67 to 0.55 m feet.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.155756+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The five infill panels rebuilt as pressed pans -- a 13 mm returned rim over a face recessed 4 mm behind it -- where they were 3 mm flat plates. The rim's shadow line is what says sheet metal rather than card.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.237571+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Weld marks rebuilt as conical beads straddling the rail surface. Ten flat 42 x 20 mm boxes at the rail centreline poked out of a 21 mm rail on both sides and rendered as bronze washers threaded onto the bars.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.318226+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Hook brackets rebuilt as pressed flat strap with the broad face turned out; at 0.011 m round tube they shaded to a narrow highlight and read as wire.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.399234+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "bays",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
+          "evidence": "Five sheeted bays and one open bay at the fifth position as the plate shows (the proxy read two open). Each is now a PRESSED PAN rather than a flat plate: a 13 mm returned rim extruded z -0.007..+0.006 over a face recessed to z -0.005..-0.001, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The rim's shadow line is what the plate shows in every bay. 8 mm clear of every tube; check-coplanar clean at 1 mm.",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: rust tile replaced by a grime mottle after the first build read as polka dots; rust confined to the weld collars; panel UVs one tile per sheet.",
+      "summary": "Form refinement: five bar tubes, five pressed pans with returned rims, an eye ring, two pressed-strap hook brackets, twelve conical weld beads.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1507,21 +1782,221 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:14.690789+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T01:44:17.482936+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Every albedo re-derived through the measured harness transfer instead of being copied from the plate: the panel face renders at 0.89 of albedo and the canvas multiplies by 0.72, so a target luma is authored at T / 0.64. Rendered tone then lands on the plate's own measurement rather than 15 luma under it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.565537+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "hardware",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Flat 0.55 m feet on stubs at +-0.67, an eye ring on -X, and two hook brackets on +X at 0.53 and 0.885 m by the plate's own vertical scale. The brackets are PRESSED FLAT STRAP with the broad face turned out, not the 0.011 m tube of the first build, which shaded to a narrow highlight and read as wire. Twelve conical weld beads straddle the rail SURFACE at the plate's measured rust tone (#826e58, the mean over the 2.2% of the frame with R-B > 26); the first build put ten flat 42 x 20 mm boxes at the rail's CENTRELINE, where a 28 mm flare on a 21 mm rail poked clean out of it and rendered as bronze washers threaded onto the bars.",
+          "notes": "Every joint radius is differentiated -- rail 0.0231 fatter than the 0.021 uprights that die into it, stubs 0.0164 thinner than the rail -- so no two meeting tubes are tangent."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: one galvanised steel at PBR confidence 0.86, textureless with albedo authored through the MEASURED harness transfer (R = 0.89 A, tile mean 0.72, so T / 0.64) rather than copied from the plate; sheet, feet and weld beads as vertex colours; metalness 0.30 for a harness with no environment map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.647001+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "The grime tile replaced by a hot-dip zinc tile. Matched crops measured the first build at half the plate's tonal spread and one-sided -- a multiply map can only darken, so the base is now raised by 1/mid and the spangle reaches back up to it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.729489+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Spangle clustered into blooms and a fine grain and scratch layer added. Scattered facets read as snow on smooth grey however well the histogram matched; the statistic that separated the two crops was spatial frequency, not sd.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.812296+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The feet split into their own component with triplanar UVs. Height UVs write v = y / scale, so every vertex of a foot top face landed on one row of the tile and the feet shipped flat and khaki -- the row they happened to sample was inside the ground rust band.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.893427+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "zinc-surface",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "MEASURED against the plate over matched flat panel crops. Plate: mean luma 157-159, sd 12-16, p5..p95 139..181. First build: mean 142, sd 8-10, span 21, and CLIPPED at the top (p75 = p95 = 147 -- the grime tile did nothing over the upper half of the panel). This build: mean 157/163/158, sd 12.2/11.5/7.5, p5..p95 137..179. A new hot-dip zinc tile carries drift, CLUSTERED spangle, fine 1-2 px grain, scratches, drip streaks and rust bled from the ground and crown bands; the tile is a multiply map authored about mid 0.98 with every albedo divided by the measured 0.64 transfer, so the surface varies in BOTH directions about its mean instead of only downward.",
+          "notes": "Two crops with the same histogram can look nothing alike: the grain and scratch layer was added on a matched-magnification comparison, not on sd. The right-hand crop's 7.5 is the narrow end panel seen near edge-on."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a hot-dip zinc tile at 1024 px over 1.15 m -- drift, clustered spangle, fine grain, scratches, drip streaks and rust bands at the feet and crown. Rendered mean/sd/p5..p95 within a few points of the plate on every statistic.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:17.973964+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The swept tube's wall winding corrected. The ring runs N -> B with B = T x N, so winding along the tube first gave every wall triangle a normal of -N: backface culling hid the near wall and showed the far one, which lit each tube by its own interior and wrote depth on the far side. The foot stubs stood proudly through the bottom rail because of it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/crowd-control-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:44:18.058616+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. The swept tubes are lit correctly for the first time -- the sweep wound its wall inward, so every tube was shaded by its own interior. Exposure 1.0, ACES filmic.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1537,17 +2012,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:14.770191+00:00",
+      "timestamp": "2026-09-01T01:44:18.143445+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
@@ -1567,49 +2042,58 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:14.850244+00:00",
+      "timestamp": "2026-09-01T01:44:18.230224+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
-          "notes": "Width residual is the declared aspect; arithmetic in the spec."
+          "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
+          "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built."
         },
         {
           "id": "bays",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
+          "evidence": "Five sheeted bays and one open bay at the fifth position as the plate shows (the proxy read two open). Each is now a PRESSED PAN rather than a flat plate: a 13 mm returned rim extruded z -0.007..+0.006 over a face recessed to z -0.005..-0.001, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The rim's shadow line is what the plate shows in every bay. 8 mm clear of every tube; check-coplanar clean at 1 mm.",
           "notes": ""
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Flat 0.55 m feet, an eye ring on -X, two hooks on +X, rust collars at ten welds; zinc #9a9d9e off region-zinc (0.86).",
-          "notes": "Rust polka-dot tile of the first build replaced by a soft mottle."
+          "evidence": "Flat 0.55 m feet on stubs at +-0.67, an eye ring on -X, and two hook brackets on +X at 0.53 and 0.885 m by the plate's own vertical scale. The brackets are PRESSED FLAT STRAP with the broad face turned out, not the 0.011 m tube of the first build, which shaded to a narrow highlight and read as wire. Twelve conical weld beads straddle the rail SURFACE at the plate's measured rust tone (#826e58, the mean over the 2.2% of the frame with R-B > 26); the first build put ten flat 42 x 20 mm boxes at the rail's CENTRELINE, where a 28 mm flare on a 21 mm rail poked clean out of it and rendered as bronze washers threaded onto the bars.",
+          "notes": "Every joint radius is differentiated -- rail 0.0231 fatter than the 0.021 uprights that die into it, stubs 0.0164 thinner than the rail -- so no two meeting tubes are tangent."
+        },
+        {
+          "id": "zinc-surface",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "MEASURED against the plate over matched flat panel crops. Plate: mean luma 157-159, sd 12-16, p5..p95 139..181. First build: mean 142, sd 8-10, span 21, and CLIPPED at the top (p75 = p95 = 147 -- the grime tile did nothing over the upper half of the panel). This build: mean 157/163/158, sd 12.2/11.5/7.5, p5..p95 137..179. A new hot-dip zinc tile carries drift, CLUSTERED spangle, fine 1-2 px grain, scratches, drip streaks and rust bled from the ground and crown bands; the tile is a multiply map authored about mid 0.98 with every albedo divided by the measured 0.64 transfer, so the surface varies in BOTH directions about its mean instead of only downward.",
+          "notes": "Two crops with the same histogram can look nothing alike: the grain and scratch layer was added on a matched-magnification comparison, not on sd. The right-hand crop's 7.5 is the narrow end panel seen near edge-on."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 1,204/4,000 triangles, 2/4 draw calls, 1/3 materials, 2/6 unique geometries, one 256 px canvas at 0.25 MB. Open frame: turntable run with --allow-holes on the _holecc measurement; collapse ratio from the declared depth.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 1,924/4,000 triangles, 3/4 draw calls, 1/3 materials, 3/6 unique geometries, one 1024 px canvas at 5.3 MB built in 109 ms. Open frame: turntable run with --allow-holes on the _holecc measurement; collapse ratio from the declared depth.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1648,30 +2132,30 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 2,
+        "components": 3,
         "repetitionSystems": 0,
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 4,
-        "headroom": 2,
-        "note": "Two components, no repetition system: 2 of 4."
+        "headroom": 1,
+        "note": "Three components, no repetition system: 3 of 4. The third is the feet, forced by the UV mode rather than the material."
       },
       "materials": {
         "projectedTotal": 1,
         "budget": 3,
         "headroom": 2,
-        "note": "steel only: 1 of 3; sheet, feet and rust are vertex colours."
+        "note": "steel only: 1 of 3; sheet, feet and weld beads are vertex colours."
       },
       "uniqueGeometries": {
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 6,
-        "headroom": 4,
+        "headroom": 3,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1204,
+        "measured": 1980,
         "budget": 4000,
-        "headroom": 2796,
-        "note": "1,204 of 4,000: a 14-point corner-rounded tube at 10 segments, twelve short tubes, one ring lathe, seventeen boxes."
+        "headroom": 2020,
+        "note": "1,980 of 4,000: one 18-point swept frame outline at 12 segments, ten short swept tubes, twelve 8-segment bead cones, one ring lathe, five extruded rims and seven boxes."
       }
     }
   },
@@ -1729,7 +2213,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Polyline tubes for every rail, bar and hook; a small ring lathe for the eye; boxes for the feet, the sheets and the weld collars."
+      "strategy": "SWEPT polyline tubes for every rail, bar, stub and hook -- one mitred ring per point rather than a cylinder per segment, because the per-segment builder extends each cylinder by 1.2 r to close its joints and a 0.12 m corner has a 0.038 m chord, so the bend rendered as an accordion of pleats. A small ring lathe for the eye; tapered cones for the weld beads; extruded rectangular rings and boxes for the pans; boxes for the feet."
     },
     {
       "id": "instancing",
@@ -1741,12 +2225,18 @@
     },
     {
       "id": "textures",
-      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB of texture VRAM."
+      "strategy": "The material is declared textureless. One 1024 px hot-dip zinc canvas after construction, 5.3 MB of texture VRAM, built in 117 ms."
     }
   ],
   "animationAnchors": [],
   "destructionAnchors": [],
   "risks": [
+    {
+      "id": "plate-inconsistency",
+      "severity": "medium",
+      "description": "The plate draws the -X leg running past the bottom rail to the foot and the +X leg stopping at the rail. Only one can be true.",
+      "mitigation": "Built to the +X reading, which is the standard barrier and the end where the crown, ground and rail are all legible at one x. Recorded as an assumption with the arithmetic; a second plate would settle it."
+    },
     {
       "id": "declared-aspect",
       "severity": "low",
@@ -1805,34 +2295,38 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.4415,
-        "aspectRatioDelta": 0.094,
-        "scaleDelta": 0.2668,
-        "bilateralSymmetryError": 0.181,
+        "silhouetteIoU": 0.3097,
+        "aspectRatioDelta": 0.0604,
+        "scaleDelta": 0.5552,
+        "bilateralSymmetryError": 0.1218,
         "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 8.11,
+          "checked": 3,
+          "maxDeltaE": 8.16,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 4.36
+              "deltaE": 4.18
             },
             {
               "componentId": null,
-              "deltaE": 8.11
+              "deltaE": 3.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.16
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.442 is below threshold 0.85",
-        "aspect-ratio delta 0.094 exceeds threshold 0.05",
-        "scale delta 0.267 exceeds threshold 0.08",
+        "silhouette IoU 0.310 is below threshold 0.85",
+        "aspect-ratio delta 0.060 exceeds threshold 0.05",
+        "scale delta 0.555 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "98c0e5dcd2b95a94",
+      "renderHash": "b870460195dd67ed",
       "passId": "blockout"
     }
   ]

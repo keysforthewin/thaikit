@@ -72,10 +72,12 @@
       "formLanguage": [
         "four-corner-posts",
         "steel-channel-section",
-        "deep-perimeter-fascia",
+        "channel-perimeter-beam",
         "single-slope",
         "corrugated-sheet-deck",
         "fluted-edge",
+        "lapped-sheet-courses",
+        "screw-fixing-lines",
         "open-all-sides"
       ],
       "structureKind": [
@@ -108,7 +110,7 @@
         "mesoComponents": 5,
         "microFeatureGroups": 3,
         "materialLayers": 2,
-        "repetitionSystems": 0
+        "repetitionSystems": 1
       },
       "reasoning": [
         "ONE steel merge -- four three-box channel posts, four perimeter beams, two purlins and four bolt heads -- and ONE corrugated height grid: TWO draw calls of 4.",
@@ -128,7 +130,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "A corrugated roof is read at its EDGES. The registry notes say to carry the corrugation as a normal map on a flat deck because modelled flutes \"would eat the whole triangle budget for a ripple a normal map carries exactly\" -- and a normal map does carry the ripple, but it cannot carry the fluted eave and the fluted rake, which are the whole tell. This is the same argument the bamboo module's own notes make for its scalloped eave. The cost claim was measured rather than assumed and came out at 1,676 triangles for the deck and 1,940 for the bay: half the budget, not all of it. The corrugation canvas is still bound, as a BUMP map over the modelled flutes, for the roll marks between them."
+      "rationale": "A corrugated roof is read at its EDGES. The registry notes say to carry the corrugation as a normal map on a flat deck because modelled flutes \"would eat the whole triangle budget for a ripple a normal map carries exactly\" -- and a normal map does carry the ripple, but it cannot carry the fluted eave and the fluted rake, which are the whole tell. This is the same argument the bamboo module's own notes make for its scalloped eave. The cost claim was measured rather than assumed and came out at 2,516 triangles for the deck and 3,188 for the bay: 80% of the budget, not all of it, and that is with five z rows rather than the three the first build used. The canvas over the flutes is now a WEATHERING tile whose base fill carries the flute shading in phase with the geometry -- 13 ripples per metre against the deck's own 13 flutes per metre, with a trough at x = 0 in both -- so it reinforces the modelled corrugation instead of beating with it."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -174,11 +176,34 @@
           "zone": "roof",
           "kind": "ridge",
           "identityDefining": true,
-          "description": "52 modelled flutes 36 mm deep with a deepened sheet lap every 20, so the eave and the rake are a sawtooth",
+          "description": "52 modelled flutes 36 mm deep in four lapped courses of 1.00 m, so the eave and the rake are a sawtooth and the three interior laps stand 1.8 amplitudes proud",
           "mapsTo": {
             "ref": "d4-flutes"
           },
           "onMaterial": "zinc",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-eaverust",
+          "zone": "roof",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "a 0.11 m rusted band along the eave and both rakes, staining beside each sheet lap, and four courses at their own tones",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "onMaterial": "zinc",
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-screws",
+          "zone": "roof",
+          "kind": "fastener",
+          "identityDefining": false,
+          "description": "two lines of 13 screw washers on the crests over each purlin",
+          "mapsTo": {
+            "ref": "d9-screws"
+          },
           "realization": "unreported"
         },
         {
@@ -244,8 +269,14 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
     "resolvedUnknowns": [
+      "BOTH materials are ENVELOPE RE-BASED. `material.color` is the brightest tone the tile has to reach -- the chalked oxide bloom, the whitest zinc oxidation -- the vertex colours are near-white multipliers over that, and the tile's own base fill brings the bulk of the surface back to clean. A plain multiply over the clean tone can only DARKEN, and on both of these surfaces the identity-defining mark is brighter than what it sits on.",
+      "The BROAD chalk-to-drift zoning on the deck is on the sheet's VERTEX GRID and not in the canvas. The deck is 4 m across against a 1 m tile, so a canvas mark wider than about a tenth of the tile draws a 4 x 4 lattice across the roof -- which is exactly what the first attempt at this did. The vertex field is three sinusoids at incommensurate frequencies (wavelengths 3.7, 2.2 and 1.5 m), so it never repeats over the deck, with a gain of 1.70 because a sum of sinusoids otherwise piles up around its mean and the zoning does not read at all.",
+      "The deck is a single plane between its supports and does NOT sag. A real sheet dips between purlins, and expressing that needs a grid row at each span MIDPOINT -- z about +-1.28 and 0 -- which is seven divisions rather than five: 3,356 triangles for the deck and 4,028 for the bay, over the 4,000 ceiling. Left out on that arithmetic rather than overlooked.",
       "The corrugations are MODELLED, against the registry notes, which ask for a normal map on a flat deck. The notes' reason is a cost claim and it measures false at this budget; the silhouette a normal map cannot carry is the reason to spend it. Arithmetic in depthRationale, and the canvas is still bound as a bump map.",
       "Two samples per flute -- a triangle wave, which under smooth shading reads as the sine a roll former makes. Four samples would double the deck for a difference nobody resolves at prop distance.",
+      "The sheet laps are at flute columns 26, 52 and 78: four courses of 1.00 m, which is the real cover width of a corrugated sheet and gives the three interior seams the plate shows. The first build lapped every 20 flutes starting at column 0, so one of its three laps landed ON the rake and only two were ever visible. Each course also carries its own tone -- 1.000, 0.958, 1.032, 0.974 -- because the plate's four courses do not match each other and a hard step at a lap is the one thing a smooth noise field cannot produce.",
+      "The sheet RESTS ON the frame, so the beam and the purlins hang from the underside of the deck's TROUGHS and not from its mean plane. Hung from the mean plane -- which the earlier builds did -- the beam's top flange stands 18 mm and the purlins 3 mm INTO the corrugation valleys and show through them as a dotted red line along the eave. It reads as a defect and it measures as one: those shadow slivers are silhouette-enclosed background, 1,358 px at azimuth 90 or 1.06% of the foreground against the turntable gate's 1% ceiling, and correcting the datum took that to 843 px and 0.65%.",
+      "The screw fixings are an InstancedMesh of 26 washers rather than vertex colour on the deck. A rusted dot at a purlin line drawn on the grid would smear over the 1.25 m span to the next z row, which is not a fixing; and 26 separate submissions of a 12-triangle washer would be the wrong axis to spend on. One geometry, one draw call, 312 triangles.",
       "The deck stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
       "The declared 2.90 and 2.40 are the tops of the CRESTS, which is how a roofer quotes a height.",
       "The channel posts are built as three boxes each rather than an extruded C profile: the section is 8 mm and the saving is one geometry, not any triangles."
@@ -266,7 +297,7 @@
       "mesoComponents": 0,
       "microFeatureGroups": 3,
       "materialLayers": 2,
-      "repetitionSystems": 0,
+      "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -299,8 +330,9 @@
         "qualityCriteria": [
           "A fluted SILHOUETTE at both the eave and the rake, not a straight cut line",
           "About 52 flutes across the 4 m, at a real 36 mm depth",
-          "A visible sheet lap",
-          "Galvanised grey that does not render blown"
+          "Three interior sheet laps at 1.00 m courses, each course at its own tone",
+          "A rusted band along the eave and the rakes, and screw lines over the purlins",
+          "A galvanised grey carrying the plate's own 70-luma spread rather than one flat value"
         ],
         "evidenceRefs": [
           "region-zinc",
@@ -310,7 +342,8 @@
         "failureModes": [
           "a flat deck with only a normal map",
           "flutes so deep the deck reads as a fence panel",
-          "a deck rendering at 240 against the plate's 185"
+          "a deck rendering at 228 across a 34-luma spread against a plate that spans 70",
+          "a canvas mark wide enough to draw a tiling lattice across the roof"
         ]
       },
       {
@@ -319,8 +352,10 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Channel section legible at the post corners",
+          "Channel section legible at the post corners AND along the perimeter beam, whose web is recessed between two flanges",
+          "The web darker than the flanges it sits between",
           "Red-oxide primer at the plate's hue, kept chromatic rather than lifted grey",
+          "Frame tone VARYING post to post and along each post, not one value everywhere",
           "Rust blooming through rather than sheets of rust",
           "No face rendering as background"
         ],
@@ -331,6 +366,9 @@
         ],
         "failureModes": [
           "plain box posts",
+          "a slab perimeter beam",
+          "every post and every face at one identical value",
+          "a tile scale that draws an identical mark six times down a post",
           "a post face inside the gate band",
           "a pure saturated red instead of oxide"
         ]
@@ -630,7 +668,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 3,
+    "partCount": 4,
     "pivotInventory": [
       {
         "name": "root",
@@ -656,8 +694,14 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
+    "BOTH materials are ENVELOPE RE-BASED. `material.color` is the brightest tone the tile has to reach -- the chalked oxide bloom, the whitest zinc oxidation -- the vertex colours are near-white multipliers over that, and the tile's own base fill brings the bulk of the surface back to clean. A plain multiply over the clean tone can only DARKEN, and on both of these surfaces the identity-defining mark is brighter than what it sits on.",
+    "The BROAD chalk-to-drift zoning on the deck is on the sheet's VERTEX GRID and not in the canvas. The deck is 4 m across against a 1 m tile, so a canvas mark wider than about a tenth of the tile draws a 4 x 4 lattice across the roof -- which is exactly what the first attempt at this did. The vertex field is three sinusoids at incommensurate frequencies (wavelengths 3.7, 2.2 and 1.5 m), so it never repeats over the deck, with a gain of 1.70 because a sum of sinusoids otherwise piles up around its mean and the zoning does not read at all.",
+    "The deck is a single plane between its supports and does NOT sag. A real sheet dips between purlins, and expressing that needs a grid row at each span MIDPOINT -- z about +-1.28 and 0 -- which is seven divisions rather than five: 3,356 triangles for the deck and 4,028 for the bay, over the 4,000 ceiling. Left out on that arithmetic rather than overlooked.",
     "The corrugations are MODELLED, against the registry notes, which ask for a normal map on a flat deck. The notes' reason is a cost claim and it measures false at this budget; the silhouette a normal map cannot carry is the reason to spend it. Arithmetic in depthRationale, and the canvas is still bound as a bump map.",
     "Two samples per flute -- a triangle wave, which under smooth shading reads as the sine a roll former makes. Four samples would double the deck for a difference nobody resolves at prop distance.",
+    "The sheet laps are at flute columns 26, 52 and 78: four courses of 1.00 m, which is the real cover width of a corrugated sheet and gives the three interior seams the plate shows. The first build lapped every 20 flutes starting at column 0, so one of its three laps landed ON the rake and only two were ever visible. Each course also carries its own tone -- 1.000, 0.958, 1.032, 0.974 -- because the plate's four courses do not match each other and a hard step at a lap is the one thing a smooth noise field cannot produce.",
+    "The sheet RESTS ON the frame, so the beam and the purlins hang from the underside of the deck's TROUGHS and not from its mean plane. Hung from the mean plane -- which the earlier builds did -- the beam's top flange stands 18 mm and the purlins 3 mm INTO the corrugation valleys and show through them as a dotted red line along the eave. It reads as a defect and it measures as one: those shadow slivers are silhouette-enclosed background, 1,358 px at azimuth 90 or 1.06% of the foreground against the turntable gate's 1% ceiling, and correcting the datum took that to 843 px and 0.65%.",
+    "The screw fixings are an InstancedMesh of 26 washers rather than vertex colour on the deck. A rusted dot at a purlin line drawn on the grid would smear over the 1.25 m span to the next z row, which is not a fixing; and 26 separate submissions of a 12-triangle washer would be the wrong axis to spend on. One geometry, one draw call, 312 triangles.",
     "The deck stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
     "The declared 2.90 and 2.40 are the tops of the CRESTS, which is how a roofer quotes a height.",
     "The channel posts are built as three boxes each rather than an extruded C profile: the section is 8 mm and the saving is one geometry, not any triangles."
@@ -677,7 +721,7 @@
       "d": 4.0
     },
     "description": "A 4.00 x 4.00 m bay: four 120 x 58 mm steel channel posts at the corners under a 200 mm deep perimeter beam, and a single corrugated plane falling 2.90 m at the -Z side to 2.40 m at the +Z side. 52 flutes 36 mm deep across the 4 m, with a deepened lap flute every 20, so both the eave and the rake are a sawtooth. Open on all four sides.",
-    "envelopeDerivation": "x and z span exactly -2.000..+2.000 at the deck, which OWNS both planes -- the frame stops at 1.988 at the post flanges, so no bounding-box face is shared and check-coplanar is clean at 0.001 m. y 0.000 to 2.900 at the top of the corrugation CRESTS: the declared height is a crest, not the mean plane, and authored the other way the deepened lap flute stood at 2.926 and the bay was over its own envelope. Proxy (Meshy v7): w:h:d 1 : 0.903 : 1.147 with 68.8% of the sampled surface in the top band -- the deck is nearly the whole prop -- over a perimeter frame of CONSTANT extent 1.084 x 1.263 H from the ground to the deck, which is what a channel-section post and a deep fascia look like to a surface sampler. The proxy footprint is rectangular at 0.858:1 where the notes fix a square 4 x 4 cell; the notes govern. The proxy IS used for the constant section and for confirming the deck is a single plane and not a shallow gable.",
+    "envelopeDerivation": "x and z span exactly -2.000..+2.000 at the deck, which OWNS both planes -- the frame stops at 1.988 at the post flanges, so no bounding-box face is shared and check-coplanar is clean at 0.001 m. y 0.000 to 2.900 at the top of the corrugation CRESTS: the declared height is a crest, not the mean plane, and the crest that sets it is the DEEPENED one at a sheet lap, which stands 1.8 amplitudes proud rather than 1.0 -- authored off the ordinary crest the lap flute stood at 2.905 and the bay was over its own envelope. Measured bounds 4.000 x 2.900 x 4.000. The deck grid's z STATIONS are explicit rather than an even division: -2.00, -1.90, -0.65, 0.65, 1.90, 2.00. The rusted band along the eave and the high rake is 0.10 m wide on the plate, and a canvas tile cannot place it -- a tile repeats by world position and does not know where the eave is -- so it rides on a colour per top-grid VERTEX, which needs a row 0.10 m inside each z edge. Reaching 0.10 m by raising nz evenly would have needed thirty-odd rows of 105 columns; five stations cost 2,516 triangles against 1,676 and nothing between them is narrower than 1.25 m. Proxy (Meshy v7): w:h:d 1 : 0.903 : 1.147 with 68.8% of the sampled surface in the top band -- the deck is nearly the whole prop -- over a perimeter frame of CONSTANT extent 1.084 x 1.263 H from the ground to the deck, which is what a channel-section post and a deep fascia look like to a surface sampler. The proxy footprint is rectangular at 0.858:1 where the notes fix a square 4 x 4 cell; the notes govern. The proxy IS used for the constant section and for confirming the deck is a single plane and not a shallow gable.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.903 : 1.147, 68.8% of the surface in the top band, a frame of constant 1.084 x 1.263 H extent to the ground. Used for the section and for confirming a single plane. NOT used for the footprint, which the proxy reads as rectangular and the notes fix square."
   },
   "viewEvidence": [
@@ -773,12 +817,12 @@
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#d8d4cc",
-        "recipe": "The same red-oxide steel material; the bolt head is a bare galvanised vertex colour on it.",
+        "baseColor": "#f2f0ee",
+        "recipe": "The same red-oxide steel material; the bolt head is a near-white multiplier over its envelope.",
         "evidenceRef": "region-paint",
         "confidence": 0.84,
-        "dominantAlbedo": "rgba(216, 212, 204, 1.0)",
-        "secondaryAlbedo": "rgba(216, 212, 204, 1.0)",
+        "dominantAlbedo": "rgba(242, 240, 238, 1.0)",
+        "secondaryAlbedo": "rgba(242, 240, 238, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.84
       },
@@ -808,12 +852,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four three-box channel posts, four beams, two purlins and four bolt heads are one merge and one draw call.",
+      "topologyRationale": "Four three-box channel posts, twelve beam boxes, two purlins and four bolt heads are one merge and one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts 120 x 58 x 8 mm channels at x,z +-1.928, opening outward in z, from the ground to the beam soffit; perimeter beam 120 x 200 mm, the two rake sides rotated onto the 7.1 degree fall and the two ends level at their own heights; two purlins 70 x 50 mm at z +-0.67, 50 mm under the deck; bolt heads 30 mm at each post-to-beam joint.",
+        "topologyIntent": "Everything under the sheet hangs from the underside of its TROUGHS, 26 mm below the mean plane. Posts 120 x 58 x 8 mm channels at x,z +-1.928, opening outward in z, from the ground to the beam soffit, the recessed web darker than its two flanges; perimeter beam 120 x 200 mm built as a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange -- on all four sides, the two rake sides rotated onto the 7.1 degree fall and the two ends level at their own heights; two purlins 70 x 50 mm at z +-0.67, 50 mm under the deck; bolt heads 30 mm at each post-to-beam joint.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -822,19 +866,19 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The flanges stand inside the web's own section; the beams meet the posts as solids; the purlins run under the deck by more than the corrugation depth; the deck owns +-2.000 in both axes and the frame stops at 1.988. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.80 m."
+        "zFightingNote": "The flanges stand inside the web's own section; the beam flanges meet the post flanges as an OPPOSED butt joint at the same y, which is how a real frame meets; the beam and the purlins hang from the underside of the deck's TROUGHS rather than from its mean plane, so nothing stands up into the corrugation valleys; the deck owns +-2.000 in both axes and the frame stops at 1.988. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 1.10 m."
       },
       "localFeatures": [
         {
           "id": "d1-posts",
           "description": "channel posts",
-          "delivery": "three boxes each -- a web and two flanges"
+          "delivery": "three boxes each -- a web and two flanges, the web darker"
         },
         {
           "id": "d2-fascia",
           "description": "perimeter beam",
-          "delivery": "four boxes, two rotated onto the fall"
+          "delivery": "twelve boxes -- a web between two flanges on each of the four sides, two rotated onto the fall"
         },
         {
           "id": "d7-purlins",
@@ -844,17 +888,17 @@
         {
           "id": "d5-rust",
           "description": "rust",
-          "delivery": "bloom canvas"
+          "delivery": "bloom canvas over a re-based envelope"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#d38672",
-        "recipe": "Red-oxide primer as vertex colours on a white material -- web #d38672, flanges #df9683, fascia #c97e6c, bolt heads #d8d4cc -- with a rust-bloom multiply canvas.",
+        "baseColor": "#c9836f",
+        "recipe": "Red oxide on an ENVELOPE RE-BASED material: the colour is the chalked bloom #c9836f and the vertex colours are multipliers over it -- flange #ffffff, web #d2c8c2, beam #f6efec, bolt #f2f0ee -- with a `paint` weathering canvas filling back down to the clean #ad422f, plus a y tint darkening the frame toward the roof's own shade.",
         "evidenceRef": "region-paint",
         "confidence": 0.88,
-        "dominantAlbedo": "rgba(211, 134, 114, 1.0)",
-        "secondaryAlbedo": "rgba(211, 134, 114, 1.0)",
+        "dominantAlbedo": "rgba(201, 131, 111, 1.0)",
+        "secondaryAlbedo": "rgba(201, 131, 111, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.88
       },
@@ -898,12 +942,12 @@
       "confidence": 0.9,
       "primitive": "plane-card",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "A 104 x 3 height grid is one merge and one draw call for the whole roof, and its edge strips ARE the fluted eave and rake -- the silhouette a normal map cannot carry.",
+      "topologyRationale": "A 104 x 5 height grid is one merge and one draw call for the whole roof, and its edge strips ARE the fluted eave and rake -- the silhouette a normal map cannot carry.",
       "materialId": "zinc",
       "material": "zinc",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "A 104 x 3 grid over x,z -2.00..2.00, 8 mm thick; the top surface is a single plane falling from 2.90 at z -2.00 to 2.40 at z +2.00 with a 36 mm triangle-wave corrugation in x at 52 flutes, every 20th flute deepened 45% as the sheet lap.",
+        "topologyIntent": "A 104 x 5 grid over x,z -2.00..2.00 at explicit z stations -2.00, -1.90, -0.65, 0.65, 1.90, 2.00, 8 mm thick; the top surface is a single plane falling from 2.90 at z -2.00 to 2.40 at z +2.00 with a 36 mm triangle-wave corrugation in x at 52 flutes, and a lap flute standing 1.8 amplitudes proud at columns 26, 52 and 78 -- four courses of 1.00 m, the real cover width of a sheet.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -912,8 +956,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The deck is the only thing at its heights and it owns both cell-edge planes; the purlins run under it by more than the corrugation depth.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.90 m."
+        "zFightingNote": "The deck is the only thing at its heights and it owns both cell-edge planes; the purlins run under it by more than the corrugation depth; the screw washers stand 4 mm proud of the crests they sit on.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 1.00 m, locked to the deck's own 13 flutes per metre."
       },
       "localFeatures": [
         {
@@ -923,18 +967,28 @@
         },
         {
           "id": "d4-flutes",
-          "description": "corrugation and sheet lap",
-          "delivery": "a triangle wave in the height grid, plus the canvas as a bump map"
+          "description": "corrugation and sheet laps",
+          "delivery": "a triangle wave in the height grid with three deepened lap columns, plus the canvas in phase as map and bump"
+        },
+        {
+          "id": "d8-eaverust",
+          "description": "edge rust, lap staining and course tones",
+          "delivery": "a colour per top-grid vertex, computed at emit time"
+        },
+        {
+          "id": "d9-screws",
+          "description": "screw fixing lines over the purlins",
+          "delivery": "the `fixings` repetition system -- 26 instances of one washer box, placed at the height of the crest each sits on"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "zinc",
-        "baseColor": "#8c9094",
-        "recipe": "One galvanised grey on a white material, authored DARKER than the plate because the deck is up-facing, with a corrugation canvas bound as map and bump.",
+        "baseColor": "#939faa",
+        "recipe": "An ENVELOPE RE-BASED galvanised grey: the material colour is the whitest oxidation and every top-grid VERTEX carries its own multiplier -- the broad chalk-to-drift zoning, the four course tones, the 0.11 m rusted edge band and the lap staining -- with a `galv` canvas over it for the fine speckle, the rust freckles, the roll marks and the flute shading.",
         "evidenceRef": "region-zinc",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(140, 144, 148, 1.0)",
-        "secondaryAlbedo": "rgba(140, 144, 148, 1.0)",
+        "dominantAlbedo": "rgba(147, 159, 170, 1.0)",
+        "secondaryAlbedo": "rgba(147, 159, 170, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.9
       },
@@ -962,8 +1016,8 @@
       "name": "Red-oxide painted steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d38672",
-      "color": "#d38672",
+      "baseColor": "#c9836f",
+      "color": "#c9836f",
       "roughness": {
         "base": 0.72,
         "variation": 0.05,
@@ -972,12 +1026,12 @@
       },
       "metalness": 0.18,
       "albedo": {
-        "dominant": "#d38672",
+        "dominant": "#c9836f",
         "secondary": [
-          "#d38672",
-          "#df9683",
-          "#c97e6c",
-          "#d8d4cc"
+          "#ffffff",
+          "#d2c8c2",
+          "#f6efec",
+          "#f2f0ee"
         ],
         "samplingNotes": "Measured as the mean of crops/paint.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -987,19 +1041,23 @@
           "region": "the fascia and the post feet",
           "roughness": 0.8,
           "palette": [
-            "#88746E"
+            "#B2705A",
+            "#8A3A24"
           ],
-          "evidence": "crops/fascia.png #88746e sd 55 -- the sd is the rust blooming through the primer; carried as a bloom canvas rather than as geometry."
+          "evidence": "crops/fascia.png #88746e sd 55 against paint #6a4e49 -- the bloom is BRIGHTER than the primer it eats, which is why it needs the re-based envelope; the run below it is #8a3a24. Carried as canvas, not geometry."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-paint (0.88) at #6a4e49 sd 30 and region-paintlit (0.86) at #6f5b58 sd 30, with the deep fascia at #88746e sd 55 -- a brownish red-oxide primer, mean luma about 87.",
-          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER (two-point solve from the nipa module: authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). The first build authored #b0705f, luma 129, and the posts came back at 40 to 52 -- BELOW the backdrop's 58. Lifted 20% to #d38672, luma 155, and re-measured at 74 / 61 / 62 / 59 across the four azimuths. The lift keeps the CHROMA rather than going grey: the rendered post is #853328, saturation 0.67 and 48 away from the backdrop in RGB, so the silhouette gate reads it as prop on distance alone even where it is dark. Grey at the same luma would not.",
+          "Measured on the plate ACROSS the frame rather than at one crop, because one crop is what the first build got wrong: a lit flange at #78342e luma 66.0, a web at #5c2c28 luma 54.1, the deep fascia at #654139 luma 72.0 and #3f211b luma 38.7, and a fully shaded post at #3c150e luma 28.6 -- saturation 0.44 to 0.76 throughout. The frame spans 44 luma on a plate whose backdrop is 127.",
+          "THE TONE WAS ALREADY RIGHT AND THE VARIATION WAS ABSENT. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2, against that 28.6-to-67.4 plate range -- and its clean albedo, material #d38672 times vertex #d38672, is #ad422f, which is the plate's own red oxide. So this pass keeps the clean tone EXACTLY and spends everything on spread. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view now runs mean 51.5, p05 44.2, p50 49.0, p95 68.2, and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. Read over the WHOLE frame instead it runs a p95 of 117, and that is a viewpoint artefact rather than a material error: the beam's top flange shows between the eave flutes, which is an up-facing painted surface the plate never sees because its own deck hides it.",
+          "ENVELOPE RE-BASED: the material colour is #c9836f, the chalked bloom -- the BRIGHTEST tone the tile reaches -- and the `paint` canvas fills back down to the clean #ad422f. A multiply over the clean paint could only darken, and a chalk bloom on red oxide is brighter than the paint in two channels.",
+          "The web is a whole stop under the flanges it sits between (#5c2c28 against #78342e, about 0.79 in linear terms), which is what makes a channel read as a channel. The first build had it the BRIGHTER of the two.",
+          "World UVs at 1.10 m, and the number is set by the POST. A post is 0.12 m across and 2.4 m tall, so its x faces sample a narrow strip of the tile whatever the scale, and what a viewer sees is that strip repeated DOWN the post: at 0.40 m that is six identical repeats and reads as a chevron ladder, at 1.10 m it is two. The first build was at 0.80 m, where a post crossed 15% of one tile and every post crossed the same 15% -- which is what put three posts and every face at exactly #a33123.",
           "Metalness 0.18, not physical: the thaikit harness has no environment map and a full metal renders black.",
-          "Textureless as DECLARED: one 512 px rust-bloom multiply canvas after construction, world UVs at 0.80 m."
+          "Textureless as DECLARED: one 512 px envelope-re-based weathering canvas after construction, bound as map and bump at 0.006."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1015,8 +1073,8 @@
       "name": "Galvanised corrugated sheet",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#8c9094",
-      "color": "#8c9094",
+      "baseColor": "#939faa",
+      "color": "#939faa",
       "roughness": {
         "base": 0.46,
         "variation": 0.05,
@@ -1025,10 +1083,11 @@
       },
       "metalness": 0.3,
       "albedo": {
-        "dominant": "#8c9094",
+        "dominant": "#939faa",
         "secondary": [
-          "#8c9094",
-          "#83878b"
+          "#869199",
+          "#666d75",
+          "#7d6252"
         ],
         "samplingNotes": "Measured as the mean of crops/zinc.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1038,20 +1097,33 @@
           "region": "the whole deck",
           "roughness": 0.46,
           "palette": [
-            "#B6B9BD",
+            "#C3C6CB",
             "#AAA09D"
           ],
-          "evidence": "crops/zinc.png and crops/edge.png -- the deck and its fluted edge; the flutes are geometry and the canvas carries only the roll marks between them."
+          "evidence": "crops/zinc.png and crops/edge.png -- the deck and its fluted edge; the flutes are geometry and the canvas shades them in phase and carries the roll marks between them."
+        },
+        {
+          "id": "d8-eaverust",
+          "region": "the 0.11 m band along the eave and both rakes, and the fluted rim itself",
+          "roughness": 0.55,
+          "palette": [
+            "#A69B94",
+            "#9A8878"
+          ],
+          "evidence": "crops/edge.png and the plate's eave at #a69b94 against clean #c3c6cb -- a per-vertex band on the sheet grid, since a world-space tile cannot know where the edge is."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-zinc (0.90) at #b6b9bd sd 23, region-zincrust (0.86) at #bcbdbf sd 28 and region-joint (0.82) at #b9bbbe -- matt galvanised grey, luma about 185, with rust blooms rather than sheets of rust. region-edge (0.88) at #aaa09d sd 48 is the fluted eave, and that standard deviation IS the flute shadow.",
-          "THE ONE MATERIAL IN THE SET AUTHORED DARKER THAN THE PLATE. The deck is up-facing, where the harness transfer is roughly 1.05A + 60, so a grey authored anywhere near its measured value renders blown: the first build authored #d8dbdf, luma 218, and came back at 241. Authored at luma 143 (#8c9094), times the corrugation canvas's ~0.90 mean, and re-measured at 228 on the fully lit slope and 145 to 151 at glancing angles -- a mean of about 168 against the plate's 185.",
+          "Measured ACROSS the deck rather than at one crop: clean sheet #c3c6cb luma 197.4, the chalked and drifted zones #acafb3 luma 174.3 and #aaacb1 luma 172.2, the darkest drift #807f7d luma 127.3, and the rusted eave #a69b94 luma 156.5 at saturation 0.109. That is a 70-luma spread at a saturation of 0.02 to 0.11 on a nominally flat grey, and it is the whole difference between a roof and a sheet of plastic.",
+          "THE FIRST BUILD HAD THE TONE AND NONE OF THE SPREAD. It came back at 193.7 / 195.6 / 227.8 luma at saturation 0.007 to 0.021 -- blown at the lit slope, and effectively one colour. Its only canvas was the corrugation ripple, which is now GEOMETRY, so the map was carrying a second ripple and nothing else. Tuned against a MATCHED WINDOW rather than hand-picked crops, since the spread IS the thing under review: a rectangle entirely inside the deck in the plate (280..760 x 150..300, n = 72,000) against one entirely inside it in the render (300..720 x 280..420, n = 58,800). Plate mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2. Shipped: mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread, against a first build with a 34-luma range and a saturation of 0.007.",
+          "THE LAST 5% OF THE MEAN IS THE GATE, not the authoring, and it was measured rather than guessed. Taking the clean zinc down 4% lands the deck at mean 194.1 sd 23.3 p05 146.6 -- closer to the plate on every statistic -- and pushes the flute VALLEY SHADOWS along the eave and the high rake into the harness backdrop's own 58 +- 2.5 luma band, where the turntable gate reads them as silhouette-enclosed background: 1,795 px at azimuth 180 and 1,412 at 270, 1.9% and 1.1% of the foreground against a 1% ceiling, holed at both. The valley shadow is albedo times a geometric shading term, so the deck's mean and that band are directly coupled and this is the floor.",
+          "THE RESIDUAL IS CHROMA, and it is the harness rather than the authoring. The plate's deck means (186.1, 188.0, 191.7) -- blue by 5.6 levels, per-pixel saturation 0.043 -- and the deck ships at (194.6, 195.3, 196.1), blue by 1.5 at 0.017, off an envelope authored blue by 23. An up-facing surface goes through a large neutral additive term here, which desaturates it about fifteenfold, so closing those four levels would need a zinc authored blue by about 86. That is not a galvanised sheet, and the difference is 2% of a channel on a surface at luma 190.",
+          "ENVELOPE RE-BASED: the material colour is #939faa, the whitest oxidation. The BROAD chalk-to-drift zoning (#869199 to #666d75) is a per-vertex field on the sheet grid, because it must not repeat; the tile carries the fine speckle inside those zones, the rust freckles at #7d6252, the roll marks and the flute shading.",
           "Metalness 0.30, not physical, for the same reason as the steel.",
-          "Textureless as DECLARED: one 512 px corrugation canvas bound as map AND bump (0.012) over the MODELLED flutes, at a pitch of four canvas ripples per modelled flute so the two do not beat against each other. World UVs at 0.90 m."
+          "Textureless as DECLARED: one 512 px `galv` canvas bound as map AND bump (0.010). World UVs at 1.00 m, which is NOT chosen: the deck carries 13 flutes per metre (52 over 4.00 m), so one metre of world per tile against 13 canvas ripples phase-locks the two at every repeat, with a trough at x = 0 in both. Any other scale beats against the geometry."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1063,7 +1135,20 @@
       }
     }
   ],
-  "repetitionSystems": [],
+  "repetitionSystems": [
+    {
+      "id": "fixings",
+      "name": "Roof screw washers",
+      "componentRef": "deck",
+      "count": 26,
+      "primitive": "box",
+      "materialId": "steel",
+      "placement": "two lines of thirteen, one over each purlin at z +-0.67, on every fourth crest across the 4 m; each washer is 26 x 7 x 26 mm standing 4 mm proud of the crest it sits on, and each is placed at the height of ITS crest, which is 1.8 amplitudes at a lap column and 1.0 elsewhere",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "One InstancedMesh. Drawn instead as vertex colour on the deck a fixing would smear over the 1.25 m span to the next grid row, and submitted separately 26 twelve-triangle washers would be the wrong axis to spend a draw call on. The plate shows the screw lines as rust dots, which is what these carry."
+    }
+  ],
   "buildPasses": [
     {
       "id": "blockout",
@@ -1172,27 +1257,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-31T12:03:23.846935+00:00",
+      "timestamp": "2026-09-01T02:50:09.995726+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1203,27 +1288,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:23.923425+00:00",
+      "timestamp": "2026-09-01T02:50:10.079565+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1234,27 +1319,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.000914+00:00",
+      "timestamp": "2026-09-01T02:50:10.160891+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.244742+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "roof-corrugation",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1265,27 +1365,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.078738+00:00",
+      "timestamp": "2026-09-01T02:50:10.328585+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.411882+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "roof-corrugation",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1296,27 +1411,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.155495+00:00",
+      "timestamp": "2026-09-01T02:50:10.495167+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.578464+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
-          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+          "evidence": "Channel section built as a web and two flanges per post with the WEB darker than the flanges it sits between (the plate's #5c2c28 against #78342e, about 0.79 in linear terms; the first build had it the brighter of the two and a channel read as a bar). BOTH materials are envelope re-based, so a chalk bloom can land brighter than the clean tone a multiply could only darken. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view runs mean 51.5, p05 44.2, p50 49.0, p95 68.2 and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2.",
+          "notes": "The world UV scale is set by the post and not chosen: at 0.80 m a 0.12 m post crossed 15% of one tile and every post crossed the same 15%; at 0.40 m the strip repeated six times down each post as a chevron ladder; at 1.10 m it is two repeats and the y tint carries the rest."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1327,17 +1457,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.236267+00:00",
+      "timestamp": "2026-09-01T02:50:10.661802+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1348,17 +1478,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.316901+00:00",
+      "timestamp": "2026-09-01T02:50:10.746103+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1369,45 +1499,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:03:24.396524+00:00",
+      "timestamp": "2026-09-01T02:50:10.831841+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         },
         {
           "id": "roof-corrugation",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
-          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+          "evidence": "Channel section built as a web and two flanges per post with the WEB darker than the flanges it sits between (the plate's #5c2c28 against #78342e, about 0.79 in linear terms; the first build had it the brighter of the two and a channel read as a bar). BOTH materials are envelope re-based, so a chalk bloom can land brighter than the clean tone a multiply could only darken. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view runs mean 51.5, p05 44.2, p50 49.0, p95 68.2 and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2.",
+          "notes": "The world UV scale is set by the post and not chosen: at 0.80 m a 0.12 m post crossed 15% of one tile and every post crossed the same 15%; at 0.40 m the strip repeated six times down each post as a chevron ladder; at 1.10 m it is two repeats and the y tint carries the rest."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
@@ -1420,31 +1550,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-31T12:03:23.846935+00:00",
+      "timestamp": "2026-09-01T02:50:09.995726+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components, no repetition system, 2 draw calls of 4.",
+      "summary": "Blockout: two merged components plus one repetition system, 3 draw calls of 4.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1461,31 +1591,31 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:23.923425+00:00",
+      "timestamp": "2026-09-01T02:50:10.079565+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: four channel posts, a deep perimeter beam raking on the fall sides and level on the ends, two purlins.",
+      "summary": "Structural pass: four channel posts, a CHANNEL perimeter beam raking on the fall sides and level on the ends, two purlins.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1501,31 +1631,15 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.000914+00:00",
+      "timestamp": "2026-09-01T02:50:10.160891+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-corrugation",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: the corrugation MODELLED as a triangle wave in the height grid so the eave and rake are fluted in silhouette; the notes' cost claim measured at 42% of budget rather than assumed.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The perimeter beam rebuilt as a channel and, with the purlins, re-hung from the underside of the deck's troughs rather than its mean plane; the sheet laps moved to four courses of 1.00 m with their own tones; a 0.11 m rusted edge band and two lines of 13 screw washers added; the deck grid given explicit z stations so a 0.10 m band is expressible at all.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1541,31 +1655,55 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.078738+00:00",
+      "timestamp": "2026-09-01T02:50:10.244742+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the corrugation MODELLED as a triangle wave in the height grid so the eave and rake are fluted in silhouette, in four lapped courses of 1.00 m with explicit z stations 0.10 m inside each edge.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.328585+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-corrugation",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: red-oxide steel 0.88 and galvanised zinc 0.90, both textureless; the zinc is the one material in the set authored DARKER than its plate.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Both materials re-based onto an envelope above every tone their tiles reach, so a chalk bloom brighter than the clean surface is reachable at all; the clean tones are pinned to what the previous build actually rendered.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1581,31 +1719,95 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.155495+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "timestamp": "2026-09-01T02:50:10.411882+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: both materials ENVELOPE RE-BASED -- red oxide on a #c9836f chalk envelope, galvanised zinc on a #939faa oxidation envelope -- so a bloom brighter than clean is reachable. Both textureless.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.495167+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The deck's corrugation canvas replaced by a `galv` weathering tile whose base fill carries the flute shading in phase with the modelled flutes; the broad chalk-to-drift zoning moved onto the sheet's own vertex grid, and the steel tile's world scale set from the post rather than left at a value that repeated one strip six times down it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:50:10.578464+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
-          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+          "evidence": "Channel section built as a web and two flanges per post with the WEB darker than the flanges it sits between (the plate's #5c2c28 against #78342e, about 0.79 in linear terms; the first build had it the brighter of the two and a channel read as a bar). BOTH materials are envelope re-based, so a chalk bloom can land brighter than the clean tone a multiply could only darken. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view runs mean 51.5, p05 44.2, p50 49.0, p95 68.2 and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2.",
+          "notes": "The world UV scale is set by the post and not chosen: at 0.80 m a 0.12 m post crossed 15% of one tile and every post crossed the same 15%; at 0.40 m the strip repeated six times down each post as a chevron ladder; at 1.10 m it is two repeats and the y tint carries the rest."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: rust-bloom canvas on the steel; corrugation canvas bound as map AND bump over the modelled flutes, at four canvas ripples per flute so the two do not beat.",
+      "summary": "Surface pass: the deck's broad zoning is a non-repeating per-vertex field and the canvas keeps only the fine speckle, because a 1 m tile on a 4 m deck drew a 4 x 4 lattice; matched-window sd 22.3 against the plate's 26.1.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1621,21 +1823,21 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.236267+00:00",
+      "timestamp": "2026-09-01T02:50:10.661802+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. The up-facing deck was re-authored after measuring 241 against the plate's 185.",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. The deck's mean sits 9 levels over the plate's and that is the GATE, measured: 4% darker is closer on every statistic and puts the flute valley shadows into the backdrop's own luma band at two azimuths. The other residual is CHROMA on the deck -- plate (186.1, 188.0, 191.7) against shipped (194.6, 195.3, 196.1) off an envelope authored blue by 23, the harness desaturating an up-facing surface about fifteenfold.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1651,17 +1853,17 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.316901+00:00",
+      "timestamp": "2026-09-01T02:50:10.746103+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "action": "continue",
@@ -1681,49 +1883,49 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:03:24.396524+00:00",
+      "timestamp": "2026-09-01T02:50:10.831841+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.85,
-        "formDetail": 0.87,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.94,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
-          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them."
         },
         {
           "id": "roof-corrugation",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
-          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
+          "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
-          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+          "evidence": "Channel section built as a web and two flanges per post with the WEB darker than the flanges it sits between (the plate's #5c2c28 against #78342e, about 0.79 in linear terms; the first build had it the brighter of the two and a channel read as a bar). BOTH materials are envelope re-based, so a chalk bloom can land brighter than the clean tone a multiply could only darken. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view runs mean 51.5, p05 44.2, p50 49.0, p95 68.2 and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2.",
+          "notes": "The world UV scale is set by the post and not chosen: at 0.80 m a 0.12 m post crossed 15% of one tile and every post crossed the same 15%; at 0.40 m the strip repeated six times down each post as a chevron ladder; at 1.10 m it is two repeats and the y tint carries the rest."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,940/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Enclosed background 0-162 px, so the turntable is run WITHOUT --allow-holes.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.94. 3,188/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Turntable passes at every azimuth with holed=false and an enclosed-background fraction of 0.0005 to 0.0074 against the gate ceiling of 0.01, so it is run WITHOUT --allow-holes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1763,29 +1965,29 @@
     "accounting": {
       "drawCalls": {
         "components": 3,
-        "repetitionSystems": 0,
-        "projectedTotal": 3,
+        "repetitionSystems": 1,
+        "projectedTotal": 4,
         "budget": 4,
-        "headroom": 1,
-        "note": "Three spec components on two materials, no repetition system: the bolt heads are merged into the frame geometry, so 2 DRAW CALLS of 4."
+        "headroom": 0,
+        "note": "Three spec components on two materials plus one repetition system: the bolt heads are merged into the frame geometry and the 26 screw washers are one InstancedMesh, so 3 DRAW CALLS of 4."
       },
       "materials": {
         "projectedTotal": 2,
         "budget": 3,
         "headroom": 1,
-        "note": "steel and zinc: 2 of 3. Web, flange, fascia and bolt are vertex colours on one material."
+        "note": "steel and zinc: 2 of 3. Web, flange, beam, bolt and washer are vertex multipliers on one re-based steel envelope; the deck's zoning, course tones and edge rust are vertex multipliers on one re-based zinc envelope."
       },
       "uniqueGeometries": {
-        "projectedTotal": 3,
+        "projectedTotal": 4,
         "budget": 6,
-        "headroom": 3,
+        "headroom": 2,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1940,
+        "measured": 3188,
         "budget": 4000,
-        "headroom": 2060,
-        "note": "1,940 of 4,000: 264 in the frame merge (22 boxes), 1,676 in the corrugated height grid -- 1,248 in the two 104 x 3 surfaces and 428 in the wound edge strips, which ARE the fluted eave and rake. The registry notes predicted modelled flutes would eat the whole budget; measured, they are 42% of it."
+        "headroom": 812,
+        "note": "3,188 of 4,000: 360 in the frame merge (30 boxes -- 12 post, 12 beam, 2 purlin, 4 bolt), 2,516 in the corrugated height grid (2,080 in the two 104 x 5 surfaces and 436 in the wound edge strips, which ARE the fluted eave and rake), and 312 in the 26 screw washers. The registry notes predicted modelled flutes would eat the whole budget; measured, the deck is 63% of it and the bay 80%."
       }
     }
   },
@@ -1843,11 +2045,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes throughout the frame, two rotated onto the 7.1 degree fall; the deck is a height grid with thickness."
+      "strategy": "Boxes throughout the frame, six rotated onto the 7.1 degree fall; the deck is a height grid with thickness at explicit z stations; the washers are one instanced box."
     },
     {
       "id": "instancing",
-      "strategy": "No InstancedMesh. In a scene the HOST places whole bays on the 4 m grid; butted along the fall they step 0.50 m, butted across it they continue one plane."
+      "strategy": "One InstancedMesh of 26 screw washers. In a scene the HOST places whole bays on the 4 m grid; butted along the fall they step 0.50 m, butted across it they continue one plane."
     },
     {
       "id": "determinism",
@@ -1855,7 +2057,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM; the corrugation canvas is bound as map and bump."
+      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM, both bound as map AND bump and both drawn in absolute multiplier space over a re-based envelope so a mark may land either side of clean."
     }
   ],
   "animationAnchors": [],
@@ -1865,19 +2067,25 @@
       "id": "modelled-flutes-against-the-notes",
       "severity": "medium",
       "description": "The registry notes ask for a flat deck with a normal map and say modelled corrugations would eat the whole triangle budget.",
-      "mitigation": "The cost claim was measured, not assumed: the deck is 1,676 triangles and the bay 1,940 of 4,000. What the notes are right about is that a normal map carries the ripple; what it cannot carry is the fluted eave and rake, which is what a corrugated roof is read by -- the same argument the bamboo module's own notes make for its scalloped eave. The canvas is still bound, as a bump map over the modelled flutes. Recorded in assumptions and depthRationale."
+      "mitigation": "The cost claim was measured, not assumed: the deck is 2,516 triangles and the bay 3,188 of 4,000. What the notes are right about is that a normal map carries the ripple; what it cannot carry is the fluted eave and rake, which is what a corrugated roof is read by -- the same argument the bamboo module's own notes make for its scalloped eave. The canvas is still bound, as a bump map over the modelled flutes. Recorded in assumptions and depthRationale."
     },
     {
       "id": "up-facing-deck-blowout",
       "severity": "low",
-      "description": "The deck is up-facing, where the harness transfer has a large additive term, so a galvanised grey authored at its measured value renders blown -- 241 on the first build against the plate's 185.",
-      "mitigation": "Authored DARKER than the plate at luma 143, the only material in the set that is; re-measured at a mean of about 168 across the azimuths. The measurement and the inverse are both on the material."
+      "description": "The deck is up-facing, where the harness transfer has a large additive term, so a galvanised grey authored at its measured value renders blown -- 241 on the very first build and still 228 at the lit slope on the second.",
+      "mitigation": "The clean zinc is authored well below the plate, and the SPREAD rather than the level is what was added. Matched windows entirely inside the deck: plate mean 187.8 sd 26.1 p05 144.0 p95 229.2, shipped mean 196.8 sd 22.3 p05 151.3 p95 221.6. The remaining 9 levels of mean are the turntable gate and were measured, not conceded: 4% darker is closer on every statistic and holes at two azimuths."
     },
     {
       "id": "dark-primer-vs-gate",
       "severity": "low",
-      "description": "Red oxide measures luma 87 on the plate and the first build rendered the posts at 40 to 52, below the backdrop's 58.",
-      "mitigation": "Lifted 20% keeping the CHROMA rather than going grey: the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the silhouette gate reads it as prop on distance alone. Measured at 74 / 61 / 62 / 59 across the azimuths, and the enclosed-background count is 0 to 162 px, so this bay needs no --allow-holes at all."
+      "description": "Red oxide measures 28.6 to 72.0 luma on the plate, and giving the frame that whole range puts its median BELOW the backdrop's 58 at three of the four azimuths.",
+      "mitigation": "The chroma is what carries it, not the luma. The frame is saturation 0.44 to 0.81 throughout, so a post at 30 luma is still about 54 away from the backdrop in RGB, and the turntable gate passes at every azimuth with holed=false -- no --allow-holes, measured after the darkening rather than assumed to survive it."
+    },
+    {
+      "id": "canvas-tiling-lattice",
+      "severity": "medium",
+      "description": "Both surfaces are large against their tiles -- 4 m of deck on a 1 m tile, 3.94 m of beam and 2.4 m of post on a 1.10 m tile -- so any canvas mark of a useful size repeats visibly. Two builds of this pass drew exactly that: a 4 x 4 lattice of chalk blooms across the roof, and thirteen identical pale dots along the fascia.",
+      "mitigation": "The broad marks were moved OFF the canvas and onto the vertex grid, which spans each surface once; the tile keeps only marks small enough that their repeat reads as grain. The scales are set from the geometry rather than chosen -- 1.00 m to phase-lock the deck's flutes, 1.10 m to hold a post to two vertical repeats."
     }
   ],
   "localSpecSearch": {
@@ -1967,38 +2175,38 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.2724,
-        "aspectRatioDelta": 0.1582,
-        "scaleDelta": 0.2322,
-        "bilateralSymmetryError": 0.0601,
+        "silhouetteIoU": 0.2618,
+        "aspectRatioDelta": 0.1518,
+        "scaleDelta": 0.2364,
+        "bilateralSymmetryError": 0.0598,
         "colorDelta": {
           "checked": 3,
-          "maxDeltaE": 35.44,
+          "maxDeltaE": 47.48,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 25.86
+              "deltaE": 47.48
             },
             {
               "componentId": null,
-              "deltaE": 35.44
+              "deltaE": 35.83
             },
             {
               "componentId": null,
-              "deltaE": 0.57
+              "deltaE": 18.01
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.272 is below threshold 0.85",
-        "aspect-ratio delta 0.158 exceeds threshold 0.05",
-        "scale delta 0.232 exceeds threshold 0.08",
+        "silhouette IoU 0.262 is below threshold 0.85",
+        "aspect-ratio delta 0.152 exceeds threshold 0.05",
+        "scale delta 0.236 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "71d79a4a00c2eb68",
+      "renderHash": "0ead1a69b5bcef44",
       "passId": "blockout"
     }
   ]

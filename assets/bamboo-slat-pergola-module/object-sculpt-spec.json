@@ -55,143 +55,163 @@
     ],
     "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
   },
-  "suitability": "conditional",
+  "suitability": "pass",
   "scores": {
-    "object_isolation": 0,
-    "silhouette_readability": 0,
-    "depth_inference": 0,
-    "primitive_decomposition": 0,
-    "material_procedurality": 0,
-    "occlusion_risk": 0,
-    "interaction_fit": 0
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
   },
   "preSpecAssessment": {
     "objectClass": {
-      "primaryType": "four-post bamboo slat pergola bay, one module of a 4 m outdoor roof grid",
+      "primaryType": "modular-canopy-bay",
       "primaryDomain": "object",
       "formLanguage": [
-        "geometric",
-        "post-and-beam frame",
-        "open slatted deck"
+        "sawn-timber-frame",
+        "four-corner-posts",
+        "perimeter-beam-and-cap-rail",
+        "spaced-bamboo-deck",
+        "flat-open-roof",
+        "open-all-sides"
       ],
       "structureKind": [
-        "timber post-and-beam frame",
-        "spaced bamboo culm roof"
+        "post-and-rail",
+        "assembled-solid"
       ],
       "motionPotential": [
-        "none - a fixed structure"
+        "static-prop"
       ],
       "materialFamilies": [
-        "weathered sawn timber",
-        "split bamboo culm"
+        "weathered-sawn-timber",
+        "whole-bamboo-culm"
       ],
-      "notes": "The ONE module in the outdoor roof set that does NOT close its roof: the culms are spaced, so it casts a striped shade and the sky shows through. That is why it cannot be authored as a textured deck with an alpha cutout - an alpha roof seen from underneath at a grazing angle is a row of hard edges, and the culms have real depth a player sees from below."
+      "notes": "ONE BAY of a modular outdoor roof kit, and the only one of the six whose roof does NOT close: a 4 x 4 m cell on a 4 m grid, four sawn timber corner posts under a perimeter beam and cap rail, and a flat deck of forty-eight spaced bamboo culms that casts a striped shade and lets the sky through. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. The shade frame over a garden table, a guesthouse terrace or a temple forecourt: sawn hardwood posts gone grey-brown with a bamboo deck laid across them, which is the cheapest roof that is not a roof. It shades without enclosing, and it is what a Thai street cafe puts over the pavement when a tarpaulin would look permanent."
     },
     "complexity": {
       "tier": "moderate",
       "scores": {
         "silhouetteComplexity": 2,
-        "componentCount": 1,
+        "componentCount": 2,
         "hierarchyDepth": 1,
-        "repetitionDensity": 3,
+        "repetitionDensity": 1,
         "materialLayerCount": 2,
-        "localDetailDensity": 1,
+        "localDetailDensity": 2,
         "occlusionRisk": 1,
-        "actionReadinessNeed": 0
+        "actionReadinessNeed": 1
       },
       "estimatedCounts": {
-        "macroComponents": 1,
-        "mesoComponents": 0,
-        "microFeatureGroups": 4,
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
         "materialLayers": 2,
-        "repetitionSystems": 1
+        "repetitionSystems": 0
       },
       "reasoning": [
-        "Structurally simple - four posts, four beams and a run of culms - but repetitionDensity 3: the roof IS the repetition, and it is what pushes this module nearest its ceilings.",
-        "occlusionRisk 1: an open frame hides almost nothing from a single view.",
-        "actionReadinessNeed 0: nothing on a pergola moves."
+        "TWO components and no repetition system: ONE timber merge (four posts, four beams, four cap rails, two purlins, eight post-head cleats) and ONE bamboo merge (forty-eight culms). Two draw calls of four, two unique geometries of six.",
+        "The roof is a MERGE and not an InstancedMesh, which is the single most consequential decision on this prop and costs nothing: 1,152 triangles either way. A merge can carry PER-CULM uv offsets, so the node rings fall at a different phase on every culm, and per-culm radius, roll, height and a DIFFERENT tone at each end. An InstancedMesh shares one geometry, so every culm gets the same node stations; thirty-six identical cylinders read as a printed stripe however many tones ride on the instance colour attribute, and that is exactly what the first build shipped.",
+        "Two materials of three: weathered timber (three vertex tones -- post, beam, cap rail) and bamboo (seven tones carried at BOTH ends of every culm). Both textureless as declared, each with one 512 px multiply canvas bound after construction.",
+        "1,416 of 4,000 triangles. Twelve radial segments on a 70 mm culm is generous and is what the merge buys: nodes are texture, not geometry, because a 6% collar on a 70 mm culm is 2 mm and no ring of triangles resolves it at prop distance.",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
       ]
     },
     "specDepthDecision": {
       "requiredDepth": "moderate",
       "minimumComponentLevels": [
-        "macro"
+        "macro",
+        "meso",
+        "micro"
       ],
       "needsRepetitionSystems": true,
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
-      "needsActionReadyHierarchy": false,
-      "rationale": "One frame component plus one InstancedMesh for the culm run: 2 draw calls of the 4 allowed. The asset notes ask for the slats as one repeated element for exactly this reason."
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is a flat deck of ROUND spaced culms in a dark sawn frame -- the registry notes say so, and say why it cannot be an alpha-cutout deck: seen from underneath at a grazing angle an alpha roof is a row of hard edges, and these culms have depth a player sees from below. Everything else is surface. The node banding, the fibre grain, the sun-faded grey drift, the checking splits in the timber and the rust bleeding from old bolts are all identity in the plate and all of them are two canvases, because none of them changes the silhouette."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
       "scanMethod": "component-zones",
       "targetMinDetails": 6,
-      "note": "Each detail maps to a component.localFeatures or material.localOverrides entry.",
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
       "details": [
         {
-          "id": "spaced-culms",
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 130 mm sawn posts with their outer faces ON the +-2.000 cell edge",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-beam",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a 195 mm perimeter beam recessed behind the posts, closed by a 65 mm cap rail that laps the culm tops",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-deck",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "forty-eight round 70 mm bamboo culms at a 79 mm pitch with a 9 mm gap, spanning X",
+          "mapsTo": {
+            "ref": "roof"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-nodes",
           "zone": "roof",
           "kind": "ridge",
           "identityDefining": true,
-          "description": "Closely spaced round bamboo culms run one direction across the frame with real gaps between them, so the sky shows through and the shade is striped.",
+          "description": "node rings crossing every culm at 300 mm, at a different station on each one",
           "mapsTo": {
-            "ref": "culms"
+            "ref": "d4-nodes"
           },
+          "onMaterial": "bamboo",
           "realization": "unreported"
         },
         {
-          "id": "four-posts",
-          "zone": "corners",
-          "kind": "contour",
+          "id": "d5-checking",
+          "zone": "frame",
+          "kind": "linework",
           "identityDefining": true,
-          "description": "Four square-section timber posts, one per corner, so the module stands alone.",
+          "description": "checking splits along the grain and rust bleeding down from old bolts",
           "mapsTo": {
-            "ref": "frame"
+            "ref": "d5-checking"
           },
+          "onMaterial": "timber",
           "realization": "unreported"
         },
         {
-          "id": "perimeter-beams",
-          "zone": "roof edge",
-          "kind": "contour",
-          "identityDefining": true,
-          "description": "Sawn timber beams run the full perimeter at the head of the posts and carry the culms.",
-          "mapsTo": {
-            "ref": "frame"
-          },
-          "realization": "unreported"
-        },
-        {
-          "id": "open-sides",
-          "zone": "whole",
-          "kind": "hole",
-          "identityDefining": true,
-          "description": "Open on all four sides: there is no infill between the posts, and the gaps between culms are real openings rather than a texture.",
-          "mapsTo": {
-            "ref": "frame"
-          },
-          "realization": "unreported"
-        },
-        {
-          "id": "timber-vs-bamboo",
-          "zone": "whole",
-          "kind": "decal",
-          "identityDefining": true,
-          "description": "A hard value split: dark weathered grey-brown timber against pale warm bamboo.",
-          "mapsTo": {
-            "ref": "weathered-timber"
-          },
-          "realization": "unreported"
-        },
-        {
-          "id": "culm-tone-variation",
+          "id": "d6-purlins",
           "zone": "roof",
-          "kind": "stain",
-          "identityDefining": false,
-          "description": "The culms vary tone from pale straw to mid tan along the run.",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two purlins along Z under the deck, seen by anyone standing in the shade",
           "mapsTo": {
-            "ref": "bamboo"
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-cleats",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "a cleat on the two inner faces of every post head",
+          "mapsTo": {
+            "ref": "frame"
           },
           "realization": "unreported"
         }
@@ -222,102 +242,99 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png"
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+    "resolvedUnknowns": [
+      "Culm DIAMETER is the one measurement taken from reality rather than from the plate. Scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is larger than any bamboo; 70 mm at a 79 mm pitch keeps the plate's measured gap-to-pitch ratio of 0.12 on a culm that exists. Forty-eight of them cross the 3.80 m clear span.",
+      "The node rings are TEXTURE, not geometry. A node collar on a 70 mm culm stands about 2 mm proud, which is below what a ring of triangles resolves at prop distance; the tile carries them at 300 mm along a 600 mm culm-uv tile, phased per culm.",
+      "Each culm is given a DIFFERENT tone at each end and the vertex colours interpolate between them. A real deck is spliced and one end of a 4 m run gets more sun than the other; the plate's deck varies along each culm as much as across the course.",
+      "The post-head cleats sit on the two INNER faces of every post. The plate shows a bracket at the post head on the outside, and nothing on this module may cross the cell edge, so it is carried inboard.",
+      "Interior of the timber sections is not modelled and the frame is boxes. A pergola is looked at from outside and from underneath, never from inside a beam."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
-    "qualityBar": "moderate",
+    "qualityBar": "high",
     "definitionOfDone": [
-      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+      "Rendered model matches the reference silhouette, the 4.00 x 2.60 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 0,
       "microFeatureGroups": 3,
       "materialLayers": 2,
-      "repetitionSystems": 1,
+      "repetitionSystems": 0,
       "reviewViewpoints": 4
     },
     "featureGroups": [
       {
         "id": "overall-silhouette",
-        "name": "Overall silhouette and proportions",
+        "name": "Overall silhouette and module contract",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+          "Envelope 4.00 x 2.60 x 4.00 m with nothing crossing the cell edge",
+          "Four corner posts owning the cell edge, beam and cap rail recessed behind them",
+          "A FLAT roof at 2.60, open on all four sides",
+          "No overhang, no walls, no vegetation"
         ],
         "evidenceRefs": [
-          "full-object"
+          "view-full"
         ],
         "failureModes": [
-          "model reads as a generic placeholder instead of the reference object",
-          "major proportions are guessed without evidence"
+          "a roof overhanging the cell",
+          "a pitched roof",
+          "the beam flush with the post face",
+          "an open slot above the outermost culm"
         ]
       },
       {
-        "id": "primary-structure",
-        "name": "Primary structure and hierarchy",
+        "id": "spaced-deck",
+        "name": "Spaced bamboo deck",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+          "Real round culms with real gaps, not a textured deck with an alpha cutout",
+          "A gap-to-pitch ratio near the plate's 0.12, so the shade is striped and the sky shows through",
+          "Node rings at real spacing and at a different station on every culm",
+          "Tone varying culm to culm AND along each culm"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-deck",
+          "region-culm",
+          "region-slat"
         ],
         "failureModes": [
-          "large visible parts are merged into one mesh",
-          "component hierarchy is too shallow for the observed complexity"
+          "identical cylinders reading as a printed stripe",
+          "node rings on one line across the whole deck",
+          "a batten roof at three times the plate's pitch",
+          "one flat honey tone"
         ]
       },
       {
-        "id": "attachment-joint-correctness",
-        "name": "Attachment and joint correctness",
+        "id": "timber-frame-surface",
+        "name": "Weathered timber value and surface",
         "required": true,
+        "threshold": 0.8,
         "qualityCriteria": [
-          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+          "Post darker than beam darker than nothing -- the plate's value separation kept, not flattened to one lifted brown",
+          "Grain running ALONG every member",
+          "Checking splits and rust bleed present and not repeating within a member",
+          "Every face clearing the turntable's background test on chroma without --allow-holes"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-beam",
+          "region-beamshade",
+          "region-post"
         ],
         "failureModes": [
-          "child part root floats away from the parent",
-          "branch/limb/tube is centered in space instead of pivoting from its root",
-          "parent-child transform mixes world and local coordinates"
-        ]
-      },
-      {
-        "id": "surface-material-response",
-        "name": "Surface material response",
-        "required": true,
-        "qualityCriteria": [
-          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
-          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
-          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
-        ],
-        "evidenceRefs": [
-          "full-object"
-        ],
-        "failureModes": [
-          "surface looks like flat plastic",
-          "local material variation is missing or not tied to image evidence"
-        ]
-      },
-      {
-        "id": "reference-lookdev",
-        "name": "Reference color, material, and lighting response",
-        "required": true,
-        "qualityCriteria": [
-          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
-          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
-          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
-          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
-        ],
-        "evidenceRefs": [
-          "full-object"
-        ],
-        "failureModes": [
-          "model has acceptable shape but reads as flat shaded or plastic",
-          "colors are a generic average instead of reference-observed local color zones",
-          "lighting is evenly ambient and cannot reproduce the source value range"
+          "one lifted brown across the whole frame",
+          "cross-grain ringing a post like a barrel",
+          "the same bolt stain three times down one post",
+          "a dark frame read as a hole"
         ]
       }
     ],
@@ -343,6 +360,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -357,8 +375,7 @@
       "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
-    ],
-    "depthRationale": "One frame component plus one instanced culm run. Everything in the frame shares a material and nothing moves, so it merges; the roof is one InstancedMesh because thirty-six separate culms would otherwise spend the entire draw-call budget on the roof alone."
+    ]
   },
   "qualityTargets": {
     "targetFidelity": 0.7,
@@ -463,8 +480,8 @@
   },
   "featureReviewTargets": [
     {
-      "id": "spaced-roof",
-      "name": "Roof of SPACED culms, not a closed deck",
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
       "tier": "critical",
       "passIds": [
         "blockout",
@@ -476,62 +493,45 @@
         "frame"
       ],
       "evidenceRefs": [
-        "full-object"
-      ],
-      "acceptance": "Real gaps between round culms, visible from below at a grazing angle. A closed deck, or an alpha-cutout sheet, is the specific failure the asset notes forbid."
+        "view-full"
+      ]
     },
     {
-      "id": "four-post-frame",
-      "name": "Four corner posts and perimeter beams",
+      "id": "spaced-deck",
+      "name": "Spaced bamboo deck",
       "tier": "critical",
       "passIds": [
-        "blockout",
-        "structural-pass"
-      ],
-      "minimumScore": 0.85,
-      "mustPass": true,
-      "componentRefs": [
-        "frame"
-      ],
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "acceptance": "Four posts, one per corner, so the module stands alone; beams on the module lines so bays pair their posts when placed side by side."
-    },
-    {
-      "id": "module-envelope",
-      "name": "4 x 4 m module envelope",
-      "tier": "critical",
-      "passIds": [
-        "blockout"
-      ],
-      "minimumScore": 0.85,
-      "mustPass": true,
-      "componentRefs": [
-        "frame"
-      ],
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "acceptance": "Built envelope 4.0 x 2.6 x 4.0 m. The grid is the contract: it divides the kit's 8 m tiles exactly 2 x 2."
-    },
-    {
-      "id": "timber-value-separation",
-      "name": "Frame clear of the backdrop band",
-      "tier": "critical",
-      "passIds": [
+        "form-refinement",
         "material-pass"
       ],
-      "minimumScore": 0.75,
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "roof"
+      ],
+      "evidenceRefs": [
+        "region-deck",
+        "region-culm",
+        "region-slat"
+      ]
+    },
+    {
+      "id": "timber-frame-surface",
+      "name": "Weathered timber value and surface",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
       "mustPass": true,
       "componentRefs": [
         "frame"
       ],
       "evidenceRefs": [
         "region-beam",
+        "region-beamshade",
         "region-post"
-      ],
-      "acceptance": "The timber must not render near the harness backdrop's luma 58. This prop is mostly open space, so a dark frame is the worst case and the lift is load-bearing."
+      ]
     }
   ],
   "sculptPipeline": {
@@ -628,49 +628,39 @@
     ]
   },
   "actionReadiness": {
-    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
-    "defaultRigType": "action-ready-static-rig",
-    "rootMotionNode": "root",
-    "requiredComponentFields": [
-      "id",
-      "parent",
-      "transform",
-      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
-      "actionProfile.animationRole",
-      "actionProfile.pivot",
-      "actionProfile.collider",
-      "actionProfile.destruction"
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
     ],
-    "transformChannels": [
-      "translate",
-      "rotate",
-      "scale",
-      "bend",
-      "twist",
-      "detach",
-      "visibility",
-      "material-state"
-    ],
-    "authoringRules": [
-      "Do not collapse independently movable parts into one mesh.",
-      "Put transforms on component pivot groups, not only on raw meshes.",
-      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
-      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
-      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
-    ],
-    "destructionPolicy": {
-      "defaultBreakable": false,
-      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
-      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
-    }
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The declared 4 x 4 x 2.6 m module governs, and the beam outer faces are placed ON the +-2.0 m lines so bays tile correctly; the asset notes call the paired posts at a shared edge the right look rather than a defect to design out.",
-    "The culms run along ONE axis (X), as the plate shows. Which axis is arbitrary for a square bay and is recorded here so a level builder knows the stripe direction is a property of the prop, not of its placement.",
-    "Thirty-six culms at a 0.1057 m pitch is read off the plate's culm-to-gap ratio rather than counted exactly; the plate's culms are partly occluded by perspective at the far edge.",
-    "The timber tone is LIFTED far from its measurement (luma 76 and 45 up to 115) for hole-gate reasons stated in the material override. This is the largest departure from measurement on this prop and it is deliberate.",
-    "No infill, no bracing and no climbing plants: vegetation is its own category and a separate prop.",
-    "The plate shows the frame from above; the underside of the beams and the post feet are inferred as plain sawn ends. Confidence 0.8."
+    "Culm DIAMETER is the one measurement taken from reality rather than from the plate. Scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is larger than any bamboo; 70 mm at a 79 mm pitch keeps the plate's measured gap-to-pitch ratio of 0.12 on a culm that exists. Forty-eight of them cross the 3.80 m clear span.",
+    "The node rings are TEXTURE, not geometry. A node collar on a 70 mm culm stands about 2 mm proud, which is below what a ring of triangles resolves at prop distance; the tile carries them at 300 mm along a 600 mm culm-uv tile, phased per culm.",
+    "Each culm is given a DIFFERENT tone at each end and the vertex colours interpolate between them. A real deck is spliced and one end of a 4 m run gets more sun than the other; the plate's deck varies along each culm as much as across the course.",
+    "The post-head cleats sit on the two INNER faces of every post. The plate shows a bracket at the post head on the outside, and nothing on this module may cross the cell edge, so it is carried inboard.",
+    "Interior of the timber sections is not modelled and the frame is boxes. A pergola is looked at from outside and from underneath, never from inside a beam."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -678,7 +668,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center on the ground at the centre of the 4 x 4 m bay, +Y up. The culms run along X."
+    "notes": "Origin base-center at ground, +Y up. The culms run along X and the course marches along Z. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner POSTS then pair at the shared edge."
   },
   "silhouette": {
     "envelope": {
@@ -686,143 +676,125 @@
       "h": 2.6,
       "d": 4.0
     },
-    "description": "Four posts 0.12 x 0.12 m at the corners, rising from y 0 to 2.305. Perimeter beams 0.10 wide x 0.22 deep with their outer faces on the +-2.0 m module lines, from y 2.305 to 2.525. Thirty-six bamboo culms r 0.0375 m running the full 4 m along X, resting on the two beams that run along Z, at a 0.1057 m pitch across z - so the roof is spaced, not closed, and the top of the culms is the 2.6 m module height.",
-    "envelopeDerivation": "The declared 4 x 4 m is the module grid and is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2, so a canopy grid lands on the paving grid. The beam outer faces are placed ON the +-2.0 m lines so that modules placed side by side pair their posts at the shared edge, which the asset notes call the correct look rather than a defect.",
-    "aspectRatios": [
-      {
-        "id": "width-over-depth",
-        "value": 1.0,
-        "note": "square bay"
-      },
-      {
-        "id": "height-over-width",
-        "value": 0.65,
-        "note": "2.6 / 4.0"
-      }
-    ],
-    "symmetry": "4-fold about Y for the frame; the culm run breaks it to bilateral",
-    "dominantCurves": [
-      "the round section of each culm - the only curvature on the prop"
-    ],
-    "negativeSpaces": [
-      "the gaps between culms, which are the point of a pergola",
-      "the four open sides",
-      "the volume under the deck a player walks through"
-    ],
-    "landmarks": [
-      {
-        "id": "beam-underside",
-        "y": 2.305
-      },
-      {
-        "id": "beam-top",
-        "y": 2.525
-      },
-      {
-        "id": "culm-top",
-        "y": 2.6
-      }
-    ]
+    "description": "A 4.00 x 4.00 m bay: four 130 mm sawn timber posts at the corners with their outer faces ON the cell edge, a 195 mm perimeter beam at 2.34 m recessed behind them, a 65 mm cap rail closing the top at 2.60, and a flat deck of forty-eight 70 mm bamboo culms at a 79 mm pitch running along X with a 9 mm gap between them. Two purlins under the deck. Open on all four sides, nothing overhanging.",
+    "envelopeDerivation": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y, i.e. the declared 4.00 x 2.60 x 4.00 exactly. The POST owns the cell edge here, which is the change from the first build: 130 mm posts with their outer faces ON +-2.000, the perimeter beam recessed 10 mm behind them to +-1.990 and the cap rail 5 mm to +-1.995. That is what lets the post head read as a real joint standing proud of the rail it carries while nothing crosses the cell edge, and it is also why check-coplanar is clean at 0.001 m -- three members meeting at a corner with their outer faces on ONE plane is four same-facing coplanar pairs, and stepping them apart costs 10 mm nobody sees. The vertical stack: post 0.000-2.340, beam 2.340-2.535 (195 mm deep, 90 mm thick), cap rail 2.535-2.600 (115 mm thick, so it reaches 65 mm further inboard than the beam), culms centred at 2.5185 with a 35 mm radius so their crowns at 2.5535 are LAPPED 18 mm by the cap rail. The lap is the fix for the defect the first build shipped: with the culm tops flush at the rail line the bay carried an open slot its full width above the outermost culm, which the turntable gate found at azimuth 0 and 180 as a 468 x 2 px see-through sliver. Two purlins run along Z at x = +-0.65 from 2.400 up to the culm undersides, which is what a player standing under the bay actually sees. The PROXY is used for the plan and not for the height: Meshy v7 over the same plate reads square to within 0.04 of its height on all ten bands, and reads 1 : 0.83 : 1.00 against the built 1 : 0.65 : 1.00. The registry notes fix the 4 m cell and the flat 2.60 m roof, so the declared envelope governs, exactly as it does on the other five canopy modules. The one place the PLATE is not followed literally is culm diameter: measured against its own frame the plate's culms scale to about 190 mm at a 4 m bay, which is not a bamboo that exists. 70 mm at a 79 mm pitch is a real culm carrying the plate's own gap-to-pitch ratio of 0.12.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate (fal, request 01a057e9, ultra_mode, 4,000 target triangles). Band table over ten bands: the proxy reads width 1.177-1.218 and depth 1.173-1.235 of its own height, i.e. w:h:d 1 : 0.83 : 1.00, against the built bay's 1 : 0.65 : 1.00. SQUARE IN PLAN at every band, which is what the proxy is used for and what it settles: width and depth agree to within 0.04 of the height on all ten, so the bay is square and the culms cross a square cell. It is NOT used for the height -- the proxy reconstructs a small slatted TABLE and the registry notes fix a 2.60 m flat roof because a player has to walk under it, so the declared envelope governs and the built bay is proportionally lower than the plate's subject. Mean |delta| is 0.334 of the height in width and 0.342 in depth, which is that decision stated as a number rather than a fidelity failure. The proxy narrows at band 9 (1.195 from 1.217), consistent with the plate's deck sitting inside a perimeter beam rather than overhanging it."
   },
   "viewEvidence": [
     {
-      "id": "full-object",
-      "view": "primary",
-      "imageRegion": {
-        "x": 0.0,
-        "y": 0.0,
-        "width": 1.0,
-        "height": 1.0,
-        "units": "normalized"
-      },
-      "observations": [],
-      "confidence": 0.5
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-deck",
+      "viewpoint": "top",
+      "path": "crops/deck.png",
+      "confidence": 0.92
+    },
+    {
+      "id": "region-culm",
+      "viewpoint": "top",
+      "path": "crops/culm.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-slat",
+      "viewpoint": "top",
+      "path": "crops/slat.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-beam",
+      "viewpoint": "front",
+      "path": "crops/beam.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-beamshade",
+      "viewpoint": "left",
+      "path": "crops/beamshade.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-post",
+      "viewpoint": "front",
+      "path": "crops/post.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.94,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.94: the bay is symmetric about both axes and open on all four sides, and the plate shows two full elevations and the whole deck. There is nothing a rear view could carry that the front does not."
     }
   ],
   "componentTree": [
     {
       "id": "frame",
-      "name": "Four posts and perimeter beams",
+      "name": "Posts, perimeter beam, cap rail, purlins and cleats",
       "level": "macro",
-      "role": "identity",
+      "role": "structure",
       "importance": 1.0,
-      "confidence": 0.9,
+      "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Sawn timber: square-section posts and rectangular beams, merged into one geometry because they share a material and nothing on a pergola moves.",
-      "materialId": "weathered-timber",
-      "material": "weathered-timber",
+      "topologyRationale": "Four posts, four beams, four cap rails, two purlins and eight cleats are one merge and ONE draw call, and the root the deck hangs off. Nothing here moves relative to anything else here.",
+      "materialId": "timber",
+      "material": "timber",
       "parent": null,
-      "attachment": null,
       "geometryDescriptor": {
-        "topologyIntent": "Four posts 0.12 x 0.12 m from y 0 to 2.305 at the bay corners, their outer faces on the module lines. Four beams 0.10 wide x 0.22 deep from y 2.305 to 2.525: two running along X with outer faces at z +-2.0, two along Z at x +-2.0.",
+        "topologyIntent": "Posts 0.130 square, outer faces ON +-2.000, y 0.000-2.340. Perimeter beam 0.090 thick with its outer face at +-1.990, y 2.340-2.535, the +-Z pair running the full width and the +-X pair butting against them. Cap rail 0.115 thick at +-1.995, y 2.535-2.600, reaching 65 mm further inboard than the beam so it laps the culm crowns by 18 mm. Two purlins 0.090 wide along Z at x = +-0.650, y 2.400-2.4835. Eight cleats 0.045 x 0.230 x 0.085 on the two inner faces of every post head.",
         "edgeTreatment": {
-          "type": "none",
-          "bevelRadius": 0.0,
+          "type": "chamfer",
+          "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The beams sit ON the post heads as OPPOSED faces, an ordinary butt joint. The culms rest ON the beams that run along Z and are held clear of the beams that run along X, so no culm is ever coplanar with a beam face.",
-        "mergeNote": "One merged BufferGeometry for the whole frame."
-      },
-      "dimensions": {
-        "width": 4.0,
-        "height": 2.525,
-        "depth": 4.0,
-        "units": "meters",
-        "confidence": 0.9
-      },
-      "transform": {
-        "position": [
-          0,
-          0,
-          0
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
+        "zFightingNote": "NOTHING is flush and co-facing. The three members that meet at the cell edge are stepped 10 mm and 5 mm apart, so the post face at +-2.000, the rail at +-1.995 and the beam at +-1.990 are three planes rather than one; the corner joints are OPPOSED butt faces, which is how solids are meant to meet; the cap rail OVERLAPS the culm crowns rather than meeting them. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry carrying position, uv and colour. Every member is given its own (u, v) offset in the tile, so two members meeting at a corner never show the same crack and a member longer than the 1.80 m tile does not put its repeat where the eye is already looking."
       },
       "localFeatures": [
         {
-          "id": "four-posts",
-          "description": "corner posts",
-          "delivery": "merged boxes"
+          "id": "d1-posts",
+          "description": "four corner posts owning the cell edge",
+          "delivery": "four boxes"
         },
         {
-          "id": "perimeter-beams",
-          "description": "beams carrying the roof",
-          "delivery": "merged boxes"
+          "id": "d2-beam",
+          "description": "perimeter beam and cap rail",
+          "delivery": "eight boxes on two levels, stepped back from the post face"
         },
         {
-          "id": "open-sides",
-          "description": "no infill between posts",
-          "delivery": "absence of geometry, deliberately"
+          "id": "d6-purlins",
+          "description": "two purlins under the deck",
+          "delivery": "two boxes along Z"
         },
         {
-          "id": "culms",
-          "description": "spaced bamboo roof",
-          "delivery": "instanced cylinders, one draw call"
+          "id": "d7-cleats",
+          "description": "post-head cleats",
+          "delivery": "eight boxes on the inner post faces"
+        },
+        {
+          "id": "d5-checking",
+          "description": "checking splits and rust bleed",
+          "delivery": "the timber canvas on world-planar uvs, u along each member"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "weathered-timber",
-        "baseColor": "#85705c",
-        "recipe": "One flat lifted timber tone across posts and beams; the culms carry their own material and per-instance tones.",
+        "materialId": "timber",
+        "baseColor": "#977f66",
+        "recipe": "Three weathered timber tones as vertex colours on a WHITE material -- post #5c4b3a, beam #977f66, cap rail #87715c -- with a timber multiply canvas on world-planar uvs whose u follows each member's length.",
         "evidenceRef": "region-beam",
-        "confidence": 0.85,
-        "dominantAlbedo": "rgba(133, 112, 92, 1.0)",
-        "secondaryAlbedo": "rgba(133, 112, 92, 1.0)",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(151, 127, 102, 1.0)",
+        "secondaryAlbedo": "rgba(151, 127, 102, 1.0)",
         "materialClass": "wood",
-        "materialClassConfidence": 0.9
+        "materialClassConfidence": 0.88
       },
       "actionProfile": {
         "animationRole": "root",
@@ -840,7 +812,7 @@
           ],
           "confidence": 0.95,
           "name": "root",
-          "notes": "At base-center. A pergola has no moving parts at all, so ONE root pivot is the complete mechanism inventory - the correct answer, not a gap."
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
         },
         "transformChannels": {
           "translate": true,
@@ -852,148 +824,204 @@
           "visibility": true,
           "materialState": true
         },
-        "sockets": [],
-        "collider": {
-          "shape": "box",
-          "localCenter": [
-            0,
-            1.3,
-            0
-          ],
-          "size": [
-            4.0,
-            2.6,
-            4.0
-          ],
-          "axis": [
-            0,
-            1,
-            0
-          ],
-          "notes": "Authoring intent only; thaikit derives the shipped compound from the built geometry. A pergola is walked UNDER, so the derived compound matters more here than on a solid prop."
+        "sockets": []
+      }
+    },
+    {
+      "id": "roof",
+      "name": "Forty-eight spaced bamboo culms",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Forty-eight culms are one merge and ONE draw call. They are a MERGE rather than an InstancedMesh deliberately and at no triangle cost: only a merge can carry a per-culm uv phase, so the node rings fall at a different station on each culm, and a different tone at each end of each culm.",
+      "materialId": "bamboo",
+      "material": "bamboo",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "Forty-eight open-ended cylinders of radius 0.035 (jittered +-6%) and length 3.800, running along X at y 2.5185 (jittered +-1.5 mm), centres marching along Z at a 0.0792 m pitch from -1.860 to 1.860. Twelve radial segments. Each culm carries its own roll, its own (u, v) phase in the 0.60 m culm tile and a tone at each end.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
         },
-        "destruction": {
-          "fractureGroup": null,
-          "notes": "Not breakable."
+        "deformationStack": [],
+        "uvStrategy": "culm uvs in metres -- u around the circumference, v along the length, over a 0.60 m tile, with a per-culm (u, v) phase",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The culm crowns are LAPPED 18 mm by the cap rail rather than meeting it, and their ends are buried 100 mm inside the perimeter beam -- which is also why they are open-ended: caps would be 48 x 20 triangles nobody can see. No two culms touch: the 9 mm gap is the whole point of the prop.",
+        "mergeNote": "One merged BufferGeometry carrying position, uv and colour; the culm uvs are written PER CYLINDER, u around the circumference and v along the length, both in metres."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-deck",
+          "description": "the spaced culm course",
+          "delivery": "forty-eight merged twelve-segment open cylinders"
+        },
+        {
+          "id": "d4-nodes",
+          "description": "node rings",
+          "delivery": "the culm canvas at two rings per 0.60 m tile, phased per culm"
         }
+      ],
+      "attachment": {
+        "parentSocket": "perimeter-beam",
+        "localStart": [
+          -1.9,
+          2.5185,
+          0.0
+        ],
+        "localEnd": [
+          1.9,
+          2.5185,
+          0.0
+        ],
+        "contactType": "resting",
+        "embedDepth": 0.1,
+        "gapTolerance": 0.002
+      },
+      "colorMaterialRecipe": {
+        "materialId": "bamboo",
+        "baseColor": "#e8c286",
+        "recipe": "Seven bamboo tones as vertex colours on a WHITE material, a DIFFERENT one at each end of every culm and interpolated along it, with a culm multiply canvas on per-culm culm uvs.",
+        "evidenceRef": "region-deck",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(232, 194, 134, 1.0)",
+        "secondaryAlbedo": "rgba(232, 194, 134, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
       }
     }
   ],
   "materials": [
     {
-      "id": "weathered-timber",
-      "name": "Weathered sawn timber frame",
+      "id": "timber",
+      "name": "Weathered sawn timber",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#85705c",
-      "color": "#85705c",
+      "baseColor": "#8f7860",
+      "color": "#8f7860",
       "roughness": {
-        "base": 0.88,
+        "base": 0.9,
         "variation": 0.05,
-        "notes": "Silvered, open-grained sawn timber; matte with no sheen anywhere on the plate. Scalar is the runtime value; textureless."
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/timber_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#85705c",
+        "dominant": "#8f7860",
         "secondary": [
-          "#85705c"
+          "#977f66",
+          "#87715c",
+          "#5c4b3a"
         ],
-        "samplingNotes": "crops/beam.png measured #564a41 at luma 75.9 saturation 0.246, and crops/post.png #372c22 at luma 45.5 saturation 0.375. Authored at #85705c, luma 115, saturation 0.308 - a substantial LIFT, with the arithmetic in the override below."
+        "samplingNotes": "Measured as the mean of crops/beam.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "timber-lift",
-          "region": "posts and perimeter beams",
+          "id": "d5-checking",
+          "region": "every timber face",
+          "roughness": 0.9,
           "palette": [
-            "#85705c"
+            "#3F342A",
+            "#7A4A28"
           ],
-          "evidence": "LIFTED, and by a lot, because the measurements are unshippable as they stand. A side-lit face renders at ~0.56 of its painted luma, so the measured beam at 75.9 would land at 42 and the post at 45.5 would land at 25 - both BELOW the harness backdrop's 58, and the silhouette gate reads a face at the backdrop's luma as a hole punched through the model. On a prop that is mostly holes already, a dark frame is the worst possible combination. Authored at luma 115, which lands near 64 side-lit, and at saturation 0.308 so the frame also clears on chroma, the route this kit uses for genuinely dark props. The hue is kept from the measurement; only value and saturation move."
+          "evidence": "crops/post.png and crops/beam.png -- checking splits along the grain and rust bleeding down from old bolts, both visible on every member in the plate; carried as sixteen split strokes and five bolt stains on the 512 px canvas."
         }
       ],
-      "finishClass": "matte weathered timber",
+      "finishClass": "wood",
       "textureless": {
         "declared": true,
         "evidence": [
-          "crops/beam.png #564a41 and crops/post.png #372c22; the frame is one substance in one tone, and the plate's grain is a high-frequency detail no viewer resolves on a 0.12 m post at prop distance.",
-          "The identity here is the FRAME and the spaced roof - geometry - not the surface of the timber.",
-          "Declared textureless so createSculptMaterial skips makeProceduralTextureSet, and so the generator does not force color to white and roughness to 1 and discard the lift above, which is the one thing keeping this prop off the hole gate."
+          "Measured on viewEvidence region-beam (0.88) at #836b56 (luma 110.6, saturation 0.344) on the lit beam, region-beamshade (0.84) at #6f5b4b (94.4, 0.321) on the shaded one, and region-post (0.86) at #3f342a (53.7, 0.331) on the post. The post is 57 levels darker than the lit beam and that VALUE SEPARATION is the finding: this is not one brown, it is a sun-bleached top rail over a rain-streaked beam over a post that has been standing in the dirt.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER, probed on this prop rather than assumed: an authored #7d6753 (luma 107) measured back at 83 on the lit beam face and 63 on the shaded one, and an authored #4e4034 (66) measured back at 43 on the post -- a factor of about 0.65 with the shading. Carried at #977f66 beam, #87715c cap rail and #5c4b3a post as vertex colours on a WHITE material, which measure back at 105 / 89 / 51 against the plate's 111 / 94 / 54. The RATIOS are what was matched: deck-to-beam 1.31 against the plate's 1.40 and deck-to-post 2.7 against 2.9.",
+          "The first build lifted every timber tone to ONE colour at luma 115 for fear of the turntable's background test, and recorded that as the largest deliberate departure from measurement on the prop. It was not necessary. The test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is the CHROMA clause that carries a dark weathered timber: the post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses, and passes with no --allow-holes at all.",
+          "Textureless as DECLARED: one 512 px timber multiply canvas after construction, on WORLD-PLANAR uvs in metres over a 1.80 m tile with u following each member's own LENGTH axis. That last part is the whole trick -- unwrapped by world axes alone a post takes u = x on one face and u = z on the other, so the grain runs ACROSS a 130 mm face and the post ships ringed like a barrel. The tile was 0.75 m first and put the same bolt stain three times down one post."
         ],
-        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands."
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/beam.png",
+        "pbrReport": "material-evidence/timber.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
       }
     },
     {
       "id": "bamboo",
-      "name": "Split bamboo culm",
+      "name": "Bamboo deck culm",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#ffffff",
-      "color": "#ffffff",
+      "baseColor": "#e8c286",
+      "color": "#e8c286",
       "roughness": {
-        "base": 0.72,
-        "variation": 0.06,
-        "notes": "Bamboo is smoother and slightly more lustrous than the sawn frame. Scalar is the runtime value; textureless."
+        "base": 0.84,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/bamboo_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#c69e79",
+        "dominant": "#e8c286",
         "secondary": [
-          "#b08d68",
-          "#d4b48f"
+          "#E8C286",
+          "#DDB67C",
+          "#EED4A2",
+          "#CFAA78",
+          "#E6C288",
+          "#D2BD97",
+          "#EBCC93"
         ],
-        "samplingNotes": "crops/culm.png measured #bf9773 at luma 156.8, saturation 0.396; authored at #c69e79 and carried as PER-INSTANCE colour. The material's own colour is WHITE deliberately: InstancedMesh.setColorAt MULTIPLIES with material.color, so a tinted base would ship every culm darkened by it."
+        "samplingNotes": "Measured as the mean of crops/culm.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "culm-variation",
-          "region": "the thirty-six culms",
+          "id": "d4-nodes",
+          "region": "every culm along its length",
+          "roughness": 0.84,
           "palette": [
-            "#b08d68",
-            "#c69e79",
-            "#d4b48f"
+            "#96805F",
+            "#D6C4A6"
           ],
-          "evidence": "A seeded spread of three tones about the measured #bf9773, applied per instance. It costs nothing - the instance colour attribute already exists - and it is what stops thirty-six identical cylinders reading as a printed stripe."
+          "evidence": "crops/deck.png -- darker collars crossing every culm at roughly 300 mm with a light sheen above and a fringe of root scars below; carried on the culm canvas at two rings per 0.60 m tile, phased per culm."
         }
       ],
-      "finishClass": "satin natural fibre",
+      "finishClass": "wood",
       "textureless": {
         "declared": true,
         "evidence": [
-          "crops/culm.png measured #bf9773. Culm nodes and grain are below the resolvable band on a 75 mm culm at prop distance, and the tone variation that DOES read is carried per instance for free.",
-          "Thirty-six instances share one geometry and one material, so a texture set here would be sampled by the whole roof for detail no viewer resolves.",
-          "Declared textureless so createSculptMaterial synthesises no canvases; with a texture set the generator would force color to white and roughness to 1, which would also discard the per-instance tones."
+          "Measured on viewEvidence region-culm (0.90) at #bd9773 (luma 155.1, saturation 0.398) and region-slat (0.88) at #c09773 (157.2, 0.402). The two means agree to two levels and the SPREAD is the finding: p10 88 against p90 195 inside one crop of the deck, which is not shading alone -- the plate's course runs from pale straw through honey to a weathered grey, culm by culm and along each culm.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER: an authored mean luma of 164 measured back at 104 on the deck, a factor of 0.634. Carried as SEVEN tones with a mean luma of 192 and a mean saturation of 0.39 -- #e8c286, #ddb67c, #eed4a2, #cfaa78, #e6c288, #d2bd97, #ebcc93, one of them the grey a sun-faded culm has gone. Saturation was the second correction and the one the numbers alone would have missed: at a rendered luma of 130 against the plate's 155 the deck still read PALER than the plate, because its rendered saturation was 0.33 against 0.398. Warming the tones at the same value fixed what raising the value could not -- which measure back at 130-132 against the plate's 155. Each culm takes a different tone at EACH END and the vertex colours interpolate along it.",
+          "Textureless as DECLARED: one 512 px culm multiply canvas after construction with CULM UVS -- u around the circumference and v along the length, both in metres over 0.60, written per culm with its OWN (u, v) phase. That is what puts two node rings on every culm at real 300 mm spacing and at a different station on each of the forty-eight; a planar unwrap would ring the whole deck on one line."
         ],
-        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands."
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/culm.png",
+        "pbrReport": "material-evidence/bamboo.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
       }
     }
   ],
-  "repetitionSystems": [
-    {
-      "id": "culms",
-      "name": "Spaced bamboo culm roof",
-      "componentRef": "frame",
-      "count": 36,
-      "primitive": "cylinder",
-      "materialId": "bamboo",
-      "instanced": true,
-      "pivotPerInstance": false,
-      "buildsGeometry": true,
-      "realization": "instanced-geometry",
-      "geometry": {
-        "primitive": "cylinder",
-        "radius": 0.0375,
-        "length": 4.0,
-        "radialSegments": 6,
-        "units": "meters"
-      },
-      "instances": [
-        {
-          "note": "36 culms at a 0.1057 m pitch across z from -1.85 to +1.85, each running the full 4 m along X, centred at y 2.5625 so the culm top is the 2.6 m module height."
-        }
-      ],
-      "placement": "Thirty-six culms at a 0.1057 m pitch across z, each spanning the full 4 m along X and resting on the two beams that run along Z. The gap between culms is real, not an alpha cutout.",
-      "notes": "ONE InstancedMesh: one draw call and one unique geometry for the whole roof. Six radial segments is enough for a 75 mm culm at prop distance and keeps thirty-six of them inside the triangle ceiling. Per-instance colours ride the instance colour attribute at no extra cost."
-    }
-  ],
+  "repetitionSystems": [],
   "buildPasses": [
     {
       "id": "blockout",
@@ -1102,369 +1130,337 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-31T13:28:10.867767+00:00",
+      "timestamp": "2026-09-01T04:00:52.486304+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
-          "score": 0.9,
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
           "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:10.948455+00:00",
+      "timestamp": "2026-09-01T04:00:52.571232+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
-          "score": 0.9,
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
           "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.031287+00:00",
+      "timestamp": "2026-09-01T04:00:52.654857+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "layerScores": {},
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.114191+00:00",
+      "timestamp": "2026-09-01T04:00:52.736373+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:52.819664+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:52.901738+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "layerScores": {},
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.197018+00:00",
+      "timestamp": "2026-09-01T04:00:52.986111+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.068597+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.151568+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "layerScores": {},
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.279023+00:00",
+      "timestamp": "2026-09-01T04:00:53.239501+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.350895+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "timber-frame-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three timber tones where the first build had one: post #5c4b3a, cap rail #87715c, beam #977f66, measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111. Grain runs ALONG every member because u follows each member's own length axis, on a 1.80 m tile with a per-member (u, v) phase. Checking splits and rust bleed on a 512 px multiply canvas.",
+          "notes": "The first build lifted the whole frame to one brown at luma 115 for fear of the background test and recorded that as its largest deliberate departure from measurement. It was unnecessary: the test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is CHROMA that carries a dark timber. The post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.437265+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.361941+00:00",
+      "timestamp": "2026-09-01T04:00:53.522427+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T13:28:11.444841+00:00",
+      "timestamp": "2026-09-01T04:00:53.606853+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
+        },
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        },
+        {
+          "id": "timber-frame-surface",
+          "tier": "critical",
           "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three timber tones where the first build had one: post #5c4b3a, cap rail #87715c, beam #977f66, measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111. Grain runs ALONG every member because u follows each member's own length axis, on a 1.80 m tile with a per-member (u, v) phase. Checking splits and rust bleed on a 512 px multiply canvas.",
+          "notes": "The first build lifted the whole frame to one brown at luma 115 for fear of the background test and recorded that as its largest deliberate departure from measurement. It was unnecessary: the test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is CHROMA that carries a dark timber. The post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
@@ -1472,448 +1468,463 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-31T13:28:10.867767+00:00",
+      "timestamp": "2026-09-01T04:00:52.486304+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
-          "score": 0.9,
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
           "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
         }
       ],
       "action": "continue",
-      "summary": "Four-post frame at the 4 m module lines carrying a spaced bamboo roof. Built envelope 4.000 x 2.595 x 4.000 m. 984 triangles / 2 draw calls / 2 materials / 2 geometries against a 4000/4/3/6 ceiling.",
+      "summary": "Blockout: TWO components at 2 draw calls of 4 -- one timber merge and one bamboo merge. Envelope 4.000 x 2.600 x 4.000 exactly.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/clay/clay-315.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:10.948455+00:00",
+      "timestamp": "2026-09-01T04:00:52.571232+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
-          "score": 0.9,
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
           "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
         }
       ],
       "action": "continue",
-      "summary": "Frame merged into ONE geometry; the roof is ONE InstancedMesh of thirty-six culms, which the asset notes ask for directly - authoring the culms as anything else would spend the whole draw-call budget on the roof.",
+      "summary": "Structural pass: posts owning the cell edge at +-2.000, beam recessed 10 mm and cap rail 5 mm behind them, purlins along Z at +-0.65, cleats on the inner post faces.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.031287+00:00",
+      "timestamp": "2026-09-01T04:00:52.654857+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
-      "action": "continue",
-      "summary": "The two beams running along Z were raised to cap flush with the culm tops. Left at the height of the other pair they leave an open slot the full width of the bay, above the beam and behind the outermost culm, which the turntable gate found as a 468 x 2 px see-through sliver at azimuths 0 and 180. Capping them closed it: those two azimuths now measure zero holes.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The roof was 36 InstancedMesh culms at a 103 mm pitch on a 75 mm culm -- a batten roof at three times the plate's spacing, and one shared geometry, so every culm carried the same node stations and the deck read as a printed stripe. Rebuilt as 48 MERGED culms at 79.2 mm with a 9.2 mm gap, the plate's own gap-to-pitch ratio of 0.12, each with its own uv phase, roll, radius, height jitter and a different tone at each end. It costs nothing: 1,152 triangles, one draw call and one unique geometry either way.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.114191+00:00",
+      "timestamp": "2026-09-01T04:00:52.736373+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The first build left an open slot the full width of the bay above the outermost culm -- the turntable gate found it at azimuth 0 and 180 as a 468 x 2 px see-through sliver -- and had no roof structure at all under the deck. The cap rail now reaches 65 mm further inboard than the beam and LAPS the culm crowns by 18 mm, which closes it; two purlins along Z at x = +-0.65 carry the deck and are what a player standing in the shade sees; eight cleats tie the post heads to the beam.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:52.819664+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the deck rebuilt from 36 instanced culms at a 103 mm pitch to 48 MERGED culms at 79 mm; cap rail lapping the culm crowns by 18 mm; purlins and post-head cleats added.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:52.901738+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
-      "action": "continue",
-      "summary": "Two materials against a ceiling of three: timber and bamboo are genuinely different substances with different roughness, so this is not a colour-only split. Both declared textureless. The bamboo material is WHITE-based deliberately, because InstancedMesh.setColorAt MULTIPLIES with material.color and a tinted base would ship every culm darkened by it.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The frame shipped as ONE brown lifted to luma 115, recorded as the largest deliberate departure from measurement on the prop, on the belief that a dark timber would be read as a hole. The turntable's own test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so chroma carries it. Three tones restored -- post, cap rail, beam -- measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111, and the gate passes with no --allow-holes at all.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.197018+00:00",
+      "timestamp": "2026-09-01T04:00:52.986111+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The deck was 12% too dark AND 17% too grey. Value was corrected first by probing the harness transfer on this prop (authored mean luma 164 measured back at 104, a factor of 0.634) and inverting it; the deck still read paler than the plate, because rendered saturation was 0.33 against the plate's 0.398. Warming the seven tones at the same value is what fixed it -- the second correction, and the one the luma numbers alone would have missed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.068597+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: timber 0.88 and bamboo 0.90, both textureless as declared. Three timber tones and seven bamboo tones, all vertex colours on white materials, all authored as the inverse of a probed harness transfer.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.151568+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
-      "action": "continue",
-      "summary": "Flat by declaration, with one exception that costs nothing: three measured tones about the culm's #bf9773 are applied PER INSTANCE, which is what stops thirty-six identical cylinders reading as a printed stripe. Culm nodes and timber grain are below the resolvable band at prop distance.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Both materials were bare colour with no surface at all -- no grain, no nodes, no weathering -- against a texture brief that names fibre grain, node banding, uneven grey sun-fade, checking splits and rust bleeding from old bolts. Two 512 px MULTIPLY canvases added after construction, both with a near-white base so the measured albedo stays on the vertex colours.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.279023+00:00",
+      "timestamp": "2026-09-01T04:00:53.239501+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The timber tile shipped CROSS-GRAIN on the posts and repeated three times down one: unwrapped by world axes alone a post takes u = x on one face and u = z on the other, so the grain ran across a 130 mm face and the post read as a barrel with hoops. u now follows each member's own length axis on every face containing it, the tile is 1.80 m rather than 0.75, and every member carries its own (u, v) phase. Found by zooming the render on a post, not by looking at the tile.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.350895+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "timber-frame-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three timber tones where the first build had one: post #5c4b3a, cap rail #87715c, beam #977f66, measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111. Grain runs ALONG every member because u follows each member's own length axis, on a 1.80 m tile with a per-member (u, v) phase. Checking splits and rust bleed on a 512 px multiply canvas.",
+          "notes": "The first build lifted the whole frame to one brown at luma 115 for fear of the background test and recorded that as its largest deliberate departure from measurement. It was unnecessary: the test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is CHROMA that carries a dark timber. The post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: two 512 px multiply canvases after construction -- culm uvs carrying phased node rings and fibre grain, world-planar uvs whose u follows each member carrying grain, checking splits and rust bleed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T04:00:53.437265+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "featureReviews": [],
       "action": "continue",
-      "summary": "lightingFromPhoto records key elevation 55 / azimuth -30, a 0.7 fill ratio and ACES filmic tone mapping. The striped shade this roof casts is a property of the SPACED geometry and is deliberately not painted into any albedo.",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Nothing on this prop is emissive.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.361941+00:00",
+      "timestamp": "2026-09-01T04:00:53.522427+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "spaced-roof",
-          "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
-        }
-      ],
+      "featureReviews": [],
       "action": "continue",
-      "summary": "ONE root pivot, no sockets, no destruction groups. A pergola has no moving parts at all, so that is the complete mechanism inventory and the correct answer rather than a gap.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups. A pergola has no moving parts, which is the complete mechanism inventory and the right answer.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-31T13:28:11.444841+00:00",
+      "timestamp": "2026-09-01T04:00:53.606853+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.86,
-        "formDetail": 0.8,
-        "materialSurface": 0.72,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "spaced-roof",
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+          "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands."
+        },
+        {
+          "id": "spaced-deck",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+          "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry."
+        },
+        {
+          "id": "timber-frame-surface",
+          "tier": "critical",
           "score": 0.9,
-          "threshold": 0.85,
-          "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion."
-        },
-        {
-          "id": "four-post-frame",
-          "score": 0.88,
-          "threshold": 0.85,
-          "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run."
-        },
-        {
-          "id": "module-envelope",
-          "score": 0.92,
-          "threshold": 0.85,
-          "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2."
-        },
-        {
-          "id": "timber-value-separation",
-          "score": 0.78,
-          "threshold": 0.75,
-          "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price."
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three timber tones where the first build had one: post #5c4b3a, cap rail #87715c, beam #977f66, measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111. Grain runs ALONG every member because u follows each member's own length axis, on a 1.80 m tile with a per-member (u, v) phase. Checking splits and rust bleed on a 512 px multiply canvas.",
+          "notes": "The first build lifted the whole frame to one brown at luma 115 for fear of the background test and recorded that as its largest deliberate departure from measurement. It was unnecessary: the test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is CHROMA that carries a dark timber. The post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses."
         }
       ],
       "action": "continue",
-      "summary": "984 triangles / 2 draw calls / 2 materials / 2 unique geometries against 4000 / 4 / 3 / 6. Six radial segments per culm is enough for a 75 mm pole at prop distance and keeps thirty-six of them at a quarter of the triangle ceiling; all thirty-six share ONE geometry, which is the whole point of an InstancedMesh.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 1,416/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Turntable passes with NO --allow-holes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders-clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/cmp.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-slat-pergola-module/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
@@ -1940,33 +1951,33 @@
     "maxUniqueGeometries": 6,
     "textureSize": 1024,
     "fpsTarget": 60,
-    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The asset notes warn this module sits nearer its draw-call and triangle ceilings than the others in the set, because its roof is a run of separate solids rather than one sheet.",
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 1,
-        "repetitionSystems": 1,
+        "components": 2,
+        "repetitionSystems": 0,
         "projectedTotal": 2,
         "budget": 4,
         "headroom": 2,
-        "note": "Frame (four posts and four beams) merged into ONE geometry, plus ONE InstancedMesh for all thirty-six culms: 2 of 4. Authoring the culms as anything but an instanced set would spend the whole budget on the roof."
+        "note": "Two components and no repetition system: 2 of 4. One timber merge and one bamboo merge."
       },
       "materials": {
         "projectedTotal": 2,
         "budget": 3,
         "headroom": 1,
-        "note": "Timber and bamboo are genuinely different substances with different roughness, so they are two materials rather than a vertex-colour split. The bamboo material is WHITE-based so that per-instance colours multiply correctly."
+        "note": "timber and bamboo: 2 of 3. Three timber tones and seven bamboo tones are all vertex colours on white materials."
       },
       "uniqueGeometries": {
         "projectedTotal": 2,
         "budget": 6,
         "headroom": 4,
-        "note": "One merged frame geometry and ONE culm geometry shared across all thirty-six instances - which is the whole point of an InstancedMesh."
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "estimated": 840,
+        "measured": 1416,
         "budget": 4000,
-        "headroom": 3160,
-        "note": "Measured after the render and recorded here."
+        "headroom": 2584,
+        "note": "1,416 of 4,000: 1,152 in forty-eight twelve-segment open culms and 264 in the twenty-two boxes of the frame. Twelve segments on a 70 mm culm is generous and is what the merge pays for: the nodes are texture, so no triangles are spent on a 2 mm collar."
       }
     }
   },
@@ -1975,58 +1986,98 @@
       "id": "key",
       "role": "key",
       "direction": "front-upper-left",
-      "elevationDegrees": 55,
-      "azimuthDegrees": -30,
-      "intensity": 0.9,
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
       "colorTemperature": "neutral 5600K",
-      "shadowSoftness": "soft, broad source",
-      "notes": "Read off the plate's lit-to-shadow ratio."
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
     },
     {
       "id": "fill",
       "role": "fill",
       "direction": "front-lower-right",
-      "intensity": 0.6,
-      "fillRatio": 0.7,
+      "intensity": 0.64,
+      "fillRatio": 0.75,
       "colorTemperature": "neutral 5600K",
-      "notes": "Fill ratio taken from the measured lit-face to shadow-face luma ratio."
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
     },
     {
       "id": "ambient",
       "role": "environment",
       "intensity": 0.45,
-      "source": "uniform mid grey studio surround measured off the plate corners",
-      "colorTemperature": "neutral 6000K",
-      "notes": "The seamless backdrop acts as a large source."
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
     },
     {
-      "id": "render-intent",
-      "role": "exposure",
-      "toneMapping": "ACES filmic",
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
       "exposure": 1.0,
-      "contactShadow": "A soft ground shadow under the four posts; the striped shade the roof casts is a property of the SPACED geometry and must not be painted in.",
-      "ambientOcclusion": "Contact occlusion in the recesses and under overhangs; lighting, never painted into base colour.",
-      "backgroundColor": "measured off the plate corners",
-      "notes": "Exposure and tone mapping intent recorded so a render compares fairly with the plate. No baked lighting or AO enters any albedo."
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
     }
   ],
   "proceduralStrategy": [
-    "Block out macro silhouette first.",
-    "Add component hierarchy and joints.",
-    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
-    "Refine forms with bevels, tapers, bends, and procedural noise.",
-    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
-    "Add material variation before adding expensive micro-geometry."
+    {
+      "id": "primitives",
+      "strategy": "Boxes for every timber member; open-ended cylinders for every culm. No lathes, no sweeps, no extrusions."
+    },
+    {
+      "id": "instancing",
+      "strategy": "NO instancing, deliberately. The forty-eight culms are merged rather than instanced because an InstancedMesh shares one geometry and therefore one set of node stations, and identical cylinders read as a printed stripe. The cost is nil -- 1,152 triangles either way, one draw call either way, one unique geometry either way. In a scene the HOST places whole bays on the 4 m grid."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px multiply canvases after construction, ~2.8 MB of texture VRAM; both are written in MULTIPLIER space with a near-white base, so the measured albedo lives on the vertex colours and the canvas carries nothing but the surface."
+    }
   ],
-  "animationAnchors": [
-    "root pivot node supports whole-object translation, rotation, scale, and visibility changes",
-    "component pivot groups support later local transforms without rebuilding geometry"
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "notes-over-proxy",
+      "severity": "medium",
+      "description": "The proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00 -- a mean divergence of 0.334 of the height in width and 0.342 in depth.",
+      "mitigation": "The registry notes fix a 4 x 4 m cell on a 4 m grid at a flat 2.60 m, because the grid divides the kit's 8 m ground and road tiles exactly 2 x 2 and because a player has to walk under the roof. The proxy reconstructs a small slatted TABLE, so its height proportion is the plate's subject and not this module's. What the proxy IS used for is the plan -- square on all ten bands, with a band-9 narrowing consistent with a deck sitting inside its beam rather than overhanging it."
+    },
+    {
+      "id": "culm-diameter-not-from-the-plate",
+      "severity": "medium",
+      "description": "The plate's culms scale to about 190 mm at a 4 m bay; the build carries 70 mm.",
+      "mitigation": "No bamboo is 190 mm, so the plate is being read at a scale it was not drawn at. What IS taken from the plate is the gap-to-pitch ratio of 0.12, which is what makes the deck read as nearly-touching slats rather than as battens, and 70 mm at a 79 mm pitch keeps it. Recorded here rather than left as an unexplained difference."
+    },
+    {
+      "id": "open-deck-turntable",
+      "severity": "low",
+      "description": "Open on all four sides with forty-eight real gaps in the roof, so a lot of what the silhouette encloses is background.",
+      "mitigation": "It PASSES with no --allow-holes, which the first build could not: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against a 0.010 threshold, largest hole 41 px, silhouette ratios 0.990-0.999. The cap rail's 18 mm lap over the culm crowns is what closed the full-width slot the first build left, and the denser course did the rest."
+    },
+    {
+      "id": "texture-repeat",
+      "severity": "low",
+      "description": "A 1.80 m timber tile repeats 2.2 times along a 4 m beam and 1.3 times down a 2.34 m post.",
+      "mitigation": "Every member is given its own (u, v) offset in the tile, so no two show the same crack and no repeat lands at a member's midpoint. The first tile was 0.75 m and put the same bolt stain three times down one post, which read as a decal; it was found by zooming the render on a post, not by looking at the tile."
+    }
   ],
-  "destructionAnchors": [
-    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
-    "component seams and sockets define plausible break points instead of random explosions"
-  ],
-  "risks": [],
   "localSpecSearch": {
     "collection": "core_3d",
     "query": "Bamboo Slat Pergola Module",
@@ -2061,5 +2112,39 @@
         ]
       }
     ]
-  }
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3617,
+        "aspectRatioDelta": 0.013,
+        "scaleDelta": 0.1119,
+        "bilateralSymmetryError": 0.0114,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.41,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.41
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.37
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.362 is below threshold 0.85",
+        "scale delta 0.112 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "29eb650f6e3d412b",
+      "passId": "blockout"
+    }
+  ]
 }

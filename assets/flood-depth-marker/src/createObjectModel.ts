@@ -931,18 +931,45 @@ const PALETTE = {
   white: '#CBCDCE',    // from #DBDCDB lit (2250 px) and #BABCC0 shaded (2500 px)
   algae: '#785C50',    // 3300 px of (462,700,55,60), 55 luma below the white above it
   ink: '#321C1B',      // 770 sub-luma-70 px of (450,160,70,60)
-  padSide: '#8F8C87',  // 5700 px of (390,930,190,30)
-  padTop: '#8A8678',   // 7200 px of (400,880,180,40) - dirt settles on the upward face
-  bolt: '#363927',     // 420 sub-luma-70 px of (500,860,40,40)
+  // The pad tones were measured off the plate's LIT face and shipped straight in, so the slab
+  // rendered as a clean cream block against a plate whose pad is grimy grey concrete with algae
+  // creeping up its edges. Taken down and greened, and the ramp's blotch amplitude raised from 0.05
+  // to 0.14 so it reads as cast concrete rather than as a solid.
+  padSide: '#aaa9a8',  // was #8F8C87, 5700 px of (390,930,190,30) -- the LIT face
+  padTop:  '#9e9c97',  // was #8A8678, 7200 px of (400,880,180,40) - dirt settles on the upward face
+  bolt: '#4a3524',     // 420 sub-luma-70 px of (500,860,40,40), warmed toward the rust the plate shows on them
 } as const;
 
 /** Geometry, in metres, from the spec. Origin base-center: y=0 is the pad's underside. */
+/* SECTION CORRECTED 2026-09-01: post 0.150 -> 0.267 m, pad 0.400 -> 0.700 m.
+ *
+ * The ten-band proxy comparison read the candidate at a flat 0.050 of HEIGHT in every one of bands
+ * 1-9 against the reference's 0.084, and 0.133 against 0.224 at band 0 -- a uniform shortfall in
+ * every band, which is a section and not a shape. The plate agrees independently. Measured off its
+ * silhouette: the post's median row is 0.130 of the total height and the pad's WIDEST row, at 0.89
+ * of the height, is 0.341. Both are apparent widths at the plate's ~35 degree azimuth, where a
+ * square section projects as s(cos35 + sin35) = 1.393 s, so the true fractions are 0.0933 and
+ * 0.245 against the proxy's 0.084 and 0.224 -- agreement inside 11%.
+ *
+ * At the unchanged 3.00 m height that is a 0.28 m post by the plate and 0.25 by the proxy, and a
+ * 0.70 m pad by the plate against 0.67 by the proxy. Shipped at 0.267 and 0.700.
+ *
+ * A first pass at the pad measured it from the MEDIAN row below 0.93 of the height and got 0.196,
+ * which disagreed with the proxy by 40% and looked like a real conflict. It was not: the pad is a
+ * slab seen from above, so its widest row is at 0.89 and the rows below that are its front edge
+ * alone. Take the maximum over the band, not the median.
+ *
+ * The labels rescale on their own -- drawWorldText derives pxPerMU from DIM.postW -- so the metre
+ * gradations grow with the post instead of staying the illegible smear a 0.15 m face made of them.
+ */
 const DIM = {
-  postW: 0.15, postH: 2.86, postY0: 0.14, postTop: 3.00,
-  padW: 0.40, padH: 0.14, padD: 0.40,
-  boltR: 0.013, boltH: 0.045, boltX: 0.135, boltSegs: 6,
+  postW: 0.267, postH: 2.86, postY0: 0.14, postTop: 3.00,
+  padW: 0.70, padH: 0.14, padD: 0.70,
+  boltR: 0.019, boltH: 0.058, boltX: 0.245, boltSegs: 6,
   /** 0.5 m band pitch, read off the reference's own 2.0 / 1.5 / 1.0 / 0.5 labels. */
   bandPitch: 0.5,
+    // The top of the FIRST RED band: the crown carries 0.118 m of white above it.
+    crownTop: 2.882,
 } as const;
 
 /** Band column for three faces and both caps; graphic region for the lettered face only. */
@@ -955,11 +982,71 @@ function postV(y: number): number {
   return Math.min(1, Math.max(0, (y - DIM.postY0) / DIM.postH));
 }
 
+/**
+ * The Thai unit glyph MO MA, drawn as PATHS rather than typed.
+ *
+ * The labels read "2.0 <MO>." on the plate and the unit is half of what says this is a Thai
+ * flood gauge and not a generic bollard. It cannot be typed: the factory runs on whatever
+ * machine loads the level, `fillText` needs a Thai face installed to draw it, and the render
+ * harness has none -- every label came back as "2.0 [tofu]". Six segments cost nothing and
+ * are the same on every host.
+ *
+ * Authored in a unit box, x right and y UP from the baseline; the caller supplies the
+ * anisotropic scale so the glyph is squashed exactly as much as the digits beside it.
+ */
+function drawThaiMo(ctx: CanvasRenderingContext2D, x: number, y: number,
+                    pxW: number, pxH: number, color: string): void {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(pxW, -pxH);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 0.15;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  // the head loop, bottom left
+  ctx.beginPath();
+  ctx.arc(0.21, 0.20, 0.185, 0, Math.PI * 2);
+  ctx.stroke();
+  // the stem: up out of the loop, over the top, down to the baseline
+  ctx.beginPath();
+  ctx.moveTo(0.40, 0.20);
+  ctx.lineTo(0.40, 0.78);
+  ctx.quadraticCurveTo(0.40, 1.00, 0.62, 1.00);
+  ctx.quadraticCurveTo(0.84, 1.00, 0.84, 0.78);
+  ctx.lineTo(0.84, 0.00);
+  ctx.stroke();
+  ctx.restore();
+  // the abbreviation stop
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x + pxW * 1.02, y - pxH * 0.06, pxW * 0.075, pxH * 0.075, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function paintBands(ctx: CanvasRenderingContext2D, x: number, w: number, size: number): void {
-  // Six alternating 0.5 m bands measured DOWN from the crown, so the pitch is anchored
-  // where the reference anchors it rather than at the stained foot.
-  for (let i = 0; i < 7; i += 1) {
-    const yTop = DIM.postTop - i * DIM.bandPitch;
+  // Alternating 0.5 m bands measured DOWN from the crown, so the pitch is anchored where
+  // the reference anchors it rather than at the stained foot.
+  //
+  // The crown is NOT the first red band. Scanning the plate's centre column for red/white
+  // transitions puts them at image rows 80, 216, 365, 499, 623 and 741; calibrating on the
+  // post itself (crown at row 48, pad top at row 824, so 2.86 m over 776 px = 271.3 px/m)
+  // makes those 2.882, 2.381, 1.832, 1.337, 0.880 and 0.446 m -- gaps of 0.501, 0.549,
+  // 0.495, 0.457 and 0.434, which is a 0.50 m pitch read through a camera looking slightly
+  // DOWN, shortening the lower bands. What the first row settles is the phase: the top
+  // 0.118 m is WHITE, and the first red band starts under it. The build had red starting at
+  // the crown, which put every band half a pitch out.
+  //
+  // The plate's LABELS are not evidence about the pitch and were not followed. Their ink
+  // centres sit at 2.488, 1.758, 1.094 and 0.460 m -- 0.73, 0.66 and 0.63 apart, against the
+  // 0.5 they are lettered with. A generated plate can be internally inconsistent, and a
+  // gauge whose labels are 0.68 m apart while reading 0.5 is a gauge that lies. The labels
+  // stay at their marks; the bands stay at 0.50.
+  ctx.fillStyle = PALETTE.white;
+  ctx.fillRect(x, (1 - postV(DIM.postTop)) * size, w, size);
+  for (let i = 0; i < 8; i += 1) {
+    const yTop = DIM.crownTop - i * DIM.bandPitch;
     const yBot = Math.max(DIM.postY0, yTop - DIM.bandPitch);
     if (yTop <= DIM.postY0) break;
     const vTop = postV(yTop), vBot = postV(yBot);
@@ -967,15 +1054,97 @@ function paintBands(ctx: CanvasRenderingContext2D, x: number, w: number, size: n
     ctx.fillRect(x, (1 - vTop) * size, w, (vTop - vBot) * size);
   }
 
-  // Algae over the lowest 0.7 m. On a flood gauge this stain is the most meaningful mark
-  // on the prop: it records the height standing water actually reaches.
-  const vAlgae = postV(DIM.postY0 + 0.70);
+  // Algae over the lowest 0.9 m. On a flood gauge this stain is the most meaningful mark on the
+  // prop: it records the height standing water actually reaches.
+  //
+  // IT IS GREEN, and the first build's #785C50 is not. That tone was honestly measured, but off a
+  // crop high in the stain where it has dried to a brown film; sampled at the FOOT the plate reads
+  // #70725d -- green minus red +2, green minus blue +21, which is unambiguously green. The stain is
+  // a two-stop ramp now: the dried brown film at its top, live algae at the bottom.
+  const vAlgae = postV(DIM.postY0 + 1.32);
   const g = ctx.createLinearGradient(0, (1 - vAlgae) * size, 0, size);
-  g.addColorStop(0, 'rgba(120,92,80,0)');
-  g.addColorStop(0.55, 'rgba(120,92,80,0.62)');
-  g.addColorStop(1, 'rgba(120,92,80,0.95)');
+  g.addColorStop(0.00, 'rgba(122, 96, 82, 0)');
+  g.addColorStop(0.26, 'rgba(122, 96, 82, 0.22)');
+  g.addColorStop(0.55, 'rgba(116, 104, 78, 0.52)');
+  g.addColorStop(0.70, 'rgba( 98, 104, 74, 0.80)');
+  g.addColorStop(1.00, 'rgba( 72,  86, 52, 0.97)');
   ctx.fillStyle = g;
   ctx.fillRect(x, (1 - vAlgae) * size, w, vAlgae * size);
+
+  // WEATHERING over the whole column. The plate's post is a twenty-year-old concrete gauge standing
+  // in floodwater: its white bands are grey-green and blotched, its red is faded and patchy, and
+  // both carry dirt washing down from every band edge. The first build shipped six flat rectangles
+  // of masked paint, which is what the prop looked like on the day it was cast.
+  //
+  // Seeded off the column's own x so the lettered face and the wrapped band column do not repeat
+  // the identical pattern round three sides.
+  let sd = (1013904223 + Math.round(x * 7919)) >>> 0;
+  const rnd = () => (((sd = (sd * 1664525 + 1013904223) >>> 0) >>> 8) / 16777216);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, 0, w, size);
+  ctx.clip();
+  // dirt washing down from each band edge, strongest low on the post
+  for (let i = 0; i < 90; i += 1) {
+    const y0 = rnd() * size;
+    const len = size * (0.02 + rnd() * rnd() * 0.16);
+    const sw = w * (0.02 + rnd() * rnd() * 0.30);
+    const gg = ctx.createLinearGradient(0, y0, 0, y0 + len);
+    const a = 0.05 + rnd() * 0.20 * (0.35 + 0.65 * (y0 / size));
+    gg.addColorStop(0, `rgba(86,84,68,${a.toFixed(3)})`);
+    gg.addColorStop(1, 'rgba(86,84,68,0)');
+    ctx.fillStyle = gg;
+    ctx.fillRect(x + rnd() * w, y0, sw, len);
+  }
+  // Grey-green blotching, weighted toward the foot but present all the way up: on the plate the
+  // white bands are grey-green over their whole height, not only where the water reaches.
+  //
+  // The mark ASPECT is the thing to get right here and it is not 1:1. The face region maps 0.267 m
+  // of post width onto 0.86 of u and 2.86 m of height onto 1.0 of v, so a canvas pixel is 9.2x
+  // wider in world terms than it is tall. A first pass ran the blotches at up to 0.42 w by 0.022
+  // size -- about 16:1, well past the 9.2:1 that reads as round -- and 130 of them clustered in the
+  // bottom third merged into horizontal SCANLINES across the white bands.
+  for (let i = 0; i < 150; i += 1) {
+    const py = size * (1 - Math.pow(rnd(), 1.25));
+    const rx = w * (0.04 + rnd() * 0.20), ry = size * (0.006 + rnd() * 0.030);
+    const gg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    const a = 0.07 + rnd() * 0.26;
+    gg.addColorStop(0, `rgba(104,108,84,${a.toFixed(3)})`);
+    gg.addColorStop(1, 'rgba(104,108,84,0)');
+    ctx.save();
+    ctx.translate(x + rnd() * w, py);
+    ctx.scale(rx, ry);
+    ctx.fillStyle = gg;
+    ctx.beginPath();
+    ctx.arc(0, 0, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  // chalking: pale patches where the paint has powdered off, which is what fades the red
+  // Broad and faint, NOT spots. A first pass ran 70 patches at alpha up to 0.21 and they
+  // read across the red bands as pale polka dots; chalking is a paint film powdering off
+  // evenly, so it is many more marks at a third the strength, each half again as wide.
+  for (let i = 0; i < 210; i += 1) {
+    const gg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    const a = 0.02 + rnd() * 0.055;
+    gg.addColorStop(0, `rgba(214,206,196,${a.toFixed(3)})`);
+    gg.addColorStop(1, 'rgba(214,206,196,0)');
+    ctx.save();
+    ctx.translate(x + rnd() * w, rnd() * size);
+    ctx.scale(w * (0.10 + rnd() * 0.30), size * (0.010 + rnd() * 0.034));
+    ctx.fillStyle = gg;
+    ctx.beginPath();
+    ctx.arc(0, 0, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  for (let i = 0; i < 2200; i += 1) {
+    ctx.globalAlpha = 0.03 + rnd() * 0.09;
+    ctx.fillStyle = rnd() < 0.5 ? '#56543f' : '#d2ccc2';
+    ctx.fillRect(x + rnd() * w, rnd() * size, 1 + rnd() * 2, 1 + rnd() * 2);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
 function faceAtlas(size: number): THREE.CanvasTexture | null {
@@ -1004,16 +1173,121 @@ function faceAtlas(size: number): THREE.CanvasTexture | null {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   for (const mark of [2.0, 1.5, 1.0, 0.5]) {
-    const label = `${mark.toFixed(1)} ม.`;
     const v = postV(mark + 0.12);
-    drawWorldText(ctx, label, fx + fw * 0.50, (1 - v) * size,
-      DIM.postW * 0.78, 0.055, pxPerMU, pxPerMV, SANS_R);
+    const cy = (1 - v) * size;
+    // The digits are ASCII and safe to type; the unit is drawn. Together they occupy the
+    // same 0.78 of the post's width the typed label used to.
+    const wPx = DIM.postW * 0.78 * pxPerMU;
+    drawWorldText(ctx, mark.toFixed(1), fx + fw * 0.50 - wPx * 0.17, cy,
+      DIM.postW * 0.50, 0.055, pxPerMU, pxPerMV, SANS_R);
+    drawThaiMo(ctx, fx + fw * 0.50 + wPx * 0.16, cy + 0.055 * pxPerMV * 0.5,
+      0.055 * 0.76 * pxPerMU, 0.055 * pxPerMV * 1.00, PALETTE.ink);
   }
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.needsUpdate = true;
   faceAtlasCache = tex;
+  return tex;
+}
+
+let padTexCache: THREE.CanvasTexture | null | undefined;
+
+/**
+ * The pad's own multiply map. The plate's slab is stained, cracked and speckled cast
+ * concrete; the render's was one flat tone, which is the whole of what was left between
+ * this prop and its reference once the section was corrected. It is a TEXTURE, not a
+ * material: the pad mesh already exists and already carries box UVs, so this costs no
+ * draw call, no material and no geometry -- all three of which are at their ceiling.
+ *
+ * It multiplies, so it can only darken. Its mean is ~0.88 and PALETTE.padSide/padTop are
+ * authored 1/0.88 brighter than the measurement to land back on it.
+ */
+function padTexture(size: number): THREE.CanvasTexture | null {
+  if (padTexCache !== undefined) return padTexCache;
+  if (typeof document === 'undefined') { padTexCache = null; return null; }
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D | null;
+  if (!ctx) { padTexCache = null; return null; }
+
+  let sd = 0x5f3a91b7 >>> 0;
+  const rnd = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+  const rr = (a: number, b: number) => a + (b - a) * rnd();
+
+  ctx.fillStyle = '#f2f2f0';
+  ctx.fillRect(0, 0, size, size);
+
+  // Broad cloudy drift: cast concrete is never one tone across a 0.7 m face.
+  for (let i = 0; i < 90; i += 1) {
+    const cx = rr(0, size), cy = rr(0, size), r = rr(size * 0.06, size * 0.24);
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    const a = rr(0.07, 0.22);
+    g.addColorStop(0, `rgba(148,148,148,${a.toFixed(3)})`);
+    g.addColorStop(1, 'rgba(148,148,148,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(cx, cy, r, r * rr(0.55, 1.0), rr(0, Math.PI), 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Ground-line staining. v = 0 is the bottom of every side face, and a slab sitting in
+  // silt is darkest where it meets it.
+  const gs = ctx.createLinearGradient(0, size, 0, size * 0.55);
+  gs.addColorStop(0, 'rgba(104,104,100,0.42)');
+  gs.addColorStop(1, 'rgba(104,104,100,0)');
+  ctx.fillStyle = gs; ctx.fillRect(0, 0, size, size);
+
+  // Hairline cracks: three, each a jittered polyline, thin enough to read as a line and
+  // not as a scratch.
+  ctx.lineCap = 'round';
+  for (let c = 0; c < 3; c += 1) {
+    let x = rr(0, size), y = rr(0, size);
+    const dir = rr(0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(58,55,48,${rr(0.45, 0.72).toFixed(3)})`;
+    ctx.lineWidth = rr(1.0, 2.2);
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let k = 0; k < 14; k += 1) {
+      const a = dir + rr(-0.7, 0.7);
+      x += Math.cos(a) * rr(size * 0.02, size * 0.06);
+      y += Math.sin(a) * rr(size * 0.02, size * 0.06);
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // Rust bleed. The four anchor bolts are the only ferrous thing touching this slab and
+  // the plate shows a halo round every one of them. The pad's box UVs put the bolt
+  // centres at u,v = 0.5 +- boltX/padW on the TOP face; the same four marks land near the
+  // corners of the side faces, where run-off from those bolts is exactly what stains a
+  // kerb slab.
+  {
+    const f = DIM.boltX / DIM.padW;
+    for (const su of [-1, 1]) {
+      for (const sv of [-1, 1]) {
+        const cx = (0.5 + su * f) * size, cy = (0.5 + sv * f) * size;
+        const rr0 = size * rr(0.055, 0.085);
+        const g = ctx.createRadialGradient(cx, cy, rr0 * 0.15, cx, cy, rr0);
+        g.addColorStop(0, 'rgba(150,88,44,0.46)');
+        g.addColorStop(0.45, 'rgba(168,110,66,0.24)');
+        g.addColorStop(1, 'rgba(168,110,66,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(cx, cy, rr0, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  // Aggregate speck: the exposed stones in a rained-on cast face.
+  for (let i = 0; i < 5200; i += 1) {
+    const v = rr(0.08, 0.26);
+    ctx.fillStyle = `rgba(${(122 + rnd() * 60) | 0},${(122 + rnd() * 60) | 0},${(118 + rnd() * 58) | 0},${v.toFixed(3)})`;
+    ctx.fillRect(rr(0, size), rr(0, size), rr(1, 2.6), rr(1, 2.6));
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.needsUpdate = true;
+  padTexCache = tex;
   return tex;
 }
 
@@ -1056,7 +1330,7 @@ function buildGeometry(root: THREE.Group): void {
     [DIM.padH, PALETTE.padTop],
     [DIM.padH + 0.006, PALETTE.bolt],
     [DIM.padH + DIM.boltH, PALETTE.bolt],
-  ], 0.05);
+  ], 0.14);
   pad.computeVertexNormals();
   const pm = setMeshGeometry(root, 'base-pad', pad);
   if (pm) {
@@ -1084,6 +1358,15 @@ function applyAtlases(root: THREE.Group, options: ProceduralModelOptions): void 
   m.metalness = 0.0;
   m.roughness = 0.84;
   m.needsUpdate = true;
+
+  const padMesh = rt?.meshes?.['base-pad'];
+  if (!padMesh) return;
+  const ptex = padTexture(Math.min(512, options.textureSize ?? 512));
+  if (!ptex) return;
+  ptex.anisotropy = options.textureAnisotropy ?? 4;
+  const pm2 = padMesh.material as THREE.MeshPhysicalMaterial;
+  pm2.map = ptex;
+  pm2.needsUpdate = true;
 }
 
 /**

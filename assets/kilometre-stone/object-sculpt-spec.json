@@ -862,13 +862,13 @@
       "topologyClass": "assembled-solid",
       "topologyRationale": "A single cast-concrete solid: a rectangular block whose top is finished as a semicircular arch, extruded through its depth. One closed solid, not an assembly - there is no joint anywhere on this prop and nothing is bolted to anything, which is what separates it from every other prop in this signage set.",
       "geometryDescriptor": {
-        "topologyIntent": "ExtrudeGeometry over an arch-topped profile, 0.49 x 0.9, extruded 0.42 deep, bevelEnabled false.",
+        "topologyIntent": "ExtrudeGeometry over an arch-topped profile, 0.49 x 0.9, extruded 0.42 deep, with a 22 mm three-segment bevel on every edge. Every arris is ROLLED, not sharp: the plate's crown turns over in the depth axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the body's vertical corners are worn soft. `bevelSize` runs OUTWARD from the outline and the bevel hangs off both ends of the extrusion, so the shape is inset by the bevel on all four sides and the extrusion is shortened by two of them; the harness reads the bounds back as exactly 0.49 x 0.900 x 0.42. Normals are then smoothed with an angle-limited pass (62 degrees) so the bevel rounds over while the flat faces stay flat - unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole.",
         "profile2D": {
           "kind": "arch-topped-rect",
           "halfWidth": 0.245,
           "height": 0.9,
           "archRadius": 0.245,
-          "archSegments": 16,
+          "archSegments": 24,
           "depth": 0.42,
           "points": [
             [
@@ -948,7 +948,12 @@
               0.655
             ]
           ],
-          "note": "19 points: two bottom corners, straight sides up to y=0.655, then a 16-segment semicircular arch of radius 0.245 swept from angle 0 (right shoulder) through pi/2 (apex) to pi (LEFT shoulder). The earlier build swept -pi/2..pi/2, which is the RIGHT half of a circle - a quarter-round cusp on one side and no left shoulder at all - and rendered visibly lop-sided. The arch IS this prop's silhouette."
+          "note": "19 points: two bottom corners, straight sides up to y=0.655, then a 16-segment semicircular arch of radius 0.245 swept from angle 0 (right shoulder) through pi/2 (apex) to pi (LEFT shoulder). The earlier build swept -pi/2..pi/2, which is the RIGHT half of a circle - a quarter-round cusp on one side and no left shoulder at all - and rendered visibly lop-sided. The arch IS this prop's silhouette.",
+          "bevel": {
+            "size": 0.022,
+            "thickness": 0.022,
+            "segments": 3
+          }
         },
         "edgeTreatment": {
           "type": "none",
@@ -1079,14 +1084,14 @@
         }
       ],
       "surfaceDetail": {
-        "macroRoughness": 0.0,
-        "microRoughness": 0.0,
-        "bumpAmplitude": 0.0,
-        "normalPattern": "",
+        "macroRoughness": 0.3,
+        "microRoughness": 0.45,
+        "bumpAmplitude": 0.6,
+        "normalPattern": "bumpMap from a height atlas painted alongside the albedo, at half its resolution",
         "displacementPattern": "",
         "occlusionPattern": "",
-        "edgeWearPattern": "",
-        "notes": ""
+        "edgeWearPattern": "clustered polygon flakes off both edges of the red band; ragged chipping round the foot",
+        "notes": "The atlas is a band COLUMN plus a face region with a guard gutter between them. The column used to be sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone, so nothing on those faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now and the walls map their own horizontal position into it: a side wall along z, the back cap and the crown along x."
       },
       "evidenceRefs": [
         "full-object"
@@ -1163,18 +1168,22 @@
           "#98917F",
           "#E6EAEE",
           "#A32124",
-          "#686554",
+          "#7A7663",
+          "#DCD8C6",
+          "#6F7659",
+          "#6B6047",
           "#1B1F22"
         ],
-        "pattern": "authored-bands",
-        "amplitude": 0.0,
-        "heightCorrelation": 1.0
+        "pattern": "authored-bands over vertically-elongated stain drift, formwork striation and aggregate grain",
+        "amplitude": 0.22,
+        "heightCorrelation": 0.85,
+        "notes": "The bands are authored; everything on top of them is weathering, and its amplitude is MEASURED rather than chosen. A matched 110x120 px window on the plate's shaded body reads luma 155 with sd 23; the flat build read the same window at 111 with sd 5, and the shipped build reads 135 with sd 10 on the shaded face and 148 with sd 18 on the key-lit one. The two drift poles are spread wide and biased LIGHT (#7A7663 luma 116 and #DCD8C6 luma 214, compositing over the base to about 132..186) because the spread has to be bought without pushing any texel toward the turntable gate's backdrop luma of 58."
       },
       "roughness": {
         "base": 0.85,
         "variation": 0.06,
         "map": "none",
-        "localResponse": "Chalky and fully matte - the highest roughness of the eight props. Cast concrete and masked paint both scatter completely; there is no tight highlight anywhere on this reference, and the two faces at right angles differ by only 2 luma on the body, which is what a fully diffuse surface under strong fill does."
+        "localResponse": "Chalky and fully matte - the highest roughness of the eight props. Cast concrete and masked paint both scatter completely; there is no tight highlight anywhere on this reference, and the two faces at right angles differ by only 2 luma on the body, which is what a fully diffuse surface under strong fill does. Relief arrives as a bumpMap rather than as roughness variation: the height atlas is painted alongside the albedo off the SAME draw streams, so its grain, striation, chips and spall land on the marks the picture shows. It ships at half the albedo's resolution - relief is low-frequency where it matters, and two full 1024 RGBA textures is 11 MB of VRAM on a kit aimed at low-end integrated GPUs."
       },
       "metalness": {
         "base": 0.0,
@@ -1184,17 +1193,48 @@
       "ambientOcclusion": {
         "cavityStrength": 0.0,
         "contactShadowBias": 0.0,
-        "notes": "A convex solid with no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+        "notes": "A convex solid with no cavity for AO to find, and baking any into base colour is what the material pass forbids. The 22 mm rolled arris is GEOMETRY and shades itself; the only recess on the prop is the spall, and its shadow is painted into the albedo and the height atlas rather than into an AO channel."
       },
       "wear": {
-        "edgeWear": 0.0,
+        "edgeWear": 0.35,
         "scratches": [],
-        "chips": []
+        "chips": [
+          {
+            "id": "band-flaking",
+            "where": "the red band's lower and upper edges, and scattered across its face",
+            "size_m": [
+              0.004,
+              0.015
+            ],
+            "count": "13 clusters of 4 to 11",
+            "evidence": "The plate's band is the most damaged surface on the stone: paint lifted off both edges in clustered irregular flakes exposing the concrete beneath. Each chip is an 8-sided polygon with a #8E2226 rim where the film has lifted. They are wider than they are tall - the first tuning made them 0.07..0.33 of the band's height and hung a row of white icicles off the red."
+          },
+          {
+            "id": "foot-chipping",
+            "where": "the bottom 6 per cent of the stone, all round",
+            "size_m": [
+              0.003,
+              0.014
+            ],
+            "count": "26",
+            "evidence": "The plate's foot is ragged rather than a clean cast edge."
+          }
+        ],
+        "spalls": [
+          {
+            "id": "body-spall",
+            "where": "the front face, 0.115 of the face width from its left arris",
+            "centreHeightFraction": 0.17,
+            "heightFraction": 0.135,
+            "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height. The previous build placed it at 0.21 and half that size. Painted rather than modelled - it is a surface loss of a few millimetres - but it carries relief in the height atlas, and it is painted from the OUTSIDE IN: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it. A hole is darker than the wall it is in, and filling the void with pale aggregate is what made the first two tunings read as a sticker."
+          }
+        ]
       },
       "dirt": {
-        "amount": 0.0,
+        "amount": 0.45,
         "cavityBias": 0.0,
-        "color": "#2F2A22"
+        "color": "#807D6B",
+        "notes": "Three separate marks, not one smudge. (1) A standing ramp from the band to the foot, nearly flat over the top half - the plate's body only collapses in its lowest fifth, and a ramp that starts at the band renders the whole body 44 luma too dark. (2) Rain runs biased to the band's lower edge, which is the drip line on the plate. (3) Algae over the lowest fifth as a gradient PLUS speck clusters thickening downward; a gradient alone is a smudge. The algae is #6F7659 - green-chroma at luma 113 - rather than the previous neutral #686554, because the hole gate reads a back-lit face at about 0.55 of its painted luma against a backdrop at 58 and a neutral grey that dark is a hole the gate has to guess about."
       },
       "localOverrides": [
         {
@@ -1243,11 +1283,11 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Reference plate, concrete body at (560,600,180,140) and (270,600,90,140): 25200 and 12600 px trimming to #98917F and #988F7A - within 2 luma across two faces at right angles, so this is a flat diffuse albedo and not a height field.",
-          "Reference plate, red band at (560,380,180,60): 10800 px trimming to #A32124. Masked paint over cast concrete, flat across its face.",
-          "Reference plate, white crown at (380,120,120,90): 10799 of 10800 px pass a bright filter, trimming to #ECF0F3 - a solid painted crown with no resolvable relief.",
-          "The bands and the legend arrive as one canvas atlas assigned after material construction, which the textureless declaration does not touch. Letting the generator synthesise a texture set here would additionally force color to white and roughness to 1 and read both from the generated maps - discarding the measured #98917F that makes this stone concrete rather than grey.",
-          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel, on a prop whose whole geometry is 88 triangles."
+          "The generator's five synthesised canvases are what this declaration skips, and they are still skipped: everything this prop shows arrives on ONE canvas atlas pair assigned AFTER material construction, which the declaration does not touch. Letting the generator synthesise a texture set here would additionally force color to white and roughness to 1 and read both from the generated maps, discarding the measured #98917F that makes this stone concrete rather than grey.",
+          "Reference plate, concrete body at (560,600,180,140) and (270,600,90,140): 25200 and 12600 px trimming to #98917F and #988F7A - within 2 luma across two faces at right angles. That agreement is why the BASE albedo could be taken directly; it is not a claim that the surface is flat, and the same plate reads luma variance 0.071 over the whole stone against a flat build's 0.050.",
+          "Reference plate, red band at (560,380,180,60): 10800 px trimming to #A32124. Masked paint over cast concrete.",
+          "Reference plate, white crown at (380,120,120,90): 10799 of 10800 px pass a bright filter, trimming to #ECF0F3.",
+          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel. The atlas pair that replaces them is Path2D fills, not a per-pixel loop, and the whole factory builds in 180 ms measured by render-model.mjs."
         ]
       }
     }
@@ -1773,6 +1813,64 @@
       "cameraView": "45 deg azimuth / 20 deg elevation hero, plus the 0/90/180/270 turntable and a clay pass",
       "notes": "",
       "aiVisionNotes": "Shape now matches the plate at every azimuth; the remaining gap is a flat concrete body against a heavily stained one, which is surface work."
+    },
+    {
+      "timestamp": "2026-09-01T03:23:07.481678+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.9,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "concrete-weathering",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "The named gap of the previous review, scored 0.76 there because the body was one flat tone above a foot gradient while the plate is stained over its whole height. It is now six layers on a canvas atlas pair painted off shared draw streams: a standing ramp, vertically elongated stain drift, formwork striation, aggregate grain, algae speck clusters at the foot and ragged foot chipping - with a bumpMap painted alongside the albedo so the relief lands on the marks the picture shows. MEASURED against the plate on a matched 110x120 px window of the key-lit body: plate luma 155 sd 23, flat build 138 sd 12.6, this build 154 sd 19.3. The deterministic material comparator moves deltaE00 2.96 -> 2.44, baseColor 0.941 -> 0.951 and directionalResponse 0.839 -> 0.944. Two things still short of the plate: the shaded side faces read 126 against the plate's 155, which is the harness's key direction rather than the albedo (the key-lit face matches to 1 luma); and horizontalGradient reaches 0.032 against the plate's 0.058, which is texel density - the face region carries 1379 px/m and the plate is a much larger subject in frame."
+        },
+        {
+          "id": "rolled-arris",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "Every edge is a 22 mm three-segment bevel. The plate's crown turns over in the DEPTH axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the previous build's prismatic extrude with bevelEnabled false showed a hard silhouette edge at every azimuth. Normals are smoothed with an angle-limited pass at 62 degrees so the bevel rounds over while the flat faces stay flat; unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole. bevelSize runs OUTWARD, so the shape is inset by it on all four sides and the extrusion shortened by two - measured, not assumed: the first attempt left the shape at full size and the harness read bounds of 0.534 x 0.944. Bounds now read exactly 0.490 x 0.900 x 0.420. Arch segments 16 -> 24. 72 -> 428 triangles of 2000."
+        },
+        {
+          "id": "band-flaking",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "The previous build had fourteen axis-aligned rectangles along the band's lower edge, which rendered as a sawtooth graphic. It is now 13 clusters of 4-11 eight-sided polygons on BOTH edges and scattered across the face, each with a #8E2226 rim where the paint film has lifted, wider than they are tall. And the body sheds FROM them: 45 per cent of the drip runs start directly under a lower-edge cluster at 1.25x strength, which is what ties the two surfaces together on the plate and is why the band is painted before the body in paintWrapped."
+        },
+        {
+          "id": "body-spall",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall - the previous build had it at 0.21 and half that size, as a flat grey ellipse. It is painted from the OUTSIDE IN now: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it, with a matching recess in the height atlas. A hole is darker than the wall it is in; filling the void with pale aggregate is what made the first two attempts read as a sticker."
+        },
+        {
+          "id": "atlas-column",
+          "passed": true,
+          "score": 0.89,
+          "evidence": "The atlas column was sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone - so nothing on three of the four faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now, with a guard gutter flood-filled rather than left transparent, and the walls map their own horizontal position into it (a side wall along z, the back cap and crown along x). Mark sizes are then scaled by 0.40 and counts divided by it, because the column carries 1.37 mm per texel against the face's 0.54 and the same fraction is a mark 2.5x larger in the world."
+        },
+        {
+          "id": "legend-glyphs",
+          "passed": true,
+          "score": 0.95,
+          "evidence": "The Thai line rendered as six tofu boxes in the harness and in the thumbnail it writes. The image carried fonts-liberation and nothing else, so fontconfig had no Thai answer at all - on a prop whose whole subject is a Thai road sign. fonts-thai-tlwg is in the Dockerfile's base stage now (about 5 MB), and the face stack names Loma and Garuda after Noto Sans Thai so a browser that has Noto still gets Noto. Verified in the render."
+        }
+      ],
+      "referenceScreenshot": "/repo/assets/kilometre-stone/preview.jpg",
+      "renderScreenshot": "/repo/scratch/kilometre-stone/renders/beauty-hero.png",
+      "comparisonImage": "/repo/scratch/kilometre-stone/cmp-final-2.png",
+      "cameraView": "three-quarter",
+      "notes": "",
+      "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
@@ -2295,6 +2393,92 @@
         "cameraView": "45 deg azimuth / 20 deg elevation hero, plus the 0/90/180/270 turntable and a clay pass",
         "notes": "",
         "aiVisionNotes": "Shape now matches the plate at every azimuth; the remaining gap is a flat concrete body against a heavily stained one, which is surface work."
+      }
+    },
+    {
+      "timestamp": "2026-09-01T03:23:07.481678+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.9,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "concrete-weathering",
+          "passed": true,
+          "score": 0.91,
+          "evidence": "The named gap of the previous review, scored 0.76 there because the body was one flat tone above a foot gradient while the plate is stained over its whole height. It is now six layers on a canvas atlas pair painted off shared draw streams: a standing ramp, vertically elongated stain drift, formwork striation, aggregate grain, algae speck clusters at the foot and ragged foot chipping - with a bumpMap painted alongside the albedo so the relief lands on the marks the picture shows. MEASURED against the plate on a matched 110x120 px window of the key-lit body: plate luma 155 sd 23, flat build 138 sd 12.6, this build 154 sd 19.3. The deterministic material comparator moves deltaE00 2.96 -> 2.44, baseColor 0.941 -> 0.951 and directionalResponse 0.839 -> 0.944. Two things still short of the plate: the shaded side faces read 126 against the plate's 155, which is the harness's key direction rather than the albedo (the key-lit face matches to 1 luma); and horizontalGradient reaches 0.032 against the plate's 0.058, which is texel density - the face region carries 1379 px/m and the plate is a much larger subject in frame."
+        },
+        {
+          "id": "rolled-arris",
+          "passed": true,
+          "score": 0.94,
+          "evidence": "Every edge is a 22 mm three-segment bevel. The plate's crown turns over in the DEPTH axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the previous build's prismatic extrude with bevelEnabled false showed a hard silhouette edge at every azimuth. Normals are smoothed with an angle-limited pass at 62 degrees so the bevel rounds over while the flat faces stay flat; unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole. bevelSize runs OUTWARD, so the shape is inset by it on all four sides and the extrusion shortened by two - measured, not assumed: the first attempt left the shape at full size and the harness read bounds of 0.534 x 0.944. Bounds now read exactly 0.490 x 0.900 x 0.420. Arch segments 16 -> 24. 72 -> 428 triangles of 2000."
+        },
+        {
+          "id": "band-flaking",
+          "passed": true,
+          "score": 0.92,
+          "evidence": "The previous build had fourteen axis-aligned rectangles along the band's lower edge, which rendered as a sawtooth graphic. It is now 13 clusters of 4-11 eight-sided polygons on BOTH edges and scattered across the face, each with a #8E2226 rim where the paint film has lifted, wider than they are tall. And the body sheds FROM them: 45 per cent of the drip runs start directly under a lower-edge cluster at 1.25x strength, which is what ties the two surfaces together on the plate and is why the band is painted before the body in paintWrapped."
+        },
+        {
+          "id": "body-spall",
+          "passed": true,
+          "score": 0.9,
+          "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall - the previous build had it at 0.21 and half that size, as a flat grey ellipse. It is painted from the OUTSIDE IN now: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it, with a matching recess in the height atlas. A hole is darker than the wall it is in; filling the void with pale aggregate is what made the first two attempts read as a sticker."
+        },
+        {
+          "id": "atlas-column",
+          "passed": true,
+          "score": 0.89,
+          "evidence": "The atlas column was sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone - so nothing on three of the four faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now, with a guard gutter flood-filled rather than left transparent, and the walls map their own horizontal position into it (a side wall along z, the back cap and crown along x). Mark sizes are then scaled by 0.40 and counts divided by it, because the column carries 1.37 mm per texel against the face's 0.54 and the same fraction is a mark 2.5x larger in the world."
+        },
+        {
+          "id": "legend-glyphs",
+          "passed": true,
+          "score": 0.95,
+          "evidence": "The Thai line rendered as six tofu boxes in the harness and in the thumbnail it writes. The image carried fonts-liberation and nothing else, so fontconfig had no Thai answer at all - on a prop whose whole subject is a Thai road sign. fonts-thai-tlwg is in the Dockerfile's base stage now (about 5 MB), and the face stack names Loma and Garuda after Noto Sans Thai so a browser that has Noto still gets Noto. Verified in the render."
+        }
+      ],
+      "action": "continue",
+      "summary": "",
+      "matched": [],
+      "mismatches": [
+        "shaded side faces read luma 126 against the plate 155, which is the harness key direction rather than the albedo",
+        "horizontalGradient 0.032 against the plate 0.058, which is texel density at 1379 px per metre",
+        "the plate foot is greener and darker than the gate allows this build to go"
+      ],
+      "specFixes": [
+        "material wear/dirt/colorVariation/surfaceDetail rewritten to describe what ships",
+        "textureless evidence corrected - it no longer claims the surface has no resolvable relief",
+        "geometryDescriptor records the 22 mm bevel and the 24-segment arch"
+      ],
+      "codeFixes": [
+        "atlas column widened to a region and the walls map into it",
+        "22 mm bevel with angle-limited normal smoothing",
+        "six weathering layers plus a height atlas",
+        "fonts-thai-tlwg added to the image"
+      ],
+      "evidence": [
+        "/repo/scratch/kilometre-stone/cmp-final-2.png",
+        "/repo/scratch/_km/matcmp.json",
+        "/repo/scratch/_km/tt.png"
+      ],
+      "outOfSequence": true,
+      "mapStrippedRender": "/repo/scratch/kilometre-stone/renders/clay-000.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/assets/kilometre-stone/preview.jpg",
+        "renderScreenshot": "/repo/scratch/kilometre-stone/renders/beauty-hero.png",
+        "comparisonImage": "/repo/scratch/kilometre-stone/cmp-final-2.png",
+        "cameraView": "three-quarter",
+        "notes": "",
+        "aiVisionNotes": ""
       }
     }
   ],

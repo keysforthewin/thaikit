@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, mediaUrl } from './api.js';
 import { Drawer } from './Drawer.jsx';
 import { CreateDialog } from './CreateDialog.jsx';
+import { FacetDialog } from './FacetDialog.jsx';
 import { budgetRows, describeClassBriefly, useBudgetClasses } from './budgets.js';
 
 const PRESETS = [
@@ -97,6 +98,16 @@ export default function App() {
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null);
   const [creating, setCreating] = useState(false);
+  // The facet selection. Categories and tags are OR'ed with each other on the
+  // server; `q` is AND'ed on top, so text narrows whatever the facets gathered.
+  const [pickedCategories, setPickedCategories] = useState([]);
+  const [pickedTags, setPickedTags] = useState([]);
+  const [facet, setFacet] = useState(null);
+  // What /api/meta knows: every category and tag in the registry, with counts.
+  const [meta, setMeta] = useState(null);
+  // The size of the CURRENT result, which is not `assets.length` once paging
+  // exists and is not `health.assetCount` ever -- that is the whole registry.
+  const [total, setTotal] = useState(0);
   // Bumped on every registry change. An open Drawer re-reads its asset when it
   // moves, and the viewer keys its module URL off the asset's updatedAt --
   // together that is what makes a new build appear without a reload.
@@ -106,17 +117,27 @@ export default function App() {
 
   const load = useCallback(async () => {
     try {
-      const params = { ...PRESETS.find((p) => p.key === preset).params, q, sort: 'name' };
-      const { items } = await api.list(params);
+      const params = {
+        ...PRESETS.find((p) => p.key === preset).params,
+        q,
+        categories: pickedCategories.join(','),
+        tags: pickedTags.join(','),
+        sort: 'name',
+      };
+      const { items, total: n } = await api.list(params);
       setAssets(items);
+      setTotal(n ?? items.length);
       setError(null);
     } catch (e) {
       setError(e.message);
     }
-  }, [preset, q]);
+  }, [preset, q, pickedCategories, pickedTags]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { api.health().then(setHealth).catch(() => {}); }, []);
+  // The facet lists follow the registry, so they are re-read on every change the
+  // SSE stream reports -- a prop given a new tag must be pickable by it at once.
+  useEffect(() => { api.meta().then(setMeta).catch(() => {}); }, [rev]);
 
   // Live updates: the generation skills write the same registry from the host,
   // so an open tab must reflect their work without a manual refresh.
@@ -168,13 +189,85 @@ export default function App() {
             {p.label}
           </span>
         ))}
+        <span className="sep" />
+        <button
+          className={pickedCategories.length ? 'on' : ''}
+          onClick={() => setFacet('categories')}
+          title="pick any number of categories; they are OR'ed with the tags"
+        >
+          categories{pickedCategories.length ? ` (${pickedCategories.length})` : ''}
+        </button>
+        <button
+          className={pickedTags.length ? 'on' : ''}
+          onClick={() => setFacet('tags')}
+          title="pick any number of tags; they are OR'ed with the categories"
+        >
+          tags{pickedTags.length ? ` (${pickedTags.length})` : ''}
+        </button>
+        {(pickedCategories.length > 0 || pickedTags.length > 0) && (
+          <button
+            onClick={() => { setPickedCategories([]); setPickedTags([]); }}
+            title="drop every category and tag"
+          >
+            clear filters
+          </button>
+        )}
+        <span className="grow" />
+        {/* Always on, so a filter that matched nothing says so before you go
+            looking for the grid that did not render. */}
+        <span className="muted match-count">
+          {total} {total === 1 ? 'match' : 'matches'}
+        </span>
       </div>
+
+      {/* The picked facets, spelled out. The buttons carry a count; only the
+          chips say WHICH, and each one is its own undo. */}
+      {(pickedCategories.length > 0 || pickedTags.length > 0) && (
+        <div className="filters picked">
+          {pickedCategories.map((c) => (
+            <span
+              key={`c:${c}`}
+              className="chip on"
+              onClick={() => setPickedCategories(pickedCategories.filter((x) => x !== c))}
+              title="remove"
+            >
+              {c} ×
+            </span>
+          ))}
+          {pickedTags.map((t) => (
+            <span
+              key={`t:${t}`}
+              className="chip on"
+              onClick={() => setPickedTags(pickedTags.filter((x) => x !== t))}
+              title="remove"
+            >
+              #{t} ×
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* The drawer is a flex SIBLING of the grid, not an overlay: opening it
           narrows the grid, which reflows to fewer columns, so every asset stays
           reachable while a prop's properties are up. */}
       <div className="browse">
-      {assets.length === 0 ? (
+      {assets.length === 0 && (q || pickedCategories.length || pickedTags.length) ? (
+        // A filter that matches nothing is not an empty kit, and telling someone
+        // to run the asset-list skill when they have simply over-narrowed reads
+        // as the page having lost their props.
+        <div className="empty">
+          <h2>No matches</h2>
+          <p className="muted">
+            Nothing here carries {pickedCategories.length + pickedTags.length > 0
+              ? 'any of the selected categories or tags'
+              : 'that text'}
+            {q && (pickedCategories.length || pickedTags.length) ? ' and matches the search text' : ''}.
+          </p>
+          <button onClick={() => { setPickedCategories([]); setPickedTags([]); setQ(''); }}>
+            clear the filters
+          </button>
+        </div>
+      ) : assets.length === 0 ? (
         <div className="empty">
           <h2>No assets yet</h2>
           <p>
@@ -197,6 +290,24 @@ export default function App() {
 
       {open && <Drawer id={open} rev={rev} onClose={() => setOpen(null)} onChanged={load} />}
       </div>
+      {facet === 'categories' && (
+        <FacetDialog
+          title="Categories"
+          counts={meta?.categories}
+          selected={pickedCategories}
+          onChange={setPickedCategories}
+          onClose={() => setFacet(null)}
+        />
+      )}
+      {facet === 'tags' && (
+        <FacetDialog
+          title="Tags"
+          counts={meta?.tags}
+          selected={pickedTags}
+          onChange={setPickedTags}
+          onClose={() => setFacet(null)}
+        />
+      )}
       {creating && (
         <CreateDialog
           onClose={() => setCreating(false)}

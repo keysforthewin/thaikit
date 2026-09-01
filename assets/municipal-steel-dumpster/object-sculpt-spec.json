@@ -105,14 +105,14 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 1,
+        "materialLayers": 2,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE body component: the tapered frustum, four rim rails and the deck, the door seam strip, the orange handle bar on two brackets, the orange lift handle, two trunnions with plates, four castor forks and four castors with hubs -- all merged on the steel material.",
-        "ONE lids InstancedMesh of two instances at x +-0.32: panel, chamfer slab and hinge knuckle, so lid-hinge-l and lid-hinge-r each name an instance a host can rotate.",
-        "One material: painted steel; the light-blue lids and rails, the orange handles, the seam and the castors are vertex colours.",
-        "Action readiness: one root pivot plus two lid hinges, zero sockets, one box collider on the root, not breakable."
+        "TWO static components, split on a real constraint rather than for convenience: `body` is the tapered frustum and the door seam alone, and `fittings` is the four rim rails and deck, the handle bar on two brackets, the lift handle, two trunnions with plates, four castor forks and four castors with hubs. The split exists because a canvas tile is a MULTIPLY: ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23), whose red is above 1 and clamps, so the plate's orange rust is unreachable on the blue body. The body therefore carries its own material re-based to the envelope #8a6a95 with the blue painted BY the tile, and that tile must not reach the orange handle bar. maxDrawCalls was raised 2 -> 3 on the asset to buy it.",
+        "ONE lids InstancedMesh of two instances at x +-0.255: panel, chamfer slab and hinge knuckle, so lid-hinge-l and lid-hinge-r each name an instance a host can rotate. Extents measured off a top-deck crop: the pair spans 0.764 of the deck at their own row, not the 0.924 first shipped.",
+        "TWO materials of 2: `bodypaint` for the body shell alone, re-based to the envelope #8a6a95 so its tile renders the shell back to #2f6a95 and its rust to the measured #8a4a22 exactly; and `steel` for the fittings and the lids, where the pale lids take orange by plain multiply (ratio 0.847, 0.363, 0.150) and need no re-basing.",
+        "Action readiness: one root pivot plus two lid hinges, zero sockets, one box collider on the root, not breakable. 3 of 3 draw calls, 2 of 2 materials, 3 of 4 unique geometries, 696 of 2,000 triangles."
       ]
     },
     "specDepthDecision": {
@@ -126,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the blue steel box with a paler rim and two paler lids, the orange bar across the front doors and the rust; every part is a box, frustum or cylinder and the rust is a grime canvas in the measured drip tone."
+      "rationale": "The identity is the blue steel box with a paler rim and two paler lids, the orange bar across the front doors and the rust; every part is a box, frustum or cylinder, and the rust is a post-construction `paint` canvas whose clusters each bleed a vertical run, in the plate's own measured tones."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -241,16 +241,16 @@
     "qualityBar": "high",
     "definitionOfDone": [
       "Rendered model matches the reference silhouette, the 1.40 x 1.40 x 0.65 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=3 draw calls, <=2 materials, <=4 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 2 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 0,
       "microFeatureGroups": 3,
-      "materialLayers": 1,
+      "materialLayers": 2,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -330,7 +330,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 3 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -598,7 +598,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 3,
     "pivotInventory": [
       {
         "name": "root",
@@ -621,7 +621,7 @@
         "component": "lids",
         "type": "hinge",
         "localPosition": [
-          -0.32,
+          -0.255,
           1.375,
           -0.26
         ],
@@ -637,7 +637,7 @@
         "component": "lids",
         "type": "hinge",
         "localPosition": [
-          0.32,
+          0.255,
           1.375,
           -0.26
         ],
@@ -681,9 +681,9 @@
       "h": 1.4,
       "d": 0.65
     },
-    "description": "Frustum 1.24 x 0.56 at 0.22 m to 1.30 x 0.60 at 1.32 m; rim frame 1.32 x 0.62 x 0.04 m; two lids 0.58 x 0.03 x 0.50 m at 1.36-1.39 m; handle bar 1.02 m across the front at 0.70 m; lift handle 0.16 m tall at the seam at 0.93 m; trunnions at 1.15 m on both ends; four castors r 0.09 at x +-0.48, z +-0.18.",
-    "envelopeDerivation": "x spans -0.70..+0.70 at the lift trunnion plates over the 1.32 m rim frame, the declared 1.40 m; z -0.31..+0.3375 at the handle bar over the 0.62 m body; y 0.00 to 1.393 at the lids. Declared 1.40 x 1.40 x 0.65 (corrected from 1.80 x 1.30 x 1.10 at model time: the proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate shows a container as tall as wide). Castors 0-0.18 m (proxy rows 0-0.16 H), body 0.22-1.32 m from 1.24 x 0.56 to 1.30 x 0.60 (proxy sides vertical within one column), rim frame 1.32-1.36 m, lids 1.36-1.39 m.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate. Band table at the corrected envelope: mean |delta width| 0.0186, |delta depth| 0.0453; width bands 2-7 within 0.012; every depth band reads -0.04..-0.06 because the declared 0.65 m holds the handle bar and the body is 0.62 m deep behind it."
+    "description": "Frustum 1.08 x 0.50 at 0.22 m to 1.30 x 0.60 at 1.32 m (measured plate taper 0.833); rim frame 1.32 x 0.62 x 0.04 m; two lids 0.50 x 0.03 x 0.46 m at x +-0.255 at 1.36-1.39 m; handle bar 1.02 m across the front at 0.70 m; lift handle 0.16 m tall at the seam at 0.93 m; trunnions at 1.15 m on both ends; four castors r 0.09 at x +-0.48, z +-0.18.",
+    "envelopeDerivation": "x spans -0.70..+0.70 at the lift trunnion plates over the 1.32 m rim frame, the declared 1.40 m; z -0.31..+0.3375 at the handle bar over the 0.62 m body; y 0.00 to 1.393 at the lids. Declared 1.40 x 1.40 x 0.65 (corrected from 1.80 x 1.30 x 1.10 at model time: the proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate shows a container as tall as wide). Castors 0-0.18 m, body 0.22-1.32 m from 1.08 x 0.50 to 1.30 x 0.60, rim frame 1.32-1.36 m, lids 1.36-1.39 m. The TAPER is measured off the PLATE, not the proxy: the front face narrows 899 px at the rim to 628 px at the body base (0.699 raw), and the plate top deck's own recession (0.814 over 0.65 m, camera 2.85 m out) accounts for 0.838 of it, leaving a real 0.833. The proxy reads the sides vertical over bands 1-8 and is wrong.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, and it is WRONG about the taper: it reads the body sides vertical (w 0.874-0.934 across bands 1-8), which the first build followed to B0W/BW 0.954. The plate shows a clear trapezoid, and a plate-only solve gives a real taper of 0.833. The band table now disagrees with the proxy BY CONSTRUCTION and that is the correct outcome -- its old 0.0186 mean |delta width| was agreement with a hallucinated straight box, not fidelity. Depth bands still read -0.04..-0.06 because the declared 0.65 m holds the handle bar and the body is 0.62 m deep behind it."
   },
   "viewEvidence": [
     {
@@ -733,19 +733,19 @@
   "componentTree": [
     {
       "id": "body",
-      "name": "Body, rim frame, handles and castors",
+      "name": "Tapered body shell",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One frustum, twenty boxes and eight cylinders merged into one geometry on one material: one draw call.",
-      "materialId": "steel",
-      "material": "steel",
+      "topologyRationale": "The frustum and the door seam alone, on their own material: one draw call. Split from the fittings because the re-based envelope and its tile must not reach the orange handle bar, whose red cannot be divided back out without clamping.",
+      "materialId": "bodypaint",
+      "material": "bodypaint",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Frustum 1.24 x 0.56 -> 1.30 x 0.60 over 0.22-1.32 m; rails 0.07 x 0.04 around the top 1 cm proud; deck 5 mm below the rails; seam strip 12 mm wide tilted to the front face; bar 1.02 x 0.045 at 0.70 m on brackets; castors r 0.09 x 0.05 with hubs r 0.04.",
+        "topologyIntent": "Frustum 1.08 x 0.50 -> 1.30 x 0.60 over 0.22-1.32 m at the plate-measured taper 0.833; seam strip 12 mm wide tilted to the front face.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -754,44 +754,34 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rails overlap the frustum top by 1 cm (slanted faces, never coplanar with a box); the deck top is 5 mm below the rail tops; the seam strip is 1.6 mm proud of the slanted front and rotated to it; the bar stands 27 mm proud on brackets 2 cm inside the face; hubs are 2 mm proud of the castor faces.",
-        "mergeNote": "One merged BufferGeometry with height UVs at 1.35 m."
+        "zFightingNote": "The seam strip is 1.6 mm proud of the slanted front and rotated to it; the rails above overlap the frustum top by 1 cm on slanted faces, never coplanar with a box.",
+        "mergeNote": "One merged BufferGeometry with height UVs over the full height (uvScale 1.0)."
       },
       "localFeatures": [
         {
           "id": "d1-body",
-          "description": "body",
-          "delivery": "frustum + rail boxes"
-        },
-        {
-          "id": "d3-handles",
-          "description": "handles",
-          "delivery": "boxes, vertex colour"
+          "description": "tapered shell",
+          "delivery": "frustum"
         },
         {
           "id": "d4-rust",
-          "description": "rust",
-          "delivery": "grime canvas"
-        },
-        {
-          "id": "d5-castors",
-          "description": "castors",
-          "delivery": "cylinders + fork boxes"
+          "description": "rust drips",
+          "delivery": "paint canvas on the re-based envelope"
         },
         {
           "id": "d6-seam",
-          "description": "seam and trunnions",
-          "delivery": "boxes"
+          "description": "door seam",
+          "delivery": "tilted box"
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "steel",
-        "baseColor": "#2f6a95",
-        "recipe": "Lifted navy as vertex colour on white with a rust grime canvas; rails #7fa6c2; handles #b8703f; seam #2a5c85; castors #565656.",
+        "materialId": "bodypaint",
+        "baseColor": "#8a6a95",
+        "recipe": "Envelope #8a6a95 as vertex colour on white; the tile paints the blue field back at (0.341, 1, 1) and the rust at the measured #8a4a22. Seam pre-divided to #7b5c85.",
         "evidenceRef": "region-blue",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(47, 106, 149, 1.0)",
-        "secondaryAlbedo": "rgba(127, 166, 194, 1.0)",
+        "dominantAlbedo": "rgba(138, 106, 149, 1.0)",
+        "secondaryAlbedo": "rgba(123, 92, 133, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.9
       },
@@ -839,6 +829,77 @@
           "notes": "Declared on the asset as box: the full body."
         }
       }
+    },
+    {
+      "id": "fittings",
+      "name": "Rim frame, handles, trunnions and castors",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Nineteen boxes and eight cylinders merged into one geometry on the shared steel material: one draw call. Kept off the body material so the body tile's blue base fill never multiplies the orange bar.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Rails 0.07 x 0.04 around the top 1 cm proud; deck 5 mm below the rails; bar 1.02 x 0.045 at 0.70 m on brackets; lift handle 0.16 m at the seam at 0.93 m; trunnions at 1.15 m on both ends; castors r 0.09 x 0.05 with hubs r 0.04.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The deck top is 5 mm below the rail tops; the bar stands 27 mm proud on brackets 2 cm inside the face; hubs are 2 mm proud of the castor faces; trunnion plates 3 mm proud of the trunnions.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.35 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-handles",
+          "description": "handles",
+          "delivery": "boxes, vertex colour"
+        },
+        {
+          "id": "d5-castors",
+          "description": "castors",
+          "delivery": "cylinders + fork boxes"
+        },
+        {
+          "id": "d6-seam",
+          "description": "trunnions",
+          "delivery": "boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#7fa6c2",
+        "recipe": "Rails #7fa6c2; deck #2f6a95; handles #b8703f; trunnions #4a5568 with #6b7a90 plates; castors #3f4a5c with #5a6675 hubs.",
+        "evidenceRef": "region-orange",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(127, 166, 194, 1.0)",
+        "secondaryAlbedo": "rgba(184, 112, 63, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
     }
   ],
   "materials": [
@@ -859,9 +920,9 @@
       "albedo": {
         "dominant": "#2f6a95",
         "secondary": [
-          "#2f6a95",
           "#a3cce3",
-          "#b8703f"
+          "#b8703f",
+          "#3f4a5c"
         ],
         "samplingNotes": "Measured as the mean of crops/blue.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -901,17 +962,68 @@
         "confidence": 0.751,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "bodypaint",
+      "name": "Painted steel, body shell",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#2f6a95",
+      "color": "#2f6a95",
+      "roughness": {
+        "base": 0.6,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/bodypaint_roughness.png"
+      },
+      "metalness": 0.22,
+      "albedo": {
+        "dominant": "#2f6a95",
+        "secondary": [
+          "#8a6a95",
+          "#8a4a22",
+          "#7b5c85"
+        ],
+        "samplingNotes": "Measured as the mean of crops/rust.png. extract_pbr_evidence confidence 0.752. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-rust",
+          "region": "body panels below the rim and the handle bar",
+          "roughness": 0.75,
+          "palette": [
+            "#8A4A22"
+          ],
+          "evidence": "crops/rust.png -- #582810 cores at 0.752, drip bodies #8a4a22; rendered exactly by the envelope re-basing rather than approximated by a clamped ratio."
+        }
+      ],
+      "finishClass": "painted-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The body shell alone. Its vertex colour is NOT the blue -- it is the per-channel ENVELOPE #8a6a95 of every tone the shell carries (blue #2f6a95, seam #2a5c85, rust #8a4a22, chip core #582810), and the blue field is painted back on BY the tile at (0.341, 1, 1). This exists because a canvas tile is a MULTIPLY and can only darken: ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23), whose red is above 1, so it clamps and the marks render OLIVE -- which is exactly what the first build shipped as grey-green smudges.",
+          "Re-based, the tile renders the shell back to #2f6a95 and its rust to the measured #8a4a22 exactly. The seam is pre-divided by the base fill (#2a5c85 / (0.341, 1, 1) = #7b5c85) so it renders back to its own measured tone.",
+          "Textureless as DECLARED: a 512 px `paint` canvas after construction -- 9 rust clusters at 0.85 run chance, 26 top streaks from the rim, chalk pinned near the base fill in red (0.40, 0.97, 0.93) after blooms brighter in red than the field let the envelope through and the panels rendered VIOLET."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/rust.png",
+        "pbrReport": "material-evidence/bodypaint.pbr.json",
+        "confidence": 0.752,
+        "verdict": "pass"
+      }
     }
   ],
   "repetitionSystems": [
     {
       "id": "lids",
       "name": "Hinged lids",
-      "componentRef": "body",
+      "componentRef": "fittings",
       "count": 2,
       "primitive": "box",
       "materialId": "steel",
-      "placement": "two instances at x -0.32 and +0.32 on the deck; the geometry is authored at its world height",
+      "placement": "two instances at x -0.255 and +0.255 on the deck; the geometry is authored at its world height",
       "instanced": true,
       "pivotPerInstance": true,
       "notes": "One InstancedMesh of panel, chamfer slab and knuckle; each instance is a named hinge pivot on the rear rail."
@@ -1025,27 +1137,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T18:16:11.040781+00:00",
+      "timestamp": "2026-09-01T12:22:13.005890+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1056,58 +1168,103 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.120544+00:00",
+      "timestamp": "2026-09-01T12:22:13.084154+00:00",
       "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.163520+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.242829+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.324190+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.407267+00:00",
+      "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.91,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T18:16:11.201570+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1118,27 +1275,72 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.284523+00:00",
+      "timestamp": "2026-09-01T12:22:13.488386+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.568736+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.649022+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.730556+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "handles-and-rust",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1149,27 +1351,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.367882+00:00",
+      "timestamp": "2026-09-01T12:22:13.819621+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.902407+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "handles-and-rust",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1180,17 +1397,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.447791+00:00",
+      "timestamp": "2026-09-01T12:22:13.987290+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1201,27 +1418,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.531311+00:00",
+      "timestamp": "2026-09-01T12:22:14.071050+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1232,45 +1449,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:16:11.614523+00:00",
+      "timestamp": "2026-09-01T12:22:14.153656+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
         },
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         },
         {
           "id": "handles-and-rust",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
@@ -1283,31 +1500,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T18:16:11.040781+00:00",
+      "timestamp": "2026-09-01T12:22:13.005890+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component plus one instanced lid pair at 2 draw calls of 2; frustum body from the proxy occupancy rows.",
+      "summary": "Blockout: body, fittings and one instanced lid pair at 3 draw calls of 3; frustum body at the plate-measured taper rather than the proxy occupancy rows.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1324,31 +1541,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.120544+00:00",
+      "timestamp": "2026-09-01T12:22:13.084154+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the body taper re-derived from the PLATE after the first build followed the Meshy proxy into near-vertical sides. Base footprint 1.24 x 0.56 -> 1.08 x 0.50, i.e. B0W/BW 0.954 -> 0.833, with the perspective share removed using the plate top deck's own recession (0.814 over 0.65 m -> camera 2.85 m).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.163520+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: envelope re-derived after the first band table read every band +0.33 -- the declared 1.80 x 1.30 x 1.10 was the residual, corrected to 1.40 x 1.40 x 0.65; trunnions and bar pulled inside it.",
+      "summary": "Structural pass: body taper re-derived from the plate (front face 899 -> 628 px, perspective share 0.838 from the deck's own recession) giving a real 0.833 against the 0.954 first shipped. Envelope 1.40 x 1.40 x 0.65 held.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1364,31 +1605,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.201570+00:00",
+      "timestamp": "2026-09-01T12:22:13.242829+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The plate's FRONT TOP CORNERS each carry a dark bracket plate with a pale bolt head -- the hinge straps' front anchors, two of the four hard-edged dark marks on an otherwise plain blue face -- and the build had none of them. Added on the fittings component, so they cost 48 triangles and nothing on any other axis, and held on the same chroma the trunnions are.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.324190+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: lid extents measured off a top-deck crop -- the two lids span 0.764 of the deck at their own row, not the 0.924 shipped, so LW 0.58 -> 0.50 at LX 0.32 -> 0.255. Corner lift fittings re-toned to dark hardware and their inner plates re-toned with them.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.407267+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: rim rails and deck, door seam tilted to the front face, brackets, trunnion plates, castor forks and hubs.",
+      "summary": "Form refinement: lid extents measured to 0.764 of the deck; rim rails and deck, door seam tilted to the front face, brackets, trunnion plates, castor forks and hubs.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1404,31 +1693,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.284523+00:00",
+      "timestamp": "2026-09-01T12:22:13.488386+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "handles-and-rust",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 1 material at PBR confidence 0.751-0.854; body lifted from luma 60 to 93 and recorded; lids, rails, handles, castors as vertex colours.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The lids moved to a THIRD material, re-based to their own probed envelope #bea4fd, after a transfer probe showed their top face rendering 216/219/221 against a plate measurement of 166/198/217 -- white, with the blue gone. They could share neither existing material: a re-based base fill is per-material and the lid's 0.308 in red would take the orange handle bar down with it. maxMaterials 2 -> 3 on the asset; no draw call, because the lids are already an InstancedMesh.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1444,31 +1717,103 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.367882+00:00",
+      "timestamp": "2026-09-01T12:22:13.568736+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the body split into its own component on a second material re-based to the envelope #8a6a95, which is the only way a MULTIPLY tile can put the plate's orange #8a4a22 rust on a #2f6a95 body. maxDrawCalls raised 2 -> 3 on the asset to buy it. Chalk pinned near the base fill in red (0.40, 0.97, 0.93) after blooms brighter in red than the field let the envelope through and the panels rendered VIOLET.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.649022+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: castors #565656 -> #3f4a5c and corner fittings -> #4a5568, held on CHROMA rather than lifted off the measurement. #7c7c7c passed the gate but rendered the castors near-white against a plate that shows them dark; the gate's test is luma AND saturation, so sat 0.29-0.32 keeps them dark and clear of it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.730556+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials, the body re-based to the envelope #8a6a95 so the tile renders it back to #2f6a95 and its rust to the measured #8a4a22 exactly; castors and fittings held dark on chroma.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.819621+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "handles-and-rust",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: rust canvas re-toned to the drip body #8a4a22 with 34 streaks from the top edge.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the generic `grime` tile replaced with `paint`, which carries rust CLUSTERS that each bleed a vertical run plus topStreaks from the rim -- the plate's drips. Lid chipping re-sized to BLOTCHES (clusterScale 0.85, 22 specks) after 0.40/66 rendered as fine confetti against the plate's bold patches.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1484,17 +1829,57 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.447791+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-09-01T12:22:13.902407+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "handles-and-rust",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: `paint` tile with 14 rust clusters at 0.85 run chance and 50 topStreaks on the body -- the body gains its coverage from thin STREAKS rather than clusters, because a cluster core on the shaded front is what the turntable gate reads as a hole -- and 44 clusters at full opacity on the lids, which are lit and can carry them.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T12:22:13.987290+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
@@ -1514,27 +1899,27 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.531311+00:00",
+      "timestamp": "2026-09-01T12:22:14.071050+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
       "action": "continue",
@@ -1554,49 +1939,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:16:11.614523+00:00",
+      "timestamp": "2026-09-01T12:22:14.153656+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
-          "notes": ""
+          "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
+          "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range."
         },
         {
           "id": "lids-and-hinges",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
-          "notes": ""
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         },
         {
           "id": "handles-and-rust",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
-          "notes": ""
+          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 696/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.922 and the three critical features 0.933. 744/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries, two 512 px canvases. The only budget axis this round moved was maxMaterials, 2 -> 3, and it is what let the lids be re-based to their own probed envelope. What is still simplified: the plate's corner hinge STRAPS are a bracket plate and a trunnion block rather than a strap, and its drips are more concentrated below the handle bar than the tile's.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1627,7 +2012,7 @@
   "performanceBudget": {
     "qualityPriority": "real-time",
     "targetTriangles": 2000,
-    "maxDrawCalls": 2,
+    "maxDrawCalls": 3,
     "maxMaterials": 2,
     "maxUniqueGeometries": 4,
     "textureSize": 1024,
@@ -1635,23 +2020,23 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 1,
+        "components": 2,
         "repetitionSystems": 1,
+        "projectedTotal": 3,
+        "budget": 3,
+        "headroom": 0,
+        "note": "Two components and one repetition system: 3 of 3, the ceiling raised from 2 so the body could carry its own re-based material."
+      },
+      "materials": {
         "projectedTotal": 2,
         "budget": 2,
         "headroom": 0,
-        "note": "One component and one repetition system: 2 of 2."
-      },
-      "materials": {
-        "projectedTotal": 1,
-        "budget": 2,
-        "headroom": 1,
-        "note": "steel only: 1 of 2; every tone a vertex colour."
+        "note": "bodypaint and steel: 2 of 2."
       },
       "uniqueGeometries": {
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 4,
-        "headroom": 2,
+        "headroom": 1,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
@@ -1810,29 +2195,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.7571,
-        "aspectRatioDelta": 0.3239,
-        "scaleDelta": 0.0396,
-        "bilateralSymmetryError": 0.1542,
+        "silhouetteIoU": 0.626,
+        "aspectRatioDelta": 0.3287,
+        "scaleDelta": 0.2552,
+        "bilateralSymmetryError": 0.0978,
         "colorDelta": {
-          "checked": 1,
-          "maxDeltaE": 10.65,
+          "checked": 2,
+          "maxDeltaE": 28.28,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 10.65
+              "deltaE": 28.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 28.0
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.757 is below threshold 0.85",
-        "aspect-ratio delta 0.324 exceeds threshold 0.05",
+        "silhouette IoU 0.626 is below threshold 0.85",
+        "aspect-ratio delta 0.329 exceeds threshold 0.05",
+        "scale delta 0.255 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "98d4c83c4396324b",
+      "renderHash": "d427e9021618f7d1",
       "passId": "blockout"
     }
   ]

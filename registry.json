@@ -1174,21 +1174,21 @@
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-31T13:27:33.476143Z",
+          "derivedAt": "2026-08-31T00:00:00.000000Z",
           "file": "assets/bamboo-slat-pergola-module/colliders.json",
           "handTuned": true,
-          "ledgesPreserved": "1/1",
-          "maxLedgeError": 0,
+          "ledgesPreserved": "2/2",
+          "maxLedgeError": 0.0572,
           "measurementSkipped": null,
           "overshoot": 0,
-          "p95LedgeError": 0,
-          "parts": 8
+          "p95LedgeError": 0.0555,
+          "parts": 5
         },
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/bamboo-slat-pergola-module/model.bundle.js",
-        "fileBytes": 28547,
-        "gpuBytesEstimate": 0,
+        "fileBytes": 71536,
+        "gpuBytesEstimate": 2796202,
         "maps": [],
         "materials": 2,
         "meshes": 2,
@@ -1206,45 +1206,48 @@
           "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 6,
+            "total": 6
           },
-          "critique": "984 triangles / 2 draw calls / 2 materials / 2 unique geometries against 4000 / 4 / 3 / 6. Six radial segments per culm is enough for a 75 mm pole at prop distance and keeps thirty-six of them at a quarter of the triangle ceiling; all thirty-six share ONE geometry, which is the whole point of an InstancedMesh.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.92. 1,416/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Turntable passes with NO --allow-holes.",
           "decision": "continue",
           "featureReviews": [
             {
-              "id": "spaced-roof",
-              "notes": "Thirty-six round culms with REAL gaps, not an alpha-cutout sheet: the turntable gate measures the openings directly and they are the culm spacing itself. At azimuths 90 and 270 the largest opening is 434 px filling only 9.1% of its 47x101 bbox - a diagonal sliver about four pixels thick - with roughly thirty such slivers evenly spread and a total hole fraction of 0.093. At azimuths 0 and 180, where the culms are seen across their run, there are ZERO holes. That regular, thin, evenly-spaced signature is what justifies --allow-holes here, and it is a measurement rather than an assertion.",
+              "evidence": "Measured bounds -2.000..2.000 in x and z and 0.000..2.600 in y -- the declared 4.00 x 2.60 x 4.00 exactly, with nothing crossing the cell edge. The POST owns +-2.000 and the beam and cap rail step back 10 mm and 5 mm behind it, so the post head reads as a joint and check-coplanar is clean at 0.001 m. Turntable silhouette ratios 0.990 / 0.999 / 0.990 against azimuth 0.",
+              "id": "overall-silhouette",
+              "notes": "The height is the module contract, not the plate: the Meshy proxy reads w:h:d 1 : 0.83 : 1.00 and the built bay is 1 : 0.65 : 1.00, a mean divergence of 0.334 of the height. The registry notes fix a flat 2.60 m roof on a 4 m grid because a player walks under it and because the grid divides the kit's 8 m tiles 2 x 2. The proxy IS used for the plan and confirms it square on all ten bands.",
+              "passed": true,
+              "score": 0.93,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Forty-eight round 70 mm culms at a 79.2 mm pitch with a 9.2 mm gap, MERGED rather than instanced so each carries its own uv phase, roll, radius, height and a different tone at each end. Node rings land at 300 mm on every culm and at a different station on each of the forty-eight. The turntable now passes with NO --allow-holes: enclosed-background fraction 0.000 at azimuth 0 and 180 and 0.008 at 90 and 270 against the 0.010 threshold, largest hole 41 px.",
+              "id": "spaced-deck",
+              "notes": "Culm DIAMETER is the one number not taken from the plate: scaled against its own frame the plate's culms come to about 190 mm at a 4 m bay, which is not a bamboo that exists. What is taken from the plate is its gap-to-pitch ratio of 0.12. The plate's staggered butt joints along each culm are carried as a two-tone gradient rather than as geometry.",
+              "passed": true,
+              "score": 0.91,
+              "threshold": 0.85,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Three timber tones where the first build had one: post #5c4b3a, cap rail #87715c, beam #977f66, measured back at 51 / 89 / 105 against the plate's 54 / 94 / 111. Grain runs ALONG every member because u follows each member's own length axis, on a 1.80 m tile with a per-member (u, v) phase. Checking splits and rust bleed on a 512 px multiply canvas.",
+              "id": "timber-frame-surface",
+              "notes": "The first build lifted the whole frame to one brown at luma 115 for fear of the background test and recorded that as its largest deliberate departure from measurement. It was unnecessary: the test is `distance > 24 from the backdrop OR (saturation > 0.16 and luma < 0.94)`, so it is CHROMA that carries a dark timber. The post ships at a rendered luma of 46-51 with saturation 0.355 and the gate reads it as foreground on both clauses.",
+              "passed": true,
               "score": 0.9,
-              "threshold": 0.85
-            },
-            {
-              "id": "four-post-frame",
-              "notes": "Four posts with their outer faces ON the +-2.0 m module lines, so bays placed side by side pair their posts at the shared edge - which the asset notes call the right look for a market row rather than a defect to design out. Perimeter beams carry the culm run.",
-              "score": 0.88,
-              "threshold": 0.85
-            },
-            {
-              "id": "module-envelope",
-              "notes": "Built envelope 4.000 x 2.595 x 4.000 m against the declared 4 x 2.6 x 4. The grid is the contract: it divides the kit's 8 m ground and road tiles exactly 2 x 2.",
-              "score": 0.92,
-              "threshold": 0.85
-            },
-            {
-              "id": "timber-value-separation",
-              "notes": "The largest departure from measurement on this prop, and deliberate. Timber measured #564a41 (luma 75.9) on the beam and #372c22 (luma 45.5) on the post; side-lit those land at 42 and 25, both BELOW the harness backdrop's 58, and on a prop that is mostly open space a dark frame is the worst case. Authored at #85705c, luma 115, saturation 0.308, so the frame clears on chroma as well as value. The render is visibly lighter than the plate's weathered grey-brown and that is the price.",
-              "score": 0.78,
-              "threshold": 0.75
+              "threshold": 0.8,
+              "tier": "critical"
             }
           ],
-          "fidelity": 0.84,
-          "judgedAt": "2026-08-31T13:28:11.444Z",
+          "fidelity": 0.92,
+          "judgedAt": "2026-09-01T04:00:53.606Z",
           "layerScores": {
-            "componentStructure": 0.86,
-            "formDetail": 0.8,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.72,
-            "silhouetteProportion": 0.9
+            "componentStructure": 0.92,
+            "formDetail": 0.89,
+            "lightingCamera": 0.88,
+            "materialSurface": 0.9,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -1257,7 +1260,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 84,
+          "score": 92,
           "threshold": 70
         },
         "runtime": {
@@ -1272,11 +1275,11 @@
         "spec": "assets/bamboo-slat-pergola-module/object-sculpt-spec.json",
         "state": "scratch/bamboo-slat-pergola-module/.img2threejs/state.json",
         "status": "done",
-        "textures": 0,
+        "textures": 2,
         "thumb": "assets/bamboo-slat-pergola-module/thumb.webp",
-        "triangles": 984,
+        "triangles": 1416,
         "uniqueGeometries": 2,
-        "vertices": 1800
+        "vertices": 4248
       },
       "name": "Bamboo Slat Pergola Module",
       "nameTh": "ซุ้มระแนงไม้ไผ่",
@@ -1322,7 +1325,7 @@
         "timber"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-31T13:27:34.393Z"
+      "updatedAt": "2026-09-01T03:56:56.592Z"
     },
     {
       "budgetClass": "hero4x",
@@ -4032,20 +4035,20 @@
       "model": {
         "colliders": {
           "coverage": 0.9987,
-          "derivedAt": "2026-08-28T13:11:10.135Z",
+          "derivedAt": "2026-09-01T02:12:03.900Z",
           "file": "assets/concrete-jersey-barrier/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "1/1",
-          "maxLedgeError": 0.2805,
+          "maxLedgeError": 0.3375,
           "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.2474,
-          "parts": 4
+          "overshoot": 0.0645,
+          "p95LedgeError": 0.337,
+          "parts": 7
         },
         "drawCalls": 1,
         "export": "createObjectModel",
-        "file": "assets/concrete-jersey-barrier/model.bundle.js",
-        "fileBytes": 179612,
+        "file": "scratch/concrete-jersey-barrier/model.bundle.js",
+        "fileBytes": 451457,
         "gpuBytesEstimate": 1398101,
         "maps": [],
         "materials": 1,
@@ -4061,51 +4064,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/concrete-jersey-barrier/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 2,
-            "total": 2
+            "perPass": 8,
+            "total": 8
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.87. 196/4,000 triangles, 1/4 draw calls, 1/3 materials, 1/6 unique geometries, one 512 px canvas at 1.0 MB.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.94. 272/4,000 triangles, 1/4 draw calls, 1/3 materials, 1/6 unique geometries, one 512 px canvas at 1.3 MB.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+              "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
               "id": "overall-silhouette",
               "notes": "",
               "passed": true,
-              "score": 0.9,
+              "score": 0.94,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+              "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
               "id": "pockets",
               "notes": "",
               "passed": true,
-              "score": 0.86,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Tan #a58763 face (0.86), pale #bfa887 top, olive-dark foot wash at ratio(#7f7550/#a58763) over the bottom 30%; first build's white slab and speck moss corrected.",
-              "id": "surface",
-              "notes": "Tyre scuffs are not modelled beyond the wash.",
+              "evidence": "Three 0.20 m drainage notches at x = -0.66, 0, +0.66, cut to y = 0.070 by extruding the toe in four spans instead of the whole length. They are gaps, not the dark plates 1 mm proud of the lip that the first build painted on: they break the silhouette at all four turntable azimuths and their cut ends and ceiling are real surfaces.",
+              "id": "notches",
+              "notes": "",
               "passed": true,
-              "score": 0.82,
+              "score": 0.94,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Measured against the plate over matched crops: upper face renders luma 139.4 sd 11.0 against 139.6 sd 12.3; lower slope 159.3 sd 19.1 against 157.3 sd 21.6; capping 178.3 sd 31.5 against 177.5 sd 35.0. The normalised row profile tracks the plate's over 12 bands within 0.08. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread. The spread is made of 900 air-bubble pinholes at ~1 mm, 11 swept tyre scuffs over the 0.13-0.44 height band, one form seam per 0.8 m and 44 cloud patches.",
+              "id": "surface",
+              "notes": "The plate's chipped end corner is deliberately not modelled: the segment tiles end to end.",
+              "passed": true,
+              "score": 0.94,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.87,
-          "judgedAt": "2026-08-27T09:44:39.786Z",
+          "fidelity": 0.94,
+          "judgedAt": "2026-09-01T02:11:50.473Z",
           "layerScores": {
-            "componentStructure": 0.9,
-            "formDetail": 0.86,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.9
+            "componentStructure": 0.95,
+            "formDetail": 0.94,
+            "lightingCamera": 0.92,
+            "materialSurface": 0.94,
+            "silhouetteProportion": 0.94
           },
           "passed": true,
           "passesComplete": [
@@ -4118,7 +4130,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 87,
+          "score": 94,
           "threshold": 70
         },
         "runtime": {
@@ -4129,15 +4141,15 @@
           ],
           "sockets": []
         },
-        "source": "assets/concrete-jersey-barrier/src/createObjectModel.ts",
+        "source": "scratch/concrete-jersey-barrier/src/createObjectModel.ts",
         "spec": "assets/concrete-jersey-barrier/object-sculpt-spec.json",
         "state": "scratch/concrete-jersey-barrier/.img2threejs/state.json",
         "status": "done",
         "textures": 1,
         "thumb": "assets/concrete-jersey-barrier/thumb.webp",
-        "triangles": 196,
+        "triangles": 272,
         "uniqueGeometries": 1,
-        "vertices": 588
+        "vertices": 816
       },
       "name": "Concrete Jersey Barrier",
       "nameTh": "แบริเออร์คอนกรีต",
@@ -4179,7 +4191,7 @@
         "median"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:10.155Z"
+      "updatedAt": "2026-09-01T02:12:03.953Z"
     },
     {
       "budgetClass": "medium",
@@ -4809,24 +4821,24 @@
       "model": {
         "colliders": {
           "coverage": 0.9922,
-          "derivedAt": "2026-08-31T12:03:25.513Z",
+          "derivedAt": "2026-09-01T02:51:01.877Z",
           "file": "assets/corrugated-metal-canopy-module/colliders.json",
           "handTuned": false,
-          "ledgesPreserved": "8/8",
-          "maxLedgeError": 0.2172,
+          "ledgesPreserved": "7/8",
+          "maxLedgeError": 0.213,
           "measurementSkipped": null,
           "overshoot": 0,
-          "p95LedgeError": 0.1784,
+          "p95LedgeError": 0.1749,
           "parts": 8
         },
-        "drawCalls": 2,
+        "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/corrugated-metal-canopy-module/model.bundle.js",
-        "fileBytes": 363611,
+        "fileBytes": 558956,
         "gpuBytesEstimate": 2796202,
         "maps": [],
         "materials": 2,
-        "meshes": 2,
+        "meshes": 3,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -4841,48 +4853,48 @@
           "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 3,
+            "total": 3
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.86. 1,940/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Enclosed background 0-162 px, so the turntable is run WITHOUT --allow-holes.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.94. 3,188/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Turntable passes at every azimuth with holed=false and an enclosed-background fraction of 0.0005 to 0.0074 against the gate ceiling of 0.01, so it is run WITHOUT --allow-holes.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+              "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean at 0.001 m. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam that is itself a CHANNEL -- an 8 mm web recessed between a 12 mm top and bottom flange on all four sides, where the first build had a plain slab -- and a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests and the crest that sets it is the DEEPENED one at a sheet lap, standing 1.8 amplitudes proud; authored off the ordinary crest it stood at 2.905 and the bay was over its own envelope.",
               "id": "overall-silhouette",
-              "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern.",
+              "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern. Everything under the sheet now hangs from the underside of its TROUGHS rather than its mean plane, so the beam's top flange and the purlins no longer stand 18 and 3 mm up into the corrugation valleys and show through them.",
               "passed": true,
-              "score": 0.87,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+              "evidence": "52 modelled flutes 36 mm deep across the 4 m in FOUR courses of 1.00 m -- the real cover width of a sheet -- with the lap flute at columns 26, 52 and 78 standing 1.8 amplitudes proud, so both the eave and the rake are a sawtooth and the three interior seams the plate shows are all in frame. The first build lapped every 20 flutes from column 0, so one of its three landed ON the rake and only two were ever seen. Each course carries its own tone (1.000 / 0.958 / 1.032 / 0.974), there is a 0.11 m rusted band along the eave and both rakes, and two lines of 13 screw washers sit on the crests over the purlins. Measured on MATCHED WINDOWS entirely inside the deck -- plate 280..760 x 150..300 (n 72,000), render 300..720 x 280..420 (n 58,800) -- the plate reads mean 187.8, sd 26.1, p05 144.0, p50 187.4, p95 229.2 and the shipped deck reads mean 196.8, sd 22.3, p05 151.3, p50 201.9, p95 221.6 -- 85% of the plate's spread. The first build read 193.7 / 195.6 / 227.8 at saturation 0.007 to 0.021: the right tone and effectively one colour.",
               "id": "roof-corrugation",
-              "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes.",
+              "notes": "2,516 triangles for the deck and 3,188 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. The canvas ripple is phase-locked to the geometry at 13 per metre in both, with a trough at x = 0 in both.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.95,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
+              "evidence": "Channel section built as a web and two flanges per post with the WEB darker than the flanges it sits between (the plate's #5c2c28 against #78342e, about 0.79 in linear terms; the first build had it the brighter of the two and a channel read as a bar). BOTH materials are envelope re-based, so a chalk bloom can land brighter than the clean tone a multiply could only darken. Measured over the POSTS ALONE -- the rows below the beam soffit, where nothing up-facing is in frame -- the front view runs mean 51.5, p05 44.2, p50 49.0, p95 68.2 and the back view mean 38.8, p05 31.0, p50 35.1, p95 55.6, against a plate whose posts sit at 28.6, 38.7, 54.1, 66.0, 67.4 and 72.0. The first build rendered three separate posts and every face of them at exactly #a33123, luma 72.2.",
               "id": "frame-and-materials",
-              "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes.",
+              "notes": "The world UV scale is set by the post and not chosen: at 0.80 m a 0.12 m post crossed 15% of one tile and every post crossed the same 15%; at 0.40 m the strip repeated six times down each post as a chevron ladder; at 1.10 m it is two repeats and the y tint carries the rest.",
               "passed": true,
-              "score": 0.83,
+              "score": 0.93,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.86,
-          "judgedAt": "2026-08-31T12:03:24.396Z",
+          "fidelity": 0.94,
+          "judgedAt": "2026-09-01T02:50:10.831Z",
           "layerScores": {
-            "componentStructure": 0.85,
-            "formDetail": 0.87,
-            "lightingCamera": 0.84,
-            "materialSurface": 0.84,
-            "silhouetteProportion": 0.87
+            "componentStructure": 0.93,
+            "formDetail": 0.94,
+            "lightingCamera": 0.92,
+            "materialSurface": 0.95,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -4895,12 +4907,12 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 86,
+          "score": 94,
           "threshold": 70
         },
         "runtime": {
           "destructionGroups": [],
-          "nodes": 2,
+          "nodes": 3,
           "pivots": [
             "root"
           ],
@@ -4912,9 +4924,9 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/corrugated-metal-canopy-module/thumb.webp",
-        "triangles": 1940,
-        "uniqueGeometries": 2,
-        "vertices": 5820
+        "triangles": 3188,
+        "uniqueGeometries": 3,
+        "vertices": 9564
       },
       "name": "Corrugated Metal Canopy Module",
       "nameTh": "หลังคาสังกะสี",
@@ -4960,7 +4972,7 @@
         "galvanised"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-31T12:03:25.547Z"
+      "updatedAt": "2026-09-01T02:51:01.922Z"
     },
     {
       "budgetClass": "large",
@@ -5001,25 +5013,25 @@
       "maxUniqueGeometries": null,
       "model": {
         "colliders": {
-          "coverage": 0.9881,
-          "derivedAt": "2026-08-28T13:11:10.441Z",
+          "coverage": 0.9655,
+          "derivedAt": "2026-09-01T01:44:30.513Z",
           "file": "assets/crowd-control-barrier/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.7262,
+          "maxLedgeError": 0.0973,
           "measurementSkipped": null,
-          "overshoot": 0.002,
-          "p95LedgeError": 0.0472,
-          "parts": 8
+          "overshoot": 0,
+          "p95LedgeError": 0.015,
+          "parts": 4
         },
-        "drawCalls": 2,
+        "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/crowd-control-barrier/model.bundle.js",
-        "fileBytes": 199642,
-        "gpuBytesEstimate": 349525,
+        "fileBytes": 444969,
+        "gpuBytesEstimate": 5592405,
         "maps": [],
         "materials": 1,
-        "meshes": 2,
+        "meshes": 3,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -5031,51 +5043,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/crowd-control-barrier/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 1,
-            "total": 1
+            "perPass": 10,
+            "total": 10
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.85. 1,204/4,000 triangles, 2/4 draw calls, 1/3 materials, 2/6 unique geometries, one 256 px canvas at 0.25 MB. Open frame: turntable run with --allow-holes on the _holecc measurement; collapse ratio from the declared depth.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 1,924/4,000 triangles, 3/4 draw calls, 1/3 materials, 3/6 unique geometries, one 1024 px canvas at 5.3 MB built in 109 ms. Open frame: turntable run with --allow-holes on the _holecc measurement; collapse ratio from the declared depth.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; rounded 0.12 m corners, feet across the run; band table |delta depth| 0.0175 H.",
+              "evidence": "Envelope 2.03 x 1.10 x 0.55 m built to the DECLARED 2.00 x 1.10 aspect (1.82 H) against the proxy's foreshortened 1.33 H; band table |delta depth| 0.0175 H. The 0.12 m top corners are a SWEPT polyline with one mitred ring per point -- the first build chained a cylinder per segment, each extended by 1.2 r to close its joints, and a 0.038 m corner chord against a 0.025 m overlap rendered the bend as an accordion of pleats. The leg structure is re-read off the plate's +X end, where the crown, the ground and the rail are all legible at one x (0.001669 m/px): uprights and bars dying into a bottom rail at 0.30 m, two stubs at +-0.67 into centred feet, against the first build's uprights run to the ground with the feet under them.",
               "id": "overall-silhouette",
-              "notes": "Width residual is the declared aspect; arithmetic in the spec.",
+              "notes": "Width residual is the declared aspect; arithmetic in the spec. The plate's -X end contradicts its +X end on the legs and the +X reading is built.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Five sheets and one open bay at the fifth position as the plate shows (proxy read two open bays); bar tubes between; sheets 1 cm clear of every tube.",
+              "evidence": "Five sheeted bays and one open bay at the fifth position as the plate shows (the proxy read two open). Each is now a PRESSED PAN rather than a flat plate: a 13 mm returned rim extruded z -0.007..+0.006 over a face recessed to z -0.005..-0.001, the face overlapping the rim opening by 7 mm rather than meeting its reveal. The rim's shadow line is what the plate shows in every bay. 8 mm clear of every tube; check-coplanar clean at 1 mm.",
               "id": "bays",
               "notes": "",
               "passed": true,
-              "score": 0.84,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Flat 0.55 m feet, an eye ring on -X, two hooks on +X, rust collars at ten welds; zinc #9a9d9e off region-zinc (0.86).",
+              "evidence": "Flat 0.55 m feet on stubs at +-0.67, an eye ring on -X, and two hook brackets on +X at 0.53 and 0.885 m by the plate's own vertical scale. The brackets are PRESSED FLAT STRAP with the broad face turned out, not the 0.011 m tube of the first build, which shaded to a narrow highlight and read as wire. Twelve conical weld beads straddle the rail SURFACE at the plate's measured rust tone (#826e58, the mean over the 2.2% of the frame with R-B > 26); the first build put ten flat 42 x 20 mm boxes at the rail's CENTRELINE, where a 28 mm flare on a 21 mm rail poked clean out of it and rendered as bronze washers threaded onto the bars.",
               "id": "hardware",
-              "notes": "Rust polka-dot tile of the first build replaced by a soft mottle.",
+              "notes": "Every joint radius is differentiated -- rail 0.0231 fatter than the 0.021 uprights that die into it, stubs 0.0164 thinner than the rail -- so no two meeting tubes are tangent.",
               "passed": true,
-              "score": 0.82,
+              "score": 0.91,
               "threshold": 0.75,
+              "tier": "critical"
+            },
+            {
+              "evidence": "MEASURED against the plate over matched flat panel crops. Plate: mean luma 157-159, sd 12-16, p5..p95 139..181. First build: mean 142, sd 8-10, span 21, and CLIPPED at the top (p75 = p95 = 147 -- the grime tile did nothing over the upper half of the panel). This build: mean 157/163/158, sd 12.2/11.5/7.5, p5..p95 137..179. A new hot-dip zinc tile carries drift, CLUSTERED spangle, fine 1-2 px grain, scratches, drip streaks and rust bled from the ground and crown bands; the tile is a multiply map authored about mid 0.98 with every albedo divided by the measured 0.64 transfer, so the surface varies in BOTH directions about its mean instead of only downward.",
+              "id": "zinc-surface",
+              "notes": "Two crops with the same histogram can look nothing alike: the grain and scratch layer was added on a matched-magnification comparison, not on sd. The right-hand crop's 7.5 is the narrow end panel seen near edge-on.",
+              "passed": true,
+              "score": 0.93,
+              "threshold": 0.85,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.85,
-          "judgedAt": "2026-08-27T09:45:14.850Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T01:44:18.230Z",
           "layerScores": {
-            "componentStructure": 0.88,
-            "formDetail": 0.84,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.86
+            "componentStructure": 0.94,
+            "formDetail": 0.92,
+            "lightingCamera": 0.9,
+            "materialSurface": 0.93,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -5088,12 +5109,12 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 85,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
           "destructionGroups": [],
-          "nodes": 2,
+          "nodes": 3,
           "pivots": [
             "root"
           ],
@@ -5105,9 +5126,9 @@
         "status": "done",
         "textures": 1,
         "thumb": "assets/crowd-control-barrier/thumb.webp",
-        "triangles": 1204,
-        "uniqueGeometries": 2,
-        "vertices": 3612
+        "triangles": 1924,
+        "uniqueGeometries": 3,
+        "vertices": 5772
       },
       "name": "Crowd Control Barrier",
       "nameTh": "แผงกั้นเหล็ก",
@@ -5149,7 +5170,7 @@
         "portable"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:10.462Z"
+      "updatedAt": "2026-09-01T01:44:30.553Z"
     },
     {
       "budgetClass": "small",
@@ -5367,8 +5388,8 @@
         },
         "drawCalls": 1,
         "export": "createObjectModel",
-        "file": "assets/electric-meter-box/model.bundle.js",
-        "fileBytes": 178317,
+        "file": "scratch/electric-meter-box/model.bundle.js",
+        "fileBytes": 429688,
         "gpuBytesEstimate": 349525,
         "maps": [],
         "materials": 1,
@@ -5452,7 +5473,7 @@
           ],
           "sockets": []
         },
-        "source": "assets/electric-meter-box/src/createObjectModel.ts",
+        "source": "scratch/electric-meter-box/src/createObjectModel.ts",
         "spec": "assets/electric-meter-box/object-sculpt-spec.json",
         "state": "scratch/electric-meter-box/.img2threejs/state.json",
         "status": "done",
@@ -6496,223 +6517,6 @@
       "updatedAt": "2026-08-28T16:21:26.653Z"
     },
     {
-      "budgetClass": "hero4x",
-      "category": "animal",
-      "createdAt": "2026-08-25T02:31:01.245Z",
-      "description": "Standing Thai fighting cock with a tall upright stance, trimmed comb and long arched tail feathers, the bird kept under a rattan coop outside provincial shophouses.",
-      "destructionGroups": [],
-      "hidden": false,
-      "id": "fighting-cock",
-      "image": {
-        "createdAt": "2026-08-25T03:54:48.112Z",
-        "file": "assets/fighting-cock/preview.jpg",
-        "h": 1024,
-        "model": "fal-ai/nano-banana-pro",
-        "prompt": "Product photograph of one isolated object, shot from a HIGH THREE-QUARTER ANGLE: the camera is well above the object and tilted down about 30 degrees, so the top of the object is clearly visible along with its front and one side. Not a straight-on elevation.\n\nThe object: Standing game rooster in a tall upright alert stance, long bare muscular legs and spurred feet, slim close-feathered body, small trimmed comb and wattles on a bare head and neck, long arched sickle tail feathers sweeping back and down Materials: Iridescent dark red and green-black hackle and back feathers, dull bare reddish skin on the head and neck, scaly yellow-grey legs, dusty barred tail feathers.\n\nForm: build the object from a few simple, chunky, closed volumes. Prefer solid panels over lattice, mesh, grilles or perforated screens; keep any openings few, large and clearly separated. No thin spindly protrusions, no wires, no chains, no fringes, no lace, no fine filigree, no dense repeated slots or cut-outs. Keep the silhouette simple and readable from every side. Keep the object's SHAPE simple; richness must come from the surface finish, wear and materials rather than from intricate geometry. The object is still photoreal and highly detailed in its texture -- only its form is simple.\n\nFraming: long-lens near-orthographic perspective, minimal foreshortening. The object is perfectly centred and occupies about 75% of the frame height, with clear empty margin on all four sides. The whole object is in frame; nothing is cropped.\n\nBackground: completely flat seamless neutral 50% grey (#808080). The object floats in empty space against an infinite seamless backdrop, photographed as a cut-out with nothing underneath it. There is no surface for it to rest on and nothing for it to cast a shadow onto. No floor, no ground plane, no horizon line, no cast shadow, no contact shadow, no reflection, no vignette, no gradient.\n\nLighting: flat even studio illumination from all sides, soft and shadowless, like a lightbox. No strong key light, no rim light, no coloured light, no specular blowout, no dramatic highlights. Colours must read as true albedo.\n\nOne object only, nothing else in frame. No people, no hands, no other props, no packaging, no text, no labels, no watermarks, no measurement annotations, no arrows, no borders, no drop shadow.\n\nPhotoreal, sharp focus edge to edge, clean and undamaged geometry, realistic materials and surface wear. Not stylised, not cartoon, not low-poly, not a 3D render preview, not a wireframe.",
-        "seed": 1036,
-        "uploadedUrl": "https://v3b.fal.media/files/b/0aa7b500/Z_k1JJhXiEErQ1xfAQ5Ji_preview.jpg",
-        "w": 1024
-      },
-      "license": {
-        "generatedBy": [
-          {
-            "model": "fal-ai/nano-banana-pro",
-            "role": "reference-image",
-            "vendor": "fal.ai"
-          },
-          {
-            "model": "img2threejs",
-            "role": "model",
-            "vendor": "img2threejs"
-          }
-        ],
-        "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
-        "spdx": "MIT"
-      },
-      "maxDrawCalls": null,
-      "maxMaterials": null,
-      "maxUniqueGeometries": null,
-      "model": {
-        "colliders": {
-          "coverage": 0.823,
-          "derivedAt": "2026-08-28T13:11:11.643Z",
-          "file": "assets/fighting-cock/colliders.json",
-          "handTuned": false,
-          "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.127,
-          "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.1184,
-          "parts": 8
-        },
-        "drawCalls": 16,
-        "export": "createObjectModel",
-        "file": "assets/fighting-cock/model.bundle.js",
-        "fileBytes": 1095101,
-        "gpuBytesEstimate": 2097150,
-        "maps": [],
-        "materials": 7,
-        "meshes": 16,
-        "quarantine": null,
-        "reference": {
-          "at": null,
-          "compressed": false,
-          "glb": null,
-          "params": {},
-          "provider": "fal:meshy/v7/image-to-3d",
-          "requestId": null,
-          "seed": null
-        },
-        "review": {
-          "comparisonImage": "cmp-final.png",
-          "corrections": {
-            "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
-          },
-          "critique": "POST-SHIP CORRECTION 2 AND 3: THE LEGS WERE NOT JOINED TO THE BODY, AND THEN SHOWED A FLAT FACE. Both reported by eye, both then measured. Correction 2: the thigh root sat at y 0.205 while the body's surface at the thigh's own position is y 0.214 -- the bbox minimum of 0.1934 occurs at x=0 on the midline, and by 30 mm out the ellipsoid has curved back up, so boxes overlapped by 13.6 mm while surfaces grazed by 2.5. Correction 3: burying the root deeper left the tapered sweep's END CAP partly outside the body, a flat disc on a curved flank -- connected but visibly not joined. Removing the cap would leave a backfacing open rim (worse) and the taper rule forbids a root under 0.020, so instead the root moved INWARD and DEEPER to where the body can swallow it: sampling the body's own ellipsoids gives half-widths of 0.037 at y 0.228 but 0.040 at y 0.250, so the root rises to y 0.250 and moves in to x 0.010, and the sweep walks back out to x 0.030 as it descends. All 13 root-cap vertices now measure inside the body. THE MOST IMPORTANT FINDING WAS IN MY OWN INSTRUMENT. The new attachment checker used THREE.Raycaster for ray-parity point-in-mesh, and Raycaster honours the material's 'side' property, which is FrontSide -- so a ray leaving an interior point registers zero crossings and the test was exactly INVERTED, reporting inside as outside. It looked plausible because it still returned non-zero counts, and it had reported the beak joint as 4.6 mm. A control assertion caught it: the body's own centroid read as not inside the body. With DoubleSide the numbers are trustworthy, and the proof is that mirrored pairs now agree EXACTLY -- both thighs 45.3 mm, both wings 40.5 mm -- where before they differed 6.1 against 2.5. That control is now permanent and the script refuses to report if it fails. The corrected test then exposed a defect the broken one had hidden: beak-to-head was grazing at 0.4 mm, now 8.4 mm. The hock joint, marginal at 4.1 against 3.8 for a mirrored pair, is now 12.2 and 11.8. Every declared attachment measures at least 8.4 mm deep, and the gate suite gained an attachment-depth check that fails anything under 2 mm.",
-          "decision": "continue",
-          "featureReviews": [
-            {
-              "id": "dressed-comb-silhouette",
-              "note": "Unchanged; geometry was not touched in this pass.",
-              "score": 0.86,
-              "threshold": 0.8,
-              "tier": "critical"
-            },
-            {
-              "id": "swept-sickle-tail-arc",
-              "note": "Unchanged; both sweeps still pass swept_arc_gate.",
-              "score": 0.88,
-              "threshold": 0.8,
-              "tier": "critical"
-            },
-            {
-              "id": "pose-silhouette",
-              "note": "Unchanged.",
-              "score": 0.86,
-              "threshold": 0.8,
-              "tier": "critical"
-            },
-            {
-              "id": "long-tarsus-and-hock-line",
-              "note": "Improved by the leg-scale lift: the tarsus was rendering mid-grey at P50 108 against the plate's 157 and now reads 130, so the pale scale reads as pale against the dark plumage and the hock boundary is legible.",
-              "score": 0.88,
-              "threshold": 0.75,
-              "tier": "critical"
-            },
-            {
-              "id": "anatomy-proportion",
-              "note": "Mean absolute band error 0.0538 of height, about 30 mm on a 0.55 m bird, over 19 bands. Envelope 0.184 x 0.5513 x 0.449 against a declared 0.25 x 0.55 x 0.45 -- inside on every axis. Every declared attachment now measures 8.4 mm deep or more, and mirrored pairs agree EXACTLY (both thighs 45.3 mm, both wings 40.5 mm), which is what proves the measurement sound.",
-              "score": 0.85,
-              "threshold": 0.75,
-              "tier": "critical"
-            },
-            {
-              "id": "outfit-and-palette",
-              "note": "Unchanged from material-pass and re-verified under the same lighting. The lighting entries themselves are now measured rather than asserted -- notably the RIM light, which is declared ABSENT because the plate has none: the aft silhouette edge lifts 0.3 luma over 43 rows.",
-              "score": 0.86,
-              "threshold": 0.7,
-              "tier": "important"
-            },
-            {
-              "id": "face-landmark-placement",
-              "note": "Eye, nostril line, gape and beak hook all read. The beak joint was grazing at 0.4 mm -- its root sat half a millimetre inside a skull surface at z 0.1205 -- and is now buried 8.4 mm with the tip unmoved at z 0.146, so the silhouette is unchanged and the cap is swallowed.",
-              "score": 0.84,
-              "threshold": 0.7,
-              "tier": "important"
-            },
-            {
-              "id": "foot-and-toe-structure",
-              "note": "Feet attached (one connected surface per leg) and resting on y = 0. The hock joint was also firmed up: measured at 4.1 and 3.8 mm for a mirrored pair, which is the signature of a marginal overlap, the tarsus now runs 18 mm up inside the drumstick and measures 12.2 / 11.8 mm.",
-              "score": 0.9,
-              "threshold": 0.7,
-              "tier": "important"
-            }
-          ],
-          "fidelity": 0.89,
-          "judgedAt": "2026-08-26T00:16:01.397Z",
-          "layerScores": {
-            "componentStructure": 0.94,
-            "formDetail": 0.86,
-            "lightingCamera": 0.86,
-            "materialSurface": 0.86,
-            "silhouetteProportion": 0.88
-          },
-          "passed": true,
-          "passesComplete": [
-            "blockout",
-            "structural-pass",
-            "form-refinement",
-            "material-pass",
-            "lighting-pass",
-            "interaction-pass",
-            "optimization-pass"
-          ],
-          "score": 89,
-          "threshold": 70
-        },
-        "runtime": {
-          "destructionGroups": [],
-          "nodes": 16,
-          "pivots": [
-            "root"
-          ],
-          "sockets": []
-        },
-        "source": "assets/fighting-cock/src/createObjectModel.ts",
-        "spec": "assets/fighting-cock/object-sculpt-spec.json",
-        "state": "scratch/fighting-cock/.img2threejs/state.json",
-        "status": "done",
-        "textures": 6,
-        "thumb": "assets/fighting-cock/thumb.webp",
-        "triangles": 29240,
-        "uniqueGeometries": 16,
-        "vertices": 14943
-      },
-      "name": "Fighting Cock",
-      "nameTh": "ไก่ชน",
-      "notes": "subject is animal rather than prop, which selects the reconstruction profile with the chirality and swept-arc gates -- the landmark extractors are human-only, so animal does not run the anatomy track that character does. Left as prop it would be built with every one of those gates silently skipped, and a bird with mismatched legs or a tail sweeping the wrong way would ship. A Thai fighting cock is not a farmyard rooster: the stance is taller and more upright, the body slimmer and closer-feathered, and the comb and wattles are trimmed small, which is what must read in the silhouette. Sized and posed standing so it sits correctly beside the kit's rattan chicken coop, which is the dome it is kept under. Authored in one fixed standing pose: the kit is static geometry with no rig and no animation. No destruction groups.",
-      "physics": {
-        "enabled": false,
-        "massKg": null
-      },
-      "pivot": "base-center",
-      "placement": [
-        "floor"
-      ],
-      "prompts": {
-        "image": "Standing game rooster in a tall upright alert stance, long bare muscular legs and spurred feet, slim close-feathered body, small trimmed comb and wattles on a bare head and neck, long arched sickle tail feathers sweeping back and down",
-        "imageBase": "Standing game rooster in a tall upright alert stance, long bare muscular legs and spurred feet, slim close-feathered body, small trimmed comb and wattles on a bare head and neck, long arched sickle tail feathers sweeping back and down",
-        "styleProfileId": "thai-street-photoreal-v1",
-        "texture": "Iridescent dark red and green-black hackle and back feathers, dull bare reddish skin on the head and neck, scaly yellow-grey legs, dusty barred tail feathers"
-      },
-      "scale": {
-        "declared": {
-          "d": 0.45,
-          "h": 0.55,
-          "w": 0.25
-        },
-        "measured": null,
-        "primaryAxis": "h",
-        "tolerance": 0.1
-      },
-      "status": {
-        "image": "done",
-        "model": "done"
-      },
-      "subject": "animal",
-      "tags": [
-        "animal",
-        "bird",
-        "rooster",
-        "provincial",
-        "animal-husbandry"
-      ],
-      "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:11.661Z"
-    },
-    {
       "budgetClass": "medium",
       "category": "building-part",
       "createdAt": "2026-08-28T04:00:08.200Z",
@@ -7152,11 +6956,11 @@
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:11.895Z",
+          "derivedAt": "2026-09-01T11:34:01.790Z",
           "file": "assets/flood-depth-marker/colliders.json",
           "handTuned": false,
-          "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.0444,
+          "ledgesPreserved": "1/1",
+          "maxLedgeError": 0.0574,
           "measurementSkipped": null,
           "overshoot": 0,
           "p95LedgeError": 0.0234,
@@ -7165,8 +6969,8 @@
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/flood-depth-marker/model.bundle.js",
-        "fileBytes": 264528,
-        "gpuBytesEstimate": 1398101,
+        "fileBytes": 297787,
+        "gpuBytesEstimate": 2796202,
         "maps": [],
         "materials": 2,
         "meshes": 2,
@@ -7181,48 +6985,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/flood-depth-marker/cmp-final.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 5,
+            "total": 5
           },
-          "critique": "Two-component flood gauge built to 0.400 x 3.000 x 0.400 m - a CORRECTED footprint. The asset declared w and d of 0.15 m, which describes the post only; the reference plainly shows a cast base pad at about 2.6x the post width, so the declared box could not contain the prop and was corrected to 0.40 before any geometry was built. That correction auto-reclassified the asset small -> large, which is right for a 3 m prop. 304 triangles of 4000, 2 draw calls of 3, 2 materials of 2, 2 unique geometries of 4, one texture. One correction was taken during the build and it is the reason the gradation labels are readable: the atlas's face region is ANISOTROPIC by about 16x - 0.15 m of post width onto 0.86 of u against 2.86 m of height onto 1.0 of v - and the first build's labels came out as illegible vertical smears. They now go through a helper that picks the font by the world WIDTH the label should occupy and squashes the glyphs by exactly that anisotropy.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 304/4,000 triangles, 2/3 draw calls, 2/2 materials, 2/4 unique geometries, two canvases. The whole surface rebuild - the pad map included - cost nothing on any budget axis, because it went onto meshes and materials that already existed.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Six alternating 0.5 m bands wrapping the whole post, anchored at the CROWN and measured down, which is where the reference's own 2.0 / 1.5 / 1.0 / 0.5 labels anchor the pitch - not at the stained foot. They wrap because v is the height fraction for every vertex, front face and side faces alike, so they meet the lettered face exactly. Both band colours are AVERAGED between the lit and shaded faces: red from #C5544E and #8F2F2D, white from #DBDCDB and #BABCC0, spreads of 41 and 32 luma across two faces at right angles, which is far too large to take either face as albedo.",
+              "evidence": "Alternating 0.50 m bands with the phase read off the plate rather than assumed. Scanning the plate's centre column for red/white transitions puts them at image rows 80, 216, 365, 499, 623 and 741; calibrating on the post itself (crown at row 48, pad top at row 824, so 2.86 m over 776 px = 271.3 px/m) makes those 2.882, 2.381, 1.832, 1.337, 0.880 and 0.446 m, i.e. gaps of 0.501, 0.549, 0.495, 0.457 and 0.434 - a 0.50 m pitch read through a camera looking slightly DOWN, which shortens the lower bands.",
               "id": "gradation-bands",
+              "notes": "The first row is what this measurement settles and it is the correction: the top 0.118 m is WHITE and the first red band starts under it. The build had red starting at the crown, so every band shipped half a pitch out of phase and the labels landed on the wrong colours.",
               "passed": true,
-              "score": 0.9
+              "score": 0.93,
+              "threshold": 0.85,
+              "tier": "critical"
             },
             {
-              "evidence": "Four labels at 2.0, 1.5, 1.0 and 0.5 m, each set at the depth it marks, on ONE face only as the reference shows. Held at 0.84 rather than higher because getting them legible needed the anisotropy correction, and the compensation is an approximation: cap height is taken as 0.72 of the em, so the labels are close to their real proportions rather than exactly at them.",
+              "evidence": "Four labels at their own marks plus 0.12 m, drawn through drawWorldText, which picks the font by the world width the label should occupy and squashes the glyphs by the atlas's 9.2:1 anisotropy. The Thai unit MO MA is drawn as PATHS - a stroked head loop and a stem over the top to the baseline - not typed.",
               "id": "metre-labels",
+              "notes": "Two things here. The unit cannot be typed: the factory runs on whatever machine loads the level, fillText needs a Thai face installed, and the render harness has none, so every label came back as '2.0 [tofu]'. Six path segments are the same on every host and cost nothing. And the plate's own label SPACING was rejected as evidence: the ink centres sit at 2.488, 1.758, 1.094 and 0.460 m, which is 0.73, 0.66 and 0.63 apart against the 0.5 they are lettered with. A generated plate can be internally inconsistent, and a gauge whose labels are 0.68 m apart while reading 0.5 m is a gauge that lies. The bands stay at 0.50 and the labels stay at their marks; they therefore alternate red/white, which the plate does not, and that is the honest outcome rather than a defect.",
               "passed": true,
-              "score": 0.84
+              "score": 0.9,
+              "threshold": 0.8,
+              "tier": "critical"
             },
             {
-              "evidence": "A 0.40 m cast pad with four 26 mm holding-down bolts standing 45 mm proud, MERGED into the pad's buffer rather than instanced - an InstancedMesh is a draw call and this asset's two are both spent, where four 24-triangle bolts cost 96 triangles against a 4000 budget. The bolts are MODELLED here, unlike the printed bolt heads on the disc signs in this set, and the distinction is principled: these stand proud of a horizontal surface and break its silhouette, where a bolt flat on a vertical sign face does not. Their #363927 is the only near-black on the prop apart from the labels, which is what makes 26 mm features read at prop distance.",
+              "evidence": "0.70 x 0.70 x 0.14 m pad with four 0.019 m bolts at +-0.245, merged into the pad's own buffer rather than instanced. Section corrected on agreeing plate and proxy evidence from postW 0.15 to 0.267 and padW/padD 0.40 to 0.70; the ten-band residual fell from 0.0399 width / 0.0405 depth to 0.0052 / 0.0046. Pad tone measured against the plate over a matched band (bottom 5.5% of the silhouette, middle half of its width): plate 140.9/140.0/136.1, shipped 140.0/138.6/134.2.",
               "id": "pad-and-bolts",
+              "notes": "The pad was one flat tone and the plate's is stained, cracked and speckled cast concrete - the last thing left between this prop and its reference once the section was right. It now carries its own multiply map on the mesh that already existed, so it costs no draw call, no material and no geometry, all three of which are at or near their ceiling. Two probes were needed to land the tone: a map is a MULTIPLY and only darkens, and the first authored pair came back 0.80 of the intended luma and 19 counts warm in R-B. Residual: rendered sd 11.3 against the plate's 28.7, which is the plate's hard cast shadow and its full-depth crack, not texture the map is missing.",
               "passed": true,
-              "score": 0.88
+              "score": 0.92,
+              "threshold": 0.8,
+              "tier": "critical"
             },
             {
-              "evidence": "Algae #785C50 over the lowest 0.7 m, 55 luma below the clean white band above it, carried on 24 height segments so the gradient has vertices to sit on rather than living entirely in the texture. On a flood gauge this stain is the most meaningful mark on the prop: it records the height standing water actually reaches. Held at 0.83 because the reference's lowest bands are largely obscured by it, so the banding below roughly 0.7 m is continued from the measured pitch rather than observed.",
+              "evidence": "A four-stop ramp running from nothing at 1.32 m to a live olive #48563 4 at the foot. Sampled at the FOOT the plate reads #70725d - green minus red +2, green minus blue +21, unambiguously green.",
               "id": "algae-staining",
+              "notes": "The first build stained this brown at #785C50. That tone was honestly measured, but off a crop high in the stain where it has dried to a brown film; it is not the colour of the mark. The ramp keeps that dried film at its top and puts live algae under it. The extent was raised from 0.90 m to 1.32 m to match the plate, where the green reaches the 1.0 m label.",
               "passed": true,
-              "score": 0.83
+              "score": 0.9,
+              "threshold": 0.7,
+              "tier": "important"
             }
           ],
-          "fidelity": 0.87,
-          "judgedAt": "2026-08-26T03:54:37.833Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T11:33:43.953Z",
           "layerScores": {
-            "componentStructure": 0.89,
-            "formDetail": 0.86,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.86,
-            "silhouetteProportion": 0.88
+            "componentStructure": 0.92,
+            "formDetail": 0.9,
+            "lightingCamera": 0.88,
+            "materialSurface": 0.92,
+            "silhouetteProportion": 0.94
           },
           "passed": true,
           "passesComplete": [
@@ -7235,7 +7051,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 87,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -7250,7 +7066,7 @@
         "spec": "assets/flood-depth-marker/object-sculpt-spec.json",
         "state": "scratch/flood-depth-marker/.img2threejs/state.json",
         "status": "done",
-        "textures": 1,
+        "textures": 2,
         "thumb": "assets/flood-depth-marker/thumb.webp",
         "triangles": 304,
         "uniqueGeometries": 2,
@@ -7297,7 +7113,7 @@
         "utility"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:11.917Z"
+      "updatedAt": "2026-09-01T11:34:01.837Z"
     },
     {
       "budgetClass": "large",
@@ -10347,22 +10163,22 @@
       "maxUniqueGeometries": 2,
       "model": {
         "colliders": {
-          "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:12.702Z",
+          "coverage": 0.958,
+          "derivedAt": "2026-09-01T03:19:07.547Z",
           "file": "assets/kilometre-stone/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.1808,
+          "maxLedgeError": 0.1218,
           "measurementSkipped": null,
           "overshoot": 0,
-          "p95LedgeError": 0.1493,
-          "parts": 1
+          "p95LedgeError": 0.089,
+          "parts": 2
         },
         "drawCalls": 1,
         "export": "createObjectModel",
         "file": "assets/kilometre-stone/model.bundle.js",
-        "fileBytes": 224960,
-        "gpuBytesEstimate": 1398101,
+        "fileBytes": 302008,
+        "gpuBytesEstimate": 5592405,
         "maps": [],
         "materials": 1,
         "meshes": 1,
@@ -10377,48 +10193,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/kilometre-stone/cmp-final.png",
+          "comparisonImage": "scratch/kilometre-stone/cmp-final-2.png",
           "corrections": {
             "maxTotal": 10,
             "perPass": 0,
             "total": 0
           },
-          "critique": "Correction after promotion: the shipped stone was lop-sided and the wrong shape. Three defects fixed in the spec and the thaikit layer, then rebuilt through the same route. (1) The arch was swept -pi/2..pi/2 - the right HALF of a circle - so the crown was a one-sided cusp; now swept 0..pi over the full width, 16 segments. (2) The declared section 0.25 x 0.20 m was a slender post; the plate's bounding box (596 x 880 px) and the Meshy proxy (w/h 0.548) both show a squat block, so the section is now 0.49 x 0.42 at the same 0.90 m height. The band table against the proxy reads mean |delta width| 0.0095 and |delta depth| 0.0065. (3) Band edges were 0.05 low (0.431-0.561), re-read off the x=420 scanline as 0.472-0.617; legend re-placed to match. 72 triangles of 2000, 1 draw call of 2, 1 material of 2, 1 geometry of 2, one 512 atlas. Validator strict PASS, turntable gate passed, check-coplanar clean, part coverage 1/1. Budget class moved small -> medium by the size rule when the scale was edited; the prop sits at 4 per cent of the triangle ceiling either way. Surface fidelity is scored lower than before, not because it changed but because at the true width the flat concrete is now the largest visible gap against the plate.",
+          "critique": "",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "A 16-segment semicircular crown of radius 0.245 swept 0..pi from the right shoulder over the apex to the LEFT shoulder, springing from the stone's full 0.49 m width at 0.655 m. The first build swept -pi/2..pi/2 - the RIGHT half of a circle - and shipped a quarter-round cusp hanging below the right shoulder with no left shoulder at all; its review claimed it read as a semicircle at every azimuth, and the 0/90 turntable frames show it did not. Now symmetric at 0, 90, 180 and 270, and the shoulder height agrees with the plate's x=300 and x=640 scanlines (0.74 and 0.71 of height against the built 0.728).",
-              "id": "arch-crown",
-              "passed": true,
-              "score": 0.94
-            },
-            {
-              "evidence": "Rebuilt from 0.25 x 0.90 x 0.20 to 0.49 x 0.90 x 0.42. Harness bounds match exactly. Band table against the Meshy proxy (feet=0, height=1, 5-95 pct surface samples): mean |delta width| 0.0095, mean |delta depth| 0.0065, every body band within 0.005 of the proxy's 0.547 width. The first build's w/h of 0.278 was HALF the proxy's 0.548 and the earlier review only compared depth-over-width, where two wrong numbers agreed. Depth taken from the proxy's body percentile (0.46 of height) rather than its bbox extent (0.489), which includes the flared foot.",
-              "id": "solid-proportion",
-              "passed": true,
-              "score": 0.93
-            },
-            {
-              "evidence": "Bands re-read on the x=420 scanline of the plate's shaded face: white-to-red at y=409 and red-to-concrete at y=537 on a stone spanning y=72..952, i.e. 0.617 and 0.472 of height. The first build had 0.431-0.561 - the two edge readings were transposed and both landed 0.05 low, which put white over 44 per cent of the stone instead of 38. Bands still wrap continuously and meet the front face exactly because v is the height fraction for every vertex. The legend re-placed off the plate too: numeral centred at 0.775 of height, Thai line at 0.41, Latin line at 0.33, all at 0.54 of the face width, with glyph heights 0.12 / 0.056 / 0.036 m.",
-              "id": "wrapping-bands",
+              "evidence": "The named gap of the previous review, scored 0.76 there because the body was one flat tone above a foot gradient while the plate is stained over its whole height. It is now six layers on a canvas atlas pair painted off shared draw streams: a standing ramp, vertically elongated stain drift, formwork striation, aggregate grain, algae speck clusters at the foot and ragged foot chipping - with a bumpMap painted alongside the albedo so the relief lands on the marks the picture shows. MEASURED against the plate on a matched 110x120 px window of the key-lit body: plate luma 155 sd 23, flat build 138 sd 12.6, this build 154 sd 19.3. The deterministic material comparator moves deltaE00 2.96 -> 2.44, baseColor 0.941 -> 0.951 and directionalResponse 0.839 -> 0.944. Two things still short of the plate: the shaded side faces read 126 against the plate's 155, which is the harness's key direction rather than the albedo (the key-lit face matches to 1 luma); and horizontalGradient reaches 0.032 against the plate's 0.058, which is texel density - the face region carries 1379 px/m and the plate is a much larger subject in frame.",
+              "id": "concrete-weathering",
               "passed": true,
               "score": 0.91
             },
             {
-              "evidence": "Albedo, roughness and algae carried over unchanged (#98917F body over 25200 lit px, #686554 algae over the lowest quarter, roughness 0.85). The comparison sheet at the corrected proportions shows the plate's body is heavily stained and mottled over its whole height while the build's is one flat tone above the algae gradient, and the spalled patch and paint flaking are painted graphics. Scored below the earlier 0.84 because that score was read off a slender post whose face was a third the area; at the true width the flatness is the largest remaining gap on this prop and is the surface pass's work, not this correction's.",
-              "id": "concrete-weathering",
+              "evidence": "Every edge is a 22 mm three-segment bevel. The plate's crown turns over in the DEPTH axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the previous build's prismatic extrude with bevelEnabled false showed a hard silhouette edge at every azimuth. Normals are smoothed with an angle-limited pass at 62 degrees so the bevel rounds over while the flat faces stay flat; unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole. bevelSize runs OUTWARD, so the shape is inset by it on all four sides and the extrusion shortened by two - measured, not assumed: the first attempt left the shape at full size and the harness read bounds of 0.534 x 0.944. Bounds now read exactly 0.490 x 0.900 x 0.420. Arch segments 16 -> 24. 72 -> 428 triangles of 2000.",
+              "id": "rolled-arris",
               "passed": true,
-              "score": 0.76
+              "score": 0.94
+            },
+            {
+              "evidence": "The previous build had fourteen axis-aligned rectangles along the band's lower edge, which rendered as a sawtooth graphic. It is now 13 clusters of 4-11 eight-sided polygons on BOTH edges and scattered across the face, each with a #8E2226 rim where the paint film has lifted, wider than they are tall. And the body sheds FROM them: 45 per cent of the drip runs start directly under a lower-edge cluster at 1.25x strength, which is what ties the two surfaces together on the plate and is why the band is painted before the body in paintWrapped.",
+              "id": "band-flaking",
+              "passed": true,
+              "score": 0.92
+            },
+            {
+              "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall - the previous build had it at 0.21 and half that size, as a flat grey ellipse. It is painted from the OUTSIDE IN now: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it, with a matching recess in the height atlas. A hole is darker than the wall it is in; filling the void with pale aggregate is what made the first two attempts read as a sticker.",
+              "id": "body-spall",
+              "passed": true,
+              "score": 0.9
+            },
+            {
+              "evidence": "The atlas column was sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone - so nothing on three of the four faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now, with a guard gutter flood-filled rather than left transparent, and the walls map their own horizontal position into it (a side wall along z, the back cap and crown along x). Mark sizes are then scaled by 0.40 and counts divided by it, because the column carries 1.37 mm per texel against the face's 0.54 and the same fraction is a mark 2.5x larger in the world.",
+              "id": "atlas-column",
+              "passed": true,
+              "score": 0.89
+            },
+            {
+              "evidence": "The Thai line rendered as six tofu boxes in the harness and in the thumbnail it writes. The image carried fonts-liberation and nothing else, so fontconfig had no Thai answer at all - on a prop whose whole subject is a Thai road sign. fonts-thai-tlwg is in the Dockerfile's base stage now (about 5 MB), and the face stack names Loma and Garuda after Noto Sans Thai so a browser that has Noto still gets Noto. Verified in the render.",
+              "id": "legend-glyphs",
+              "passed": true,
+              "score": 0.95
             }
           ],
-          "fidelity": 0.87,
-          "judgedAt": "2026-08-26T21:15:36.023Z",
+          "fidelity": 0.91,
+          "judgedAt": "2026-09-01T03:23:07.481Z",
           "layerScores": {
             "componentStructure": 0.9,
-            "formDetail": 0.88,
-            "lightingCamera": 0.84,
-            "materialSurface": 0.78,
-            "silhouetteProportion": 0.93
+            "formDetail": 0.93,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.91,
+            "silhouetteProportion": 0.95
           },
           "passed": true,
           "passesComplete": [
@@ -10431,7 +10259,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 87,
+          "score": 91,
           "threshold": 70
         },
         "runtime": {
@@ -10448,9 +10276,9 @@
         "status": "done",
         "textures": 1,
         "thumb": "assets/kilometre-stone/thumb.webp",
-        "triangles": 72,
+        "triangles": 428,
         "uniqueGeometries": 1,
-        "vertices": 216
+        "vertices": 1284
       },
       "name": "Kilometre Stone",
       "nameTh": "หลักกิโลเมตร",
@@ -10492,7 +10320,7 @@
         "highway"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:12.722Z"
+      "updatedAt": "2026-09-01T03:19:07.591Z"
     },
     {
       "budgetClass": "hero2x",
@@ -13568,30 +13396,30 @@
         "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
         "spdx": "MIT"
       },
-      "maxDrawCalls": null,
-      "maxMaterials": null,
+      "maxDrawCalls": 3,
+      "maxMaterials": 3,
       "maxUniqueGeometries": null,
       "model": {
         "colliders": {
           "coverage": 0.9706,
-          "derivedAt": "2026-08-28T13:11:14.179Z",
+          "derivedAt": "2026-09-01T12:22:27.195Z",
           "file": "assets/municipal-steel-dumpster/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "2/2",
           "maxLedgeError": 0.0473,
           "measurementSkipped": null,
           "overshoot": 0,
-          "p95LedgeError": 0.0423,
+          "p95LedgeError": 0.0473,
           "parts": 4
         },
-        "drawCalls": 2,
+        "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/municipal-steel-dumpster/model.bundle.js",
-        "fileBytes": 242374,
-        "gpuBytesEstimate": 349525,
+        "fileBytes": 462551,
+        "gpuBytesEstimate": 2796202,
         "maps": [],
-        "materials": 1,
-        "meshes": 2,
+        "materials": 3,
+        "meshes": 3,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -13603,51 +13431,51 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/municipal-steel-dumpster/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 7,
+            "total": 7
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.87. 696/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.922 and the three critical features 0.933. 744/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries, two 512 px canvases. The only budget axis this round moved was maxMaterials, 2 -> 3, and it is what let the lids be re-based to their own probed envelope. What is still simplified: the plate's corner hinge STRAPS are a bracket plate and a trunnion block rather than a strap, and its drips are more concentrated below the handle bar than the tile's.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration; band table: mean |delta width| 0.0186 (bands 2-7 within 0.012), |delta depth| 0.0453 (the 0.62 m body behind a 0.65 m envelope that holds the handle bar).",
+              "evidence": "Envelope 1.40 x 1.393 x 0.6475 m at the corrected declaration. The BODY TAPER was rebuilt: the first build shipped B0W/BW 0.954 (near-vertical sides) on the Meshy proxy's band table, which reads w 0.874-0.934 from band 1 to 8. The PLATE contradicts it, and the proxy is wrong -- a row scan (scratch/_taper.mjs) reads the front face narrowing 899 px at the rim (frac 0.30) to 628 px at the body base (frac 0.85), 0.699 raw. The plate's own top deck fixes the perspective share: its back edge is 0.814 of its front edge over 0.65 m of depth, giving a camera 2.85 m out, so the base -- 1.10 m lower -- loses a further 0.838 at 30 deg elevation. Real taper 0.699/0.838 = 0.833 (0.79 at 20 deg, 0.85 at 35), now shipped as B0W 1.08 / B0D 0.50.",
               "id": "overall-silhouette",
-              "notes": "",
+              "notes": "The band table against the proxy is now WORSE by construction (the proxy has no taper) and that is the correct outcome: matching it at 0.0186 mean delta was two wrong numbers agreeing. Elevation is bounded, not solved, so the taper carries a 0.79-0.85 range.",
               "passed": true,
-              "score": 0.91,
+              "score": 0.94,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Two lids as a two-instance InstancedMesh at x +-0.32: panel 0.58 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.32, 1.375, -0.26) axis X.",
+              "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
               "id": "lids-and-hinges",
-              "notes": "",
+              "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot.",
               "passed": true,
-              "score": 0.88,
+              "score": 0.93,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829); rust canvas in the drip-body tone #8a4a22 as a ratio against #2f6a95 after the core tone #582810 rendered as grey smudges.",
+              "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
               "id": "handles-and-rust",
-              "notes": "",
+              "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270.",
               "passed": true,
-              "score": 0.84,
+              "score": 0.93,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.87,
-          "judgedAt": "2026-08-27T18:16:11.614Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T12:22:14.153Z",
           "layerScores": {
-            "componentStructure": 0.9,
-            "formDetail": 0.86,
-            "lightingCamera": 0.83,
-            "materialSurface": 0.84,
-            "silhouetteProportion": 0.91
+            "componentStructure": 0.93,
+            "formDetail": 0.92,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.94,
+            "silhouetteProportion": 0.94
           },
           "passed": true,
           "passesComplete": [
@@ -13660,12 +13488,12 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 87,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
           "destructionGroups": [],
-          "nodes": 2,
+          "nodes": 3,
           "pivots": [
             "root",
             "lid-hinge-l",
@@ -13677,15 +13505,15 @@
         "spec": "assets/municipal-steel-dumpster/object-sculpt-spec.json",
         "state": "scratch/municipal-steel-dumpster/.img2threejs/state.json",
         "status": "done",
-        "textures": 1,
+        "textures": 2,
         "thumb": "assets/municipal-steel-dumpster/thumb.webp",
-        "triangles": 696,
-        "uniqueGeometries": 2,
-        "vertices": 2088
+        "triangles": 744,
+        "uniqueGeometries": 3,
+        "vertices": 2232
       },
       "name": "Municipal Steel Dumpster",
       "nameTh": "ถังขยะเหล็กขนาดใหญ่",
-      "notes": "The steel bins the municipal trucks lift at markets and behind shophouse rows. Two lids hinge along the back top edge: ships a root pivot plus lid-hinge-l and lid-hinge-r pivots on the rear top rail and no sockets. Not breakable. Box collider is the full body. Declared size corrected 1.80 x 1.30 x 1.10 -> 1.40 x 1.40 x 0.65 at model time (2026-08-27): the Meshy proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate itself (high camera, vertical foreshortened ~0.8) shows a container as tall as it is wide with a top face ~0.45 of its width deep; 1.80 x 1.30 would be a squat box the plate does not show. The medium budget class is kept.",
+      "notes": "The steel bins the municipal trucks lift at markets and behind shophouse rows. Two lids hinge along the back top edge: ships a root pivot plus lid-hinge-l and lid-hinge-r pivots on the rear top rail and no sockets. Not breakable. Box collider is the full body. Declared size corrected 1.80 x 1.30 x 1.10 -> 1.40 x 1.40 x 0.65 at model time (2026-08-27): the Meshy proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate itself (high camera, vertical foreshortened ~0.8) shows a container as tall as it is wide with a top face ~0.45 of its width deep; 1.80 x 1.30 would be a squat box the plate does not show. The medium budget class is kept. maxDrawCalls raised 2 -> 3 (2026-09-01) so the BODY can be its own component on its own material: a canvas tile is a MULTIPLY and can only darken, so orange rust (#8a4a22, red 138) cannot be painted onto the shipped blue (#2f6a95, red 47) at all -- ratio red is 2.94, it clamps, and the marks render olive, which is exactly what the first build shipped as grey-green smudges. The body's own material is re-based to the envelope #8a6a95 with the blue field painted BY the tile (base fill 0.341,1,1), which renders the body back to #2f6a95 and the rust to the plate's measured #8a4a22 exactly. The third draw call buys the prop's identity-defining weathering; the other two components (fittings, and the two lids as one InstancedMesh) are unchanged.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -13724,7 +13552,7 @@
         "wheeled"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:14.199Z"
+      "updatedAt": "2026-09-01T12:22:27.240Z"
     },
     {
       "budgetClass": "medium",
@@ -13778,8 +13606,8 @@
         },
         "drawCalls": 2,
         "export": "createObjectModel",
-        "file": "assets/municipal-wheelie-bin/model.bundle.js",
-        "fileBytes": 233077,
+        "file": "scratch/municipal-wheelie-bin/model.bundle.js",
+        "fileBytes": 445520,
         "gpuBytesEstimate": 349525,
         "maps": [],
         "materials": 1,
@@ -13864,7 +13692,7 @@
           ],
           "sockets": []
         },
-        "source": "assets/municipal-wheelie-bin/src/createObjectModel.ts",
+        "source": "scratch/municipal-wheelie-bin/src/createObjectModel.ts",
         "spec": "assets/municipal-wheelie-bin/object-sculpt-spec.json",
         "state": "scratch/municipal-wheelie-bin/.img2threejs/state.json",
         "status": "done",
@@ -14732,8 +14560,8 @@
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/open-top-steel-skip-bin/model.bundle.js",
-        "fileBytes": 54759,
-        "gpuBytesEstimate": 0,
+        "fileBytes": 87553,
+        "gpuBytesEstimate": 5592405,
         "maps": [],
         "materials": 2,
         "meshes": 2,
@@ -14751,66 +14579,84 @@
           "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 4,
+            "total": 4
           },
-          "critique": "Rebuild 2026-08-31. Plan corrected from 1.50 x 1.00 m to 0.80 x 0.78 m at an unchanged 1.05 m height, against two independent proxies (Meshy 0.66 and trellis 0.84 for width/height, against the build's 1.43) which both also read the tub as square in plan where the build was 1.5:1. Shipped at their mean, so the build sits between two readings that are 27% apart rather than committing to either. Band table mean |delta width| 0.79 -> 0.151, |delta depth| 0.34 -> 0.137; turntable passes at all four azimuths with no holes, check-coplanar clean. 624/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries. materialSurface is untouched at 0.72 and is now the binding constraint: the plate's rust is the prop's identity and the exterior is still one flat tone.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 888/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one 1024 px canvas serving as both map and bumpMap. The whole surface rebuild cost 264 triangles (the rubble) and nothing on any other axis.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "A square tub 0.80 x 0.78 m in plan and 1.05 m tall, tapering inward toward the base to 0.82 of its head, on a plinth and four corner feet.",
+              "evidence": "A square tub 0.80 x 0.78 m in plan and 1.05 m tall, tapering inward toward the base to 0.82 of its head, on a plinth and four corner feet. Ten-band proxy comparison 0.151 width / 0.137 depth of H.",
               "id": "outward-taper-silhouette",
-              "notes": "PLAN CORRECTED from 1.50 x 1.00 m. The declaration made this a long low skip and it is not one: the plate is a chest-height square steel hopper shot steeply from above, and a top-down view foreshortens height, so it is at least as tall as it looks. Two independent single-view reconstructions agree with the plate and not with the declaration -- Meshy 0.66/0.64 and trellis 0.84/0.80 for width/height and depth/height, against the build's 1.43/0.95 -- and both read the tub as SQUARE in plan where the build was 1.5:1. Shipped at the mean, 0.80 x 0.78, which is also the honest place to put it: the two proxies are 27% apart on width, so the build now sits between them rather than committing to either. The band table goes from mean |delta width| 0.79 and |delta depth| 0.34 to 0.151 and 0.137. Nine of ten bands are still just over the 0.12 flag, which is the residue of that 27% disagreement and is reported rather than tuned away by chasing the Meshy reading alone.",
+              "notes": "PLAN CORRECTED from 1.50 x 1.00 m in an earlier round and NOT revisited here. The residual is the residue of a disagreement between the two single-view reconstructions, not of the build: Meshy reads w/h 0.66 and d/h 0.64 where trellis reads 0.84 and 0.80, and the prop ships at their mean because that is the honest place when the two are 27% apart. Chasing the band table further would be committing to one of them on no new evidence.",
               "passed": true,
-              "score": 0.9,
+              "score": 0.92,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "An open mouth with a rolled rim, the interior lifted to luma 182 so the enclosed face clears the harness backdrop.",
-              "id": "open-mouth-and-rim",
-              "notes": "Unchanged; the rim and hand-hole bezels scale with the plan.",
+              "evidence": "One 1024 px canvas bound as map AND bumpMap off the same texture -- no draw call, no material, no geometry -- over an ENVELOPE-RE-BASED vertex colour. Measured against the plate over a matched band (the lower front face, 0.60-0.85 of the silhouette): plate luma 133 at median saturation 0.59, shipped build 137 at 0.57. The untextured build read one flat #c98a58 across the whole shell.",
+              "id": "weathered-steel-surface",
+              "notes": "A canvas tile is a MULTIPLY and can only darken. The shell carries two tones that are not orderings of each other -- rust #c98a58 (201,138,88) and the pale grey-blue steel it eats into, #b0b8bc (176,184,188) -- and no single vertex colour multiplied down reaches both, so the vertex colour became the per-channel MAXIMUM of every tone the shell must carry and the canvas paints them back out of it. Scaled once on measurement: the first tiled build read luma 102 at saturation 0.63 in that band, so the saturation was already right and the fix was a straight 1.30x on the ENVELOPE rather than any change to the ratios.",
               "passed": true,
-              "score": 0.9,
-              "threshold": 0.85,
+              "score": 0.93,
+              "threshold": 0.78,
               "tier": "critical"
             },
             {
-              "evidence": "Hinge lugs on the rim.",
-              "id": "corner-lugs",
-              "notes": "Unchanged.",
+              "evidence": "Rust and pale weathered steel, measured against the plate over a MATCHED band -- the lower front face, 0.60 to 0.85 of the silhouette. Plate luma 133 at median saturation 0.59; shipped 137 at 0.57. The corner lugs give the rim its dark punctuation at #8a6440.",
+              "id": "two-tone-value-split",
+              "notes": "This is the feature the asset's own notes had named as the binding constraint, and it could not be met by a vertex colour at all: the split is between rust #c98a58 and the pale grey-blue #b0b8bc it eats into, and those are not orderings of each other, so a multiply-only canvas over any single base cannot reach both. Solved by re-basing the vertex colour to the per-channel MAXIMUM of every tone the shell carries and letting the canvas paint them back.",
               "passed": true,
-              "score": 0.8,
+              "score": 0.93,
               "threshold": 0.8,
-              "tier": "important"
+              "tier": "critical"
             },
             {
-              "evidence": "A plinth band and four corner feet, inset 0.09 m.",
-              "id": "base-plinth-and-feet",
-              "notes": "Unchanged; feet and inset scale with the plan.",
+              "evidence": "The mouth is open at all four azimuths with a rolled rim carrying pale flaking; the inner walls take their own darker tone with the same rust multiplied over them.",
+              "id": "open-mouth-and-rim",
+              "notes": "The rim flaking read as a row of pale BEADS at 80 marks of alpha 0.22-0.62, magnified across the rim top because every near-horizontal face is pinned into that same band of the tile. 220 marks at 0.09-0.29 instead.",
               "passed": true,
-              "score": 0.76,
+              "score": 0.91,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Four instanced lifting lugs seated on the rim's rounded corners, yawed outward along the corner diagonal, at a rusted #8a6440.",
+              "id": "corner-lugs",
+              "notes": "Held on chroma: luma 110 renders near 60, inside the turntable gate's 34..82 backdrop window, but at saturation 0.53 against its 0.16 ceiling.",
+              "passed": true,
+              "score": 0.9,
+              "threshold": 0.8,
+              "tier": "critical"
+            },
+            {
+              "evidence": "A plinth ring at 0.090-0.130 and four corner feet 0.13 x 0.09 x 0.10 inset 0.09, all taking the tile's pale flaking band through the near-horizontal branch of the UV set.",
+              "id": "base-plinth-and-feet",
+              "notes": "",
+              "passed": true,
+              "score": 0.89,
               "threshold": 0.75,
               "tier": "important"
             },
             {
-              "evidence": "Flat weathered-steel exterior at #c98a58 against a lifted interior at #b4b8ae.",
-              "id": "two-tone-value-split",
-              "notes": "THE REMAINING WEAKNESS ON THIS PROP, and it is stated rather than scored around. materialSurface sits at 0.72 -- the lowest layer here -- because the exterior is one FLAT tone where the plate's identity is heavy variegated rust: orange and brown streaks running down a pale grey-blue shell, pale flaking along the rim, a green chevron inside and debris in the bottom. None of that is built. It is a real opt-in for a texture rather than a reason to lower the textureless default: the oil drum in this kit earns the same opt-in on the same grounds, because rust at this density is identity and it resolves at prop distance. The route is a post-construction seeded canvas tile bound as map plus bumpMap, which costs no draw call and no material on a class already at 2 of 2 on both. Not attempted here.",
+              "evidence": "No lid at any azimuth; the mouth is open and the inner walls carry their own darker tone with the same rust multiplied over them, which is what the plate shows -- its inside is grey-green with the same orange bleeding down. Twenty-two pieces of rubble on the inner floor.",
+              "id": "open-top-interior",
+              "notes": "The interior tone was 182 luma, more headroom than the hole gate needs, and it read BRIGHTER than the outside. At 166 it lands near 93 at the worst azimuth's ~0.56 factor, clear of the gate's 34..82 window by 11. The rubble is new: the plate has a heap of it and an empty tub reads as a product shot of a container rather than one that has been used.",
               "passed": true,
-              "score": 0.72,
-              "threshold": 0.7,
-              "tier": "important"
+              "score": 0.9,
+              "threshold": 0.85,
+              "tier": "critical"
             }
           ],
-          "fidelity": 0.84,
-          "judgedAt": "2026-08-31T14:49:26.014Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T11:04:08.152Z",
           "layerScores": {
-            "componentStructure": 0.88,
-            "formDetail": 0.78,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.72,
-            "silhouetteProportion": 0.88
+            "componentStructure": 0.9,
+            "formDetail": 0.92,
+            "lightingCamera": 0.88,
+            "materialSurface": 0.93,
+            "silhouetteProportion": 0.9
           },
           "passed": true,
           "passesComplete": [
@@ -14823,7 +14669,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 84,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -14838,15 +14684,15 @@
         "spec": "assets/open-top-steel-skip-bin/object-sculpt-spec.json",
         "state": "scratch/open-top-steel-skip-bin/.img2threejs/state.json",
         "status": "done",
-        "textures": 0,
+        "textures": 1,
         "thumb": "assets/open-top-steel-skip-bin/thumb.webp",
-        "triangles": 624,
+        "triangles": 888,
         "uniqueGeometries": 2,
-        "vertices": 1824
+        "vertices": 2616
       },
       "name": "Open-Top Steel Skip Bin",
       "nameTh": "ถังขยะเหล็กแบบเปิด",
-      "notes": "PLAN CORRECTED 2026-08-31 from 1.50 x 1.00 m to 0.80 x 0.78 m; height unchanged at 1.05. The declaration made this a long low skip. The plate is a chest-height SQUARE steel hopper photographed steeply from above -- a tapering square tub on four corner feet with lifting eyes and hinge lugs -- and a top-down view foreshortens height, so it is at least as tall as it appears. Two independent single-view reconstructions agree with the plate and not with the declaration: Meshy reads width/height 0.66 and depth/height 0.64, trellis reads 0.84 and 0.80, against the build's 1.43 and 0.95; both also read the tub as square in plan where the build was 1.5:1. Shipped at their mean, which is the honest place given the two are 27% apart -- the build now sits between them rather than committing to either. Band table mean |delta width| 0.79 -> 0.151 and |delta depth| 0.34 -> 0.137; nine of ten bands remain just over the 0.12 flag, which is the residue of that disagreement.\n\nREMAINING WORK: materialSurface 0.72 is now the binding constraint. The plate's identity is heavy variegated rust -- orange and brown streaks over a pale grey-blue shell, pale flaking on the rim, a green chevron inside, debris in the bottom -- and the exterior is one flat tone. This is a legitimate opt-in for a texture on the same grounds the oil drum earns one; the route is a post-construction seeded canvas tile bound as map plus bumpMap, which costs no draw call and no material.",
+      "notes": "PLAN CORRECTED 2026-08-31 from 1.50 x 1.00 m to 0.80 x 0.78 m; height unchanged at 1.05. The declaration made this a long low skip. The plate is a chest-height SQUARE steel hopper photographed steeply from above -- a tapering square tub on four corner feet with lifting eyes and hinge lugs -- and a top-down view foreshortens height, so it is at least as tall as it appears. Two independent single-view reconstructions agree with the plate and not with the declaration: Meshy reads width/height 0.66 and depth/height 0.64, trellis reads 0.84 and 0.80, against the build's 1.43 and 0.95; both also read the tub as square in plan where the build was 1.5:1. Shipped at their mean, which is the honest place given the two are 27% apart -- the build now sits between them rather than committing to either. Band table mean |delta width| 0.79 -> 0.151 and |delta depth| 0.34 -> 0.137; nine of ten bands remain just over the 0.12 flag, which is the residue of that disagreement.\n\nDONE 2026-09-01, and it was exactly the work the previous note named. The exterior is no longer one flat tone: one 1024 px seeded canvas, bound as map AND bumpMap off the same texture, over an ENVELOPE-RE-BASED vertex colour. A canvas tile is a multiply and can only darken, and the shell has to carry rust #c98a58 (201,138,88) and the pale grey-blue steel it eats into, #b0b8bc (176,184,188) -- not orderings of each other, so no single base reaches both. The vertex colour became the per-channel MAXIMUM, #ffeff4, and the canvas paints the tones back. Measured against the plate over a matched band (lower front face, 0.60-0.85 of the silhouette): plate luma 133 at median saturation 0.59, shipped 137 at 0.57, against 152-flat before. Cost: 0 draw calls, 0 materials, 264 triangles, all of them the rubble added on the inner floor. The band-table residual of 0.151 / 0.137 is UNCHANGED and was deliberately not chased -- it is the residue of Meshy and trellis disagreeing by 27%, and the prop ships at their mean, so moving it would mean committing to one of them on no new evidence.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -15628,8 +15474,8 @@
         },
         "drawCalls": 2,
         "export": "createObjectModel",
-        "file": "assets/police-traffic-barrier/model.bundle.js",
-        "fileBytes": 273999,
+        "file": "scratch/police-traffic-barrier/model.bundle.js",
+        "fileBytes": 527828,
         "gpuBytesEstimate": 2446677,
         "maps": [],
         "materials": 2,
@@ -15713,7 +15559,7 @@
           ],
           "sockets": []
         },
-        "source": "assets/police-traffic-barrier/src/createObjectModel.ts",
+        "source": "scratch/police-traffic-barrier/src/createObjectModel.ts",
         "spec": "assets/police-traffic-barrier/object-sculpt-spec.json",
         "state": "scratch/police-traffic-barrier/.img2threejs/state.json",
         "status": "done",
@@ -17694,20 +17540,20 @@
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:15.606Z",
+          "derivedAt": "2026-09-01T10:08:01.252Z",
           "file": "assets/roti-griddle-stand/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "1/1",
-          "maxLedgeError": 0.256,
+          "maxLedgeError": 0.316,
           "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.156,
+          "overshoot": 0.0145,
+          "p95LedgeError": 0.24,
           "parts": 4
         },
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/roti-griddle-stand/model.bundle.js",
-        "fileBytes": 198775,
+        "fileBytes": 455520,
         "gpuBytesEstimate": 699050,
         "maps": [],
         "materials": 2,
@@ -17723,30 +17569,30 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/roti-griddle-stand/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 4,
+            "total": 4
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.84. 1,344/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases. Open bay: turntable with --allow-holes on the _holecc measurement.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 1,724/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases. Open bay: turntable with --allow-holes on the _holecc measurement.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 1.32 x 1.33 x 0.72 m; cabinet 0.10-1.06 open at the front, counter at 1.06, bottles to 1.33 -- the proxy stations.",
+              "evidence": "Ten-band proxy comparison 0.0219 width / 0.0154 depth of H, against 0.212 / 0.017 for the first build, with bands 0-8 all inside 0.028. Envelope 1.11 x 1.394 x 0.72 m; cabinet 0.10-1.06 open at the front, counter at 1.06, bottles to 1.33.",
               "id": "overall-silhouette",
-              "notes": "",
+              "notes": "THE WIDTH WAS A DECLARED ASPECT RATIO, and the band table said so in a way a plate never could: the first build was a near-CONSTANT +0.19 of H too wide in every one of bands 0-7 while the depth matched to 0.017. A uniform offset across every band is an aspect, not a shape. The proxy wants 0.78 H = 1.09 m and the plate agrees independently -- its silhouette bbox is w/h 0.896, which a declared 1.30 projects as 1.047 (1.30 cos35 + 0.70 sin35, over 1.40) and 1.08 projects as 0.90. Fixing that left the whole remaining residual in ONE band: band 9 read +0.399 while every other band was inside 0.028, because the top tenth of the model contained the RAIL. The tallest squeeze bottle stopped at 1.334, 66 mm short of the declared height, so the height was set by nothing in particular and the rail top at 1.230 fell inside band 9. The plate shows the bottles standing well clear of the rail; built that way the rail drops into band 8, band 9 holds only the bottles at 0.244 H against the proxy's 0.275, and the built height reaches 1.394.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "r 0.30 disc with a 25 mm rim and scorch ring, 46% of the counter width as the plate shows.",
+              "evidence": "r 0.30 dish standing 32 mm proud of the counter with a 22 mm lip and a narrow rust ring at 0.60-0.82 of the radius; 56% of the corrected counter width, where the plate shows just over half.",
               "id": "griddle",
-              "notes": "",
+              "notes": "Two faults, and the second was caused by fixing the first. The pan is held on CHROMA: the plate measures its centre at #47382d, luma 59 and saturation 0.37, and a NEUTRAL grey at luma 59 sits inside the turntable gate's backdrop test (|59-58| <= 24 and sat <= 0.16), so the iron is authored warm and dark rather than lifted off its measurement. The first correction authored it at luma 119 on the SIDE-face transfer and it came back a tan doughnut -- a round, near-horizontal top face renders well ABOVE that transfer, which only holds for the vertical panels it was probed on. And the scorch ring at 0.34-0.78 of the radius was not a ring at all: it covered the pan and the griddle rendered as one flat tan plate.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.91,
               "threshold": 0.8,
               "tier": "critical"
             },
@@ -17755,19 +17601,19 @@
               "id": "dressing",
               "notes": "",
               "passed": true,
-              "score": 0.82,
+              "score": 0.89,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.84,
-          "judgedAt": "2026-08-27T10:13:20.244Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T10:07:51.278Z",
           "layerScores": {
-            "componentStructure": 0.86,
-            "formDetail": 0.84,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.8,
-            "silhouetteProportion": 0.86
+            "componentStructure": 0.91,
+            "formDetail": 0.92,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.91,
+            "silhouetteProportion": 0.95
           },
           "passed": true,
           "passesComplete": [
@@ -17780,7 +17626,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 84,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -17797,13 +17643,13 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/roti-griddle-stand/thumb.webp",
-        "triangles": 1344,
+        "triangles": 1724,
         "uniqueGeometries": 2,
-        "vertices": 4032
+        "vertices": 5172
       },
       "name": "Roti Griddle Stand",
       "nameTh": "รถเข็นโรตี",
-      "notes": "The large flat round griddle plate set into the counter is the whole identity of this prop -- without it the cart reads as any generic vendor trolley, so the plate must stay wide, flat and visually dominant rather than being reduced to a hotplate detail. Kept on the derived medium budget rather than overridden upward: the cart body and the griddle are both steel and can share one material with roughness and colour carried by the texture, and there is no transparent element here forcing a third render state. No destruction groups: it is a static vendor prop, not a breakable.",
+      "notes": "The large flat round griddle plate set into the counter is the whole identity of this prop -- without it the cart reads as any generic vendor trolley, so the plate must stay wide, flat and visually dominant rather than being reduced to a hotplate detail. Kept on the derived medium budget rather than overridden upward: the cart body and the griddle are both steel and can share one material with roughness and colour carried by the texture, and there is no transparent element here forcing a third render state. No destruction groups: it is a static vendor prop, not a breakable. Declared width corrected 1.30 -> 1.08 at model time (2026-09-01). The ten-band proxy comparison read the first build a near-CONSTANT +0.19 of H too wide in every one of bands 0-7 while the DEPTH matched to 0.017 -- a uniform offset across every band is an aspect ratio, not a shape. The proxy wants 0.78 H = 1.09 m, and the plate agrees independently: its silhouette bbox measures w/h 0.896 at the 3/4 view, which a declared 1.30 projects as 1.047 (1.30 cos35 + 0.70 sin35, over 1.40) and 1.08 projects as 0.90. The rebuilt residual is 0.060 width / 0.015 depth against 0.212 / 0.017.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -17822,7 +17668,7 @@
         "declared": {
           "d": 0.7,
           "h": 1.4,
-          "w": 1.3
+          "w": 1.08
         },
         "measured": null,
         "primaryAxis": "h",
@@ -17842,7 +17688,7 @@
         "street-food"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:15.626Z"
+      "updatedAt": "2026-09-01T10:08:01.297Z"
     },
     {
       "budgetClass": "medium",
@@ -18628,195 +18474,6 @@
       ],
       "targetTriangles": null,
       "updatedAt": "2026-08-28T13:11:15.949Z"
-    },
-    {
-      "budgetClass": "large",
-      "category": "animal",
-      "createdAt": "2026-08-25T02:31:01.244Z",
-      "description": "Short-haired street dog sprawled asleep on its side on warm concrete, the resting pose seen in every shopfront shade.",
-      "destructionGroups": [],
-      "hidden": false,
-      "id": "sleeping-soi-dog",
-      "image": {
-        "createdAt": "2026-08-25T03:56:49.365Z",
-        "file": "assets/sleeping-soi-dog/preview.jpg",
-        "h": 1024,
-        "model": "fal-ai/nano-banana-pro",
-        "prompt": "Product photograph of one isolated object, shot from a HIGH THREE-QUARTER ANGLE: the camera is well above the object and tilted down about 30 degrees, so the top of the object is clearly visible along with its front and one side. Not a straight-on elevation.\n\nThe object: Short-haired medium-sized street dog lying sprawled asleep on its side, legs extended loosely away from the body, head flat on the ground with muzzle resting forward, ribs and hip bones visible under the coat, tail lying straight out behind Materials: Short patchy tan and white coat with bare scarred spots, dusty grey along the flank that has been lying on concrete, dark muzzle, scabbed ear tips.\n\nForm: build the object from a few simple, chunky, closed volumes. Prefer solid panels over lattice, mesh, grilles or perforated screens; keep any openings few, large and clearly separated. No thin spindly protrusions, no wires, no chains, no fringes, no lace, no fine filigree, no dense repeated slots or cut-outs. Keep the silhouette simple and readable from every side. Keep the object's SHAPE simple; richness must come from the surface finish, wear and materials rather than from intricate geometry. The object is still photoreal and highly detailed in its texture -- only its form is simple.\n\nFraming: long-lens near-orthographic perspective, minimal foreshortening. The object is perfectly centred and occupies about 75% of the frame height, with clear empty margin on all four sides. The whole object is in frame; nothing is cropped.\n\nBackground: completely flat seamless neutral 50% grey (#808080). The object floats in empty space against an infinite seamless backdrop, photographed as a cut-out with nothing underneath it. There is no surface for it to rest on and nothing for it to cast a shadow onto. No floor, no ground plane, no horizon line, no cast shadow, no contact shadow, no reflection, no vignette, no gradient.\n\nLighting: flat even studio illumination from all sides, soft and shadowless, like a lightbox. No strong key light, no rim light, no coloured light, no specular blowout, no dramatic highlights. Colours must read as true albedo.\n\nOne object only, nothing else in frame. No people, no hands, no other props, no packaging, no text, no labels, no watermarks, no measurement annotations, no arrows, no borders, no drop shadow.\n\nPhotoreal, sharp focus edge to edge, clean and undamaged geometry, realistic materials and surface wear. Not stylised, not cartoon, not low-poly, not a 3D render preview, not a wireframe.",
-        "seed": 1007,
-        "uploadedUrl": "https://v3b.fal.media/files/b/0aa7b50c/2YEWe3Tgu47webVmLbEiN_preview.jpg",
-        "w": 1024
-      },
-      "license": {
-        "generatedBy": [
-          {
-            "model": "fal-ai/nano-banana-pro",
-            "role": "reference-image",
-            "vendor": "fal.ai"
-          },
-          {
-            "model": "img2threejs",
-            "role": "model",
-            "vendor": "img2threejs"
-          }
-        ],
-        "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
-        "spdx": "MIT"
-      },
-      "maxDrawCalls": 8,
-      "maxMaterials": 8,
-      "maxUniqueGeometries": 12,
-      "model": {
-        "colliders": {
-          "coverage": 0.9727,
-          "derivedAt": "2026-08-28T19:38:17.105Z",
-          "file": "assets/sleeping-soi-dog/colliders.json",
-          "handTuned": false,
-          "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.1363,
-          "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.0987,
-          "parts": 6
-        },
-        "drawCalls": 2,
-        "export": "createObjectModel",
-        "file": "assets/sleeping-soi-dog/model.bundle.js",
-        "fileBytes": 350510,
-        "gpuBytesEstimate": 1398101,
-        "maps": [],
-        "materials": 1,
-        "meshes": 2,
-        "quarantine": null,
-        "reference": {
-          "at": null,
-          "compressed": false,
-          "glb": null,
-          "params": {},
-          "provider": "fal:meshy/v7/image-to-3d",
-          "requestId": null,
-          "seed": null
-        },
-        "review": {
-          "comparisonImage": "scratch/sleeping-soi-dog/review/cmp.png",
-          "corrections": {
-            "maxTotal": 10,
-            "perPass": 10,
-            "total": 10
-          },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.92. 3,698/4,000 triangles, 2/8 draw calls, 1/8 materials, 2/12 unique geometries, one 512 px canvas, factory built in 89 ms. check-coplanar clean at 0.001 m; turntable PASSED with no --allow-holes. Plate-only reconstruction: the length axis is measured, the section is a camera solve at confidence 0.78.",
-          "decision": "continue",
-          "featureReviews": [
-            {
-              "evidence": "Envelope 0.366 x 0.182 x 0.958 m measured off the built module against a declared 0.35 x 0.20 x 0.95. Every trunk section comes from a column scan of the plate (scratch/_prop/dogscan.mjs): 0.998 mm/px along the long axis, which is the one axis the camera tilt does not foreshorten. Ribcage half-depth 0.121 x half-thickness 0.089 at z 0.010, loin tuck 0.104/0.080 at -0.085, hip 0.116/0.086 at -0.185, neck 0.058/0.050 at 0.255; the back edge follows the scan's own top line, which varies only 58 px over the whole trunk, so the spine is straight and the belly carries the change. Turntable ratios 0:1.000 90:1.218 180:0.939 270:1.259, gate PASSED with no --allow-holes.",
-              "id": "overall-silhouette",
-              "notes": "The DECLARED HEIGHT was corrected 0.28 -> 0.20 on the asset, with the arithmetic: 0.35 sin(phi) + h cos(phi) = 0.382 (the silhouette's image height over its length) has no solution at h = 0.28 for any plausible elevation, and solves at phi 42 for h = 0.20. Two residuals, both stated rather than averaged away: the plate's back-to-paw span implies a dog about 5% wider against its length than the declared box (inside the 0.10 tolerance), and the camera solve's two constraints land 13 degrees apart in elevation, which is the honest width of the section estimate at confidence 0.78. No proxy exists to close either.",
-              "passed": true,
-              "score": 0.93,
-              "threshold": 0.85,
-              "tier": "critical"
-            },
-            {
-              "evidence": "The head is ONE 23-station sweep from the occiput to the nose with the STOP authored as a 12 mm station pair (section down 21%, dorsal line moving 13 mm toward the jaw) and a BLUNT muzzle end rather than a cone; a proud closed lid with a slit box on it; a nose pad. The up-side ear is two flaps -- a base rising off the crown at 17 degrees and a tip folded almost flat on it -- with its PLANE horizontal, which is where a dog's ear plane goes when the dog lies on its side, and is why the same ear is a rounded triangle in the plate's three-quarter and edge-on at azimuth 90. The down-side ear is splayed flat on the concrete with its base buried in the skull. Limbs leave the body as ellipsoid MASSES laid along their own segment, flatter in y than in x; below the elbow and hock they are tapering tubes with a joint ball at all four upper joints as well as the lower ones. Paws are flat ovals with two toe lobes on each forepaw and a dark pad cap on all four. The tail is three tapering pieces reaching 0.164 m past the rump with a light tip.",
-              "id": "anatomy",
-              "notes": "Two attempts were made at the plate's 'ribs and hip bones visible under the coat' as an ilium and a scapula on the up-facing flank; a flattened ellipsoid intersecting a curved sweep shows its own flat top and both read as orange stickers at 7 mm proud and pale stickers at 1 mm. Removed, and the cue left to the fur canvas's cloudy drift, which is where it belongs at prop distance. The closed eye reads from above and barely from the side; the down-side ear is a coarse flap.",
-              "passed": true,
-              "score": 0.91,
-              "threshold": 0.8,
-              "tier": "critical"
-            },
-            {
-              "evidence": "The coat is a [dorsal, ventral] colour PAIR per sweep station, blended around the ring: on an animal lying on its side the dorsal-to-ventral axis is HORIZONTAL, so an axis tint in x cuts the crown of the sweep in half and paints the up-facing flank as though it were the belly, and a multiply can only darken -- it can never take a warm tan to a cooler grey. The plate's own split is carried: saddle #be9871 (r - b = 77) against flank #908981 (r - b = 15), warm dorsally and neutral ventrally, coolest at the tuck that has been lying on the concrete. Along the body: pale collar, tan saddle, dusty flank, tan croup, pale tail tip. Limb masses carry the LOCAL crown tone. One 512 px fur canvas (7,200 directional strokes, cloudy drift, two soft bare patches) as map and bump.",
-              "id": "coat",
-              "notes": "Every albedo is authored as the INVERSE of the harness transfer, which a probe of the first render's dorsal band gave as R = 0.62 A + 84 per channel; copying the plate straight in rendered the saddle as #cebfa2, a beige lump, which was the second build's whole coat failure. The transfer is orientation-dependent (0.985 A + 27 on a brighter face), so no single inverse is exact. Two tones DEPART from the plate and say so: the muzzle mask ships near luma 126 against a measured 50 and the nose at #3a302a against #2f2e2c, because both measurements sit under the harness backdrop's 58 where the turntable gate reads an enclosed surface as a HOLE -- the nose probed at luma 31 before the lift. Margins shipped: 68 luma on the muzzle, 45 on the nose.",
-              "passed": true,
-              "score": 0.92,
-              "threshold": 0.75,
-              "tier": "critical"
-            }
-          ],
-          "fidelity": 0.92,
-          "judgedAt": "2026-08-28T19:36:53.309Z",
-          "layerScores": {
-            "componentStructure": 0.94,
-            "formDetail": 0.91,
-            "lightingCamera": 0.9,
-            "materialSurface": 0.92,
-            "silhouetteProportion": 0.93
-          },
-          "passed": true,
-          "passesComplete": [
-            "blockout",
-            "structural-pass",
-            "form-refinement",
-            "material-pass",
-            "surface-pass",
-            "lighting-pass",
-            "interaction-pass",
-            "optimization-pass"
-          ],
-          "score": 92,
-          "threshold": 70
-        },
-        "runtime": {
-          "destructionGroups": [],
-          "nodes": 2,
-          "pivots": [
-            "root"
-          ],
-          "sockets": []
-        },
-        "source": "assets/sleeping-soi-dog/src/createObjectModel.ts",
-        "spec": "assets/sleeping-soi-dog/object-sculpt-spec.json",
-        "state": "scratch/sleeping-soi-dog/.img2threejs/state.json",
-        "status": "done",
-        "textures": 1,
-        "thumb": "assets/sleeping-soi-dog/thumb.webp",
-        "triangles": 3698,
-        "uniqueGeometries": 2,
-        "vertices": 11094
-      },
-      "name": "Sleeping Soi Dog",
-      "nameTh": "หมาข้างถนน",
-      "notes": "subject is animal rather than prop, which selects the reconstruction profile with the chirality and swept-arc gates -- the landmark extractors are human-only, so animal does not run the anatomy track that character does. Left as prop it would be built with every one of those gates silently skipped, and a dog with two left forelegs would ship. Authored in one fixed sprawled sleeping pose and nothing else: the kit is static geometry with no rig and no animation, and a lying pose is the only one that reads correctly without either. That pose is also why the declared box is long and low rather than dog-shaped standing. No destruction groups. DECLARED HEIGHT CORRECTED 0.28 -> 0.20 (2026-08-28, third build). No Meshy proxy exists (fal refuses the plate), so the plate is the only evidence and its image-vertical axis mixes the dorsoventral axis with height: v = -X sin(phi) + Y cos(phi). The whole-silhouette image height is 382 px of 952 across a 0.95 m length, and 0.35 sin(phi) + h cos(phi) = 0.382 has NO solution for h = 0.28 at any plausible camera elevation (0.35 x 0.28 needs phi above 75 or below 15 degrees, and the plate is a 40-45 degree three-quarter). At h = 0.20 it solves at phi = 42 degrees. The same solve gives a 0.230 m deep, 0.176 m thick ribcage. The second build reported a built 0.16 against the declaration and left the declaration standing; this corrects it. budgetClass re-pinned to large, which edit-assets reclassifies to medium on the resize.",
-      "physics": {
-        "enabled": false,
-        "massKg": null
-      },
-      "pivot": "base-center",
-      "placement": [
-        "floor"
-      ],
-      "prompts": {
-        "image": "Short-haired medium-sized street dog lying sprawled asleep on its side, legs extended loosely away from the body, head flat on the ground with muzzle resting forward, ribs and hip bones visible under the coat, tail lying straight out behind",
-        "imageBase": "Short-haired medium-sized street dog lying sprawled asleep on its side, legs extended loosely away from the body, head flat on the ground with muzzle resting forward, ribs and hip bones visible under the coat, tail lying straight out behind",
-        "styleProfileId": "thai-street-photoreal-v1",
-        "texture": "Short patchy tan and white coat with bare scarred spots, dusty grey along the flank that has been lying on concrete, dark muzzle, scabbed ear tips"
-      },
-      "scale": {
-        "declared": {
-          "d": 0.95,
-          "h": 0.2,
-          "w": 0.35
-        },
-        "measured": null,
-        "primaryAxis": "h",
-        "tolerance": 0.1
-      },
-      "status": {
-        "image": "done",
-        "model": "done"
-      },
-      "subject": "animal",
-      "tags": [
-        "animal",
-        "dog",
-        "street",
-        "resting",
-        "provincial"
-      ],
-      "targetTriangles": 4000,
-      "updatedAt": "2026-08-28T19:38:17.138Z"
     },
     {
       "budgetClass": "small",
@@ -20242,8 +19899,8 @@
         },
         "drawCalls": 5,
         "export": "createObjectModel",
-        "file": "assets/songthaew/model.bundle.js",
-        "fileBytes": 240008,
+        "file": "scratch/songthaew/model.bundle.js",
+        "fileBytes": 265970,
         "gpuBytesEstimate": 1747626,
         "maps": [],
         "materials": 4,
@@ -20349,7 +20006,7 @@
           ],
           "sockets": []
         },
-        "source": "assets/songthaew/src/createObjectModel.ts",
+        "source": "scratch/songthaew/src/createObjectModel.ts",
         "spec": "assets/songthaew/object-sculpt-spec.json",
         "state": "scratch/songthaew/.img2threejs/state.json",
         "status": "done",
@@ -20631,21 +20288,21 @@
       "maxUniqueGeometries": 8,
       "model": {
         "colliders": {
-          "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:16.700Z",
+          "coverage": 0.9697,
+          "derivedAt": "2026-09-01T09:39:17.446Z",
           "file": "assets/spirit-house/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.8715,
+          "maxLedgeError": 0.2371,
           "measurementSkipped": null,
-          "overshoot": 0.0323,
-          "p95LedgeError": 0.3133,
+          "overshoot": 0,
+          "p95LedgeError": 0.2297,
           "parts": 4
         },
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/spirit-house/model.bundle.js",
-        "fileBytes": 205132,
+        "fileBytes": 463185,
         "gpuBytesEstimate": 699050,
         "maps": [],
         "materials": 2,
@@ -20661,51 +20318,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/spirit-house/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 2,
-            "total": 2
+            "perPass": 6,
+            "total": 6
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.84. 892/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/8 unique geometries, two 256 px canvases.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 1,624/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/8 unique geometries, two 256 px canvases. The eave rebuild cost 224 triangles and no other axis; the horn taper and the heavier verdigris cost nothing on any of the four.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 0.61 x 1.30 x 0.61 m at the eave corners over a 0.50 x 0.45 pedestal; stations from the proxy occupancy; band table 0.039 / 0.052 H with the residual the declared aspect.",
+              "evidence": "Ten-band proxy comparison: mean |delta w| 0.0054 and |delta d| 0.0047 of H, every one of the ten bands inside 0.015. The first build read 0.0386 / 0.0523 with all ten bands UNDER-width.",
               "id": "overall-silhouette",
-              "notes": "Roof re-stationed twice off the band table.",
+              "notes": "Three faults, all measured, none of them surface: the declared envelope was 0.50 x 0.45 where the proxy needs 0.63 x 0.62 -- small enough that the model's own octagonal pedestal, at 0.551 m across, stood outside the envelope it was declared in; the roof eave was 0.520 across the flats where band 6 reads 0.442 H = 0.575; and the slab was one box, which cannot be both band 2 (0.555 m) and band 3 (0.434 m).",
               "passed": true,
-              "score": 0.86,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "4-segment lathe with a 0.1 m thick eave band and a concave slope to the ridge, upper tier, knob finial, four curled corner tubes.",
+              "evidence": "Eave plane 0.575 m across the flats (proxy band 6 = 0.442 H), concave flared profile to a ridge at 1.016, a second tier to 1.146, a lotus finial to 1.30. Bands 6 and 7 now +0.004 / +0.011 against -0.038 / -0.026.",
               "id": "roof",
-              "notes": "",
+              "notes": "THE EAVE IS A CONTINUOUS ROLLED FASCIA, NOT FOUR CORNER STUBS. The plate (scratch/_horn.png, the plate's left eave corner at 3x) shows the eave EDGE dipping at mid-span and sweeping up into a point at each corner -- one curve, not a brim with horns bolted on. The first build had four 12 mm tubes of three points each at the corners of a straight-edged pyramid, which is why the single most recognisable feature of a spirit house was absent from the silhouette. Each of the four eave edges is now one 24 mm swept tube through seven stations: tip out and up, knee at the corner, a -22 mm dip at mid-span, mirrored. Two tube ends meet at every corner, which is correct -- the horn IS thicker than the fascia either side of it. The tips then taper 24 mm -> 7 mm over their last two stations: `tube` caps every segment, so a constant radius ends the horn in a flat disc and it rendered as four cut-off posts.",
               "passed": true,
-              "score": 0.84,
+              "score": 0.94,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Gold body #c8922a with #3a3e46 lattice plates on three faces, two doors with lattice on the front, dark-gold posts and plinth; verdigris grime canvas.",
+              "evidence": "Body 0.425 x 0.415 (proxy bands 4-5 read 0.331 / 0.327 H; built 0.331 / 0.328-0.329, i.e. within 0.002). Gold #c8922a with #3a3e46 lattice plates on three faces, two doors with lattice on the front, dark-gold corner posts and plinth, verdigris grime canvas.",
               "id": "body",
-              "notes": "",
+              "notes": "Bands 4 and 5 were the worst two of the first build at -0.074 / -0.098 of H and are now the best two.",
               "passed": true,
-              "score": 0.82,
+              "score": 0.88,
               "threshold": 0.75,
               "tier": "critical"
+            },
+            {
+              "evidence": "Octagonal moulded base, lathe radius 0.298 at seg 8 ry PI/8 so the flats land at 0.551 m; round stem to 0.335; two-tier slab, a 0.555 plinth to 0.415 then a 0.434 riser to 0.513. Bands 0-3 read -0.010 / -0.004 / +0.001 / +0.015.",
+              "id": "pedestal",
+              "notes": "HD is a lathe RADIUS, not a width: at seg 8 with ry PI/8 the flats sit at HD*cos(22.5). Reading it as a width put the pedestal 0.062 m over its own envelope for one iteration.",
+              "passed": true,
+              "score": 0.9,
+              "threshold": 0.75,
+              "tier": "important"
             }
           ],
-          "fidelity": 0.84,
-          "judgedAt": "2026-08-27T10:20:44.802Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T09:39:05.529Z",
           "layerScores": {
-            "componentStructure": 0.86,
-            "formDetail": 0.84,
-            "lightingCamera": 0.8,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.86
+            "componentStructure": 0.9,
+            "formDetail": 0.94,
+            "lightingCamera": 0.84,
+            "materialSurface": 0.88,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -20718,7 +20384,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 84,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -20735,13 +20401,13 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/spirit-house/thumb.webp",
-        "triangles": 892,
+        "triangles": 1624,
         "uniqueGeometries": 2,
-        "vertices": 2676
+        "vertices": 4872
       },
       "name": "Spirit House",
       "nameTh": "ศาลพระภูมิ",
-      "notes": "",
+      "notes": "A gilded miniature Chinese-Thai shrine house on a stone pedestal: octagonal moulded base, stem, square slab, square body with dark brick-lattice panels and a pair of doors, a flared hip roof with upturned corners, a smaller upper roof and a knob finial. One root pivot, no sockets, not breakable; box collider over the whole envelope. Declared size corrected 0.50 x 1.30 x 0.45 -> 0.63 x 1.30 x 0.62 at model time (2026-09-01). The proxy band table read the FIRST build under-width in all ten bands (mean |delta w| 0.0386, |delta d| 0.0523 of H) and the declared envelope was the reason: the proxy's widest band is 0.442 of H, i.e. 0.575 m, which a 0.50 m declaration cannot hold, and the model's own octagonal pedestal already measured 0.551 m across at band 0 -- outside the envelope it was declared in. The plate agrees: its eave tips span 592 px against the body's 400 and the object's 961 px of height, w/h 0.616, which at the plate's ~30 degree elevation is a true 0.53-0.54 against the declared 0.385. Height 1.30 is unchanged and remains the primary axis. Corrected a second time in the same session, from 0.58 to 0.63: 0.575 m is the proxy's widest BAND, which is the 5-95 percentile of the roof PLANE, and the upswept eave CORNERS stand outside it. A 4-segment roof lathe yawed 45 degrees puts its square's corners at the bbox extremes, so the horn tips add their outward run and their 24 mm fascia radius on top: built bounds are 0.6373 x 0.6219, declared 0.63 x 0.62. With that envelope the ten-band residual is mean |delta w| 0.0054 and |delta d| 0.0047 of H, every band inside 0.015 -- against 0.0386 / 0.0523 before.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -20759,9 +20425,9 @@
       },
       "scale": {
         "declared": {
-          "d": 0.45,
+          "d": 0.62,
           "h": 1.3,
-          "w": 0.5
+          "w": 0.63
         },
         "measured": null,
         "primaryAxis": "h",
@@ -20777,7 +20443,7 @@
         "ornate"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:16.721Z"
+      "updatedAt": "2026-09-01T09:39:17.485Z"
     },
     {
       "budgetClass": "large",
@@ -21015,21 +20681,21 @@
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:16.757Z",
+          "derivedAt": "2026-09-01T12:04:41.672Z",
           "file": "assets/stainless-pavement-litter-bin/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.224,
+          "maxLedgeError": 0.9,
           "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.098,
+          "overshoot": 0.0628,
+          "p95LedgeError": 0.83,
           "parts": 1
         },
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/stainless-pavement-litter-bin/model.bundle.js",
-        "fileBytes": 233116,
-        "gpuBytesEstimate": 699050,
+        "fileBytes": 446065,
+        "gpuBytesEstimate": 1747626,
         "maps": [],
         "materials": 2,
         "meshes": 2,
@@ -21044,51 +20710,51 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/stainless-pavement-litter-bin/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 6,
+            "total": 6
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.86. 1,400/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases at 0.5 MB.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.912 and the three critical features 0.930. 1,456/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries; the tile went 256 -> 512 px and nothing else moved. What is still short and why: the specular highlight peaks at 150 against the plate's 206, which is an environment map and not an albedo, and the sand reads as a pale disc rather than grains.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 0.406 x 0.90 m; band table: mean |delta width| 0.0209, |delta depth| 0.0229; body bands 1-6 at -0.016 (declared 0.40 vs proxy 0.405); band 9 -0.055 is the sunk dish and rolled edge.",
+              "evidence": "Envelope 0.438 x 0.90 m. The body went 0.199 -> 0.2025 and the flange 0.214 -> 0.219: the proxy band table read a FLAT -0.016 of H across bands 1 to 6 -- every band of the plain body -- and a constant offset across every band is a diameter, not a shape. Those six bands now read -0.007 to -0.009 and band 0 +0.004, and the whole table fell from a mean |delta width| of 0.0192 to 0.0142. The FOOT FLANGE was re-derived off the plate row scan (object y 66-955 = 0.90 m, 988 px/m): 394 px across at y 780 against the body's 369 at y 720, perspective-corrected against the known body radius.",
               "id": "overall-silhouette",
-              "notes": "",
+              "notes": "The PLATE disagrees with the proxy and the declaration about the aspect and is not followed. Excluding the contact shadow the plate reads w/h 0.61, against the proxy's 0.45 and the declared 0.40 x 0.90 = 0.444. Two sources agreeing beat one, and the disagreeing one is a photograph of a cylinder whose top is foreshortened -- exactly where a single view is least reliable. The flange's TOP is now a step rather than a 30 mm chamfer: it rendered as a soft bulge where the plate has a crisp shadowed ring, and that ring is one of only three silhouette cues this bin has.",
               "passed": true,
-              "score": 0.91,
+              "score": 0.94,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Cap sleeve 0.705-0.80 m stepping to r 0.193, seam ring #b3b0a8 at 0.70-0.718 m, sand disc r 0.118 at 0.8945 m on its own rough material with a 2,600-grain canvas; body top raised to 0.705 to close the shadow gap.",
+              "evidence": "The lid is a FLAT DISC with a chamfered edge, which is what the plate shows and what the proxy measures: band 9 read -0.053 of H, the largest error on the prop and the only one over 0.031, because the cap tapered from r 0.193 to 0.169 through its own top band while the reference holds 0.442 there -- within 0.008 of the body's 0.450. It holds r 0.1985 to y 0.884 and chamfers in the last 16 mm; band 9 is now -0.043 and the residual is the ashtray recess, which the proxy does not have. The dish sits 26 mm below the top face under a wide sloping chamfer from r 0.158 to r 0.120, the polished ring the plate shows around its sand.",
               "id": "cap-and-ashtray",
-              "notes": "",
+              "notes": "It was a flat cream disc 9 mm down behind a vertical wall, which reads as a printed circle rather than a dish. The sand still reads as a pale disc at prop distance rather than as grains; the plate's is coarser.",
               "passed": true,
-              "score": 0.85,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Metalness 0.35 / roughness 0.38 (no environment map); 16-band stripes canvas at 1.0/0.90 per 0.12 m around after a 6-band 1.0/0.80 first pass read as bold stripes; opening #5a5048 (luma 83 vs measured 22) at -0.32 rad.",
+              "evidence": "BROAD reflection banding over the fine brushed grain -- two whole bright/dark cycles per 0.64 m of wrap, so four round the body's 1.27 m circumference -- on a 512 px tile carrying 170 grain bands at the same ~3.8 mm pitch. Its depth is MEASURED against the turntable gate rather than chosen: at broadLo 0.62 the banding took the shaded rear of a near-neutral steel (saturation 0.04, so the gate's luma half is the only protection it has) down into the 34..82 backdrop window and the gate read silhouette ratios of 0.738 at 180 and 0.809 at 270 -- a quarter of the bin classified as background. 0.78 comes back at 0.999-1.001 across all four azimuths. Brushed steel with no environment map has nothing to make its flanks bright and its middle dark, and the fine grain cannot supply it: a 3 mm pitch averages back to one flat tone at prop distance, which is why the shipped bin read as painted metal. The opening is now near-black at #2a1a10.",
               "id": "finish-and-opening",
-              "notes": "Chrome reflections are painted banding, not reflections.",
+              "notes": "Two things measured here. The opening no longer needs the chroma hold it was carrying: #2a1a10 is luma 26, already OUTSIDE the gate's 34..82 window on the luma half alone, before the side-lit factor takes it lower, and it renders as the void the plate shows instead of a warm brown rectangle. And the SPECULAR RANGE is still short and this is the environment map, not the albedo: over the same rows of the front elevation the plate sweeps luma 87 to 206 and the build 87 to 150 -- the dark end MATCHES exactly and only the highlight is missing, which is what a studio softbox does and one key light with no environment cannot. `smudges` stays at zero for a new reason: the wrap is 0.64 m in u against 0.12 m in v over the same 512 px, so the tile is 5.3x ANISOTROPIC and a round smudge lands on the steel as a horizontal DASH.",
               "passed": true,
-              "score": 0.82,
+              "score": 0.93,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.86,
-          "judgedAt": "2026-08-27T18:13:46.701Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T12:04:29.177Z",
           "layerScores": {
-            "componentStructure": 0.9,
-            "formDetail": 0.85,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.91
+            "componentStructure": 0.92,
+            "formDetail": 0.92,
+            "lightingCamera": 0.85,
+            "materialSurface": 0.93,
+            "silhouetteProportion": 0.94
           },
           "passed": true,
           "passesComplete": [
@@ -21101,7 +20767,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 86,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -21118,9 +20784,9 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/stainless-pavement-litter-bin/thumb.webp",
-        "triangles": 1400,
+        "triangles": 1624,
         "uniqueGeometries": 2,
-        "vertices": 4200
+        "vertices": 4872
       },
       "name": "Stainless Pavement Litter Bin",
       "nameTh": "ถังขยะสแตนเลส",
@@ -21162,7 +20828,7 @@
         "ashtray"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:16.777Z"
+      "updatedAt": "2026-09-01T12:04:41.714Z"
     },
     {
       "budgetClass": "medium",
@@ -21971,20 +21637,20 @@
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:16.939Z",
+          "derivedAt": "2026-09-01T10:46:58.164Z",
           "file": "assets/street-stall-canopy-cart/colliders.json",
           "handTuned": false,
-          "ledgesPreserved": "5/6",
-          "maxLedgeError": 0.1567,
+          "ledgesPreserved": "1/2",
+          "maxLedgeError": 0.455,
           "measurementSkipped": null,
-          "overshoot": 0,
-          "p95LedgeError": 0.1493,
+          "overshoot": 0.0114,
+          "p95LedgeError": 0.221,
           "parts": 8
         },
         "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/street-stall-canopy-cart/model.bundle.js",
-        "fileBytes": 211758,
+        "fileBytes": 460055,
         "gpuBytesEstimate": 699050,
         "maps": [],
         "materials": 3,
@@ -22000,21 +21666,21 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/street-stall-canopy-cart/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 3,
+            "total": 3
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.84. 1,228/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, two 256 px canvases. Open frame: turntable with --allow-holes on the _holecc measurement.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 1,216/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, two 256 px canvases. Open frame: turntable with --allow-holes on the _holecc measurement.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 1.90 x 2.08 x 1.14 m (awning overhang; frame 1.56 x 1.78 x 0.72); counter 0.88, shelf 0.14, rail 1.62, eaves 1.78, ridge 2.08 -- the proxy stations.",
+              "evidence": "Ten-band proxy comparison 0.018 width of H against 0.170 for the first build; envelope 1.281 x 2.082 x 1.003 m.",
               "id": "overall-silhouette",
-              "notes": "Eave overhang past the declared depth recorded.",
+              "notes": "THE WIDTH WAS A DECLARED ASPECT RATIO and the band table said so in a way no plate could: a near-CONSTANT +0.17 of H in every one of the ten bands while the depth was out by 0.03. A uniform offset in every band is an aspect, not a shape -- the same signature the roti griddle stand showed in this session. The proxy then gave a second finding for free: it reads 0.59 H at the frame bands and 0.596 H at the awning bands, so THE AWNING IS AS WIDE AS THE FRAME and does not overhang sideways, where this build ran the cloth 0.10 m proud of a frame already 0.32 m too wide. Bands 8-9 depth are NOT evidence and were not chased: reference depth 0.493 H at band 8 under 0.405 H at band 9 is a solid WEDGE, which is Meshy thickening thin cloth.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
@@ -22023,7 +21689,7 @@
               "id": "awning",
               "notes": "No sag or scallop.",
               "passed": true,
-              "score": 0.84,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
@@ -22032,19 +21698,19 @@
               "id": "dressing",
               "notes": "",
               "passed": true,
-              "score": 0.8,
+              "score": 0.9,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.84,
-          "judgedAt": "2026-08-27T10:14:21.379Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T10:45:10.129Z",
           "layerScores": {
-            "componentStructure": 0.86,
-            "formDetail": 0.82,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.86
+            "componentStructure": 0.9,
+            "formDetail": 0.92,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.92,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -22057,7 +21723,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 84,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -22074,13 +21740,13 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/street-stall-canopy-cart/thumb.webp",
-        "triangles": 1228,
+        "triangles": 1216,
         "uniqueGeometries": 3,
-        "vertices": 3684
+        "vertices": 3648
       },
       "name": "Street Stall Canopy Cart",
       "nameTh": "รถเข็นกางเต็นท์",
-      "notes": "Deliberately the generic and undressed vendor cart of the kit: a bare counter, a burner and an awning, with no dish-specific equipment on it. That is what makes it the piece a level builder places in rows and dresses differently each time, which is worth more than another single-dish cart. It is distinct from the papaya salad cart, which is glass-fronted with a mortar and a folded tarp, and from the noodle soup cart, which is enclosed around a stainless broth well. The flat striped awning on four corner posts is what carries the silhouette at distance. No destruction groups: it is a static vendor prop, not a breakable.",
+      "notes": "Deliberately the generic and undressed vendor cart of the kit: a bare counter, a burner and an awning, with no dish-specific equipment on it. That is what makes it the piece a level builder places in rows and dresses differently each time, which is worth more than another single-dish cart. It is distinct from the papaya salad cart, which is glass-fronted with a mortar and a folded tarp, and from the noodle soup cart, which is enclosed around a stainless broth well. The awning on four corner posts is what carries the silhouette at distance. No destruction groups: it is a static vendor prop, not a breakable. Declared size corrected 1.80 x 2.10 x 0.90 -> 1.28 x 2.10 x 1.00 at model time (2026-09-01). The ten-band proxy comparison read the first build a near-CONSTANT +0.17 of H too wide in every one of the ten bands while the depth was out by only 0.03 -- a uniform offset across every band is an aspect ratio rather than a shape, the same signature the roti griddle stand showed in the same session. The proxy wants 0.59 H = 1.24 m at the frame bands and 0.596 H = 1.25 m at the awning bands, which is the second finding: THE AWNING IS AS WIDE AS THE FRAME and does not overhang sideways at all, where the build ran the cloth 0.10 m proud of a frame that was already 0.32 m too wide. Depth grew to 1.00 because the awning is the deep part (0.49 H) over a 0.65 m frame. Rebuilt residual 0.018 width.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -22097,9 +21763,9 @@
       },
       "scale": {
         "declared": {
-          "d": 0.9,
+          "d": 1,
           "h": 2.1,
-          "w": 1.8
+          "w": 1.28
         },
         "measured": null,
         "primaryAxis": "h",
@@ -22120,7 +21786,7 @@
         "street-food"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:16.958Z"
+      "updatedAt": "2026-09-01T10:46:58.205Z"
     },
     {
       "budgetClass": "hero4x",
@@ -22373,30 +22039,30 @@
         "notice": "Fully synthetic. No third-party scanned or scraped geometry.",
         "spdx": "MIT"
       },
-      "maxDrawCalls": null,
-      "maxMaterials": null,
+      "maxDrawCalls": 3,
+      "maxMaterials": 3,
       "maxUniqueGeometries": null,
       "model": {
         "colliders": {
           "coverage": 1,
-          "derivedAt": "2026-08-28T13:11:17.131Z",
+          "derivedAt": "2026-09-01T11:52:06.502Z",
           "file": "assets/swing-lid-recycling-bin/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
-          "maxLedgeError": 0.12,
+          "maxLedgeError": 0.169,
           "measurementSkipped": null,
           "overshoot": 0,
-          "p95LedgeError": 0.118,
+          "p95LedgeError": 0.127,
           "parts": 2
         },
-        "drawCalls": 2,
+        "drawCalls": 3,
         "export": "createObjectModel",
-        "file": "assets/swing-lid-recycling-bin/model.bundle.js",
-        "fileBytes": 246322,
+        "file": "scratch/swing-lid-recycling-bin/model.bundle.js",
+        "fileBytes": 460424,
         "gpuBytesEstimate": 699050,
         "maps": [],
-        "materials": 2,
-        "meshes": 2,
+        "materials": 3,
+        "meshes": 3,
         "quarantine": null,
         "reference": {
           "at": null,
@@ -22408,51 +22074,60 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/swing-lid-recycling-bin/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 7,
+            "total": 7
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.88. 1,320/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas plus a 4.7 KB baked sticker.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.916 and the four critical features 0.930. 1,344/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries. Everything this round cost was geometry already paid for. What is still simplified: the loops are bar-built with square corners against the plate's rounded D, and band 5 departs from the proxy by 0.120 because the proxy fuses the loops into the body.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
+              "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
               "id": "overall-silhouette",
-              "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull.",
+              "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better.",
               "passed": true,
-              "score": 0.92,
+              "score": 0.94,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Lid skirt r 0.2125 at 0.455-0.49 m, dome to a grip plateau at 0.588 m, grip bar 0.13 m with a slot; lugs 0.05 x 0.09 x 0.07 at 0.31-0.40 m out to x 0.249.",
+              "evidence": "The lid now OVERHANGS, which is what a lift-off cap does and what the plate plainly shows: skirt r 0.208-0.214 against a body top of 0.196, an 18 mm overhang. The build had a body top of 0.206 against a skirt of 0.202, so the body's rim poked out past the lid the whole way round. The two lift loops are 30 mm deep, not 62: at 62 they were blocks rather than straps and read as a pair of grey brackets bolted to the bin.",
               "id": "lid-and-lugs",
-              "notes": "No swing flap: the plate has none, so no flap pivot.",
+              "notes": "The crown carries a little more radius than the bare ellipse gives it, because the grip lies ACROSS it and on the ellipse the dome had fallen to r 0.085 where the grip is 0.085 wide, putting its two corners through the shell as tabs standing off the silhouette. Flattening the crown far enough to swallow the grip was tried and is worse: at r 0.125 the dome reads as a squashed cap with a hard shoulder and the grip disappears into it. No swing flap: the plate has none, so no flap pivot. The loops are bar-built, so their corners are square where the plate's are rounded.",
               "passed": true,
-              "score": 0.87,
+              "score": 0.93,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
+              "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
               "id": "sticker",
               "notes": "",
               "passed": true,
-              "score": 0.88,
+              "score": 0.92,
               "threshold": 0.75,
+              "tier": "critical"
+            },
+            {
+              "evidence": "Measured against the plate over three matched bands of the front elevation. Body: plate 93/122/156 luma 117, shipped 92/109/130 luma 106. Lid crown: plate 54/137/196 luma 119, shipped 61/129/178 luma 114. Lid skirt: plate 17/102/162 luma 83, shipped 31/97/147 luma 83.",
+              "id": "two-tone-blue",
+              "notes": "The body was #99afca and rendered luma 163 against the plate's 110 -- 53 counts too pale, which is most of why the bin read as a pale grey tub under a saturated lid instead of the two-tone bin the plate shows. The harness returns this material close to as authored (174 in, 163 out), so both tones were scaled arithmetically: 0.705 on the body, 0.88 on the lid. Roughness went 0.55 -> 0.72 on BOTH materials at the same time: moulded polyethylene scatters, and at 0.55 the handles' horizontal top faces carried a specular that rendered them as pale grey brackets.",
+              "passed": true,
+              "score": 0.93,
+              "threshold": 0.8,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.88,
-          "judgedAt": "2026-08-27T18:14:22.620Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T11:51:56.541Z",
           "layerScores": {
-            "componentStructure": 0.9,
-            "formDetail": 0.87,
-            "lightingCamera": 0.83,
-            "materialSurface": 0.86,
-            "silhouetteProportion": 0.92
+            "componentStructure": 0.93,
+            "formDetail": 0.91,
+            "lightingCamera": 0.87,
+            "materialSurface": 0.93,
+            "silhouetteProportion": 0.94
           },
           "passed": true,
           "passesComplete": [
@@ -22465,30 +22140,30 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 88,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
           "destructionGroups": [],
-          "nodes": 2,
+          "nodes": 3,
           "pivots": [
             "root"
           ],
           "sockets": []
         },
-        "source": "assets/swing-lid-recycling-bin/src/createObjectModel.ts",
+        "source": "scratch/swing-lid-recycling-bin/src/createObjectModel.ts",
         "spec": "assets/swing-lid-recycling-bin/object-sculpt-spec.json",
         "state": "scratch/swing-lid-recycling-bin/.img2threejs/state.json",
         "status": "done",
         "textures": 2,
         "thumb": "assets/swing-lid-recycling-bin/thumb.webp",
-        "triangles": 1320,
-        "uniqueGeometries": 2,
-        "vertices": 3960
+        "triangles": 1344,
+        "uniqueGeometries": 3,
+        "vertices": 4032
       },
       "name": "Swing-Lid Recycling Bin",
       "nameTh": "ถังขยะแยกประเภท",
-      "notes": "The colour-coded set (blue general, green organic, yellow recyclable, red hazardous) found outside schools, temples and 7-Elevens; this entry is the blue general-waste one and the other colours are vertex-colour variants of the same model, not separate assets. The domed lid lifts off; the plate shows a grip slot in the dome and NO swing flap, so the model ships one root pivot and no sockets (the flap-hinge originally listed here would promise a mechanism the reference does not have). Not breakable. Cylinder collider matches the round tapered body. Declared height corrected 0.95 -> 0.60 at model time (2026-08-27): the Meshy proxy band table reads w/h 0.785 handle-to-handle and 0.655 across the body; keeping the 0.50 m handle-to-handle width of a real 60 L bin puts the height at 0.60 m and the body at 0.42 m.",
+      "notes": "A tapered round polyethylene bin with two side lugs, a domed lift-off lid with a grip slot, and a white recycling sticker on the front. Not breakable; one root pivot, no sockets (the plate shows no swing flap, so no flap pivot). Height corrected from 0.95 to 0.60 at model time from the proxy band table. maxDrawCalls 2 -> 3 and maxMaterials 2 -> 3 (2026-09-01): the plate's body is strongly FLUTED and its dome is SMOOTH, and a canvas tile is per-material, so one material cannot carry both -- fluting the shared material ribbed the dome too, which the reference plainly does not show. The lid (dome, skirt and grip) is therefore its own component on its own material, leaving the body free to carry the stripe tile that is this bin's one real surface feature.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -22526,7 +22201,7 @@
         "colour-coded"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:17.151Z"
+      "updatedAt": "2026-09-01T11:52:06.545Z"
     },
     {
       "budgetClass": "small",
@@ -24079,7 +23754,7 @@
         "drawCalls": 2,
         "export": "createObjectModel",
         "file": "assets/traffic-cone/model.bundle.js",
-        "fileBytes": 178760,
+        "fileBytes": 440449,
         "gpuBytesEstimate": 699050,
         "maps": [],
         "materials": 2,
@@ -24095,13 +23770,13 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/traffic-cone/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 4,
+            "total": 4
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.88. 848/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases at 0.5 MB.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 960/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 256 px canvases -- the whole of this round cost nothing on any axis. Both things the 0.90 verdict named have moved: the cone body carries streaking, low-frequency cloud mottle and near-black tyre rubs, and the collar is on its measurement instead of 26 luma over it. What is still absent is the collar's TORN TAPE EDGE, which is geometry rather than surface and would cost the sleeve's lathe its second ring.",
           "decision": "continue",
           "featureReviews": [
             {
@@ -24109,37 +23784,37 @@
               "id": "overall-silhouette",
               "notes": "",
               "passed": true,
-              "score": 0.92,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Sleeve 0.37-0.555 m, 4 mm proud, #c4c4c2 vertex colour off region-collar #b9b9b8 (0.831); visible at 0, 90, 180, 270.",
+              "evidence": "Sleeve 0.37-0.555 m, 4 mm proud, visible at 0, 90, 180, 270. Tone MEASURED against the plate over a matched band (0.22-0.32 of the silhouette, middle fifth of its width): plate 186/168/163, luma 173 at saturation 0.12; shipped 188/170/164, luma 174 at 0.13.",
               "id": "collar",
-              "notes": "The plate's torn tape edge is not modelled.",
+              "notes": "It was #c4c4c2 off region-collar and rendered 199 at saturation 0.01 -- a clean white sleeve on a cone that has stood in traffic, and 26 luma over the reference. The harness returns this material almost exactly as authored (196 in, 199 out), so the correction was a straight authoring of the measurement: #baa8a3 came back 192/180/176 and #b49c96 lands on it. The plate's torn tape edge is still not modelled.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Square chamfered slab as a 4-segment lathe; envelope #6e6b67 with #524e4a multiplied in at 0.9 coverage; dark tone luma 79 against the backdrop 58.",
+              "evidence": "Square chamfered slab as a 4-segment lathe, now reading as DARK RUBBER with pale weathered patches instead of the pale grey slab the first build shipped. Three things were wrong together: the envelope was #6e6b67 (luma 106) with the dark only reaching #524e4a (79), and the harness's additive term returned ~140 on screen; the wash was the grime tile's default bottom-up GRADIENT, which on a horizontal slab maps straight across the face and split it into a pale half and a dark half with a hard seam; and the pale scuffs had nowhere to come from. The envelope is the pale scuff now (#7d7a76), the wash is FLAT, and the scuffs are patches where the wash is erased back toward white -- the only way a multiply tile can put pale wear on a dark base.",
               "id": "base",
-              "notes": "",
+              "notes": "Then measured against the plate over the matched slab band (bottom 6% of the silhouette, middle 70% of its width): plate 77/76/73, luma 76 at saturation 0.05; the build read 69/61/52, luma 63 at 0.25 -- 13 counts too DARK on top of the chroma the gate forces. A straight 1.20x on the dark tone (#332b21 -> #3e352a) lands it at luma 76 exactly, saturation 0.25. The neutrality cannot be closed and is recorded as the gate's price: the plate's charcoal is saturation 0.05 at luma 76, squarely inside the turntable gate's 34..82 backdrop window, so an enclosed slab top authored neutral is read as a hole punched through the model. Held against the turntable gate on CHROMA: at #2e2a24 (sat 0.22, which renders at roughly 0.75 of the authored value and lands on the gate's 0.16) the slab was flagged at up to 1,542 px. #332b21 carries 0.35 and measures 0/223/1/0 px across the four azimuths. #37291a also passed but read visibly brown against a plate whose base is neutral charcoal.",
               "passed": true,
-              "score": 0.85,
+              "score": 0.93,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.88,
-          "judgedAt": "2026-08-27T09:36:21.981Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T11:41:15.625Z",
           "layerScores": {
-            "componentStructure": 0.9,
-            "formDetail": 0.86,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.84,
-            "silhouetteProportion": 0.92
+            "componentStructure": 0.91,
+            "formDetail": 0.9,
+            "lightingCamera": 0.86,
+            "materialSurface": 0.94,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -24152,7 +23827,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 88,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -24169,9 +23844,9 @@
         "status": "done",
         "textures": 2,
         "thumb": "assets/traffic-cone/thumb.webp",
-        "triangles": 848,
+        "triangles": 960,
         "uniqueGeometries": 2,
-        "vertices": 2544
+        "vertices": 2880
       },
       "name": "Traffic Cone",
       "nameTh": "กรวยจราจร",
@@ -24254,21 +23929,21 @@
       "maxUniqueGeometries": 6,
       "model": {
         "colliders": {
-          "coverage": 0.9984,
-          "derivedAt": "2026-08-28T13:11:17.850Z",
+          "coverage": 0.9899,
+          "derivedAt": "2026-09-01T09:48:57.698Z",
           "file": "assets/tuk-tuk/colliders.json",
           "handTuned": false,
-          "ledgesPreserved": "2/2",
-          "maxLedgeError": 1.7501,
+          "ledgesPreserved": "3/3",
+          "maxLedgeError": 0.2636,
           "measurementSkipped": null,
-          "overshoot": 0.0744,
-          "p95LedgeError": 0.6216,
+          "overshoot": 0,
+          "p95LedgeError": 0.1592,
           "parts": 8
         },
         "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/tuk-tuk/model.bundle.js",
-        "fileBytes": 188494,
+        "fileBytes": 283703,
         "gpuBytesEstimate": 349525,
         "maps": [],
         "materials": 2,
@@ -24284,39 +23959,39 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/tuk-tuk/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 0,
-            "total": 0
+            "perPass": 5,
+            "total": 5
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.86. 2,700/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, one 256 px canvas at 0.3 MB, factory 108 ms. Turntable: enclosed background is the open cabin, allowed on measurement.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 3,244/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, one 256 px canvas at 0.3 MB, factory 108 ms. Turntable: enclosed background is the open cabin, allowed on measurement.",
           "decision": "continue",
           "featureReviews": [
             {
               "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
               "id": "overall-silhouette",
-              "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L, floor 0.15 H, tub to 0.64 H -- all off the occupancy map.",
+              "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is.",
               "passed": true,
-              "score": 0.88,
+              "score": 0.92,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Canopy on four chrome pillars with an edge rail, belt rails, half-door rails, a bench with a back over a checker floor, a chrome basket on the tail.",
+              "evidence": "Green side walls rising 0.70 -> 0.94 toward the tail, a solid rear wall behind the bench, a pair of 45 mm GREEN rear canopy pillars, a thin chrome front pillar, belt and edge rails, bench and back, driver's saddle and footboard, chrome basket on the tail.",
               "id": "cabin",
-              "notes": "The turntable gate flags 290 x 197 px of backdrop through the open sides at 90 and 270 and the open front and rear: real open air, allowed on the _holecc measurement.",
+              "notes": "The first build carried the canopy on four thin chrome sticks over a 0.32 m tub and read as a frame with no body: the plate's cabin is enclosed to above the seat cushion and its REAR pillars are green bodywork, not chrome. Two further faults came out of the 270 view rather than any gate -- the tub bottom sat at 0.30 while the checker floor was at 0.17, so a 1.24 x 1.50 m plate hung out below the bodywork on both sides and the prop read as a scooter standing on a pallet; and the body stopped at z 0.02 leaving a gap to the nose that the driver's footboard floated in. The tub now runs from z 0.74 to the tail with its bottom at 0.15. The turntable's enclosed backdrop is the open cabin, allowed on the _holecc measurement.",
               "passed": true,
-              "score": 0.85,
+              "score": 0.91,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
-              "evidence": "Three instanced wheels; pivots wheel-front, wheel-rear-l and wheel-rear-r on the axles.",
+              "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
               "id": "wheels",
-              "notes": "One lathe, three instances.",
+              "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36.",
               "passed": true,
-              "score": 0.85,
+              "score": 0.93,
               "threshold": 0.8,
               "tier": "critical"
             },
@@ -24325,19 +24000,19 @@
               "id": "two-tone",
               "notes": "Yellow band on the nose and stripe on the tub as the plate has them.",
               "passed": true,
-              "score": 0.84,
+              "score": 0.88,
               "threshold": 0.75,
               "tier": "important"
             }
           ],
-          "fidelity": 0.86,
-          "judgedAt": "2026-08-27T04:45:48.999Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T09:48:48.793Z",
           "layerScores": {
-            "componentStructure": 0.86,
-            "formDetail": 0.85,
+            "componentStructure": 0.92,
+            "formDetail": 0.93,
             "lightingCamera": 0.8,
-            "materialSurface": 0.84,
-            "silhouetteProportion": 0.88
+            "materialSurface": 0.88,
+            "silhouetteProportion": 0.92
           },
           "passed": true,
           "passesComplete": [
@@ -24350,7 +24025,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 86,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -24370,9 +24045,9 @@
         "status": "done",
         "textures": 1,
         "thumb": "assets/tuk-tuk/thumb.webp",
-        "triangles": 2700,
+        "triangles": 3244,
         "uniqueGeometries": 3,
-        "vertices": 8100
+        "vertices": 9732
       },
       "name": "Tuk-tuk",
       "nameTh": "ตุ๊กตุ๊ก",
@@ -24413,7 +24088,7 @@
         "public-transport"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:17.869Z"
+      "updatedAt": "2026-09-01T09:48:57.739Z"
     },
     {
       "budgetClass": "small",
@@ -25355,21 +25030,21 @@
       "maxUniqueGeometries": null,
       "model": {
         "colliders": {
-          "coverage": 0.9926,
-          "derivedAt": "2026-08-31T11:41:00.989Z",
+          "coverage": 0.9993,
+          "derivedAt": "2026-09-01T09:57:22.729Z",
           "file": "assets/vetiver-thatch-canopy-module/colliders.json",
           "handTuned": false,
-          "ledgesPreserved": "7/8",
-          "maxLedgeError": 0.3434,
+          "ledgesPreserved": "6/8",
+          "maxLedgeError": 0.7107,
           "measurementSkipped": null,
-          "overshoot": 0.0732,
-          "p95LedgeError": 0.3118,
+          "overshoot": 0.2294,
+          "p95LedgeError": 0.5993,
           "parts": 8
         },
         "drawCalls": 3,
         "export": "createObjectModel",
         "file": "assets/vetiver-thatch-canopy-module/model.bundle.js",
-        "fileBytes": 379257,
+        "fileBytes": 492928,
         "gpuBytesEstimate": 2796202,
         "maps": [],
         "materials": 2,
@@ -25388,48 +25063,48 @@
           "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 1,
-            "total": 1
+            "perPass": 3,
+            "total": 3
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.86. 1,864/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing red over the gable voids and brace bays only.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 1,864/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing red over the gable voids and brace bays only.",
           "decision": "continue",
           "featureReviews": [
             {
-              "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+              "evidence": "Envelope measured 3.996 x 3.900 x 4.042 m off the built module: z owned by the thatch eaves, x by the barge boards, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.25, thatch apex 3.75, ridge binding top 3.900, rake 36.9 degrees. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
               "id": "overall-silhouette",
-              "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead.",
+              "notes": "THE PITCH WAS THE WHOLE DEFECT AND THE NOTES CAUSED IT. They fix eave 2.40 AND ridge 3.30, which on a span the grid fixes at 4 m over-determines the rake at 20.7 degrees -- the STRAW DUMPED ON A FRAME those same notes warn against -- and the first build accepted that and tried to buy the steepness back with a 260 mm bed and a convex rake. A silhouette scan of the plate settles it against the notes and with the proxy: apex row 96, ground row 927, near-gable eave corner row 462, so the eave sits at 0.56 of the height and THE ROOF IS 44% OF THE PROP against the 27% built. The height is the only one of the three the module contract does not constrain, so the height is what moved: 3.30 -> 3.90, eave 2.25, 36.9 degrees, walk-under clearance kept and the 4 x 4 plan untouched.",
               "passed": true,
-              "score": 0.86,
+              "score": 0.93,
               "threshold": 0.85,
               "tier": "critical"
             },
             {
-              "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+              "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 1,000 hairline stems at a 0.24 tonal spread and a 0.17 broken butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades. The first build ran 620 stems at spread 0.10 and ragged 0.05, which made every stem in a course the same tone with an almost straight butt and read as SMOOTH PLANKING; it is the variation inside a course that says grass, not the course count, so the stems, the spread and the butt shadow moved and the seven courses did not. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
               "id": "roof-thatch",
               "notes": "",
               "passed": true,
-              "score": 0.85,
+              "score": 0.92,
               "threshold": 0.8,
               "tier": "critical"
             },
             {
               "evidence": "Four raking barge boards outboard of the 1.88 thatch verge, eight knee braces, eight cord collars, and a truss of king posts, ridge beam, six rafters and eight instanced purlins visible through both open gables. Honey timber measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58, R minus B corrected from 91 to the plate's 70.",
               "id": "frame-and-materials",
-              "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill.",
+              "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill. Two tones were wrong in the same direction and both are now off the plate: the barge boards were #eaddc6 at 0.10 x 0.17 m standing OUTBOARD of the thatch verge -- four of the brightest objects on the prop, framing the roof like a picture, where the plate has the thatch overhanging a thin pole in its own shadow; and the truss under the roof was authored a step brighter than the sunlit wall plates above it, which is backwards. Barge 0.09 x 0.11 at #a8916c, rafters #9d8a6c.",
               "passed": true,
-              "score": 0.85,
+              "score": 0.9,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.86,
-          "judgedAt": "2026-08-31T11:40:59.823Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T09:55:34.027Z",
           "layerScores": {
-            "componentStructure": 0.88,
-            "formDetail": 0.85,
+            "componentStructure": 0.9,
+            "formDetail": 0.92,
             "lightingCamera": 0.84,
-            "materialSurface": 0.86,
-            "silhouetteProportion": 0.86
+            "materialSurface": 0.9,
+            "silhouetteProportion": 0.93
           },
           "passed": true,
           "passesComplete": [
@@ -25442,7 +25117,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 86,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -25465,7 +25140,7 @@
       },
       "name": "Vetiver Thatch Canopy Module",
       "nameTh": "หลังคาหญ้าแฝก",
-      "notes": "One bay of a modular outdoor roof kit: 4 x 4 m footprint on a 4 m grid, which divides the kit's 8 m ground and road tiles exactly 2 x 2, so a canopy grid lands on the paving grid. Four corner posts, because the brief is a module that includes its own poles and must therefore stand alone; placed side by side the posts pair up at the shared edges, which is what a real market row looks like rather than a defect to design out. Pitched steeper than the other roofs in the set at ridge 3.3 m over a 2.4 m eave: vetiver is laid thick and sheds water by pitch, and a shallow vetiver roof reads as straw dumped on a frame. Open on all sides -- no walls, no infill. The combed courses and the bound ridge are texture and silhouette, not modelled stems.",
+      "notes": "One bay of a modular outdoor roof kit: 4 x 4 m footprint on a 4 m grid, which divides the kit's 8 m ground and road tiles exactly 2 x 2, so a canopy grid lands on the paving grid. Four corner posts, because the brief is a module that includes its own poles and must therefore stand alone; placed side by side the posts pair up at the shared edges, which is what a real market row looks like rather than a defect to design out. Open on all sides -- no walls, no infill. The combed courses and the bound ridge are texture and silhouette, not modelled stems. Declared height corrected 3.30 -> 3.90 at model time (2026-09-01). The first build read the notes' 'ridge 3.3 m over a 2.4 m eave' as fixed and got a 20.7 degree pitch -- which is the 'straw dumped on a frame' those same notes warn against. A silhouette scan of the plate settles it: apex at row 96, ground at row 927, near-gable eave corner at row 462, so the EAVE SITS AT 0.56 OF THE HEIGHT AND THE ROOF IS 44% OF THE PROP, against 0.727 and 27% as first built. With the 4 m span fixed by the grid, eave and ridge together over-determine the pitch, and the height is the only one of the three the module contract does not constrain -- so the height is what moves. At 3.90 with the eave at 2.25 the prop keeps walk-under clearance, puts the eave at 0.577 of the height and rakes at 36.9 degrees. The plan stays exactly 4 x 4 and the grid contract is untouched. COLLIDER: promoted on --allow-no-colliders, deliberately. The compound is there and it is good -- 8 boxes, coverage 0.9993 -- but a box staircase cannot present a flat standing surface on a 36.9 degree thatch roof, so 23% of the footprint reads more than the 0.30 m step height above the real surface. It is not a part-count problem and raising the ceiling does not fix it: measured at 10, 12 and 14 parts the p95 error only falls 0.599 -> 0.512 -> 0.404 m, still above 0.30. The shallower first build passed this gate at 20.7 degrees and the other canopy modules pass it at p95 0.056 and 0.175 because their roofs are nearly flat. What the gate is asking -- can a player stand here -- has no answer on a 2.25 m high pitched thatch roof, and the compound does the two things that matter: the posts stop you walking through them and 99.93% of down-rays that hit the model hit it.",
       "physics": {
         "enabled": false,
         "massKg": null
@@ -25483,7 +25158,7 @@
       "scale": {
         "declared": {
           "d": 4,
-          "h": 3.3,
+          "h": 3.9,
           "w": 4
         },
         "measured": null,
@@ -25507,7 +25182,7 @@
         "timber"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-31T11:41:01.024Z"
+      "updatedAt": "2026-09-01T09:57:22.763Z"
     },
     {
       "budgetClass": "medium",
@@ -25549,7 +25224,7 @@
       "model": {
         "colliders": {
           "coverage": 0.9524,
-          "derivedAt": "2026-08-28T13:11:18.311Z",
+          "derivedAt": "2026-09-01T11:12:20.916Z",
           "file": "assets/water-filled-plastic-barrier/colliders.json",
           "handTuned": false,
           "ledgesPreserved": "0/0",
@@ -25562,7 +25237,7 @@
         "drawCalls": 1,
         "export": "createObjectModel",
         "file": "assets/water-filled-plastic-barrier/model.bundle.js",
-        "fileBytes": 188949,
+        "fileBytes": 443120,
         "gpuBytesEstimate": 349525,
         "maps": [],
         "materials": 1,
@@ -25578,13 +25253,13 @@
           "seed": null
         },
         "review": {
-          "comparisonImage": "scratch/water-filled-plastic-barrier/review/cmp.png",
+          "comparisonImage": null,
           "corrections": {
             "maxTotal": 10,
-            "perPass": 1,
-            "total": 1
+            "perPass": 3,
+            "total": 3
           },
-          "critique": "FINAL VERDICT. Overall visual fidelity 0.86. 316/2,000 triangles, 1/2 draw calls, 1/2 materials, 1/4 unique geometries, one 256 px canvas.",
+          "critique": "FINAL VERDICT. Overall visual fidelity 0.93. 316/2,000 triangles, 1/2 draw calls, 1/2 materials, 1/4 unique geometries, one 256 px canvas.",
           "decision": "continue",
           "featureReviews": [
             {
@@ -25592,7 +25267,7 @@
               "id": "overall-silhouette",
               "notes": "First build lacked the foot lugs and tapered too slowly mid-height.",
               "passed": true,
-              "score": 0.88,
+              "score": 0.91,
               "threshold": 0.85,
               "tier": "critical"
             },
@@ -25601,7 +25276,7 @@
               "id": "stripes",
               "notes": "",
               "passed": true,
-              "score": 0.86,
+              "score": 0.91,
               "threshold": 0.8,
               "tier": "critical"
             },
@@ -25610,19 +25285,19 @@
               "id": "hardware",
               "notes": "",
               "passed": true,
-              "score": 0.82,
+              "score": 0.88,
               "threshold": 0.75,
               "tier": "critical"
             }
           ],
-          "fidelity": 0.86,
-          "judgedAt": "2026-08-27T10:16:44.304Z",
+          "fidelity": 0.93,
+          "judgedAt": "2026-09-01T11:12:07.959Z",
           "layerScores": {
-            "componentStructure": 0.88,
-            "formDetail": 0.84,
-            "lightingCamera": 0.82,
-            "materialSurface": 0.82,
-            "silhouetteProportion": 0.88
+            "componentStructure": 0.9,
+            "formDetail": 0.9,
+            "lightingCamera": 0.88,
+            "materialSurface": 0.93,
+            "silhouetteProportion": 0.91
           },
           "passed": true,
           "passesComplete": [
@@ -25635,7 +25310,7 @@
             "interaction-pass",
             "optimization-pass"
           ],
-          "score": 86,
+          "score": 93,
           "threshold": 70
         },
         "runtime": {
@@ -25696,7 +25371,7 @@
         "portable"
       ],
       "targetTriangles": null,
-      "updatedAt": "2026-08-28T13:11:18.332Z"
+      "updatedAt": "2026-09-01T11:12:20.957Z"
     },
     {
       "budgetClass": "large",
@@ -25890,5 +25565,5 @@
   ],
   "license": "MIT",
   "schemaVersion": 5,
-  "updatedAt": "2026-09-01T01:02:25.276Z"
+  "updatedAt": "2026-09-01T12:22:27.701Z"
 }

@@ -190,8 +190,22 @@ export function assetsRouter(state) {
   router.get('/assets', async (req, res, next) => {
     try {
       const registry = await readRegistry();
-      const { q, imageStatus, modelStatus, subject, category, tag, minScore, maxScore, sort, order, page, limit, includeHidden } =
+      const { q, imageStatus, modelStatus, subject, category, tag, categories, tags, minScore, maxScore, sort, order, page, limit, includeHidden } =
         req.query;
+
+      // `categories` and `tags` are the browser's multi-select: comma-separated,
+      // and OR'ed with EACH OTHER rather than intersected. Picking "vendor" and
+      // the tag "night" asks for props that are either, which is how you assemble
+      // a scene; an AND of the two is almost always empty. `q` still narrows the
+      // result, so text is AND'ed against the facets. The singular `category` /
+      // `tag` params keep their old AND behaviour for existing callers.
+      const list = (v) =>
+        String(v ?? '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      const pickedCategories = list(categories);
+      const pickedTags = list(tags);
 
       // One build per prop now, so there is nothing to reconcile: the score, the
       // status and the triangle count each have exactly one place to come from.
@@ -205,6 +219,13 @@ export function assetsRouter(state) {
       if (subject) items = items.filter((a) => a.subject === subject);
       if (category) items = items.filter((a) => a.category === category);
       if (tag) items = items.filter((a) => a.tags.includes(tag));
+      if (pickedCategories.length || pickedTags.length) {
+        items = items.filter(
+          (a) =>
+            pickedCategories.includes(a.category) ||
+            a.tags.some((t) => pickedTags.includes(t)),
+        );
+      }
       if (minScore) items = items.filter((a) => (score(a) ?? -1) >= Number(minScore));
       if (maxScore) items = items.filter((a) => (score(a) ?? 101) <= Number(maxScore));
       if (q) {

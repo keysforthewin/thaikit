@@ -105,7 +105,7 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 2,
+        "materialLayers": 3,
         "repetitionSystems": 0
       },
       "reasoning": [
@@ -240,16 +240,16 @@
     "qualityBar": "high",
     "definitionOfDone": [
       "Rendered model matches the reference silhouette, the 0.50 x 0.60 x 0.50 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=3 draw calls, <=3 materials, <=4 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 1,
       "microFeatureGroups": 3,
-      "materialLayers": 2,
+      "materialLayers": 3,
       "repetitionSystems": 0,
       "reviewViewpoints": 4
     },
@@ -328,7 +328,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 3 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -594,7 +594,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 3,
     "pivotInventory": [
       {
         "name": "root",
@@ -685,19 +685,19 @@
   "componentTree": [
     {
       "id": "body",
-      "name": "Tapered body, lugs and domed lid",
+      "name": "Fluted tapered body and lift handles",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Two lathes and six boxes merged into one geometry on one material: one draw call.",
+      "topologyRationale": "One lathe and six handle bars merged into one geometry: one draw call. Split from the lid because a canvas tile is per MATERIAL, and the flutes that are this bin's one real surface feature ribbed the dome too when both shared a material -- the plate's dome is smooth.",
       "materialId": "plastic",
       "material": "plastic",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Body lathe closed at 0.01 and 0.45 m, 28 segments; lid lathe from 0.455 to 0.588 m; lug boxes 0.05 x 0.09 x 0.07 at x +-0.222; grip bar 0.13 x 0.024 x 0.05 at 0.594 m.",
+        "topologyIntent": "Body lathe closed at 0.01 and 0.325 m, 28 segments; each handle a THROUGH-LOOP of three bars -- top arm and bottom arm 0.048 x 0.019 x 0.062 at y 0.3835 and 0.2985, outer rail 0.014 x 0.104 x 0.062 at x +-0.2395 -- leaving a real opening the plate shows and the first build filled in.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -706,7 +706,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The lid bottom disc at 0.455 faces down onto the body top at 0.45 with a 5 mm reveal -- opposed faces. Lug slot plates are 1.6 mm proud of the lug faces; the grip slot 1.6 mm proud of the bar front.",
+        "zFightingNote": "The body rim at 0.325 sits INSIDE the lid, whose skirt descends outside it to 0.295; the first build stopped the skirt at 0.395 against a rim at 0.40 and the rim poked through. Handle bars butt into the body wall on opposed faces.",
         "mergeNote": "One merged BufferGeometry with height UVs at 0.32 m."
       },
       "localFeatures": [
@@ -716,19 +716,14 @@
           "delivery": "lathe profile"
         },
         {
-          "id": "d2-lid",
-          "description": "lid",
-          "delivery": "lid lathe + grip boxes, vertex colour"
-        },
-        {
           "id": "d3-lugs",
-          "description": "lugs",
-          "delivery": "boxes"
+          "description": "lift handles",
+          "delivery": "three-bar through-loops"
         },
         {
           "id": "d5-grime",
-          "description": "grime",
-          "delivery": "grime canvas"
+          "description": "flutes",
+          "delivery": "18-band stripe canvas"
         },
         {
           "id": "d6-foot",
@@ -739,11 +734,11 @@
       "colorMaterialRecipe": {
         "materialId": "plastic",
         "baseColor": "#99afca",
-        "recipe": "Grey-blue as vertex colour on white with a grime canvas; lid and grip #3676a8; slots #2e5a80.",
+        "recipe": "Grey-blue as vertex colour on white with a vertical FLUTE tile; handle loops in the same tone.",
         "evidenceRef": "region-blue",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(153, 175, 202, 1.0)",
-        "secondaryAlbedo": "rgba(54, 118, 168, 1.0)",
+        "secondaryAlbedo": "rgba(46, 90, 128, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -792,6 +787,67 @@
           ],
           "notes": "Declared on the asset as cylinder: one proxy over body, lugs and lid."
         }
+      }
+    },
+    {
+      "id": "lid",
+      "name": "Domed lift-off lid",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One lathe and two grip boxes on their own material: one draw call, bought by raising maxMaterials 2 -> 3.",
+      "materialId": "lidplastic",
+      "material": "lidplastic",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Skirt from 0.295 to 0.431 m at r 0.212 -> 0.226, then an elliptical dome r = 0.226 cos t, y = 0.431 + 0.157 sin t to a 0.588 m crown. Measured off the plate row scan: the dome's widest row is 705 px at y 324 (model 0.431, r 0.226) and its top y 60 (model 0.588). Grip ridge 0.187 x 0.022 x 0.046 sunk into the crown at 0.5825 with a 0.155 m finger slot under its front lip.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The grip is sunk 0.0065 proud of the crown so its ends stay on the dome surface; the slot is 1.6 mm proud of the ridge front. The lid skirt encloses the body rim rather than meeting it.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.32 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d2-lid",
+          "description": "domed lid and grip",
+          "delivery": "lathe + grip boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "lidplastic",
+        "baseColor": "#3676a8",
+        "recipe": "Lid blue as vertex colour on white, SMOOTH -- its own material exists so the body's flute tile cannot reach it.",
+        "evidenceRef": "region-lid",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(54, 118, 168, 1.0)",
+        "secondaryAlbedo": "rgba(46, 90, 128, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
       }
     },
     {
@@ -920,6 +976,56 @@
       "materialEvidenceArchive": {
         "crop": "crops/blue.png",
         "pbrReport": "material-evidence/plastic.pbr.json",
+        "confidence": 0.741,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "lidplastic",
+      "name": "Polyethylene, lid",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#3676a8",
+      "color": "#3676a8",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/lidplastic_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#3676a8",
+        "secondary": [
+          "#3676a8",
+          "#2e5a80"
+        ],
+        "samplingNotes": "Measured as the mean of crops/lid.png. extract_pbr_evidence confidence 0.741. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d2-lid",
+          "region": "dome and grip ridge",
+          "roughness": 0.55,
+          "palette": [
+            "#3676A8"
+          ],
+          "evidence": "crops/lid.png -- #3676a8 at 0.741; vertex colour, no tile."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The lid alone, on its own material for one reason: a canvas tile is per material, and the body carries a vertical FLUTE tile. Sharing one material ribbed the dome, which the plate shows perfectly smooth.",
+          "Same shader settings as `plastic` (roughness 0.55, metalness 0) -- only the absence of a tile differs. Lid blue measured #3676a8 on region-lid; the render returns #4c94c2 against the plate crop's #6ca1ce.",
+          "Textureless as DECLARED: no canvas at all, which is the point of the split."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/lid.png",
+        "pbrReport": "material-evidence/lidplastic.pbr.json",
         "confidence": 0.741,
         "verdict": "pass"
       }
@@ -1073,58 +1179,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T18:14:22.026217+00:00",
+      "timestamp": "2026-09-01T11:51:55.409524+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.92,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T18:14:22.108778+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.92,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
@@ -1135,27 +1210,118 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.190979+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "timestamp": "2026-09-01T11:51:55.491491+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.572675+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.653902+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.735191+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.816508+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.896941+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-lugs",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid skirt r 0.2125 at 0.455-0.49 m, dome to a grip plateau at 0.588 m, grip bar 0.13 m with a slot; lugs 0.05 x 0.09 x 0.07 at 0.31-0.40 m out to x 0.249.",
-          "notes": "No swing flap: the plate has none, so no flap pivot."
+          "evidence": "The lid now OVERHANGS, which is what a lift-off cap does and what the plate plainly shows: skirt r 0.208-0.214 against a body top of 0.196, an 18 mm overhang. The build had a body top of 0.206 against a skirt of 0.202, so the body's rim poked out past the lid the whole way round. The two lift loops are 30 mm deep, not 62: at 62 they were blocks rather than straps and read as a pair of grey brackets bolted to the bin.",
+          "notes": "The crown carries a little more radius than the bare ellipse gives it, because the grip lies ACROSS it and on the ellipse the dome had fallen to r 0.085 where the grip is 0.085 wide, putting its two corners through the shell as tabs standing off the silhouette. Flattening the crown far enough to swallow the grip was tried and is worse: at r 0.125 the dome reads as a squashed cap with a hard shoulder and the grip disappears into it. No swing flap: the plate has none, so no flap pivot. The loops are bar-built, so their corners are square where the plate's are rounded."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
@@ -1166,26 +1332,56 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.279649+00:00",
+      "timestamp": "2026-09-01T11:51:55.977818+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.058665+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.138101+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "sticker",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
           "notes": ""
         }
       ],
@@ -1197,26 +1393,41 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.364418+00:00",
+      "timestamp": "2026-09-01T11:51:56.217151+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.297615+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "sticker",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
           "notes": ""
         }
       ],
@@ -1228,17 +1439,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.449630+00:00",
+      "timestamp": "2026-09-01T11:51:56.379717+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
@@ -1249,17 +1460,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.537413+00:00",
+      "timestamp": "2026-09-01T11:51:56.460271+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
@@ -1270,45 +1481,54 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:14:22.620150+00:00",
+      "timestamp": "2026-09-01T11:51:56.541702+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.92,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
         },
         {
           "id": "lid-and-lugs",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid skirt r 0.2125 at 0.455-0.49 m, dome to a grip plateau at 0.588 m, grip bar 0.13 m with a slot; lugs 0.05 x 0.09 x 0.07 at 0.31-0.40 m out to x 0.249.",
-          "notes": "No swing flap: the plate has none, so no flap pivot."
+          "evidence": "The lid now OVERHANGS, which is what a lift-off cap does and what the plate plainly shows: skirt r 0.208-0.214 against a body top of 0.196, an 18 mm overhang. The build had a body top of 0.206 against a skirt of 0.202, so the body's rim poked out past the lid the whole way round. The two lift loops are 30 mm deep, not 62: at 62 they were blocks rather than straps and read as a pair of grey brackets bolted to the bin.",
+          "notes": "The crown carries a little more radius than the bare ellipse gives it, because the grip lies ACROSS it and on the ellipse the dome had fallen to r 0.085 where the grip is 0.085 wide, putting its two corners through the shell as tabs standing off the silhouette. Flattening the crown far enough to swallow the grip was tried and is worse: at r 0.125 the dome reads as a squashed cap with a hard shoulder and the grip disappears into it. No swing flap: the plate has none, so no flap pivot. The loops are bar-built, so their corners are square where the plate's are rounded."
         },
         {
           "id": "sticker",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
           "notes": ""
+        },
+        {
+          "id": "two-tone-blue",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Measured against the plate over three matched bands of the front elevation. Body: plate 93/122/156 luma 117, shipped 92/109/130 luma 106. Lid crown: plate 54/137/196 luma 119, shipped 61/129/178 luma 114. Lid skirt: plate 17/102/162 luma 83, shipped 31/97/147 luma 83.",
+          "notes": "The body was #99afca and rendered luma 163 against the plate's 110 -- 53 counts too pale, which is most of why the bin read as a pale grey tub under a saturated lid instead of the two-tone bin the plate shows. The harness returns this material close to as authored (174 in, 163 out), so both tones were scaled arithmetically: 0.705 on the body, 0.88 on the lid. Roughness went 0.55 -> 0.72 on BOTH materials at the same time: moulded polyethylene scatters, and at 0.55 the handles' horizontal top faces carried a specular that rendered them as pale grey brackets."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
@@ -1321,31 +1541,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T18:14:22.026217+00:00",
+      "timestamp": "2026-09-01T11:51:55.409524+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.92,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 2; body and lid lathes at the proxy profile scaled to the corrected 0.60 m.",
+      "summary": "Blockout: body, lid and sticker at 3 draw calls of 3; body and lid lathes at the plate-measured profile, the body 10 mm slimmer at every station after the proxy band table read a constant +0.019 of H across all four of its bands.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1362,31 +1582,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.108778+00:00",
+      "timestamp": "2026-09-01T11:51:55.491491+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
-      "aiVisionScore": 0.92,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the lid re-derived from the plate row scan -- dome radius 0.206 -> 0.226 and height 0.088 -> 0.157, widest at the measured y 0.431 -- and the body rim dropped 0.45 -> 0.325 so the lift-off skirt descends outside it to 0.295 instead of the body poking through at 0.40.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.572675+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The body came in 10 mm at every station and the skirt went out, so the lid OVERHANGS. The proxy band table read the body's four bands at a flat +0.017..+0.021 of H -- a constant offset is a diameter, not a shape -- and the build had a body top of 0.206 against a skirt of 0.202, so the rim poked out past the lid all the way round on a bin whose lid is a lift-off cap.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.653902+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.92,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: envelope re-derived after the first band table read every band -0.11 -- the declared 0.95 m height was the residual, corrected to 0.60 m.",
+      "summary": "Structural pass: dome re-derived off the row scan to r 0.216 x 0.157 m at the measured y 0.431; the body rim dropped to 0.325 and slimmed to 0.196 so the 0.214 skirt encloses it with an 18 mm overhang.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1402,31 +1670,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.190979+00:00",
+      "timestamp": "2026-09-01T11:51:55.735191+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the side lugs rebuilt as real THROUGH-LOOP handles (three bars each) instead of a solid bracket with a painted slot; the dome grip widened 0.13 -> 0.187 on the plate crop measurement and sunk into the crown so its ends stay on the dome instead of hanging in air.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.816508+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The loops thinned 62 mm -> 30 mm in z. A 62 mm loop is a block, not a strap, and against a plate whose handles are flat mouldings it read as two grey brackets bolted to the bin -- the largest thing left on the prop after the lid. The grip also came down 11 mm and in 17 mm so the dome tops the bin: a plate row scan reads the silhouette's top row at 0.070 of H on the reference and 0.300 on the build, because the grip's flat top sat 5.5 mm ABOVE the dome's own apex.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:55.896941+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-lugs",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid skirt r 0.2125 at 0.455-0.49 m, dome to a grip plateau at 0.588 m, grip bar 0.13 m with a slot; lugs 0.05 x 0.09 x 0.07 at 0.31-0.40 m out to x 0.249.",
-          "notes": "No swing flap: the plate has none, so no flap pivot."
+          "evidence": "The lid now OVERHANGS, which is what a lift-off cap does and what the plate plainly shows: skirt r 0.208-0.214 against a body top of 0.196, an 18 mm overhang. The build had a body top of 0.206 against a skirt of 0.202, so the body's rim poked out past the lid the whole way round. The two lift loops are 30 mm deep, not 62: at 62 they were blocks rather than straps and read as a pair of grey brackets bolted to the bin.",
+          "notes": "The crown carries a little more radius than the bare ellipse gives it, because the grip lies ACROSS it and on the ellipse the dome had fallen to r 0.085 where the grip is 0.085 wide, putting its two corners through the shell as tabs standing off the silhouette. Flattening the crown far enough to swallow the grip was tried and is worse: at r 0.125 the dome reads as a squashed cap with a hard shoulder and the grip disappears into it. No swing flap: the plate has none, so no flap pivot. The loops are bar-built, so their corners are square where the plate's are rounded."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: lugs with slot plates, grip bar with slot, recessed foot.",
+      "summary": "Form refinement: through-loop lift handles at 30 mm deep, grip ridge brought under the dome's apex with its finger slot, recessed foot, sticker raised 40 mm onto the shoulder.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1442,31 +1758,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.279649+00:00",
+      "timestamp": "2026-09-01T11:51:55.977818+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "sticker",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.741-0.846; body and lid as vertex colours on white; slots lifted above the hole band.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the lid split onto its own material and component. A canvas tile is per MATERIAL, so the body could not be fluted without ribbing the dome, and the plate's dome is smooth. maxDrawCalls 2 -> 3 and maxMaterials 2 -> 3 on the asset to buy it.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1482,31 +1782,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.364418+00:00",
+      "timestamp": "2026-09-01T11:51:56.058665+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Both blues scaled onto their measurements (body 0.705, lid 0.88) and both roughnesses raised 0.55 -> 0.72. The body rendered luma 163 against the plate's 110.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.138101+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "sticker",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials, the lid split onto its own so it can stay smooth; both blues scaled onto matched-band plate measurements and both roughnesses raised to 0.72.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.217151+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "sticker",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: grime canvas low on the barrel; baked sticker as the second material map.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the grime canvas replaced with an 18-band vertical FLUTE tile. The plate is a clean studio product shot with no dirt at all -- the blotches were inventing weathering the reference does not have -- and its one strong surface feature is the ribbed body. 9 bands first gave a 0.071 m pitch, twice too coarse; 18 puts it at 0.036 m, the plate's ~35 flutes around the 1.26 m circumference.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1522,17 +1870,57 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.449630+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-09-01T11:51:56.297615+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "sticker",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: 18-band vertical flute tile at a 0.036 m pitch replacing an invented grime canvas; turntable clean.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/swing-lid-recycling-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T11:51:56.379717+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
@@ -1552,21 +1940,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.537413+00:00",
+      "timestamp": "2026-09-01T11:51:56.460271+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CYLINDER collider on the root, no destruction groups; the listed flap-hinge was dropped because the plate shows no flap.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one CYLINDER collider on the root, no destruction groups.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1582,49 +1970,58 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:14:22.620150+00:00",
+      "timestamp": "2026-09-01T11:51:56.541702+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.92,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.92,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.497 x 0.606 x 0.425 m at the corrected declaration; band table: mean |delta width| 0.0195, |delta depth| 0.0181; body bands 0-4 within 0.013, lug bands 5-6 within 0.03.",
-          "notes": "Band 7 -0.09 is the seam zone where the proxy is a solid hull."
+          "evidence": "Envelope 0.498 x 0.588 x 0.432 m. The body is 10 mm slimmer at every station than it was: the proxy band table read bands 0-3 -- the body's own four -- at a flat +0.017 to +0.021 of H, and a CONSTANT offset across every band is a diameter, not a shape. Those four bands now read -0.013, -0.016, -0.014 and -0.012. The dome (bands 7-8) came in 10 mm as well, from +0.044/+0.045 to +0.021/+0.029.",
+          "notes": "Band 5 reads -0.120 and is NOT chased. The reference has bands 5 and 6 at the same 0.786 -- a single mass 0.231 m in radius, wider than its own dome -- which is Meshy fusing the two lift handles into the body, exactly the defect the proxy is known for on thin separated members. Dropping the bottom arm and the rail 30 mm to close it was TRIED: it took band 4, where the reference has no lug at all, from +0.015 to +0.136, the worst number the prop has ever carried, and band 5 got worse rather than better."
         },
         {
           "id": "lid-and-lugs",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid skirt r 0.2125 at 0.455-0.49 m, dome to a grip plateau at 0.588 m, grip bar 0.13 m with a slot; lugs 0.05 x 0.09 x 0.07 at 0.31-0.40 m out to x 0.249.",
-          "notes": "No swing flap: the plate has none, so no flap pivot."
+          "evidence": "The lid now OVERHANGS, which is what a lift-off cap does and what the plate plainly shows: skirt r 0.208-0.214 against a body top of 0.196, an 18 mm overhang. The build had a body top of 0.206 against a skirt of 0.202, so the body's rim poked out past the lid the whole way round. The two lift loops are 30 mm deep, not 62: at 62 they were blocks rather than straps and read as a pair of grey brackets bolted to the bin.",
+          "notes": "The crown carries a little more radius than the bare ellipse gives it, because the grip lies ACROSS it and on the ellipse the dome had fallen to r 0.085 where the grip is 0.085 wide, putting its two corners through the shell as tabs standing off the silhouette. Flattening the crown far enough to swallow the grip was tried and is worse: at r 0.125 the dome reads as a squashed cap with a hard shoulder and the grip disappears into it. No swing flap: the plate has none, so no flap pivot. The loops are bar-built, so their corners are square where the plate's are rounded."
         },
         {
           "id": "sticker",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad over 0.14-0.29 m; the mark reads at the hero view.",
+          "evidence": "Plate crop 204 x 182 px baked to a 256 px WebP on a partial cylinder 3 mm proud following the taper, 0.84 rad, RAISED 40 mm to 0.166-0.286 m. A plate row scan puts the sticker's white between y/H 0.33 and 0.43 and the build's between 0.17 and 0.32 -- a bin whose label sat on its belly rather than its shoulder.",
           "notes": ""
+        },
+        {
+          "id": "two-tone-blue",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Measured against the plate over three matched bands of the front elevation. Body: plate 93/122/156 luma 117, shipped 92/109/130 luma 106. Lid crown: plate 54/137/196 luma 119, shipped 61/129/178 luma 114. Lid skirt: plate 17/102/162 luma 83, shipped 31/97/147 luma 83.",
+          "notes": "The body was #99afca and rendered luma 163 against the plate's 110 -- 53 counts too pale, which is most of why the bin read as a pale grey tub under a saturated lid instead of the two-tone bin the plate shows. The harness returns this material close to as authored (174 in, 163 out), so both tones were scaled arithmetically: 0.705 on the body, 0.88 on the lid. Roughness went 0.55 -> 0.72 on BOTH materials at the same time: moulded polyethylene scatters, and at 0.55 the handles' horizontal top faces carried a specular that rendered them as pale grey brackets."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.88. 1,320/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas plus a 4.7 KB baked sticker.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.916 and the four critical features 0.930. 1,344/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries. Everything this round cost was geometry already paid for. What is still simplified: the loops are bar-built with square corners against the plate's rounded D, and band 5 departs from the proxy by 0.120 because the proxy fuses the loops into the body.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1655,38 +2052,38 @@
   "performanceBudget": {
     "qualityPriority": "real-time",
     "targetTriangles": 2000,
-    "maxDrawCalls": 2,
-    "maxMaterials": 2,
+    "maxDrawCalls": 3,
+    "maxMaterials": 3,
     "maxUniqueGeometries": 4,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 2,
+        "components": 3,
         "repetitionSystems": 0,
-        "projectedTotal": 2,
-        "budget": 2,
+        "projectedTotal": 3,
+        "budget": 3,
         "headroom": 0,
-        "note": "Two components, no repetition system: 2 of 2."
+        "note": "Three components, no repetition system: 3 of 3, the ceiling raised from 2 so the smooth lid could leave the fluted body."
       },
       "materials": {
-        "projectedTotal": 2,
-        "budget": 2,
+        "projectedTotal": 3,
+        "budget": 3,
         "headroom": 0,
-        "note": "plastic and sticker: 2 of 2; the lid blue is a vertex colour."
+        "note": "plastic, lidplastic and sticker: 3 of 3."
       },
       "uniqueGeometries": {
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 4,
-        "headroom": 2,
+        "headroom": 1,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
         "measured": 1320,
         "budget": 2000,
         "headroom": 680,
-        "note": "1,320 of 2,000: two 28-segment lathes (sharp profile corners split for clean normals), six boxes and an 8-segment patch."
+        "note": "1,344 of 2,000: two 28-segment lathes (sharp profile corners split for clean normals), eight boxes and an 8-segment patch."
       }
     }
   },
@@ -1789,34 +2186,38 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.5967,
-        "aspectRatioDelta": 0.2114,
-        "scaleDelta": 0.4234,
-        "bilateralSymmetryError": 0.0124,
+        "silhouetteIoU": 0.4174,
+        "aspectRatioDelta": 0.1873,
+        "scaleDelta": 0.5901,
+        "bilateralSymmetryError": 0.007,
         "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 30.1,
+          "checked": 3,
+          "maxDeltaE": 41.32,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 8.5
+              "deltaE": 14.97
             },
             {
               "componentId": null,
-              "deltaE": 30.1
+              "deltaE": 12.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 41.32
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.597 is below threshold 0.85",
-        "aspect-ratio delta 0.211 exceeds threshold 0.05",
-        "scale delta 0.423 exceeds threshold 0.08",
+        "silhouette IoU 0.417 is below threshold 0.85",
+        "aspect-ratio delta 0.187 exceeds threshold 0.05",
+        "scale delta 0.590 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "96a7f7eb94d06dd5",
+      "renderHash": "3525ef3be860cf36",
       "passId": "blockout"
     }
   ]

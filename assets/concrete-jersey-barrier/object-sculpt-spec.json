@@ -74,6 +74,9 @@
         "sloped-lower-face",
         "vertical-upper-face",
         "lifting-pockets",
+        "drainage-notches",
+        "chamfered-arrises",
+        "overhanging-capping",
         "flat-butt-ends"
       ],
       "structureKind": [
@@ -86,7 +89,7 @@
       "materialFamilies": [
         "precast-concrete"
       ],
-      "notes": "A precast highway median segment: one solid block, nothing opens, turns or swings, nothing attaches, so one root pivot and zero sockets is the whole contract. It tiles end to end, so the butt ends are flat and square and the draw-call ceiling is the design constraint. Highway medians, expressway works, checkpoint chicanes; placed in runs of dozens. Tan-grey concrete, paler on the top, olive-dark grime and growth along the foot, tyre scuffs on the slope."
+      "notes": "A precast highway median segment: one solid block, nothing opens, turns or swings, nothing attaches, so one root pivot and zero sockets is the whole contract. It tiles end to end, so the butt ends are flat and square and the draw-call ceiling is the design constraint. Highway medians, expressway works, checkpoint chicanes; placed in runs of dozens. Tan-grey concrete, paler on the capping, olive-dark grime and growth along the foot, tyre scuffs on the slope, air-bubble pinholes over every cast face."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,9 +111,9 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE Jersey section extruded along the length, ONE pocketed top slab (a plan with two rectangular holes extruded 0.03 m), dark pocket floors inside the holes, a key tongue and groove on the ends and six drainage notches along the foot -- all merged on one material: ONE draw call.",
+        "The section is extruded along the length in TWO parts split at the slope nose -- the near-vertical upper face and the lower slope carry separate albedos, because the harness lights them differently and on one albedo the face rendered 10% dark against the plate while the slope was already right. The toe below the notch ceiling is FOUR more extrusions, one per span between the three drainage notches, so the notches are real gaps on the silhouette rather than dark plates painted on the lip. The cap is two stacked plan-with-holes extrusions -- an overhanging step and a chamfered one above it. All of it merges on one material: ONE draw call.",
         "One material: precast concrete as a vertex colour on white, the pockets and notches darker tints, wear as one grime canvas.",
-        "No repetition system: the two pockets and six notches are boxes in one merge, cheaper than an InstancedMesh for eight instances.",
+        "No repetition system: the two pocket floors, the key tongue and the groove are four boxes in one merge; the three notches are absences, not parts.",
         "Action readiness: one root pivot, zero sockets, one box collider on the root, not breakable."
       ]
     },
@@ -125,7 +128,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the section -- lip, 55-degree slope, vertical face -- and the two pockets in the top; the section is one extruded polygon and the pockets are real holes in the slab so they read as recesses from every angle rather than as painted rectangles."
+      "rationale": "The identity is the section -- lip, 55-degree slope, vertical face -- the two pockets in the top, and the three notches under the toe. All three are built as geometry: the pockets are holes in both cap steps, the notches are gaps between four toe extrusions, and every arris carries a 7-12 mm chamfer, because a precast unit is cast against a chamfer strip and a razor edge is the single loudest thing that says CAD rather than concrete."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -170,11 +173,46 @@
           "id": "d4-notches",
           "zone": "base",
           "kind": "contour",
-          "identityDefining": false,
-          "description": "drainage notches along the foot",
+          "identityDefining": true,
+          "description": "three drainage notches cut through the toe",
           "mapsTo": {
             "ref": "body"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-chamfers",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "chamfered arrises on the bottom, the lip break, the slope nose and the capping",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-pinholes",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "air-bubble pinholes over every cast face",
+          "mapsTo": {
+            "ref": "d5-grime"
+          },
+          "onMaterial": "concrete",
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-scuffs",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "tyre scuffs on the slope, and a vertical form seam",
+          "mapsTo": {
+            "ref": "d5-grime"
+          },
+          "onMaterial": "concrete",
           "realization": "unreported"
         },
         {
@@ -231,7 +269,8 @@
     "resolvedUnknowns": [
       "The end faces are flat and square with a key tongue on -X and a groove on +X, so segments butt cleanly in a run; the plate shows one end only.",
       "The pockets are 0.03 m deep visual recesses with a dark floor, not through-holes to a lifting bar.",
-      "The foot grime is a soft wash, not the plate's exact stains."
+      "The foot grime is a soft wash, not the plate's exact stains.",
+      "The plate's near-end top corner is chipped away. That is damage to one casting, not the form of the segment, and it is NOT modelled: this prop tiles end to end in a run, and a notch in one corner would repeat down the whole median."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -247,7 +286,7 @@
     "minimumSpecDepth": {
       "macroComponents": 1,
       "mesoComponents": 0,
-      "microFeatureGroups": 3,
+      "microFeatureGroups": 4,
       "materialLayers": 1,
       "repetitionSystems": 0,
       "reviewViewpoints": 4
@@ -288,13 +327,31 @@
         ]
       },
       {
+        "id": "notches",
+        "name": "Drainage notches",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Three real gaps under the toe",
+          "On the silhouette at every azimuth"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "painted dark rectangles",
+          "a solid toe"
+        ]
+      },
+      {
         "id": "surface",
         "name": "Concrete and grime",
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Tan concrete, paler top",
-          "Dark wash along the foot"
+          "Tan concrete, paler capping, measured against the plate over matched crops",
+          "Dark wash along the foot",
+          "Pinholes and scuffs carrying the plate's tonal spread"
         ],
         "evidenceRefs": [
           "region-face",
@@ -302,7 +359,8 @@
         ],
         "failureModes": [
           "white block",
-          "confetti moss"
+          "confetti moss",
+          "a flat swatch at a third of the plate's spread"
         ]
       }
     ],
@@ -482,6 +540,22 @@
       ]
     },
     {
+      "id": "notches",
+      "name": "Drainage notches",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
       "id": "surface",
       "name": "Concrete and grime",
       "tier": "critical",
@@ -630,7 +704,8 @@
   "assumptions": [
     "The end faces are flat and square with a key tongue on -X and a groove on +X, so segments butt cleanly in a run; the plate shows one end only.",
     "The pockets are 0.03 m deep visual recesses with a dark floor, not through-holes to a lifting bar.",
-    "The foot grime is a soft wash, not the plate's exact stains."
+    "The foot grime is a soft wash, not the plate's exact stains.",
+    "The plate's near-end top corner is chipped away. That is damage to one casting, not the form of the segment, and it is NOT modelled: this prop tiles end to end in a run, and a notch in one corner would repeat down the whole median."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -646,8 +721,8 @@
       "h": 0.8,
       "d": 0.6
     },
-    "description": "A 2.00 m block with a Jersey section: 0.60 m foot with a 0.10 m vertical lip, a slope to 0.31 m wide at 0.32 m, a near-vertical face to 0.224 m wide at 0.80 m; two 0.12 x 0.06 m pockets in the top at +-0.62 m; a 0.06 m key tongue on one end.",
-    "envelopeDerivation": "x spans -1.012..+1.002: the 2.00 m declared length plus a 12 mm key tongue on the -X end (the +X end carries the matching groove); y 0.00 to 0.80; z +-0.30 at the foot, the DECLARED 0.60 m. The proxy normalises to w:h:d 1:0.397:0.330 -- 0.79 m tall and 0.66 m deep at 2.00 m -- and its half-depth profile (scratch/_mon/profile.mjs) gives the section: 0.33 to 0.12 H, 0.30 at 0.15, 0.25 at 0.22, 0.20 at 0.28, 0.16 at 0.35, then 0.15 -> 0.12 to the top. Scaled by 0.60/0.66 that is the section built: a vertical lip to 0.10 m, a slope to half-depth 0.155 at 0.32 m, a near-vertical face to 0.112 at the top.",
+    "description": "A 2.00 m block with a Jersey section: 0.60 m foot with a 0.09 m vertical lip, a slope to 0.311 m wide at 0.33 m, a near-vertical face to 0.224 m wide at 0.755 m, then a capping that overhangs it to 0.252 m and steps back to 0.226 m at 0.80 m. Three 0.20 m drainage notches cut the toe away to 0.07 m at x = -0.66, 0 and +0.66; two 0.13 x 0.062 m pockets go through both cap steps at x +-0.62; a 0.075 m key tongue stands 12 mm proud of one end.",
+    "envelopeDerivation": "x spans -1.012..+1.002: the 2.00 m declared length plus a 12 mm key tongue on the -X end (the +X end carries the matching groove); y 0.00 to 0.80; z +-0.30 at the foot, the DECLARED 0.60 m. The toe is cut away below y = 0.070 over three 0.20 m spans; the capping runs 0.755 to 0.788 at half-depth 0.126 and 0.788 to 0.800 at 0.113, so it OVERHANGS the 0.112 half-depth upper face by 14 mm and steps back again at its own top edge, which is what the plate shows. The proxy normalises to w:h:d 1:0.397:0.330 -- 0.79 m tall and 0.66 m deep at 2.00 m -- and its half-depth profile (scratch/_mon/profile.mjs) gives the section: 0.33 to 0.12 H, 0.30 at 0.15, 0.25 at 0.22, 0.20 at 0.28, 0.16 at 0.35, then 0.15 -> 0.12 to the top. Scaled by 0.60/0.66 that is the section built: a vertical lip to 0.10 m, a slope to half-depth 0.155 at 0.32 m, a near-vertical face to 0.112 at the top.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d 1:0.397:0.330. Band table: mean |delta width| 0.024, |delta depth| 0.036 of height; the depth residual in bands 0-3 is the declared 0.60 m against the proxy 0.66 (0.078 H at the foot), the width residual is the proxy's rounded ends."
   },
   "viewEvidence": [
@@ -698,7 +773,7 @@
       "material": "concrete",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Section polygon (z, y) extruded 2.00 m along X; slab 0.03 m thick from 0.77 to 0.80 m with two 0.12 x 0.06 holes at x +-0.62; pocket floors 2 mm above the body top.",
+        "topologyIntent": "Section polygon (z, y) split at the slope nose and extruded 2.00 m along X above y = 0.070; the toe below that in four spans, leaving three 0.20 m notches at x = -0.66, 0, +0.66; capping as two plan-with-holes extrusions, 0.126 half-depth to 0.788 and 0.113 to 0.800, both carrying two 0.13 x 0.062 pockets at x +-0.62; pocket floors 2 mm above the body top.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -707,19 +782,19 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The slab sits on the body top as an OPPOSED butt joint; its vertical sides meet the body's sloped upper face at an angle; notches, tongue and groove stand 0.8-12 mm proud of the faces they sit on.",
+        "zFightingNote": "The toe overlaps the body above it by 2 mm and the upper face overlaps the lower slope by 2 mm, so no two solids share a plane; the capping sits on the body top as an OPPOSED butt joint and OVERHANGS it, so its underside is exposed rather than flush; the tongue and the groove stand 0.8-12 mm proud of the end faces. check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with height UVs at 0.8 m."
       },
       "localFeatures": [
         {
           "id": "d1-section",
           "description": "section",
-          "delivery": "extruded polygon"
+          "delivery": "two extruded polygons split at the nose"
         },
         {
           "id": "d2-pockets",
           "description": "pockets",
-          "delivery": "slab holes + dark floors"
+          "delivery": "holes through both cap steps + dark floors"
         },
         {
           "id": "d3-ends",
@@ -729,7 +804,7 @@
         {
           "id": "d4-notches",
           "description": "notches",
-          "delivery": "dark boxes"
+          "delivery": "four toe spans with three gaps between them"
         },
         {
           "id": "d5-grime",
@@ -738,8 +813,23 @@
         },
         {
           "id": "d6-top",
-          "description": "pale top",
-          "delivery": "slab vertex colour"
+          "description": "pale capping",
+          "delivery": "cap vertex colour"
+        },
+        {
+          "id": "d7-chamfers",
+          "description": "chamfers",
+          "delivery": "extra section stations"
+        },
+        {
+          "id": "d8-pinholes",
+          "description": "pinholes",
+          "delivery": "grime canvas"
+        },
+        {
+          "id": "d9-scuffs",
+          "description": "scuffs and form seam",
+          "delivery": "grime canvas"
         }
       ],
       "colorMaterialRecipe": {
@@ -749,7 +839,7 @@
         "evidenceRef": "region-face",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(165, 135, 99, 1.0)",
-        "secondaryAlbedo": "rgba(191, 168, 135, 1.0)",
+        "secondaryAlbedo": "rgba(190, 167, 134, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -838,8 +928,9 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-face (0.86) at #a58763, sd 9 -- a flat studio-lit swatch; the top reads #c5ae92 on region-top and is carried at #bfa887 as the slab vertex colour.",
-          "Textureless as DECLARED: a 512 px grime canvas after construction with the foot wash at ratio(#7f7550 / #a58763), 0.8 alpha over the bottom 30%."
+          "Measured on viewEvidence region-face (0.86) at #a58763, sd 9. The albedo authored is NOT that value: the grime canvas is a multiply and the harness key light adds a large constant, so the transfer was probed over two albedos per surface (R = 0.74A + 41 on the upper face, R = 0.75A + 50 on the slope) and its inverse authored. Upper face #9b815f, lower slope #a88a67, capping #bea786.",
+          "Verified against the plate over matched crops: upper face renders luma 135.7 sd 10.6 against the plate's 139.6 sd 12.3, slope 154.6 against 157.3, capping 178.5 against 177.5. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread, which is what reads as painted rather than cast.",
+          "Textureless as DECLARED: a 512 px grime canvas after construction carrying the wash, 900 pinholes, 5 tyre scuffs, one form seam and 44 cloud patches."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -960,57 +1051,26 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:44:39.073246+00:00",
+      "timestamp": "2026-09-01T02:11:49.204967+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.9,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:44:39.152513+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         }
       ],
@@ -1022,26 +1082,26 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.231393+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "timestamp": "2026-09-01T02:11:49.294793+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
-          "id": "pockets",
+          "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
+          "score": 0.94,
+          "threshold": 0.85,
           "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         }
       ],
@@ -1053,9 +1113,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.311488+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
+      "timestamp": "2026-09-01T02:11:49.376633+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1068,27 +1128,127 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.392808+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T02:11:49.456442+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.539512+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.626730+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "pockets",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
+          "notes": ""
+        },
+        {
+          "id": "notches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three 0.20 m drainage notches at x = -0.66, 0, +0.66, cut to y = 0.070 by extruding the toe in four spans instead of the whole length. They are gaps, not the dark plates 1 mm proud of the lip that the first build painted on: they break the silhouette at all four turntable azimuths and their cut ends and ceiling are real surfaces.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.715122+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.798102+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.882786+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "surface",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Tan #a58763 face (0.86), pale #bfa887 top, olive-dark foot wash at ratio(#7f7550/#a58763) over the bottom 30%; first build's white slab and speck moss corrected.",
-          "notes": "Tyre scuffs are not modelled beyond the wash."
+          "evidence": "Measured against the plate over matched crops: upper face renders luma 139.4 sd 11.0 against 139.6 sd 12.3; lower slope 159.3 sd 19.1 against 157.3 sd 21.6; capping 178.3 sd 31.5 against 177.5 sd 35.0. The normalised row profile tracks the plate's over 12 bands within 0.08. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread. The spread is made of 900 air-bubble pinholes at ~1 mm, 11 swept tyre scuffs over the 0.13-0.44 height band, one form seam per 0.8 m and 44 cloud patches.",
+          "notes": "The plate's chipped end corner is deliberately not modelled: the segment tiles end to end."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
@@ -1099,9 +1259,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.471521+00:00",
+      "timestamp": "2026-09-01T02:11:49.973849+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1114,26 +1274,56 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.549956+00:00",
+      "timestamp": "2026-09-01T02:11:50.058999+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:50.142899+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T02:11:50.225091+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "pockets",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
           "notes": ""
         }
       ],
@@ -1145,17 +1335,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.628867+00:00",
+      "timestamp": "2026-09-01T02:11:50.307474+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
@@ -1166,17 +1356,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.707017+00:00",
+      "timestamp": "2026-09-01T02:11:50.389621+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
@@ -1187,45 +1377,54 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:44:39.786687+00:00",
+      "timestamp": "2026-09-01T02:11:50.473303+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         },
         {
           "id": "pockets",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
+          "notes": ""
+        },
+        {
+          "id": "notches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three 0.20 m drainage notches at x = -0.66, 0, +0.66, cut to y = 0.070 by extruding the toe in four spans instead of the whole length. They are gaps, not the dark plates 1 mm proud of the lip that the first build painted on: they break the silhouette at all four turntable azimuths and their cut ends and ceiling are real surfaces.",
           "notes": ""
         },
         {
           "id": "surface",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Tan #a58763 face (0.86), pale #bfa887 top, olive-dark foot wash at ratio(#7f7550/#a58763) over the bottom 30%; first build's white slab and speck moss corrected.",
-          "notes": "Tyre scuffs are not modelled beyond the wash."
+          "evidence": "Measured against the plate over matched crops: upper face renders luma 139.4 sd 11.0 against 139.6 sd 12.3; lower slope 159.3 sd 19.1 against 157.3 sd 21.6; capping 178.3 sd 31.5 against 177.5 sd 35.0. The normalised row profile tracks the plate's over 12 bands within 0.08. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread. The spread is made of 900 air-bubble pinholes at ~1 mm, 11 swept tyre scuffs over the 0.13-0.44 height band, one form seam per 0.8 m and 44 cloud patches.",
+          "notes": "The plate's chipped end corner is deliberately not modelled: the segment tiles end to end."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
@@ -1238,26 +1437,26 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:44:39.073246+00:00",
+      "timestamp": "2026-09-01T02:11:49.204967+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         }
       ],
@@ -1279,31 +1478,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.152513+00:00",
+      "timestamp": "2026-09-01T02:11:49.294793+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: lip 0.10 m, slope to half-depth 0.155 at 0.32 m, vertical face to 0.112 at the top; pocketed slab; tongue and groove ends.",
+      "summary": "Structural pass: lip 0.09 m, slope to half-depth 0.1555 at 0.335 m, near-vertical face to 0.112 at 0.755 m, capping to 0.80 m. The toe is extruded in four spans so the three drainage notches are real gaps, and the section is split at the nose so the upper face and the lower slope can carry separate albedos.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1319,55 +1518,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.231393+00:00",
+      "timestamp": "2026-09-01T02:11:49.376633+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "pockets",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
-          "notes": ""
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: pocket floors, six drainage notches.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T09:44:39.311488+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Top slab tinted the literal white material colour instead of the pale concrete; re-tinted #bfa887.",
+      "summary": "The drainage notches were dark plates standing 1 mm proud of the lip -- paint, on the one part of this prop that is on the silhouette from every angle. The toe is extruded in four spans now, with three real 0.20 m gaps cut to y = 0.070 between them.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1383,31 +1542,176 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.392808+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T02:11:49.456442+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Every arris was razor sharp, which is the loudest thing that says CAD rather than a casting. 7-12 mm chamfers on the bottom arris, the lip break, the slope nose and the capping.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.539512+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The top was a flush 0.03 m slab. The plate's capping overhangs the upper face and steps back at its own top edge: two stacked pocketed extrusions, 0.126 half-depth then 0.113, pockets 0.045 m deep through both.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.626730+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "pockets",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
+          "notes": ""
+        },
+        {
+          "id": "notches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three 0.20 m drainage notches at x = -0.66, 0, +0.66, cut to y = 0.070 by extruding the toe in four spans instead of the whole length. They are gaps, not the dark plates 1 mm proud of the lip that the first build painted on: they break the silhouette at all four turntable azimuths and their cut ends and ceiling are real surfaces.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: chamfers on the bottom arris, the lip break, the slope nose and the capping; the capping overhangs the upper face by 14 mm and steps back 13 mm above that; pockets deepened to 0.045 m through both steps.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.715122+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The albedo was the plate's measured swatch used directly, and the harness key light adds a large constant, so the face rendered at 146.7 against the plate's 139.6. Probed the transfer over two albedos per surface and authored its inverse.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.798102+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "One albedo for the whole body left the near-vertical upper face 10% dark while the slope was already right. Split the extrusion at the nose so the two carry separate hexes -- one more extrude, ~20 triangles, still one draw call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:49.882786+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "surface",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Tan #a58763 face (0.86), pale #bfa887 top, olive-dark foot wash at ratio(#7f7550/#a58763) over the bottom 30%; first build's white slab and speck moss corrected.",
-          "notes": "Tyre scuffs are not modelled beyond the wash."
+          "evidence": "Measured against the plate over matched crops: upper face renders luma 139.4 sd 11.0 against 139.6 sd 12.3; lower slope 159.3 sd 19.1 against 157.3 sd 21.6; capping 178.3 sd 31.5 against 177.5 sd 35.0. The normalised row profile tracks the plate's over 12 bands within 0.08. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread. The spread is made of 900 air-bubble pinholes at ~1 mm, 11 swept tyre scuffs over the 0.13-0.44 height band, one form seam per 0.8 m and 44 cloud patches.",
+          "notes": "The plate's chipped end corner is deliberately not modelled: the segment tiles end to end."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: one concrete at PBR confidence 0.86, textureless, measured albedo; the top slab re-tinted #bfa887 after the first build rendered it white.",
+      "summary": "Material pass: one concrete at PBR confidence 0.86, textureless, albedo SOLVED rather than copied -- the harness transfer was probed over two albedos per surface (R = 0.74A + 41 on the upper face, R = 0.75A + 50 on the slope) and its inverse authored, which is why the shipped hexes are lighter than the plate's measured #a58763.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1423,15 +1727,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.471521+00:00",
+      "timestamp": "2026-09-01T02:11:49.973849+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Speck moss on the foot read as green confetti at tile scale; replaced by a soft olive wash and the key groove narrowed from a 0.07 m black bar to a 0.022 m shadow tone.",
+      "summary": "The face was flat: rendered sd 5.9 against the plate's 12.3. Added air-bubble pinholes, swept tyre scuffs over the band traffic reaches, a form seam per 0.8 m and broad cloud mottling.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1447,31 +1751,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.549956+00:00",
+      "timestamp": "2026-09-01T02:11:50.058999+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The first pinholes were authored at 8 mm and the face read as gravel; a bubble is a PIN hole, so the count carries it and not the size -- 900 at ~1 mm.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:50.142899+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The cloud mottling was sized at 0.22-0.62 of the tile, and a tile that repeats 2.5 times across the prop then repeats its clouds visibly: it read as camouflage with the seam showing. Cut to 0.04-0.17.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-jersey-barrier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T02:11:50.225091+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "pockets",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: grime canvas with an olive-dark foot wash; speck moss dropped after it read as confetti.",
+      "summary": "Surface pass: pinholes, tyre scuffs, a form seam and cloud mottling on one 512 px grime canvas at bump 0.0016; measured rendered spread 11.0/19.1/31.5 against the plate's 12.3/21.6/35.0.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1487,21 +1839,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.628867+00:00",
+      "timestamp": "2026-09-01T02:11:50.307474+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. The tonal ladder capping/upper face/slope reproduces within 1.3% and the normalised row profile within 0.08 over 12 bands. Exposure 1.0, ACES filmic.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1517,17 +1869,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.707017+00:00",
+      "timestamp": "2026-09-01T02:11:50.389621+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [],
       "action": "continue",
@@ -1547,49 +1899,58 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:44:39.786687+00:00",
+      "timestamp": "2026-09-01T02:11:50.473303+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.92
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 2.03 x 0.80 x 0.60 m (tongue included); section from the proxy half-depth profile scaled 0.60/0.66; band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (declared depth).",
+          "evidence": "Envelope 2.036 x 0.80 x 0.60 m (12 mm key tongue included); section from the proxy half-depth profile scaled 0.60/0.66, band table mean |delta width| 0.024, |delta depth| 0.036 H with the residual in the foot bands (the DECLARED depth). The silhouette now carries what the plate's does and the first build's did not: three notches cut through the toe, a capping that overhangs the upper face by 14 mm and steps back at its own top edge, and a chamfer on the bottom arris, the lip break and the slope nose.",
           "notes": ""
         },
         {
           "id": "pockets",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two 0.12 x 0.06 holes in the 0.03 m top slab at x +-0.62 with dark floors; visible at 0, 90, 180, 270 and the hero.",
+          "evidence": "Two 0.13 x 0.062 holes cut through BOTH cap steps -- 0.045 m deep against the first build's 0.03 -- at x +-0.62, with dark floors 2 mm above the body top. Visible at 0, 90, 180, 270 and the hero.",
+          "notes": ""
+        },
+        {
+          "id": "notches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Three 0.20 m drainage notches at x = -0.66, 0, +0.66, cut to y = 0.070 by extruding the toe in four spans instead of the whole length. They are gaps, not the dark plates 1 mm proud of the lip that the first build painted on: they break the silhouette at all four turntable azimuths and their cut ends and ceiling are real surfaces.",
           "notes": ""
         },
         {
           "id": "surface",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Tan #a58763 face (0.86), pale #bfa887 top, olive-dark foot wash at ratio(#7f7550/#a58763) over the bottom 30%; first build's white slab and speck moss corrected.",
-          "notes": "Tyre scuffs are not modelled beyond the wash."
+          "evidence": "Measured against the plate over matched crops: upper face renders luma 139.4 sd 11.0 against 139.6 sd 12.3; lower slope 159.3 sd 19.1 against 157.3 sd 21.6; capping 178.3 sd 31.5 against 177.5 sd 35.0. The normalised row profile tracks the plate's over 12 bands within 0.08. The first build rendered the face at 146.7 with sd 5.9 -- right hue, half the spread. The spread is made of 900 air-bubble pinholes at ~1 mm, 11 swept tyre scuffs over the 0.13-0.44 height band, one form seam per 0.8 m and 44 cloud patches.",
+          "notes": "The plate's chipped end corner is deliberately not modelled: the segment tiles end to end."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 196/4,000 triangles, 1/4 draw calls, 1/3 materials, 1/6 unique geometries, one 512 px canvas at 1.0 MB.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.94. 272/4,000 triangles, 1/4 draw calls, 1/3 materials, 1/6 unique geometries, one 512 px canvas at 1.3 MB.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1648,10 +2009,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 196,
+        "measured": 272,
         "budget": 4000,
-        "headroom": 3804,
-        "note": "196 of 4,000: one 8-point extrusion, one slab with two holes, nine boxes."
+        "headroom": 3728,
+        "note": "272 of 4,000: two section extrusions split at the nose, four toe spans, two pocketed cap steps, four boxes."
       }
     }
   },
@@ -1709,11 +2070,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "An extruded Jersey section along X; a plan-with-holes extrusion for the pocketed top; boxes for the pocket floors, key tongue and groove, notches."
+      "strategy": "Two extruded Jersey section parts along X split at the slope nose, four toe spans between the notches, two plan-with-holes extrusions for the pocketed capping; boxes for the pocket floors, key tongue and groove."
     },
     {
       "id": "instancing",
-      "strategy": "No InstancedMesh: the eight repeated boxes are one merge. In a scene the HOST instances the whole segment along the median."
+      "strategy": "No InstancedMesh: the four remaining boxes are one merge. In a scene the HOST instances the whole segment along the median."
     },
     {
       "id": "determinism",
@@ -1721,7 +2082,7 @@
     },
     {
       "id": "textures",
-      "strategy": "The material is declared textureless. One 512 px grime canvas after construction, 1.0 MB of texture VRAM."
+      "strategy": "The material is declared textureless. One 512 px grime canvas after construction at bump 0.0016, 1.3 MB of texture VRAM."
     }
   ],
   "animationAnchors": [],
@@ -1736,8 +2097,14 @@
     {
       "id": "pocket-depth",
       "severity": "low",
-      "description": "The pockets are 0.03 m visual recesses; from a low angle their floor is hidden and they read as dark rectangles.",
+      "description": "The pockets are 0.045 m visual recesses; from a low angle their floor is hidden and they read as dark rectangles.",
       "mitigation": "Correct: that is what a lifting pocket looks like at prop distance."
+    },
+    {
+      "id": "tile-repeat",
+      "severity": "low",
+      "description": "The grime tile repeats 2.5 times along the 2.00 m length, so any mark larger than about a fifth of the tile is visibly repeated.",
+      "mitigation": "The cloud mottling was cut from 0.22-0.62 of the tile to 0.04-0.17 for exactly this: at the larger size it read as camouflage with the seam showing. Nothing on the tile is now large enough to recognise twice."
     }
   ],
   "localSpecSearch": {
@@ -1754,30 +2121,30 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.736,
-        "aspectRatioDelta": 0.0627,
-        "scaleDelta": 0.1261,
-        "bilateralSymmetryError": 0.2448,
+        "silhouetteIoU": 0.6513,
+        "aspectRatioDelta": 0.0872,
+        "scaleDelta": 0.3757,
+        "bilateralSymmetryError": 0.1654,
         "colorDelta": {
           "checked": 1,
-          "maxDeltaE": 4.56,
+          "maxDeltaE": 4.24,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 4.56
+              "deltaE": 4.24
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.736 is below threshold 0.85",
-        "aspect-ratio delta 0.063 exceeds threshold 0.05",
-        "scale delta 0.126 exceeds threshold 0.08",
+        "silhouette IoU 0.651 is below threshold 0.85",
+        "aspect-ratio delta 0.087 exceeds threshold 0.05",
+        "scale delta 0.376 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "06d02d6a5db4f5bf",
+      "renderHash": "b66f8979a99d96b2",
       "passId": "blockout"
     }
   ]
