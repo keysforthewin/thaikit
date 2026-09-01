@@ -79,7 +79,7 @@ async function verifyPack(absolute) {
   const dir = path.dirname(absolute);
   const problems = [];
 
-  if (registry.schemaVersion !== 1) problems.push(`schemaVersion is ${registry.schemaVersion}, expected 1`);
+  if (registry.schemaVersion !== 2) problems.push(`schemaVersion is ${registry.schemaVersion}, expected 2`);
   if (registry.license !== 'MIT') problems.push(`license is ${registry.license}, expected MIT`);
   if (!registry.namespace?.startsWith('@')) problems.push(`bad namespace: ${registry.namespace}`);
 
@@ -90,6 +90,8 @@ async function verifyPack(absolute) {
   if (!names.has(registry.defaultItem)) problems.push(`defaultItem missing: ${registry.defaultItem}`);
 
   let previews = 0;
+  let artifacts = 0;
+  let artifactBytes = 0;
   for (const item of models) {
     const preview = item.meta?.preview;
     if (preview) {
@@ -100,6 +102,26 @@ async function verifyPack(absolute) {
       const actual = createHash('sha256').update(file.content).digest('hex');
       if (actual !== file.hash) problems.push(`${item.name}: ${file.target} hash does not match its content`);
     }
+    // Decode every artifact exactly as their installer will, and check what it
+    // checks. It throws on a stale hash rather than writing a bad image, so a
+    // mismatch here is a failed install for every consumer.
+    for (const artifact of item.artifacts ?? []) {
+      const bytes = Buffer.from(artifact.content, 'base64');
+      if (bytes.byteLength !== artifact.byteLength) {
+        problems.push(`${item.name}: artifact ${artifact.path} decodes to ${bytes.byteLength} bytes, declares ${artifact.byteLength}`);
+      }
+      if (createHash('sha256').update(bytes).digest('hex') !== artifact.hash) {
+        problems.push(`${item.name}: artifact ${artifact.path} has a stale hash`);
+      }
+      artifacts++;
+      artifactBytes += artifact.byteLength;
+    }
+  }
+
+  // A v2 registry requires every item to be a v2 item, so the array must be
+  // present even where it is empty.
+  for (const item of registry.items) {
+    if (!Array.isArray(item.artifacts)) problems.push(`${item.name}: no artifacts array (required by registryV2Schema)`);
   }
 
   // The kit item's registryDependencies are what `vibe3d add @thai-kit` walks.
@@ -115,7 +137,15 @@ async function verifyPack(absolute) {
     for (const problem of problems.slice(0, 20)) log(`  ! ${problem}`);
     throw new Error(`${problems.length} problem(s) in the built pack; nothing versioned or published`);
   }
-  return { models: models.length, items: registry.items.length, previews, namespace: registry.namespace };
+  return {
+    models: models.length,
+    items: registry.items.length,
+    previews,
+    artifacts,
+    artifactBytes,
+    schemaVersion: registry.schemaVersion,
+    namespace: registry.namespace,
+  };
 }
 
 /**
@@ -157,7 +187,11 @@ async function main() {
   run(process.execPath, ['scripts/build-vibe3d-registry.mjs', '--out', REGISTRY_OUT]);
 
   const pack = await verifyPack(path.join(REPO_ROOT, REGISTRY_OUT));
-  log(`  verified ${pack.models} models, ${pack.previews} previews, namespace ${pack.namespace}`);
+  log(
+    `  verified ${pack.models} models, ${pack.previews} previews, ` +
+      `${pack.artifacts} artifacts (${(pack.artifactBytes / 1048576).toFixed(1)} MB decoded), ` +
+      `schemaVersion ${pack.schemaVersion}, namespace ${pack.namespace}`,
+  );
 
   // Written before packing: npm reads the version off disk, not from a flag.
   pkg.version = next;
@@ -194,6 +228,7 @@ async function main() {
     models: pack.models,
     items: pack.items,
     previews: pack.previews,
+    artifacts: pack.artifacts,
     tarballBytes: tarball.tarballBytes,
   });
 }

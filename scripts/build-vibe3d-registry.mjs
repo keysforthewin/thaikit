@@ -20,9 +20,19 @@
  * `license.notice`, which leads the description: see below for why a trademark
  * caveat is not the same kind of loss as a dropped pivot list.
  *
- * Emits schemaVersion 1, which is what their reference kit (registries/scifi-kit)
- * ships and what their loader union accepts unconditionally. Version 2 adds
- * base64 `artifacts` and `representations`, neither of which this export needs.
+ * Emits schemaVersion 2, for `artifacts`. Fifteen skyline imposters and fifteen
+ * ground tiles are mostly TEXTURE -- an imposter is two triangles and a keyed
+ * RGBA plate -- and a source-only export shipped them as cards that drew
+ * nothing. A v2 item carries those images inline as base64 with a sha256 and a
+ * byte length, both of which their installer re-checks before writing them to
+ * `target`. v1 had no way to express that, and the alternative (make every
+ * consumer supply a `baseUrl`) is a pack that needs configuration to draw.
+ *
+ * Their `registryV2Schema` requires EVERY item to be a v2 item, so all 135
+ * carry an `artifacts` array -- empty for the 104 props that synthesise their
+ * surfaces at construction, which is most of them. `representations` is the
+ * other v2 addition and is not used: it describes compiled topology, and these
+ * props are the source.
  *
  * Usage:
  *   node scripts/build-vibe3d-registry.mjs
@@ -36,6 +46,7 @@ import path from 'node:path';
 
 import { readRegistry, REPO_ROOT } from '@thaikit/registry-core';
 
+import { domReport } from './lib/dom-guard.mjs';
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 
 /**
@@ -61,6 +72,9 @@ const DEFAULT_THREE = '>=0.185.0';
 
 /** Their address grammar, from packages/schema: registryAddressSchema. */
 const ADDRESS_RE = /^@[a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9-]*)?$/;
+/** Their registryArtifactSchema pins the hash to lowercase hex sha256. */
+const ARTIFACT_HASH_RE = /^[a-f0-9]{64}$/;
+
 /** Their item-name grammar. Leading digits are allowed, so `7-eleven-...` is fine. */
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
 
@@ -163,7 +177,7 @@ function previewHelpers(source) {
  * what img2threejs reviewed. Named `model.ts` because that is where the
  * vibe-model skill looks for `createModel`.
  */
-function entryModule(asset, helpers) {
+function entryModule(asset, helpers, hasArtifacts) {
   // Their catalog types the preview against `three/webgpu`, and their own models
   // import from it. That is safe to cross: three's `three.module.js` and
   // `three.webgpu.js` both re-export the scene graph from a shared
@@ -229,6 +243,18 @@ function defaultFrameCamera(
   if (!helpers.frameCamera) for (const n of ['Box3', 'Vector3']) threeNames.add(n);
   const threeImports = [...threeNames].sort().map((n) => `  ${n},`).join('\n');
 
+  // A prop whose images ship as v2 `artifacts` needs to find them at runtime.
+  // In thaikit the bundle is EVALUATED and cannot see its own URL, which is why
+  // the factories take bare filenames plus a `baseUrl`; here the wrapper is an
+  // ordinary ES module sitting beside its own installed `maps/`, so
+  // `import.meta.url` IS that answer, and bundlers resolve it to an emitted
+  // asset. Defaulted rather than forced: a consumer who relocates the images
+  // passes their own baseUrl and this stops applying.
+  const baseUrlConst = hasArtifacts
+    ? "\n/** Where this prop's shipped images live: beside this module. */\nconst BASE_URL = new URL('.', import.meta.url).href;\n"
+    : '';
+  const baseUrlArg = hasArtifacts ? '{ baseUrl: BASE_URL, ...options }' : 'options';
+
   const lightsCall = helpers.lookDevLights ? `${helpers.lookDevLights}('neutral')` : 'defaultLookDevLights()';
   const frameCall = helpers.frameCamera ? helpers.frameCamera : 'defaultFrameCamera';
 
@@ -254,8 +280,9 @@ export type { ProceduralModelOptions } from './createObjectModel';
  * that already lives inside the module -- it is deliberately not a second source
  * of truth -- so it is left undefined here.
  */
+${baseUrlConst}
 export function createModel(options: ProceduralModelOptions = {}): Group {
-  return createObjectModel(undefined, options);
+  return createObjectModel(undefined, ${baseUrlArg});
 }
 
 /** The shape Vibe3D's docs catalogue expects back from \`createPreview\`. */
@@ -362,26 +389,56 @@ export default createModel;
 `;
 }
 
+/** Their v2 artifact media types, by extension. Images only: nothing else ships. */
+const MEDIA_TYPES = {
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+};
+
 /**
- * Cheap static check that the source still runs outside a browser.
+ * A prop's shipped images, as schemaVersion 2 `artifacts`.
  *
- * Vibe3D captures previews and exports GLBs headlessly, where a bare
- * `document.createElement` throws. This cannot prove safety -- it only reports
- * DOM references and whether the file guards for a DOM at all -- so it warns
- * rather than failing. A prop with DOM references and no guard is the shape of
- * the bug worth looking at.
+ * These are the one thing a source-only export cannot carry: an imposter IS two
+ * triangles plus a keyed RGBA texture, and a road tile's albedo is most of what
+ * it looks like. Inlined base64 beside the source, which their installer
+ * decodes, length-checks and hashes before writing to `target`.
+ *
+ * `maps/` is taken WHOLESALE rather than by parsing the source for filenames:
+ * the tiles build theirs from a MAPS array (`loadMap(base, `${name}.webp`)`),
+ * so there is no literal to match. The .ktx2 siblings are deliberately left
+ * behind -- those exist for the level bake's GPU upload path, and nothing in a
+ * factory loads them.
  */
-function domReport(source) {
-  const lines = source.split('\n');
-  const hits = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (/\/\/|^\s*\*/.test(lines[i])) continue;
-    if (/\b(?:document|window|navigator)\s*\./.test(lines[i]) || /new\s+THREE\.TextureLoader\b/.test(lines[i])) {
-      hits.push(i + 1);
-    }
+async function collectArtifacts(asset) {
+  const dir = path.join(REPO_ROOT, 'assets', asset.id, 'maps');
+  let names;
+  try {
+    names = await fs.readdir(dir);
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
   }
-  const guards = (source.match(/typeof\s+document\s*===\s*'undefined'/g) ?? []).length;
-  return { hits, guards };
+
+  const artifacts = [];
+  for (const name of names.sort()) {
+    const mediaType = MEDIA_TYPES[path.extname(name).toLowerCase()];
+    if (!mediaType) continue;
+    const bytes = await fs.readFile(path.join(dir, name));
+    artifacts.push({
+      path: posix(path.join('assets', asset.id, 'maps', name)),
+      target: `{models}/${asset.id}/maps/${name}`,
+      mediaType,
+      encoding: 'base64',
+      content: bytes.toString('base64'),
+      // Their schema pins this to lowercase hex sha256 of the DECODED bytes,
+      // and their installer recomputes it before writing.
+      hash: sha256(bytes),
+      byteLength: bytes.byteLength,
+    });
+  }
+  return artifacts;
 }
 
 async function readIfPresent(absolute) {
@@ -400,16 +457,17 @@ async function buildItem(asset, previewTarget) {
   const sourceAbsolute = path.join(REPO_ROOT, sourceRelative);
   const source = await fs.readFile(sourceAbsolute, 'utf8');
 
-  const { hits, guards } = domReport(source);
-  if (hits.length && guards === 0) {
+  const { hits, guarded } = domReport(source);
+  if (!guarded) {
     log(
-      `  ! ${asset.id}: ${hits.length} DOM reference(s) and no \`typeof document\` guard ` +
+      `  ! ${asset.id}: ${hits.length} DOM reference(s) and no DOM or baseUrl guard anywhere ` +
         `(lines ${hits.slice(0, 8).join(', ')}${hits.length > 8 ? ', ...' : ''}). ` +
         'Vibe3D previews and exports headlessly; this will throw there.',
     );
   }
 
-  const entry = entryModule(asset, previewHelpers(source));
+  const artifacts = await collectArtifacts(asset);
+  const entry = entryModule(asset, previewHelpers(source), artifacts.length > 0);
   const files = [
     {
       path: posix(sourceRelative),
@@ -469,6 +527,7 @@ async function buildItem(asset, previewTarget) {
     dependencies: [`three@${DEFAULT_THREE}`],
     registryDependencies: [],
     files,
+    artifacts,
     meta: {
       title: asset.name,
       description,
@@ -505,6 +564,24 @@ function validate(registry) {
     }
     for (const file of item.files) {
       if (!file.path || !file.target || !file.hash) problems.push(`${item.name}: incomplete file entry`);
+    }
+    // Their registryArtifactSchema is strict, and their installer throws on a
+    // mismatched length or a stale hash rather than writing a bad image. Catch
+    // both here, where the fix is a re-export rather than a consumer's failed
+    // install.
+    for (const artifact of item.artifacts ?? []) {
+      if (!ARTIFACT_HASH_RE.test(artifact.hash)) {
+        problems.push(`${item.name}: artifact hash is not lowercase hex sha256: ${artifact.path}`);
+      }
+      if (artifact.encoding !== 'base64') problems.push(`${item.name}: artifact encoding must be base64`);
+      if (!artifact.mediaType) problems.push(`${item.name}: artifact has no mediaType: ${artifact.path}`);
+      const decoded = Buffer.from(artifact.content, 'base64');
+      if (decoded.byteLength !== artifact.byteLength) {
+        problems.push(`${item.name}: artifact byteLength disagrees with its content: ${artifact.path}`);
+      }
+      if (sha256(decoded) !== artifact.hash) {
+        problems.push(`${item.name}: artifact hash disagrees with its content: ${artifact.path}`);
+      }
     }
   }
   if (!names.has(registry.defaultItem)) problems.push(`defaultItem does not exist: ${registry.defaultItem}`);
@@ -568,11 +645,12 @@ async function main() {
     dependencies: [],
     registryDependencies: modelNames.map((name) => `${namespace}/${name}`),
     files: [],
+    artifacts: [],
   });
 
   const out = {
     $schema: 'https://vibe3d.dev/schema/registry.json',
-    schemaVersion: 1,
+    schemaVersion: 2,
     namespace,
     name: 'Thai Kit',
     description:
@@ -605,9 +683,18 @@ async function main() {
   const bytes = Buffer.byteLength(JSON.stringify(out));
   log(`wrote ${outRelative} (${items.length} items, ${(bytes / 1024).toFixed(0)} KB)`);
 
+  const artifactCount = items.reduce((n, item) => n + (item.artifacts?.length ?? 0), 0);
+  const artifactBytes = items.reduce(
+    (n, item) => n + (item.artifacts ?? []).reduce((m, a) => m + a.byteLength, 0),
+    0,
+  );
+
   ok({
     out: posix(path.relative(REPO_ROOT, outAbsolute)),
     namespace,
+    schemaVersion: out.schemaVersion,
+    artifacts: artifactCount,
+    artifactBytes,
     models: items.filter((item) => item.type === 'vibe3d:model').length,
     items: items.length,
     previews: previews.length,
