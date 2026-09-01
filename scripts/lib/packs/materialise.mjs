@@ -1,6 +1,11 @@
 /**
  * Write a vibe3d registry's inlined sources to disk, the way its CLI would.
  *
+ * Both halves of an item: `files` are TEXT (the TypeScript a pack ships) and
+ * `artifacts` are BINARY, base64 in the registry, added by schemaVersion 2 and
+ * the only way a source-first pack can carry an image. Dropping the artifacts
+ * silently is how a pack of imposters installs as cards that draw nothing.
+ *
  * `{models}` and `{vibe3d}` are the two roots vibe3d's installer knows; here
  * they land under one source tree so a single alias map covers every import a
  * pack can make. The runtime templates (`@vibe3d/model.ts`, `ownership.ts`,
@@ -27,6 +32,7 @@ export function targetToPath(srcDir, target) {
 export async function materialise(registry, srcDir, { templatesDir, warn }) {
   await fs.rm(srcDir, { recursive: true, force: true });
   let files = 0;
+  let artifacts = 0;
   for (const item of registry.items ?? []) {
     for (const f of item.files ?? []) {
       if (typeof f.content !== 'string') continue;
@@ -38,6 +44,25 @@ export async function materialise(registry, srcDir, { templatesDir, warn }) {
       await fs.mkdir(path.dirname(abs), { recursive: true });
       await fs.writeFile(abs, f.content, 'utf8');
       files += 1;
+    }
+    // schemaVersion 2 artifacts. Their installer decodes, then checks the byte
+    // length AND the hash before writing, and refuses rather than putting a bad
+    // image on disk; do the same, so a corrupt pack fails here instead of
+    // rendering as an inexplicably wrong texture later.
+    for (const a of item.artifacts ?? []) {
+      if (typeof a.content !== 'string') continue;
+      const abs = targetToPath(srcDir, a.target);
+      const bytes = Buffer.from(a.content, 'base64');
+      if (typeof a.byteLength === 'number' && bytes.byteLength !== a.byteLength) {
+        throw new Error(`${item.name}: artifact ${a.path} decodes to ${bytes.byteLength} bytes, declares ${a.byteLength}`);
+      }
+      if (a.hash) {
+        const actual = createHash('sha256').update(bytes).digest('hex');
+        if (actual !== a.hash) throw new Error(`${item.name}: artifact ${a.path} has a stale hash`);
+      }
+      await fs.mkdir(path.dirname(abs), { recursive: true });
+      await fs.writeFile(abs, bytes);
+      artifacts += 1;
     }
   }
   if (templatesDir) {
@@ -52,5 +77,5 @@ export async function materialise(registry, srcDir, { templatesDir, warn }) {
       files += 1;
     }
   }
-  return { files };
+  return { files, artifacts };
 }
