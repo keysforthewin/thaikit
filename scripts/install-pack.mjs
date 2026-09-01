@@ -222,6 +222,25 @@ async function install({ source, refresh, packId, previews = true }) {
       const built = await bundleItem({ entryAbs, wrapperFile, outFile, srcDir });
       record.bundle = `/packs/${ns}/${buildTag}/${it.name}/model.bundle.js`;
       record.bytes = built.bytes;
+
+      // A v2 item's `artifacts` are its images, and materialise() has already
+      // written them under `src/models/<id>/` -- which is where vibe3d's own
+      // installer puts them, beside the TypeScript that a consuming app
+      // imports. thaikit does not import that source: it EVALUATES the bundle,
+      // and every one of its loaders (render/harness.html, the level editor's
+      // instances.js, Viewer.jsx) derives `baseUrl` from the BUNDLE's own URL.
+      // So the images have to sit beside the bundle as well, or a factory
+      // resolves `maps/albedo.webp` against a directory holding one .js file
+      // and silently draws an untextured card. That is what shipped fifteen
+      // blank skyline imposters.
+      for (const artifact of it.artifacts ?? []) {
+        const from = targetToPath(srcDir, artifact.target);
+        const rel = path.relative(path.join(srcDir, 'models', it.name), from);
+        if (rel.startsWith('..')) continue;          // not this item's own file
+        const to = path.join(outDir, rel);
+        await fs.mkdir(path.dirname(to), { recursive: true });
+        await fs.copyFile(from, to);
+      }
       for (const w of built.warnings) warnings.push(`${it.name}: ${w}`);
 
       const preview = it.meta?.preview;
