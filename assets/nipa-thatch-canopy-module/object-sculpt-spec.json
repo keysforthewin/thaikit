@@ -1,0 +1,1957 @@
+{
+  "targetName": "Nipa Thatch Canopy Module",
+  "targetId": "nipa-thatch-canopy-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "modular-canopy-bay",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "four-corner-posts",
+        "post-and-plate-frame",
+        "knee-braced",
+        "low-gable",
+        "thatched-courses",
+        "open-all-sides"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "weathered-sawn-timber",
+        "nipa-palm-thatch"
+      ],
+      "notes": "ONE BAY of a modular outdoor roof kit: a 4 x 4 m cell on a 4 m grid, so a canopy grid lands two by two on the kit's 8 m ground and road tiles. Nothing on it opens, turns or swings and nothing attaches to it -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides: no walls, no infill, no hanging goods. Market rows, food courts, bus stops and yard shelters across rural and peri-urban Thailand; a row of bays butted post to post is what a covered market is. Silver-brown sawn hardwood gone grey, palm thatch bleaching from tan to straw and blackening in the course shadows."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE timber merge -- four posts, four head plates, eight knee braces, two king posts, the ridge beam, the ridge plank, six rafters and eight cord lashings; ONE thatch height grid carrying both slopes and the ragged eave; ONE InstancedMesh of eight purlins: THREE draw calls of 4.",
+        "Two materials of three: sawn timber (vertex colours -- post, plate, rafter, ridge plank, cord) and thatch. Both textureless, each with one post-construction canvas.",
+        "Repetition system: the purlin is the one part repeated at a fixed station, eight of them at four heights on each slope.",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "At distance the identity is a low thatched gable on four posts with a ragged eave; close up it is the course structure of the thatch and the tied post-and-plate frame under it. The registry notes forbid modelled fronds, so the courses are a canvas and the eave silhouette is real geometry -- a per-column drop in the height grid's last rows, which is the one place a flat roof reads as thatch."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 150 mm sawn posts at the module corners, outer faces on the cell edge",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-plates",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a head plate on all four sides at 2.06-2.22 m with eight knee braces",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-truss",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two king posts, a ridge beam and three pairs of rafters, seen through the open gable ends",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-courses",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "overlapping thatch courses with lit butts and shadow under each",
+          "mapsTo": {
+            "ref": "d4-courses"
+          },
+          "onMaterial": "thatch",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-eave",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a ragged eave hanging up to 110 mm below the eave line, per column",
+          "mapsTo": {
+            "ref": "thatch"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-ridgeplank",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a sawn ridge plank capping the thatch, its top the declared 3.20 m",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-lashing",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "two cord collars at each of the four post heads",
+          "mapsTo": {
+            "ref": "d7-lashing"
+          },
+          "onMaterial": "timber",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-purlins",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "eight purlins along the ridge on top of the rafters",
+          "mapsTo": {
+            "ref": "d8-purlins"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+    "resolvedUnknowns": [
+      "The roof stops ON the module edge rather than overhanging it. The plate and the proxy both show a freestanding shelter with a deep eave overhang; a 4 m grid bay that overhangs collides with its neighbour, and the notes make the grid the contract.",
+      "The eave is the thatch TOP surface at 2.40 m, which is the reading that maximises pitch within the declared 3.20 m ridge. Reading it as the eave UNDERSIDE would put the top at 2.58 and drop the roof to 13.5 degrees.",
+      "The ridge is capped by a sawn plank, as the plate shows, not by a rolled thatch ridge; the plank's top IS the declared height.",
+      "Purlins run along the ridge on top of the rafters and are only visible from underneath and through the open gable ends; the plate shows them there."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 4.00 x 3.20 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope exactly 4.00 x 3.20 x 4.00 m with nothing crossing the cell edge",
+          "Four corner posts whose outer faces sit on the edge, so butted bays pair their posts",
+          "Low gable, ridge along X, eave 2.40 and ridge 3.20",
+          "Open on all four sides"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "an eave overhanging the cell (collides with the next bay)",
+          "posts inboard so a row leaves gaps",
+          "walls or infill",
+          "a mono-pitch roof"
+        ]
+      },
+      {
+        "id": "roof-thatch",
+        "name": "Thatch courses and eave",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Courses reading as stacked layers, lit butt over shadow",
+          "A ragged eave silhouette, not a straight cut edge",
+          "Broad palm blades, not combed grass"
+        ],
+        "evidenceRefs": [
+          "region-thatch",
+          "region-thatchbutt"
+        ],
+        "failureModes": [
+          "a flat slab with a wood-grain texture",
+          "modelled fronds eating the triangle budget",
+          "a straight eave"
+        ]
+      },
+      {
+        "id": "frame-and-materials",
+        "name": "Timber frame, truss and tone",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Knee braces at every post head and cord lashings over them",
+          "King posts, ridge beam, rafters and purlins visible through the open gables",
+          "Timber neutral silver-brown at the plate's hue, and no face rendering near the backdrop"
+        ],
+        "evidenceRefs": [
+          "region-timber",
+          "region-beam",
+          "region-lashing",
+          "region-purlin"
+        ],
+        "failureModes": [
+          "blond new-pine timber",
+          "a post face rendering under luma 80",
+          "no visible structure under the roof"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "thatch"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "roof-thatch",
+      "name": "Thatch courses and eave",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "thatch"
+      ],
+      "evidenceRefs": [
+        "region-thatch",
+        "region-thatchbutt"
+      ]
+    },
+    {
+      "id": "frame-and-materials",
+      "name": "Timber frame, truss and tone",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-timber",
+        "region-beam",
+        "region-lashing",
+        "region-purlin"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 3,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The roof stops ON the module edge rather than overhanging it. The plate and the proxy both show a freestanding shelter with a deep eave overhang; a 4 m grid bay that overhangs collides with its neighbour, and the notes make the grid the contract.",
+    "The eave is the thatch TOP surface at 2.40 m, which is the reading that maximises pitch within the declared 3.20 m ridge. Reading it as the eave UNDERSIDE would put the top at 2.58 and drop the roof to 13.5 degrees.",
+    "The ridge is capped by a sawn plank, as the plate shows, not by a rolled thatch ridge; the plank's top IS the declared height.",
+    "Purlins run along the ridge on top of the rafters and are only visible from underneath and through the open gable ends; the plate shows them there."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up, the ridge along X. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner posts then pair at the shared edge."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 3.2,
+      "d": 4.0
+    },
+    "description": "A 4.00 x 4.00 m bay: four 150 mm posts at the corners carrying a head frame at 2.06-2.22 m with eight knee braces, a low gable above it with its ridge along X, thatch 180 mm thick from a 2.40 m eave to a 3.13 m apex, a sawn ridge plank capping it at 3.20 m, and a ragged eave hanging up to 110 mm below the eave line. Open on all four sides.",
+    "envelopeDerivation": "x and z span exactly -2.000..+2.000 and nothing crosses it: the thatch stops on the module edge, the posts sit inside it with their outer faces on 2.000 less the 12 mm the cord lashings stand proud, and the ROTATED rafter boxes were shortened 50 mm because a box turned about X has an AABB half-depth of L/2 cos(s) + h/2 sin(s), which at the first build put the rafter ends at 2.016. The ROOF owns +-2.000 and every structural member stops short of it -- posts inset 12 mm, head plates 10 mm and shortened 20 mm, ridge beam and ridge plank shortened 20 mm -- because a frame whose bounding box shares a face with the roof's is four same-facing coplanar pairs of 4.07 m2 to check-coplanar, which cannot see that the surfaces never overlap in y. Clean at 0.001 m. y 0.000 to 3.200 at the top of the ridge plank. Proxy (Meshy v7): w:h:d 1 : 1.146 : 1.216, a SQUARE post grid of 0.769 x 0.765 H under a roof of 0.810 x 1.011 H, ridge along the narrow axis. Two divergences, both resolved for the notes and both recorded: the proxy OVERHANGS its post grid by 0.121 H at the eaves, which cannot be built because anything past 2.00 m collides with the next bay on a 4 m grid; and the proxy sits its eave at 0.61 of its height where the notes fix 2.40/3.20 = 0.75 for walk-under clearance. Honouring the notes caps the pitch at 20.0 degrees against the proxy's 39, which is why the ridge plank is 70 mm thick -- every millimetre off it is pitch. Post section IS taken from the proxy: 4 of 100 occupancy columns = 0.052 H = 0.166 m, built 0.150.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 1.146 : 1.216, post grid 0.769 x 0.765 H, roof 0.810 x 1.011 H, eave at 0.61 H, pitch 39 degrees. Used for the POST SECTION (0.052 H = 0.166 m) and for confirming that the post grid is square and the ridge runs across the narrow axis. NOT used for the overhang or the eave height: the registry notes fix a 4 m grid module whose roof may not cross the cell edge and whose eave is set by walk-under clearance, and that contract is the asset. The arithmetic of both divergences is in envelopeDerivation."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-thatch",
+      "viewpoint": "front",
+      "path": "crops/thatch.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-thatchbutt",
+      "viewpoint": "front",
+      "path": "crops/thatchbutt.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-timber",
+      "viewpoint": "front",
+      "path": "crops/timber.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-beam",
+      "viewpoint": "front",
+      "path": "crops/beam.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-ridge",
+      "viewpoint": "top",
+      "path": "crops/ridge.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-lashing",
+      "viewpoint": "front",
+      "path": "crops/lashing.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-purlin",
+      "viewpoint": "front",
+      "path": "crops/purlin.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: the bay is symmetric about both axes and open on all four sides, so the far side is the near side; the plate shows one gable end and one eave, which between them cover every distinct elevation."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Timber post-and-plate frame, rafters and ridge",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four posts, four plates, eight braces, two king posts, a ridge beam, a ridge plank, six rafters and eight cord collars are one merge and one draw call, and the root the purlin instances hang off.",
+      "materialId": "timber",
+      "material": "timber",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts 150 mm square at x,z +-1.913, y 0-2.06; head plates 120 x 160 mm on all four sides at y 2.06-2.22, outer faces on 2.000; knee braces 90 mm square at 45 degrees, 620 mm long, into both plates at every post; king posts 120 mm at x +-1.913 from 2.22 to 2.81; ridge beam 140 mm square at z 0 with its top on 2.95; ridge plank 4.00 x 0.07 x 0.34 m from 3.13 to 3.20; rafters 80 x 100 mm at x -1.913, 0 and +1.913, 2.056 m along a 20.0 degree slope; cord collars 170 mm square, 70 and 50 mm deep, at 2.00 and 1.88 m on every post.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The braces enter the post and plate as solids and stand inside the post section; the rafters are sunk 110 mm below the thatch underside so the purlins fit between them and nothing shares a plane with the roof; the ridge plank sits ON the thatch apex, overlapping it rather than meeting it. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.60 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "corner posts",
+          "delivery": "boxes"
+        },
+        {
+          "id": "d2-plates",
+          "description": "head plates and knee braces",
+          "delivery": "boxes, the braces rotated 45 degrees about X or Z"
+        },
+        {
+          "id": "d3-truss",
+          "description": "king posts, ridge beam, rafters",
+          "delivery": "boxes, the rafters rotated about X onto the slope"
+        },
+        {
+          "id": "d6-ridgeplank",
+          "description": "ridge plank",
+          "delivery": "one box capping the apex"
+        },
+        {
+          "id": "d7-lashing",
+          "description": "cord lashings",
+          "delivery": "two collars per post head, lifted off the gate band"
+        },
+        {
+          "id": "d8-purlins",
+          "description": "purlins",
+          "delivery": "the eight-instance purlin InstancedMesh hung off this root"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "timber",
+        "baseColor": "#d0cabe",
+        "recipe": "Weathered sawn timber as vertex colours on a white material -- post #c4beb2, head plate and brace #dad4c6, ridge plank #e8e2d4, rafter and purlin #b9b3a6, cord lashing #8d7659 -- with a sawn-grain multiply canvas.",
+        "evidenceRef": "region-timber",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(208, 202, 190, 1.0)",
+        "secondaryAlbedo": "rgba(208, 202, 190, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "thatch",
+      "name": "Nipa palm thatch roof",
+      "level": "macro",
+      "role": "surface",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "plane-card",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One draped height grid carries BOTH slopes, so the gable is a row of the grid rather than two components -- one draw call for the whole roof, and the ridge crease comes out smooth-shaded, which is what a thatched ridge looks like.",
+      "materialId": "thatch",
+      "material": "thatch",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 20 x 12 height grid over x,z -2.00..2.00, 180 mm thick, top surface 3.13 m at z 0 falling to 2.40 m at |z| 2.00 with a 25 mm mid-slope sag; the last rows drop a per-column 0-110 mm, faded in over the outer third, so only the eave course is ragged.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The roof is the only thing at its heights; the ridge plank overlaps its apex and the rafters are sunk below its underside. Its edges are the grid's own wound strips, so no separate fascia shares a plane with it.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 1.60 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d4-courses",
+          "description": "thatch courses",
+          "delivery": "the canvas tile"
+        },
+        {
+          "id": "d5-eave",
+          "description": "ragged eave",
+          "delivery": "a per-column drop in the grid's last rows -- real silhouette"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "thatch",
+        "baseColor": "#9a8f78",
+        "recipe": "One pale straw albedo on a white material with a thatch multiply canvas; the course structure is entirely in the canvas, as the registry notes require.",
+        "evidenceRef": "region-thatch",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(154, 143, 120, 1.0)",
+        "secondaryAlbedo": "rgba(154, 143, 120, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "timber",
+      "name": "Weathered sawn timber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d0cabe",
+      "color": "#d0cabe",
+      "roughness": {
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/timber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#d0cabe",
+        "secondary": [
+          "#c4beb2",
+          "#dad4c6",
+          "#e8e2d4",
+          "#b9b3a6",
+          "#8d7659"
+        ],
+        "samplingNotes": "Measured as the mean of crops/timber.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-lashing",
+          "region": "the two cord collars at each post head",
+          "roughness": 0.95,
+          "palette": [
+            "#8D7659"
+          ],
+          "evidence": "crops/lashing.png #5c5851 sd 50 -- dark fibre cord wrapped twice at every post-to-plate joint; authored lifted to #8d7659 so the collar renders at ~95 against the gate's 58."
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-timber (0.88) at #7a746d sd 28 (shaded post) and region-beam at #9f9890 sd 19 (sunlit head plate), with the ridge plank at #9b9997 -- a near-neutral silver-brown, R minus B only 13 to 21.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER, not copied. Probed on two renders of the same post pixel: authored luma 147.5 rendered 66 at azimuth 0 and 49 at 180; authored luma 220.5 rendered 180 and 158. The harness key barely reaches a vertical face, so the plate's own value came back BELOW the backdrop's 58 -- the silhouette gate reading a leg as background. Solving for the plate's mean 130 gives authored luma 190, carried here as #d0cabe with post #c4beb2, plate #dad4c6, ridge plank #e8e2d4, rafter #b9b3a6 and cord #8d7659 as vertex colours on it. Measured back at 134 / 111 / 111 / 94 across the four azimuths, the darkest 1.6x the backdrop.",
+          "Textureless as DECLARED: one 512 px sawn-timber multiply canvas after construction (fine longitudinal grain, four knots, three drying splits, cloudy silver weathering, three mould clusters), world UVs at 0.60 m. Deliberately weakly directional, because world UVs put v along a post but ACROSS a beam and a striped tile would read as a plank joint running the wrong way on half the frame."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/timber.png",
+        "pbrReport": "material-evidence/timber.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "thatch",
+      "name": "Nipa palm thatch",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9a8f78",
+      "color": "#9a8f78",
+      "roughness": {
+        "base": 0.95,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/thatch_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#9a8f78",
+        "secondary": [
+          "#9a8f78"
+        ],
+        "samplingNotes": "Measured as the mean of crops/thatch.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-courses",
+          "region": "the whole roof surface",
+          "roughness": 0.95,
+          "palette": [
+            "#877E74",
+            "#433C30"
+          ],
+          "evidence": "crops/thatchbutt.png -- exposed butts at #877e74 over shadows measured at #433c30 on the plate; carried as the tile's tip highlight and butt shadow rather than as geometry, which the registry notes require."
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-thatch (0.90) at #6d6257 sd 52 over the slope and region-thatchbutt (0.86) at #877e74 sd 40 along the exposed butts; the standard deviation of 52 IS the course structure, not noise.",
+          "Authored #9a8f78 and MEASURED BACK at 145-148 on the up-facing slope against the plate's own sunlit 143 -- right first time and left alone, unlike the timber.",
+          "Textureless as DECLARED: one 512 px thatch multiply canvas after construction, world UVs at 1.60 m -- five courses per tile (0.32 m per course), 170 broad blade strokes 3-7 px wide, a butt line jittered per column, a pale lit-tip line above each butt and a shadow gradient below it, six thinned gaps. The tip-and-shadow PAIR is what makes the roof read as stacked layers; the first build had the shadow alone and read as wood grain."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/thatch.png",
+        "pbrReport": "material-evidence/thatch.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "purlins",
+      "name": "Roof purlins",
+      "componentRef": "frame",
+      "count": 8,
+      "primitive": "box",
+      "materialId": "timber",
+      "placement": "eight instances of a 3.92 x 0.06 x 0.06 m bar along X, at |z| 0.50, 1.00, 1.50 and 1.92 on both slopes, each 35 mm under the thatch underside at its own station",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "One InstancedMesh: the purlin is the only part repeated at a fixed station, and it is what the thatch is actually pegged to."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T11:31:11.202026+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.282305+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.361684+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.439859+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.518356+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.597265+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
+          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.679858+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.764411+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.845613+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        },
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
+          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T11:31:11.202026+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components plus one repetition system at 3 draw calls of 4; timber frame, thatch height grid, purlins.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.282305+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Head plates shortened 20 mm and inset 10 mm, ridge beam and ridge plank shortened 20 mm, and the post centre moved to a shared POST_INSET of 12 mm so the frame, king posts, rafters and lashings cannot drift apart. Frame bounds 2.000 -> 1.998 in x and z; check-coplanar clean.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.361684+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: posts, head plates, knee braces, king posts, ridge beam and rafters at the stations the notes fix and the proxy confirms for section.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.439859+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: ragged eave as a per-column drop in the height grid, mid-slope sag, ridge plank thinned to 70 mm to win the last of the pitch, rafters sunk to clear the purlins.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.518356+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: timber 0.88 and thatch 0.90, both textureless; two 512 px post-construction canvases.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.597265+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
+          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: sawn-grain canvas on the timber, course canvas on the thatch; timber re-authored from a two-point probe after the first build rendered a post face below the backdrop.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.679858+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Every face measured off the backdrop band at all four azimuths.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.764411+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups. Nothing on a canopy bay opens, turns or swings, and a neighbouring bay is placed at 4 m rather than socketed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:31:11.845613+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.9,
+        "formDetail": 0.84,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
+          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+        },
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
+          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
+          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 1,592/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing the red over the gable voids and brace bays only.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 1,
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Two components plus one repetition system: 3 of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "timber and thatch: 2 of 3. Post, plate, brace, rafter, ridge plank and cord are vertex colours on one material, not six."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 6,
+        "headroom": 3,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1592,
+        "budget": 4000,
+        "headroom": 2408,
+        "note": "1,592 of 4,000: 408 in the frame merge (34 boxes), 1,088 in the thatch height grid (two 20 x 12 smooth grids plus four wound edge strips), 96 in eight purlin instances."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes throughout the frame, several rotated onto the 45 degree braces and the 20.0 degree rafter slope; the roof is a height grid with thickness."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh of eight purlins. In a scene the HOST places whole bays on the 4 m grid; the module does not repeat itself."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "notes-over-proxy",
+      "severity": "medium",
+      "description": "The proxy overhangs its post grid by 0.121 H at the eaves and sits its eave at 0.61 H against the notes' 0.75, so the built pitch is 20.0 degrees against the proxy's 39 and the built roof has no overhang at all.",
+      "mitigation": "The registry notes make the 4 m grid and the walk-under eave the contract, and a bay that overhangs collides with its neighbour. Both divergences and their arithmetic are recorded in envelopeDerivation and meshyNote; the proxy IS used for the post section and for confirming a square post grid and a ridge across the narrow axis."
+    },
+    {
+      "id": "shallow-pitch-hero",
+      "severity": "low",
+      "description": "At 20.0 degrees and a 20 degree camera elevation the far slope is edge-on in the hero and the bay can read as a mono-pitch.",
+      "mitigation": "The gable is unambiguous at azimuth 90 and 270, which is where the turntable gate looks; the pitch is the highest the declared 2.40 eave and 3.20 ridge allow and the ridge plank was thinned to 70 mm to win the last of it."
+    },
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "The bay is open on all four sides, so most of what the silhouette encloses is background: the volume under the roof, both gable voids, and the bays between the knee braces.",
+      "mitigation": "The turntable gate is run with --allow-holes on the _holecc measurement, and holeviz was read per azimuth to confirm the red covers the open volume and never a solid surface. Every timber face was lifted off the backdrop band first (darkest 94 against 58) so no solid part of the prop can be classified as a hole."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Nipa Thatch Canopy Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2226,
+        "aspectRatioDelta": 0.0964,
+        "scaleDelta": 0.257,
+        "bilateralSymmetryError": 0.0535,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 23.09,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 23.09
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.27
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.223 is below threshold 0.85",
+        "aspect-ratio delta 0.096 exceeds threshold 0.05",
+        "scale delta 0.257 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "026545d9c49922cc",
+      "passId": "blockout"
+    }
+  ]
+}

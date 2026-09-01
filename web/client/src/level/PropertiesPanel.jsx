@@ -7,6 +7,7 @@ import { expandIds, groupMap, isGroupId, selectionRoots } from './groups.js';
 import { isStatic } from './cells.js';
 import { isBillboard } from '@thai-kit/level-runtime/billboard';
 import { DEFAULT_GROUND } from './ground.js';
+import { skyOf, skyIsActive } from './sky.js';
 import { DEFAULT_SETTINGS } from './defaults.js';
 import { SkyPanel } from './SkyPanel.jsx';
 import { peekPrototype } from '../three/instances.js';
@@ -76,6 +77,19 @@ export function PropertiesPanel() {
     const ground = { ...DEFAULT_GROUND, ...(s.ground ?? {}) };
     // A project saved before image lighting existed has no `environment.ibl`.
     const ibl = { ...DEFAULT_SETTINGS.environment.ibl, ...(s.environment?.ibl ?? {}) };
+    /*
+      The hemisphere ramp is the FALLBACK, so it is only shown when it is what
+      the level is actually lit by.
+
+      With a sky picture up and image lighting on, nothing reads these: the
+      viewport retires the HemisphereLight, `buildEnvironment` prefilters the
+      sky dome and never reaches the `else if (hemisphere)` branch, and the
+      bake is lit by the same faces. Leaving three live-looking dials in front
+      of a level they cannot change is worse than not offering them -- the
+      brightness dial that DOES work in this configuration is the sky's own
+      intensity, on the sky tab, with IBL intensity as the trim below.
+    */
+    const litByHemisphere = !ibl.enabled || !skyIsActive(skyOf(doc));
     body = (
       <>
         <div className="field"><label>name</label><input value={doc.name} onChange={(e) => commit('rename level', (d) => { d.name = e.target.value; })} /></div>
@@ -109,12 +123,23 @@ export function PropertiesPanel() {
         <h4>environment</h4>
         <div className="row">
           <div className="field"><label>background</label><input type="color" value={s.environment.background} onChange={(e) => setSetting('environment.background', e.target.value)} /></div>
-          <div className="field"><label>ambient intensity</label><Num value={s.environment.hemisphere.intensity} step={0.05} min={0} onCommit={(n) => setSetting('environment.hemisphere.intensity', n)} /></div>
         </div>
-        <div className="row">
-          <div className="field"><label>sky</label><input type="color" value={s.environment.hemisphere.sky} onChange={(e) => setSetting('environment.hemisphere.sky', e.target.value)} /></div>
-          <div className="field"><label>ground</label><input type="color" value={s.environment.hemisphere.ground} onChange={(e) => setSetting('environment.hemisphere.ground', e.target.value)} /></div>
-        </div>
+        {litByHemisphere ? (
+          <>
+            <div className="row">
+              <div className="field"><label>ambient intensity</label><Num value={s.environment.hemisphere.intensity} step={0.05} min={0} onCommit={(n) => setSetting('environment.hemisphere.intensity', n)} /></div>
+              <div className="field muted" style={{ alignSelf: 'end', fontSize: 11 }}>
+                {ibl.enabled ? 'the fallback ramp — this level has no sky picture' : 'image lighting is off, so this ramp is the ambient'}
+              </div>
+            </div>
+            <div className="row">
+              <div className="field"><label>sky</label><input type="color" value={s.environment.hemisphere.sky} onChange={(e) => setSetting('environment.hemisphere.sky', e.target.value)} /></div>
+              <div className="field"><label>ground</label><input type="color" value={s.environment.hemisphere.ground} onChange={(e) => setSetting('environment.hemisphere.ground', e.target.value)} /></div>
+            </div>
+          </>
+        ) : (
+          <div className="muted small">ambient comes from the sky &mdash; its brightness is <b>intensity</b> on the sky tab, trimmed by IBL intensity below</div>
+        )}
         <div className="row">
           <div className="field">
             <label>image lighting</label>

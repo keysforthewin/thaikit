@@ -1,0 +1,1843 @@
+{
+  "targetName": "Folding Padded Banquet Chair",
+  "targetId": "folding-padded-banquet-chair",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "folding-banquet-chair",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "bent-tube-rear-frame",
+        "crossing-front-legs",
+        "thin-vinyl-pads",
+        "welted-pad-edges",
+        "brass-ferrules",
+        "cross-rungs"
+      ],
+      "structureKind": [
+        "tube-frame",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "painted-steel-tube",
+        "vinyl-upholstery",
+        "brass"
+      ],
+      "notes": "A folding chair shipped OPEN AND LOCKED: the entry describes the open silhouette, a folded one is a different prop, so nothing articulates -- one root pivot, zero sockets. Set out in rows under a tent by the hundred, so the draw-call ceiling is the design constraint. Temple fairs, funerals, weddings, school events; grey-blue paint chipped to rust at the rungs and knees, red vinyl scratched white on the seat and scuffed pale at the top of the back, brass ferrules on the feet."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "TWO components on TWO materials: the painted FRAME (six polyline tubes -- two bent rear legs, the top rail, two front legs, the seat frame -- two rungs, four ferrules, four rivets and three chip patches merged) and the VINYL PADS (seat slab with its welt, back pad with its welt and scuff patch). Two draw calls of two.",
+        "Two materials because chipped paint over steel (0.55 / 0.25) and red vinyl (0.42 / 0.0) do not share a response; both WHITE with the tones as vertex colours, the vinyl carrying a scratch canvas.",
+        "No repetition system at two draw calls: the four ferrules are four cylinders in the frame merge.",
+        "Action readiness: one root pivot, zero sockets, one declared box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is a thin grey-blue tube frame carrying two flat red pads -- the pads much thinner than a cushioned chair's, the rear frame one line from foot to top rail in the front view, the front legs crossing under the seat. A padded dining chair or a plain metal folding chair would be different props."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-rear-frame",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "rear tube from foot to knee to top rail",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-front-legs",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "front legs crossing to the seat frame",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-pads",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "thin red seat and back pads with welts",
+          "mapsTo": {
+            "ref": "pads"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-ferrules",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "brass ferrules and pivot rivets",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-chips",
+          "zone": "body",
+          "kind": "chip",
+          "identityDefining": false,
+          "description": "rust showing through chipped paint",
+          "mapsTo": {
+            "ref": "d5-chips"
+          },
+          "onMaterial": "paint",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-scratches",
+          "zone": "top",
+          "kind": "scratch",
+          "identityDefining": false,
+          "description": "pale scratches on the vinyl",
+          "mapsTo": {
+            "ref": "d6-scratches"
+          },
+          "onMaterial": "vinyl",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+    "resolvedUnknowns": [
+      "The rear tube bends at a knee at 0.57 m: the proxy END view shows one forward-leaning line from foot to 0.65 H and the back section leaning away above it, which the plate's front view reads as one straight tube.",
+      "The front legs meet the SEAT FRAME under its front third and the seat frame runs back to the rear tube: the proxy puts the front legs' top at z +0.07 H, not on the rear tube.",
+      "Frame tone lifted to luma 134 on chroma (the plate's lit tube is 108; a back-lit face renders at ~0.55 of its painted value, which from 108 lands on the gate's backdrop luma 58). The ferrules are lifted the same way on chroma.",
+      "The pads are flat slabs with a welt: the plate shows thin, hard-edged vinyl, not a cushion."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.48 x 0.88 x 0.54 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.48 x 0.88 x 0.54 m",
+          "Seat top at 0.41, knee at 0.57, top rail at 0.87"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a cushioned chair",
+          "straight vertical rear frame",
+          "front legs on the rear tube"
+        ]
+      },
+      {
+        "id": "pads",
+        "name": "Seat and back pads",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "0.40 x 0.045 seat, 0.40 x 0.28 x 0.035 back",
+          "Welt round each",
+          "Scuff patch top-left of the back"
+        ],
+        "evidenceRefs": [
+          "region-back",
+          "region-seat"
+        ],
+        "failureModes": [
+          "thick cushions",
+          "pad floating off the frame",
+          "welt on the wrong face"
+        ]
+      },
+      {
+        "id": "frame",
+        "name": "Tube frame and hardware",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "22 mm tube throughout",
+          "Rungs at 0.167 on both frames",
+          "Brass ferrules and rivets"
+        ],
+        "evidenceRefs": [
+          "region-frame",
+          "region-ferrule"
+        ],
+        "failureModes": [
+          "tubes as wire",
+          "no rungs",
+          "no ferrules"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "pads",
+      "name": "Seat and back pads",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "pads"
+      ],
+      "evidenceRefs": [
+        "region-back",
+        "region-seat"
+      ]
+    },
+    {
+      "id": "frame",
+      "name": "Tube frame and hardware",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-frame",
+        "region-ferrule"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "frame",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the chair envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The rear tube bends at a knee at 0.57 m: the proxy END view shows one forward-leaning line from foot to 0.65 H and the back section leaning away above it, which the plate's front view reads as one straight tube.",
+    "The front legs meet the SEAT FRAME under its front third and the seat frame runs back to the rear tube: the proxy puts the front legs' top at z +0.07 H, not on the rear tube.",
+    "Frame tone lifted to luma 134 on chroma (the plate's lit tube is 108; a back-lit face renders at ~0.55 of its painted value, which from 108 lands on the gate's backdrop luma 58). The ferrules are lifted the same way on chroma.",
+    "The pads are flat slabs with a welt: the plate shows thin, hard-edged vinyl, not a cushion."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.48,
+      "h": 0.88,
+      "d": 0.54
+    },
+    "description": "A 0.48 m wide frame of 22 mm tube: rear legs from the floor at z -0.22 leaning forward to a knee at 0.57 m, z -0.07, then back to a top rail at 0.87 m, z -0.21; front legs from z +0.21 at the floor to the seat frame at 0.365 m, z +0.06; a 0.40 x 0.045 x 0.36 seat pad topping at 0.41; a 0.40 x 0.28 x 0.035 back pad on the upper section leaning 26 degrees; rungs at 0.167.",
+    "envelopeDerivation": "x +-0.250 at the rear feet, y 0 to 0.883 at the top rail, z -0.235 at the rear feet to +0.243 at the front feet. Declared 0.45 x 0.88 x 0.55 (w/h 0.511, d/h 0.625). The Meshy proxy of the plate measures bbox 1.034 x 1.900 x 1.170, w/h 0.544 and d/h 0.616 -- inside tolerance, so the declaration stands and the build takes the proxy's own 0.48 x 0.88 x 0.54 with height as the trustworthy axis (a banquet chair is 0.85-0.90). Stations off the proxy (vox.mjs SIDE / END / TOP in fractions of H): the rear tube runs in ONE straight lean from the foot at z -0.25 H up and forward to z -0.08 H at 0.65 H (END view columns 0 -> 5 -> 11 -> 16 over rows 0.13 -> 0.65), and from there the back section hinges away to z -0.25 H at the top rail -- a folding chair whose backrest frame is bent back above the seat, reading as one straight tube in the plate's front view; back pad rows 0.65-0.99 the full width; seat rows 0.39-0.47 (top 0.41 m) spanning z -0.18..+0.25 H = 0.38 m; front legs from z +0.24 H at the floor to +0.07 H at seat level, meeting the seat frame under its front third; two cross rungs at 0.19 H, one per frame; tube 0.04 H at the voxel, ~22 mm. The plate adds the 5% x splay (top rail 400 px against 440 at the feet).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.034 x 1.900 x 1.170, w/h 0.544 and d/h 0.616 against the declared 0.511 / 0.625, which confirmed the declaration. Its END view is what settled the frame in z -- the forward lean of the rear tube to a knee at arm height and the backrest hinged back from it, which a front-view plate cannot show."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "front",
+      "path": "crops/back-pad.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-seat",
+      "viewpoint": "front-high",
+      "path": "crops/seat.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-frame",
+      "viewpoint": "front",
+      "path": "crops/frame.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-ferrule",
+      "viewpoint": "front",
+      "path": "crops/ferrule.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-side",
+      "viewpoint": "side",
+      "path": null,
+      "confidence": 0.75,
+      "note": "NOT OBSERVED in the plate. The frame's z geometry is taken from the proxy END view (knee at 0.65 H, front legs crossing to the seat frame), confidence 0.75."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Folding steel tube frame",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.84,
+      "primitive": "tube",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Six polyline tubes, two rungs, four ferrules, four rivets and three chip boxes merged on one material: one draw call.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Rear tubes foot (-0.235, 0.012, -0.22) -> knee (-0.21, 0.57, -0.07) -> rail (-0.205, 0.849, -0.21) with the 5% splay in x; top rail with 20 mm rounded corners at 0.869; front legs (-0.211, 0.012, 0.21) -> (-0.192, 0.365, 0.06); seat frame a rectangle at 0.365 from the rear tube to z +0.22; rungs r 0.009 at 0.167; ferrules r 0.014 x 0.028; rivets r 0.009 at the seat pivot and the knee.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "tube() overlaps every joint by 1.2 radii so the bends close; the seat frame butts INTO the rear tube; ferrules swallow the tube ends; chip patches stand 0.5 mm proud of the tube faces. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry, no canvas."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-rear-frame",
+          "description": "rear frame",
+          "delivery": "two bent polyline tubes + rail"
+        },
+        {
+          "id": "d2-front-legs",
+          "description": "front legs",
+          "delivery": "two tubes to the seat frame"
+        },
+        {
+          "id": "d4-ferrules",
+          "description": "ferrules and rivets",
+          "delivery": "eight cylinders"
+        },
+        {
+          "id": "d5-chips",
+          "description": "chips",
+          "delivery": "three proud boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#7f8a88",
+        "recipe": "Every tone a vertex colour on one white metal material.",
+        "evidenceRef": "region-frame",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(127, 138, 136, 1.0)",
+        "secondaryAlbedo": "rgba(138, 106, 74, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.44,
+            0
+          ],
+          "halfExtents": [
+            0.24,
+            0.44,
+            0.27
+          ],
+          "notes": "Declared on the asset as box: the chair envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
+        }
+      }
+    },
+    {
+      "id": "pads",
+      "name": "Red vinyl seat and back pads",
+      "level": "macro",
+      "role": "identity",
+      "importance": 0.95,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two pad slabs, eight welt bars and a patch merged on one material: one draw call.",
+      "materialId": "vinyl",
+      "material": "vinyl",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "Seat 0.40 x 0.045 x 0.36 topping at 0.41, its underside 3 mm above the seat frame axis; back 0.40 x 0.28 x 0.035 centred at 0.735 on the upper rear section, leaning 26 degrees with it, placed through the pad's own frame (up and normal vectors) with the welts and patch on its face.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The seat pad's underside clears the seat frame tubes; the back pad stands off the uprights by the tube radius; the patch is 0.5 mm proud of the pad face and the welts overhang it by 2 mm. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.45 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-pads",
+          "description": "pads",
+          "delivery": "two slabs with welt bars"
+        },
+        {
+          "id": "d6-scratches",
+          "description": "scratches",
+          "delivery": "scratch canvas + proud patch"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "vinyl",
+        "baseColor": "#a8342a",
+        "recipe": "Red as a vertex colour on a white material with a scratch canvas; welt and scuff patch as vertex colours.",
+        "evidenceRef": "region-back",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(168, 52, 42, 1.0)",
+        "secondaryAlbedo": "rgba(142, 44, 36, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "paint",
+      "name": "Chipped grey-blue paint on steel tube",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#7f8a88",
+      "color": "#7f8a88",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.25,
+      "albedo": {
+        "dominant": "#7f8a88",
+        "secondary": [
+          "#8a6a4a",
+          "#9a7a48",
+          "#654039"
+        ],
+        "samplingNotes": "Measured as the mean of crops/frame.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-chips",
+          "region": "the rear tubes near the knees and rungs",
+          "roughness": 0.8,
+          "palette": [
+            "#8a6a4a",
+            "#654039"
+          ],
+          "evidence": "crops/frame.png -- rust showing through chipped paint along the tube; carried as three thin warm boxes proud of the tube faces."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on the plate: tube #45413e shaded (66) and #64706e lit (108), analyze_texture worn-composite roughness 0.9 meanLum 132 sat 0.17; extract_pbr_evidence palette #654039 #322F2A #C9C9C7 #6B7472 #BBBBB9 at confidence 0.86 -- the rust and the lit paint both in the palette.",
+          "Textureless as DECLARED: paint 0x7f8a88, rust chips 0x8a6a4a as thin proud boxes, brass 0x9a7a48, all vertex colours on one white material at 0.55 / 0.25. Metalness capped because the harness binds no environment map."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/frame.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "vinyl",
+      "name": "Red vinyl upholstery",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a8342a",
+      "color": "#a8342a",
+      "roughness": {
+        "base": 0.42,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/vinyl_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a8342a",
+        "secondary": [
+          "#8e2c24",
+          "#b84a3c",
+          "#c76a60"
+        ],
+        "samplingNotes": "Measured as the mean of crops/back-pad.png. extract_pbr_evidence confidence 0.794. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d6-scratches",
+          "region": "the seat top and the top-left of the back pad",
+          "roughness": 0.5,
+          "palette": [
+            "#b84a3c",
+            "#c76a60"
+          ],
+          "evidence": "crops/seat.png -- pale scratches across the seat; crops/back-pad.png -- a scuffed pale patch top-left. Carried as the 256 px scratch canvas and a 1 mm proud patch box."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on the plate: back pad #921e14 (64) shaded to #832111 with a scuffed pale patch top-left; seat #913730 / #ac3d31 (81-93) with white scratches, analyze_texture meanLum 72 sat 0.82; extract_pbr_evidence palette #88180D #770B06 #B0443A #99271C #C76A60 at confidence 0.794.",
+          "Textureless as DECLARED: red 0xa8342a as a vertex colour (authored to render ~85 on a vertical face against the plate's 81-93), welt 0x8e2c24, scuff patch 0xb84a3c, and a 256 px scratch canvas after construction with no ground wash."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/back-pad.png",
+        "pbrReport": "material-evidence/vinyl.pbr.json",
+        "confidence": 0.794,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-09-01T00:14:01.491685+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.575398+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.661895+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.745295+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "22 mm polyline tubes with closed bends, two rungs, four brass ferrules, four rivets at the seat pivots and knees, three rust chips. Frame tone 0x7f8a88 (134) so the back-lit faces stay clear of the gate's band.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.834068+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.916548+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.999341+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:14:02.081718+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        },
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        },
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "22 mm polyline tubes with closed bends, two rungs, four brass ferrules, four rivets at the seat pivots and knees, three rust chips. Frame tone 0x7f8a88 (134) so the back-lit faces stay clear of the gate's band.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-09-01T00:14:01.491685+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2, every station off the proxy SIDE/END/TOP voxel views; declaration confirmed by the proxy (w/h 0.544 against 0.511).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.575398+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: rear tube foot (-0.22) -> knee (0.57, -0.07) -> rail (0.87, -0.21); front legs (0.21) -> seat frame (0.365, 0.06); seat 0.41; rungs 0.167; the 5% x splay.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.661895+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: rounded rail corners, welts round both pads, the scuff patch, ferrules, rivets at pivots and knees, rust chips proud of the tubes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.745295+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "22 mm polyline tubes with closed bends, two rungs, four brass ferrules, four rivets at the seat pivots and knees, three rust chips. Frame tone 0x7f8a88 (134) so the back-lit faces stay clear of the gate's band.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: TWO materials of two -- paint 0.55/0.25 and vinyl 0.42/0.0; tones vertex colours off the plate, PBR evidence 0.86 and 0.794. Frame lifted to 134 on chroma for the hole gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.834068+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a 256 px scratch canvas on the vinyl, no ground wash; chips as geometry on the paint.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.916548+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: white matte plate; the red pads authored to render ~85 on a vertical face against the plate's 81-93.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:01.999341+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider, no destruction groups. Shipped locked open: nothing articulates.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:14:02.081718+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.9,
+        "formDetail": 0.86,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.500 x 0.883 x 0.478 m against the declared 0.45 x 0.88 x 0.55 (proxy 0.48 x 0.88 x 0.54, inside tolerance). Rear tube foot -> knee at 0.57 -> rail at 0.87, front legs crossing to the seat frame at 0.365, seat top 0.41, rungs at 0.167 -- every station the proxy's.",
+          "notes": "The first build ran the rear frame straight and hung the back pad off it in the air; the proxy END view's knee fixed both."
+        },
+        {
+          "id": "pads",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seat 0.40 x 0.045 x 0.36 with a welt, back 0.40 x 0.28 x 0.035 on the upper rear section leaning 26 degrees with it, welts and the scuff patch placed through the pad's own up/normal frame so they sit on its face. Scratch canvas on the vinyl.",
+          "notes": "The first welt placement had the sign of the lean offset wrong and the welts stood off the pad."
+        },
+        {
+          "id": "frame",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "22 mm polyline tubes with closed bends, two rungs, four brass ferrules, four rivets at the seat pivots and knees, three rust chips. Frame tone 0x7f8a88 (134) so the back-lit faces stay clear of the gate's band.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.88. 872/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas. Turntable with --allow-holes: the enclosed background is the gap between seat and back and the space between the legs, real openings.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-padded-banquet-chair/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "paint and vinyl: 2 of 2; every tone within each is a vertex colour."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 872,
+        "budget": 2000,
+        "headroom": 1128,
+        "note": "872 of 2000: six 8-segment polyline tubes (thirteen segments), ten cylinders, fourteen boxes."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Polyline tubes for the frame; cylinders for rungs, ferrules and rivets; boxes for the pads, welts, patch and chips."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh at two draw calls. In a scene the HOST instances the chair in rows."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. One 256 px scratch canvas on the vinyl after construction; the factory built in under 50 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "frame-z",
+      "severity": "medium",
+      "description": "The frame's geometry in z (knee, crossing) comes from the proxy alone; the plate is a front view.",
+      "mitigation": "Recorded at confidence 0.75; the first build had a straight rear frame and the back pad floating off it, which the hero render showed and the END view corrected."
+    },
+    {
+      "id": "open-frame",
+      "severity": "low",
+      "description": "The gap between seat and back pad and the space between the legs enclose backdrop at every azimuth.",
+      "mitigation": "Real openings: --allow-holes on the holeviz and _holecc measurements."
+    },
+    {
+      "id": "dark-tube",
+      "severity": "medium",
+      "description": "The plate's tube at 66-108 renders inside the gate's backdrop band back-lit.",
+      "mitigation": "Lifted to 134 on chroma; recorded as an assumption."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Folding Padded Banquet Chair",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3306,
+        "aspectRatioDelta": 0.0501,
+        "scaleDelta": 0.2914,
+        "bilateralSymmetryError": 0.1426,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 9.34,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 9.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.16
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.331 is below threshold 0.85",
+        "aspect-ratio delta 0.050 exceeds threshold 0.05",
+        "scale delta 0.291 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "179d4f4e199286e2",
+      "passId": "blockout"
+    }
+  ]
+}

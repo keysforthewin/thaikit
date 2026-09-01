@@ -8,7 +8,7 @@ import { CellSet, CASTER_LAYER } from './cells.js';
 import { attachLightmap, eachMaterial } from './materials.js';
 import { applyLights } from './lights.js';
 import { buildSky } from './sky.js';
-import { buildEnvironment, applyEnvironment } from './environment.js';
+import { buildEnvironment, applyEnvironment, environmentIntensity } from './environment.js';
 import { applyBillboard, isBillboard } from './billboard.js';
 import { buildColliders } from './colliders.js';
 import { LevelRaycaster } from './bvh.js';
@@ -132,7 +132,10 @@ export async function loadLevel(source, opts) {
     });
     if (environment) {
       restoreEnvironment = applyEnvironment(scene, environment.texture, {
-        intensity: manifest.ibl.intensity ?? 1,
+        // `sky.base.intensity` is folded in here, not into the prefilter --
+        // the same rule the editor's probe applies, so what was art-directed
+        // is what ships.
+        intensity: environmentIntensity({ ibl: manifest.ibl, sky: manifest.sky, base: skyBase }),
         rotationDeg: manifest.sky?.base?.rotationDeg ?? 0,
       });
     }

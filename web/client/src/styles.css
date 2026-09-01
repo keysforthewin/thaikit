@@ -49,6 +49,11 @@ textarea { width: 100%; min-height: 70px; resize: vertical; font-family: ui-mono
 .chip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-size: 12px; }
 .chip.on { border-color: var(--accent); color: var(--accent); }
 
+/* The grid and the drawer share the space below the filters. `min-height: 0`
+   lets the row shrink inside the column flex so the grid scrolls on its own
+   instead of the page growing. */
+.browse { display: flex; flex: 1 1 auto; min-height: 0; }
+.browse > .grid, .browse > .empty { flex: 1 1 auto; min-width: 0; }
 .grid {
   display: grid; gap: 12px; padding: 16px; overflow: auto;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -87,8 +92,11 @@ textarea { width: 100%; min-height: 70px; resize: vertical; font-family: ui-mono
    own, without a pill around it. */
 td.score-bad, .score-bad.mono { color: var(--bad); }
 
+/* In the flow beside the grid, not fixed over it: the width it takes comes
+   out of the grid's columns, so the asset list stays whole with it open.
+   Capped at 55% so a narrow window keeps at least one column of cards. */
 .drawer {
-  position: fixed; inset: 0 0 0 auto; width: min(760px, 100%);
+  flex: 0 0 min(760px, 55%); min-width: 0; min-height: 0;
   background: var(--panel); border-left: 1px solid var(--line);
   display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,.45);
 }

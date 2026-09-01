@@ -1,0 +1,2167 @@
+{
+  "targetName": "Square Patio Umbrella",
+  "targetId": "square-patio-umbrella",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "4 m square commercial patio umbrella on a single centre pole",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "square hipped canopy",
+        "single vertical mast",
+        "round weighted base"
+      ],
+      "structureKind": [
+        "tensioned canvas canopy on radial ribs",
+        "tube mast",
+        "cast weight base"
+      ],
+      "motionPotential": [
+        "none as shipped - the crank and tilt are not modelled"
+      ],
+      "materialFamilies": [
+        "cream canvas",
+        "painted tube and cast base"
+      ],
+      "notes": "The ONE module in the outdoor roof set carried on a SINGLE CENTRE POLE rather than four corner posts, so it tiles differently: placed side by side the canopies meet at their edges and leave the corners open, and the pole lands mid-bay rather than on the grid line. Square rather than octagonal so edges meet cleanly when several are placed together."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 1,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 1,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 1,
+        "mesoComponents": 0,
+        "microFeatureGroups": 4,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "A canopy surface and a mast; complexity is in the canopy's sag between ribs and the valance rather than in part count.",
+        "repetitionDensity 2: eight radial ribs set the sag rhythm, but they are a modulation of one surface rather than separate solids.",
+        "actionReadinessNeed 0: the crank and tilt are not modelled, so nothing moves."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Two draw calls of four: the canvas canopy and valance as one double-sided surface, and the mast and base as one merged geometry."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Each detail maps to a component.localFeatures or material.localOverrides entry.",
+      "details": [
+        {
+          "id": "square-hipped-canopy",
+          "zone": "canopy",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "A square hipped canopy, widest at the eave, rising to a small crown at the apex.",
+          "mapsTo": {
+            "ref": "canopy"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "rib-sag",
+          "zone": "canopy",
+          "kind": "groove",
+          "identityDefining": true,
+          "description": "The canvas sags between eight radial ribs, so the surface is scalloped rather than a flat pyramid.",
+          "mapsTo": {
+            "ref": "canopy"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "valance",
+          "zone": "canopy edge",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "A vertical valance skirt hangs from the eave all the way round.",
+          "mapsTo": {
+            "ref": "canopy"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "centre-pole",
+          "zone": "mast",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "A single vertical tube mast on the canopy axis - the feature that separates this module from the four-post bays.",
+          "mapsTo": {
+            "ref": "mast"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "weighted-base",
+          "zone": "ground",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "A round weighted base plate sits flat on the ground and is a trip hazard a player should collide with.",
+          "mapsTo": {
+            "ref": "mast"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "cream-canvas",
+          "zone": "canopy",
+          "kind": "decal",
+          "identityDefining": false,
+          "description": "Cream canvas, the brightest surface on the prop, against a duller grey mast and base.",
+          "mapsTo": {
+            "ref": "canvas"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png"
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "depthRationale": "One mast component plus the canopy as a count-1 repetition system, which is what keeps the canvas on its own material and its own double-sided mesh inside a 2-draw-call build."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "square-canopy",
+      "name": "SQUARE canopy, widest at the eave",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "mast"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "A square 4 x 4 m plan, not octagonal or round - the asset notes require square so that edges meet cleanly when several are placed together."
+    },
+    {
+      "id": "single-centre-pole",
+      "name": "Carried on ONE centre pole",
+      "tier": "critical",
+      "passIds": [
+        "blockout"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "mast"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "One mast on the canopy axis and no corner posts. This is what separates this module from the four-post bays in the same set."
+    },
+    {
+      "id": "walk-under-clearance",
+      "name": "Valance bottom at the walk-under height",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "mast"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "Valance bottom near 2.10 m and crown at 2.80 m, so a player walks under the rim."
+    },
+    {
+      "id": "weighted-base",
+      "name": "Base plate on the ground",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "mast"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "A round weighted base sits flat on the ground as real geometry and survives into the derived collider - the asset notes call it a trip hazard a player should collide with."
+    },
+    {
+      "id": "rib-sag",
+      "name": "Canvas sagging between ribs",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "mast"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "The canopy is scalloped between eight radial ribs rather than a flat-faceted pyramid."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "root",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    }
+  },
+  "assumptions": [
+    "The declared 4 x 4 x 2.8 m governs; the 2.10 m clear height and 2.80 m peak come from the asset notes directly rather than from measuring the plate.",
+    "Eight radial ribs, read off the plate's visible seam count on the near faces and assumed 4-fold symmetric.",
+    "The canopy is DOUBLE-SIDED rather than a shell with thickness. Canvas has no meaningful thickness at this scale and a player standing under it must see the inside face; building both sides would double the canopy's triangles for nothing.",
+    "The crank handle, the tilt joint and the rib hardware are not modelled: they are below the resolvable band at prop distance and the asset declares no moving parts.",
+    "The plate's stains and creases are incidental to one worn example rather than properties of the prop, and are not reproduced.",
+    "The base is modelled as a plain round weight. The plate shows a cast disc with no visible fixings, and the underside is never visible."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center on the ground at the pole axis, +Y up. The canopy is centred on that axis, so a level builder placing several of these gets the pole mid-bay."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 2.8,
+      "d": 4.0
+    },
+    "description": "A square canopy 4 x 4 m at the eave, its corners at y 2.25, rising to a crown at 2.80 with the canvas sagging between eight radial ribs. A valance hangs from the eave down to 2.10, which is the clear height a player walks under. A tube mast r 0.035 runs the full height on the axis, standing on a round weighted base r 0.28 and 0.09 tall.",
+    "envelopeDerivation": "The declared 4 x 4 m matches the module grid the rest of the outdoor roof set uses, which divides the kit's 8 m tiles exactly 2 x 2; the asset notes state the 2.8 m peak and the ~2.1 m edge directly, and the eave and valance are placed to land on them.",
+    "aspectRatios": [
+      {
+        "id": "width-over-depth",
+        "value": 1.0,
+        "note": "square canopy"
+      },
+      {
+        "id": "height-over-width",
+        "value": 0.7,
+        "note": "2.8 / 4.0"
+      },
+      {
+        "id": "eave-over-peak",
+        "value": 0.75,
+        "note": "2.10 clear height under a 2.80 peak"
+      }
+    ],
+    "symmetry": "4-fold about the pole axis",
+    "dominantCurves": [
+      "the canvas sag between ribs - the only curvature on the prop",
+      "the round base plate"
+    ],
+    "negativeSpaces": [
+      "the whole volume under the canopy, which a player walks through",
+      "the open corners left when several are placed side by side"
+    ],
+    "landmarks": [
+      {
+        "id": "valance-bottom",
+        "y": 2.1
+      },
+      {
+        "id": "eave",
+        "y": 2.25
+      },
+      {
+        "id": "crown",
+        "y": 2.8
+      },
+      {
+        "id": "base-top",
+        "y": 0.09
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "mast",
+      "name": "Tube mast and weighted base",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.8,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A tube on a cast disc, merged into one geometry because they share a material and neither moves.",
+      "materialId": "metal",
+      "material": "metal",
+      "parent": null,
+      "attachment": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 10-segment tube r 0.035 from y 0.09 to the crown at 2.80, standing on a 16-segment disc r 0.28 and 0.09 tall.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The mast passes THROUGH the base disc rather than butting onto its top face, so no two co-facing surfaces are coincident.",
+        "mergeNote": "One merged BufferGeometry carrying both tones as vertex colours."
+      },
+      "dimensions": {
+        "width": 0.56,
+        "height": 2.8,
+        "depth": 0.56,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "localFeatures": [
+        {
+          "id": "centre-pole",
+          "description": "single tube mast",
+          "delivery": "merged cylinder"
+        },
+        {
+          "id": "weighted-base",
+          "description": "round base plate on the ground",
+          "delivery": "merged disc"
+        },
+        {
+          "id": "canopy",
+          "description": "square canopy and valance",
+          "delivery": "double-sided lofted surface, its own mesh"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "metal",
+        "baseColor": "#99978e",
+        "recipe": "Vertex colour on one material: pole #99978e, base plate #7b786f.",
+        "evidenceRef": "region-pole",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(153, 151, 142, 1.0)",
+        "secondaryAlbedo": "rgba(123, 120, 111, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At base-center on the pole axis. The crank and tilt of a real umbrella are NOT modelled, so one root pivot is the complete mechanism inventory."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "cylinder",
+          "localCenter": [
+            0,
+            1.4,
+            0
+          ],
+          "radius": 0.28,
+          "height": 2.8,
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "Authoring intent only; thaikit derives the shipped compound from the built geometry. The base plate matters here: the asset notes call it a trip hazard a player should collide with."
+        },
+        "destruction": {
+          "fractureGroup": null,
+          "notes": "Not breakable."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "canvas",
+      "name": "Cream canopy canvas",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#dfd8cb",
+      "color": "#dfd8cb",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.04,
+        "notes": "Woven canvas: fully matte with no sheen anywhere on the plate. Scalar is the runtime value; textureless."
+      },
+      "metalness": 0.0,
+      "doubleSided": true,
+      "albedo": {
+        "dominant": "#dfd8cb",
+        "secondary": [
+          "#cdc4b4"
+        ],
+        "samplingNotes": "crops/canopy.png measured #dfd8cb at luma 216.8, saturation 0.089 - the brightest surface on the prop and far clear of the harness backdrop's 58, so no lift is needed here. crops/valance.png measured #cdc4b4 at luma 197.0, slightly duller because the valance hangs in the canopy's own shade."
+      },
+      "localOverrides": [
+        {
+          "id": "valance-tone",
+          "region": "the valance skirt below the eave",
+          "palette": [
+            "#cdc4b4"
+          ],
+          "evidence": "Measured 20 luma below the canopy at #cdc4b4. Carried as a vertex colour so the skirt reads as hanging in shade without a second material or any baked shadow in the albedo."
+        }
+      ],
+      "finishClass": "matte woven canvas",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "crops/canopy.png #dfd8cb and crops/valance.png #cdc4b4; the canvas is one tone with a shaded skirt, and the plate's weave is far below the resolvable band on a 4 m canopy at prop distance.",
+          "The identity is the SQUARE hipped form, the sag between ribs and the valance - all geometry. The plate's stains and creases are incidental to one worn example rather than to the prop.",
+          "Declared textureless so createSculptMaterial skips makeProceduralTextureSet; with a texture set the generator would force color to white and roughness to 1 and discard the measured cream."
+        ],
+        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands."
+      }
+    },
+    {
+      "id": "metal",
+      "name": "Painted tube mast and cast base",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.66,
+        "variation": 0.06,
+        "notes": "Painted tube, slightly less rough than canvas. Scalar is the runtime value; textureless."
+      },
+      "metalness": 0.2,
+      "albedo": {
+        "dominant": "#99978e",
+        "secondary": [
+          "#7b786f"
+        ],
+        "samplingNotes": "crops/pole.png measured #99978e at luma 150.5 and crops/base.png #7b786f at luma 120.0. Both are comfortably clear of the harness backdrop's 58 and neither needs lifting. The material's own colour is WHITE because both tones ride the vertex colour attribute."
+      },
+      "localOverrides": [
+        {
+          "id": "pole",
+          "region": "the tube mast",
+          "palette": [
+            "#99978e"
+          ],
+          "evidence": "crops/pole.png measured #99978e, luma 150.5."
+        },
+        {
+          "id": "base-plate",
+          "region": "the round weighted base",
+          "palette": [
+            "#7b786f"
+          ],
+          "evidence": "crops/base.png measured #7b786f, luma 120.0 - a cast weight, duller and darker than the painted tube above it."
+        }
+      ],
+      "finishClass": "satin painted metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "crops/pole.png and crops/base.png; two flat tones on parts 70 mm and 560 mm across, with nothing resolvable at prop distance.",
+          "Both tones ride vertex colours on one material, so a texture set would buy nothing the attribute does not already carry."
+        ],
+        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands."
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "canopy",
+      "name": "Square canopy and valance",
+      "componentRef": "mast",
+      "count": 1,
+      "primitive": "extrude",
+      "materialId": "canvas",
+      "instanced": false,
+      "pivotPerInstance": false,
+      "buildsGeometry": true,
+      "realization": "lofted-surface",
+      "geometry": {
+        "primitive": "lofted-surface",
+        "perimeterSamples": 48,
+        "ribs": 8,
+        "units": "meters",
+        "eaveY": 2.25,
+        "crownY": 2.8,
+        "valanceBottomY": 2.1,
+        "halfSpan": 2.0
+      },
+      "instances": [
+        {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "note": "One canopy centred on the pole axis."
+        }
+      ],
+      "placement": "One double-sided canvas surface: 48 perimeter samples lofted from a small crown ring at 2.80 down to the square eave at 2.25, sagging between eight radial ribs, then a valance dropping to 2.10.",
+      "notes": "Count 1 and its own mesh because the canvas is a different material from the mast. Double-sided rather than built with a separate underside: fabric has no thickness, and a player standing under the canopy must see its inside face."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T13:33:27.058735+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.141070+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.222855+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.304138+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.384525+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.466824+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.547176+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.630495+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T13:33:27.058735+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "Square canopy on a single centre pole with a weighted base. Built envelope 4.000 x 2.800 x 4.000 m. 526 triangles / 2 draw calls / 2 materials / 2 geometries against a 4000/4/3/6 ceiling.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.141070+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "Canopy and valance as ONE double-sided surface; mast and base merged into the second mesh. Fabric has no meaningful thickness and a player under the canopy must see its inside face, so double-siding it halves the triangle count against building a separate underside.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.222855+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "The eave was a straight square edge and the canopy read as a flat slab. It now scallops between the eight rib tips, and the canvas sags between ribs with the sag fading out at the crown and at the eave where the fabric is pulled tight. The 2.10 m edge and 2.80 m peak come from the asset notes and were NOT adjusted to make the picture more like the plate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.304138+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two materials against a ceiling of three: canvas and painted metal are different substances with different roughness. Both textureless. Nothing needed lifting here - the canopy measures luma 216.8 and even the base plate 120.0, all far clear of the harness backdrop's 58.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.384525+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "Flat by declaration. The valance carries its own measured tone (#cdc4b4, 20 luma below the canopy) as a vertex colour so the skirt reads as hanging in the canopy's shade WITHOUT any baked shadow in the albedo. The plate's stains and creases belong to one worn example rather than to the prop.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.466824+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "lightingFromPhoto records key elevation 60 / azimuth -25, a 0.8 fill ratio and ACES filmic tone mapping. The canopy's own shade is a property of the geometry and is deliberately not painted into the canvas albedo.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.547176+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "ONE root pivot, no sockets, no destruction groups. A real umbrella cranks open and tilts, but neither is modelled and the asset declares no mechanism, so declaring a crank axis would be a contract the kit has to keep for no one.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T13:33:27.630495+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.89,
+        "componentStructure": 0.86,
+        "formDetail": 0.8,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "square-canopy",
+          "score": 0.89,
+          "threshold": 0.85,
+          "notes": "A square 4 x 4 m plan at the eave, not octagonal or round. Built envelope 4.000 x 2.800 x 4.000 m exactly. The square is a requirement rather than a style choice: the asset notes need edges that meet cleanly when several are placed side by side."
+        },
+        {
+          "id": "single-centre-pole",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "One tube mast on the canopy axis and no corner posts, which is what separates this module from the four-post bays in the same set. The pole lands mid-bay, so placed in a row these canopies meet at their edges and leave the corners open."
+        },
+        {
+          "id": "walk-under-clearance",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Valance bottom at 2.10 m and crown at 2.80 m, taken from the asset notes directly rather than measured off the plate. The derived collider confirms it end to end: its canopy slab starts at y 2.09, so a player walks under the rim and stops there."
+        },
+        {
+          "id": "weighted-base",
+          "score": 0.85,
+          "threshold": 0.75,
+          "notes": "A round weighted base r 0.28 sits flat on the ground and SURVIVES into the derived compound as its own cylinder part, which is the point - the asset notes call it a trip hazard a player should collide with, and a base that existed only in the render would not deliver that."
+        },
+        {
+          "id": "rib-sag",
+          "score": 0.8,
+          "threshold": 0.7,
+          "notes": "The canvas sags between eight radial ribs AND the eave scallops between the rib tips. The scallop was added after the first render: with a straight square eave the shallow canopy read as a flat slab with a skirt round it, which is a fair description of what a 0.55 m rise over a 2 m half-span looks like without it. The rise itself is fixed by the asset notes (2.10 edge, 2.80 peak) and was not changed to flatter the picture."
+        }
+      ],
+      "action": "continue",
+      "summary": "526 triangles / 2 draw calls / 2 materials / 2 unique geometries against 4000 / 4 / 3 / 6. Forty-eight perimeter samples give a smooth scalloped eave at an eighth of the triangle ceiling.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/square-patio-umbrella/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() for the large class and none was invented.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "Canopy and valance as ONE double-sided surface, mast and base merged as the second: 2 of 4. The canopy is double-sided rather than built with a separate underside, which halves its triangle count for a fabric that genuinely has no thickness."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "Canvas and painted metal are different substances with different roughness, so they are two materials. The white pole and the grey base are a COLOUR difference within the metal material and ride vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 6,
+        "headroom": 4,
+        "note": "One canopy surface and one merged mast-and-base geometry."
+      },
+      "triangles": {
+        "estimated": 700,
+        "budget": 4000,
+        "headroom": 3300,
+        "note": "Measured after the render and recorded here."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 60,
+      "azimuthDegrees": -25,
+      "intensity": 0.9,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "soft, broad source",
+      "notes": "Read off the plate's lit-to-shadow ratio."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.6,
+      "fillRatio": 0.8,
+      "colorTemperature": "neutral 5600K",
+      "notes": "Fill ratio taken from the measured lit-face to shadow-face luma ratio."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform mid grey studio surround measured off the plate corners",
+      "colorTemperature": "neutral 6000K",
+      "notes": "The seamless backdrop acts as a large source."
+    },
+    {
+      "id": "render-intent",
+      "role": "exposure",
+      "toneMapping": "ACES filmic",
+      "exposure": 1.0,
+      "contactShadow": "A soft ground shadow under the base plate; the canopy's own shade is a property of the geometry and must not be painted into the canvas albedo.",
+      "ambientOcclusion": "Contact occlusion in the recesses and under overhangs; lighting, never painted into base colour.",
+      "backgroundColor": "measured off the plate corners",
+      "notes": "Exposure and tone mapping intent recorded so a render compares fairly with the plate. No baked lighting or AO enters any albedo."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot node supports whole-object translation, rotation, scale, and visibility changes",
+    "component pivot groups support later local transforms without rebuilding geometry"
+  ],
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": [],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Square Patio Umbrella",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  }
+}

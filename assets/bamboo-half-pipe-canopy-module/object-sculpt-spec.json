@@ -1,0 +1,1969 @@
+{
+  "targetName": "Bamboo Half-Pipe Canopy Module",
+  "targetId": "bamboo-half-pipe-canopy-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "modular-canopy-bay",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "whole-bamboo-poles",
+        "lashed-joints",
+        "double-head-rail",
+        "low-gable",
+        "split-culm-half-pipes",
+        "scalloped-eave",
+        "open-all-sides"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "whole-bamboo-culm",
+        "split-bamboo-tile"
+      ],
+      "notes": "ONE BAY of a modular outdoor roof kit, and the only one of the five whose ROOF SURFACE is real geometry: a 4 x 4 m cell on a 4 m grid, four whole-bamboo corner posts, and a roof of split culms laid alternately hollow-up and hollow-down as interlocking tiles. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. Garden shelters, farm sheds, beach bars and temple fair stalls; the cheapest roof in the kit and the one a village builds itself. Culms weather from green through cream to grey and are tied, never nailed."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE bamboo merge -- four posts, eight head rails on two levels, two king culms, the ridge pole, six rafters, the capping culm and sixteen lashing collars -- and ONE InstancedMesh of 33 four-culm PAIRS: TWO draw calls of 4, the cheapest submission count in the set.",
+        "The pair geometry carries FOUR culms -- channel and cap on the +Z slope and on the -Z slope -- so the instanced set varies in x alone and both slopes come off one geometry. Two sets, one per slope, would have been two draw calls and two geometries for the same triangles.",
+        "Two materials of three: bamboo (vertex colours -- two culm tones, rafter, rope, black cord) and split bamboo (WHITE, because setColorAt multiplies, with six tones carried per instance). Both textureless, each with one culm canvas.",
+        "The roof is 1,584 of the 2,552 triangles, which is the registry notes' own prediction that this module would sit nearest its ceiling. It is still 64% of the budget.",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the alternating half-pipe course, and the notes say so: a run of half-cylinders reads wrong when it is flat, because the silhouette at the eave is a scalloped edge and not a line. That scallop is 33 open culm mouths, and it is the one place in the set where triangles buy something a canvas cannot."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 100 mm whole-bamboo posts at the module corners",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-rails",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a DOUBLE head rail on all four sides, at 2.02 and 2.24 m",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-truss",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two king culms, a ridge pole and six rafters under the roof",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-alternation",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "split culms laid alternately hollow-up and hollow-down, in mixed green, cream and grey",
+          "mapsTo": {
+            "ref": "d4-alternation"
+          },
+          "onMaterial": "split",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-scallop",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the eave as 33 open culm mouths -- a scalloped edge, not a line",
+          "mapsTo": {
+            "ref": "d5-scallop"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-lashing",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "rope and black cord collars at every post head and rafter foot",
+          "mapsTo": {
+            "ref": "d6-lashing"
+          },
+          "onMaterial": "bamboo",
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-nodes",
+          "zone": "frame",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "node rings crossing every pole at real spacing, whichever way it is turned",
+          "mapsTo": {
+            "ref": "d7-nodes"
+          },
+          "onMaterial": "bamboo",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-capculm",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a 140 mm capping culm along the ridge, its crown the declared 3.10 m",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+    "resolvedUnknowns": [
+      "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+      "The half-pipes are single-thickness SHELLS on a double-sided material, not walled tubes. A hollow-up channel is seen from the inside at every azimuth, and a real wall would triple the roof's triangles for 8 mm nobody resolves at prop distance; the scallop at the eave, which is what the notes actually ask for, is the shell's own open mouth.",
+      "Six segments per half culm. At a 118 mm pitch a culm is about 25 px across at prop distance, and the roof is 1,584 triangles at six; at twelve it would be 3,168 and over the ceiling with the frame.",
+      "The cap culm rides 62 mm above the channel plane and half a pitch across, which is how the two courses interlock; it is 55 mm radius against the channel's 50 so it bridges the gap."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 4.00 x 3.10 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 4.00 x 3.10 x 4.00 m with nothing crossing the cell edge",
+          "Four bamboo corner posts at the cell corners under a double head rail",
+          "Low gable, ridge along X, eave 2.40 and capping culm crown 3.10",
+          "Open on all four sides"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a roof overhanging the cell",
+          "the plate's squat table proportions",
+          "a single head rail",
+          "walls"
+        ]
+      },
+      {
+        "id": "roof-halfpipes",
+        "name": "Half-pipe course and scalloped eave",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Real half-cylinders, alternating hollow-up and hollow-down and interlocking",
+          "A scalloped eave of open culm mouths",
+          "Mixed green, cream and grey tones with no pattern",
+          "Node rings along each split culm"
+        ],
+        "evidenceRefs": [
+          "region-roofgreen",
+          "region-roofcream",
+          "region-end"
+        ],
+        "failureModes": [
+          "a flat deck with a ripple texture",
+          "a straight cut eave",
+          "one flat tone across 33 pairs",
+          "culms too coarse to read as round"
+        ]
+      },
+      {
+        "id": "frame-and-lashings",
+        "name": "Bamboo frame, nodes and lashings",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Node rings at real spacing on every pole regardless of its rotation",
+          "Rope and black cord collars at the joints",
+          "Culm tone at the plate's grey-green with no face rendering near the backdrop"
+        ],
+        "evidenceRefs": [
+          "region-culm",
+          "region-culmlit",
+          "region-rope",
+          "region-ropeblk"
+        ],
+        "failureModes": [
+          "node rings every 4 cm from panel UVs",
+          "nailed-looking butt joints",
+          "black cord inside the gate band"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "roof-halfpipes",
+      "name": "Half-pipe course and scalloped eave",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-roofgreen",
+        "region-roofcream",
+        "region-end"
+      ]
+    },
+    {
+      "id": "frame-and-lashings",
+      "name": "Bamboo frame, nodes and lashings",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-culm",
+        "region-culmlit",
+        "region-rope",
+        "region-ropeblk"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+    "The half-pipes are single-thickness SHELLS on a double-sided material, not walled tubes. A hollow-up channel is seen from the inside at every azimuth, and a real wall would triple the roof's triangles for 8 mm nobody resolves at prop distance; the scallop at the eave, which is what the notes actually ask for, is the shell's own open mouth.",
+    "Six segments per half culm. At a 118 mm pitch a culm is about 25 px across at prop distance, and the roof is 1,584 triangles at six; at twelve it would be 3,168 and over the ceiling with the frame.",
+    "The cap culm rides 62 mm above the channel plane and half a pitch across, which is how the two courses interlock; it is 55 mm radius against the channel's 50 so it bridges the gap."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up, the ridge along X. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner posts then pair at the shared edge."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 3.1,
+      "d": 4.0
+    },
+    "description": "A 4.00 x 4.00 m bay: four 100 mm bamboo posts at the corners under a DOUBLE head rail at 2.02 and 2.24 m, a ridge pole on two king culms, six rafters, and a low gable of 33 pairs of split culms -- a hollow-up channel with a hollow-down cap riding on the two beside it -- from a 2.40 m eave to a 3.10 m capping culm. The eave is 33 open culm mouths, not a line. Open on all four sides.",
+    "envelopeDerivation": "x and z span -1.998..+1.998, set by the rope collars at the post heads: the post surface is already at 1.988 and a 66 mm collar radius crossed the cell edge at 2.004 on the first build, so the collars are 60 mm. y 0.000 to 3.100 at the crown of the capping culm -- which is r cos(PI/10) above its centre, not r, because a 10-segment cylinder has a flat there; centring it at H - r left the declared height 3.4 mm short. The roof culms were shortened 60 mm from the true rake: a cylinder rotated onto the slope has a z extent of half-L cos(s) + r sin(s), and at 40 mm short the cap culms reached 1.9974 against the frame collars' 1.9980 -- inside check-coplanar's 1 mm tolerance, and it reported all 66 pairs. On this bay the FRAME owns the z plane; on the two thatched ones the roof does. Proxy (Meshy v7): w:h:d 1 : 0.760 : 1.119, post grid 1.182 x 1.360 H, roof reaching 1.450 H at an eave sitting at 0.42 of the height -- a squat table of a shelter, which is what the plate shows. The notes fix a 2.40 eave under a 3.10 ridge, so the built bay is far taller in proportion and the roof is 23% of its height against the proxy's 58%. The proxy IS used for the culm diameter and for confirming the ridge runs across the narrow axis.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.760 : 1.119, post grid 1.182 x 1.360 H, roof 1.450 H, eave at 0.42 H, 39-degree pitch. Used for the culm diameter and for confirming the ridge axis. NOT used for the proportions: the plate is a squat stand-in and the notes fix a 4 x 4 m bay at 2.40/3.10."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-roofgreen",
+      "viewpoint": "top",
+      "path": "crops/roofgreen.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-roofcream",
+      "viewpoint": "top",
+      "path": "crops/roofcream.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-culm",
+      "viewpoint": "front",
+      "path": "crops/culm.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-culmlit",
+      "viewpoint": "front",
+      "path": "crops/culmlit.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-rope",
+      "viewpoint": "front",
+      "path": "crops/rope.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-ropeblk",
+      "viewpoint": "front",
+      "path": "crops/ropeblk.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-ridge",
+      "viewpoint": "top",
+      "path": "crops/ridge.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-end",
+      "viewpoint": "front",
+      "path": "crops/end.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: the bay is symmetric about both axes and open on all four sides; the plate shows one gable end and one full slope."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Bamboo pole frame, rafters and ridge",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four posts, eight rails, two king culms, a ridge pole, six rafters, a capping culm and sixteen collars are one merge and one draw call, and the root the roof instances hang off.",
+      "materialId": "bamboo",
+      "material": "bamboo",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts r 0.050 at x,z +-1.938, y 0-2.02; head rails r 0.050 on all four sides at 2.24 and 2.02, the two Z-axis rails dropped 0.10 so they cross under the X-axis pair rather than through them; king culms r 0.045 from 2.24 to 2.86; ridge pole r 0.055 at 2.86; six rafters r 0.045 on a 17.5 degree rake, 110 mm under the roof plane; capping culm r 0.070 along the ridge; collars r 0.060 rope at 2.24 and r 0.058 black cord at 1.92 on every post.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The rails on the two axes are offset 100 mm in y so no two poles are coincident; the rafters run under the roof plane by more than a culm radius; the collars are concentric with the poles they wrap and stand 10 mm proud. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry; culm UVs are written PER CYLINDER before its rotations, at 0.60 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "corner posts",
+          "delivery": "cylinders"
+        },
+        {
+          "id": "d2-rails",
+          "description": "double head rail",
+          "delivery": "eight cylinders on two levels"
+        },
+        {
+          "id": "d3-truss",
+          "description": "king culms, ridge pole, rafters",
+          "delivery": "cylinders, the rafters rotated onto the rake"
+        },
+        {
+          "id": "d8-capculm",
+          "description": "capping culm",
+          "delivery": "one 10-segment cylinder along X"
+        },
+        {
+          "id": "d6-lashing",
+          "description": "rope and cord collars",
+          "delivery": "sixteen short cylinders concentric with the poles"
+        },
+        {
+          "id": "d7-nodes",
+          "description": "node rings",
+          "delivery": "the culm canvas on culm UVs, applied per cylinder before rotation"
+        },
+        {
+          "id": "d5-scallop",
+          "description": "scalloped eave",
+          "delivery": "the open mouths of the roof InstancedMesh hung off this root"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "bamboo",
+        "baseColor": "#c6c2b4",
+        "recipe": "Weathered grey-green culm as vertex colours on a white material -- two culm tones, rafter, natural rope and black cord -- with a culm multiply canvas on culm UVs.",
+        "evidenceRef": "region-culm",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(198, 194, 180, 1.0)",
+        "secondaryAlbedo": "rgba(198, 194, 180, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "bamboo",
+      "name": "Whole bamboo culm",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c6c2b4",
+      "color": "#c6c2b4",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/bamboo_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c6c2b4",
+        "secondary": [
+          "#c6c2b4",
+          "#b8b5a6",
+          "#bcb8a8",
+          "#d0bd94",
+          "#6e6a60"
+        ],
+        "samplingNotes": "Measured as the mean of crops/culm.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d6-lashing",
+          "region": "the sixteen collars at the post heads and rafter feet",
+          "roughness": 0.8,
+          "palette": [
+            "#D0BD94",
+            "#6E6A60"
+          ],
+          "evidence": "crops/rope.png #95866e and crops/ropeblk.png #4d4942 -- natural fibre rope and black cord, both used on the plate; the black is authored lifted to #6e6a60 so a 5 cm collar clears the gate band."
+        },
+        {
+          "id": "d7-nodes",
+          "region": "frame",
+          "roughness": 0.62,
+          "evidence": "crops/culm.png -- node rings crossing every pole at real spacing, whichever way it is turned"
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-culm (0.90) at #807a6c sd 30 and region-culmlit (0.86) at #878176 sd 37 -- grey-green weathered culm, mean luma ~120; region-rope (0.84) at #95866e and region-ropeblk (0.80) at #4d4942 sd 60 for the two lashings.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER using the two-point solve probed on the nipa module (authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). Carried at #c6c2b4 with a second culm tone #b8b5a6, rafter #bcb8a8, rope #d0bd94 and black cord #6e6a60 as vertex colours. Measured back at 94 / 77 / 94 / 95 across the four azimuths against a backdrop of 58 -- the black cord is the one tone lifted well off its measured value, because a 5 cm collar at the plate's #4d4942 sits inside the gate band.",
+          "Textureless as DECLARED: one 512 px CULM multiply canvas after construction with CULM UVs -- u around the circumference and v along the length, both in metres over 0.60, written per cylinder BEFORE its rotations. That is what puts two node rings on every pole at real spacing however the pole is turned; panel UVs would ring a post every 4 cm."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/culm.png",
+        "pbrReport": "material-evidence/bamboo.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "split",
+      "name": "Split bamboo roofing culm",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.58,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/split_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#B8BD9A",
+          "#CDC39C",
+          "#C3BDA8",
+          "#C6C69E",
+          "#D2C8A2",
+          "#BAB7A2"
+        ],
+        "samplingNotes": "Measured as the mean of crops/roofgreen.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-alternation",
+          "region": "the whole roof",
+          "roughness": 0.58,
+          "palette": [
+            "#B0A78D",
+            "#B9AB8F"
+          ],
+          "evidence": "crops/roofgreen.png and crops/roofcream.png, sd 38 and 41 -- the spread inside one crop IS the alternation; carried as six per-instance tones rather than as a texture."
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-roofgreen (0.88) at #b0a78d sd 38 and region-roofcream (0.88) at #b9ab8f sd 41. The two means are close and the STANDARD DEVIATION is the finding: 38 to 41 inside a crop of one course means the roof is a mix of green, cream and weathered grey culms with no pattern, not two zones.",
+          "The material colour is WHITE, deliberately: InstancedMesh.setColorAt MULTIPLIES with material.color, so six tones ride on the instance colour attribute and a tinted base would ship all 33 pairs darkened by it. The tones are #b8bd9a, #cdc39c, #c3bda8, #c6c69e, #d2c8a2 and #bab7a2, assigned by k*5 mod 6 -- 5 and 6 are coprime, so it walks all six and never repeats within a cycle. The first build used (k*5 + k%3) % 6, which collapses to three clustered values and shipped 33 pairs of nearly one colour.",
+          "Authored a first time at a mean luma of 200 and MEASURED BACK at 188 on the up-facing slope against the plate's 163-169; pulled 7.5% and re-measured at 180 / 141 / 124 across the azimuths.",
+          "DOUBLE-SIDED, because a hollow-up channel is a single-thickness shell seen from the inside at every azimuth; without it half the roof is invisible.",
+          "Textureless as DECLARED: one 512 px culm canvas with CULM UVs at 0.55 m, so the node rings cross each split culm at real spacing along its own length."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/roofgreen.png",
+        "pbrReport": "material-evidence/split.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "tiles",
+      "name": "Split bamboo half-pipe tiles",
+      "componentRef": "frame",
+      "count": 33,
+      "primitive": "cylinder",
+      "materialId": "split",
+      "placement": "33 instances at a 118 mm pitch across x from -1.94 to 1.94. Each instance is FOUR half culms: on each slope a hollow-up channel (r 0.050) and a hollow-down cap (r 0.055) half a pitch across and 62 mm above it, both 2.057 m long on a 17.5 degree rake, six segments, open-ended, theta length PI. Six tones ride on the instance colour attribute.",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "Both slopes are baked into the pair geometry so the set varies in x alone -- one draw call and one unique geometry for the whole roof. Which half of each shell is material follows from the rotation: rotateX(PI/2 + s) sends local +Z downward on the +Z slope, so a channel is theta start -PI/2 and a cap +PI/2, and the two swap on the -Z slope."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T11:56:46.186122+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.261573+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.338573+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.421542+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.500686+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.578508+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-lashings",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
+          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.658515+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.736430+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.817012+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.894632+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        },
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        },
+        {
+          "id": "frame-and-lashings",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
+          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T11:56:46.186122+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: one component plus one repetition system at 2 draw calls of 4 -- the cheapest submission count in the set.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.261573+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Roof culms shortened from 40 mm to 60 mm under the true rake: at 40 the cap culms reached 1.9974 in z against the frame collars' 1.9980, inside check-coplanar's 1 mm tolerance, and it reported all 66 pairs. Clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.338573+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: four posts, a DOUBLE head rail with the two axes offset 100 mm in y so no two poles are coincident, king culms, ridge pole and six rafters on a 17.5 degree rake.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.421542+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: both slopes baked into ONE pair geometry so the roof varies in x alone; the theta start of each shell derived from the rotation rather than guessed, which is what puts the material on the right half of every culm.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.500686+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: bamboo 0.90 and split bamboo 0.88, both textureless; the split material is WHITE because setColorAt multiplies, and six tones ride per instance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.578508+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-lashings",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
+          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: culm canvases on CULM UVs -- u around the circumference, v along the length, written per cylinder before its rotations. Roof tones pulled 7.5% after the first build measured 188 against the plate's 163-169.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.658515+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Darkest frame face 77 against a backdrop of 58.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.736430+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Collider derivation fixed in scripts/lib/colliders.mjs. A 100 mm bamboo post is under the cover's 0.15 m minimum rectangle, so the post layer fell back to its bounding box -- the whole 4 x 4 m bay -- and shipped a solid block a player would stand on at waist height under the roof. The fallback now splits into connected components when the box is under 35% full and at least a square metre; volumeRatio 9.95 -> 4.52 here and no coverage change anywhere in the kit.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.817012+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:56:46.894632+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.88,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+        },
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
+          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+        },
+        {
+          "id": "frame-and-lashings",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
+          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 2,552/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. The roof is 62% of the triangles, which is what the registry notes predicted for this module. Open on all four sides and the eave is 33 open culm mouths: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One component plus one repetition system: 2 of 4, the cheapest submission count in the set."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "bamboo and split: 2 of 3. Two culm tones, the rafter, the rope and the black cord are vertex colours; the roof's six tones are per-instance."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 6,
+        "headroom": 4,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 2552,
+        "budget": 4000,
+        "headroom": 1448,
+        "note": "2,552 of 4,000: 968 in the frame merge (24 cylinders at 8 or 10 segments), 1,584 in 33 roof instances at 48 each (four six-segment open half culms). The roof is 62% of the model, which is the registry notes' own prediction for this module."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Cylinders throughout: closed for the frame poles, open partial cylinders (theta length PI) for the roof shells and the lashing collars."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh of 33 four-culm pairs carrying both slopes. In a scene the HOST places whole bays on the 4 m grid."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px culm canvases after construction, ~2 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "single-thickness-shells",
+      "severity": "low",
+      "description": "The half-pipes are shells with no wall thickness, on a double-sided material.",
+      "mitigation": "A walled culm triples the roof's triangles for 8 mm nobody resolves at prop distance, and the scallop the notes ask for is the shell's own open mouth. Double-sided is not optional here: a hollow-up channel is seen from the inside at every azimuth."
+    },
+    {
+      "id": "six-segment-culms",
+      "severity": "low",
+      "description": "Six segments per half culm is coarse; at twelve the roof alone would be 3,168 triangles and over the ceiling with the frame.",
+      "mitigation": "At a 118 mm pitch a culm is about 25 px across at prop distance. Measured on the renders the course reads as round, and the budget verdict is 2,552 of 4,000."
+    },
+    {
+      "id": "notes-over-proxy",
+      "severity": "medium",
+      "description": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40 under 3.10, which makes the roof 23% of the height against the proxy's 58%.",
+      "mitigation": "The notes are the module contract and the plate is a stand-in. The proxy IS used for the culm diameter and the ridge axis; arithmetic in envelopeDerivation."
+    },
+    {
+      "id": "thin-posts-vs-collider-cover",
+      "severity": "medium",
+      "description": "A 100 mm bamboo post is under the collider derivation's 0.15 m minimum rectangle, so the greedy cover took NO rectangle for the post layer and fell back to the mask's bounding box -- which for four corner posts is the whole 4 x 4 m bay. The first compound shipped a solid 4 x 4 x 1.84 m block under the roof, and promote refused it: 20% of the footprint standing more than the 0.30 m step height above the real surface, i.e. a player walking onto thin air at waist height inside a shelter whose whole purpose is to be walked under.",
+      "mitigation": "Fixed in scripts/lib/colliders.mjs rather than by thickening the posts, because 100 mm is the right culm: the fallback is now per CONNECTED COMPONENT when the bounding box is less than 35% full AND at least a square metre. Both conditions are measured -- splitting unconditionally dropped the soi dog from 0.973 to 0.718 coverage, because for four legs under a solid body the bbox IS the body. Re-derived all 122 existing compounds: four change part geometry (this bay, the stall cart, the songthaew and the tuk-tuk), none change coverage, and no shipped compound changes without a re-derive."
+    },
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "Open on all four sides, and the eave is 33 open culm mouths, so a lot of what the silhouette encloses is background.",
+      "mitigation": "Turntable run with --allow-holes on the _holecc measurement and a holeviz read per azimuth: the red covers the volume under the roof and the culm mouths, both genuine openings, and no solid surface. Every frame tone measured off the backdrop band first, darkest 77 against 58."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Bamboo Half-Pipe Canopy Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3756,
+        "aspectRatioDelta": 0.069,
+        "scaleDelta": 0.2248,
+        "bilateralSymmetryError": 0.0956,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 17.93,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.93
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.376 is below threshold 0.85",
+        "aspect-ratio delta 0.069 exceeds threshold 0.05",
+        "scale delta 0.225 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "2c69d795f207c08f",
+      "passId": "blockout"
+    }
+  ]
+}

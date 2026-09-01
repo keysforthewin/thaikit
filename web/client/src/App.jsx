@@ -9,6 +9,11 @@ const PRESETS = [
   { key: 'needs-images', label: 'Needs images', params: { imageStatus: 'pending' } },
   { key: 'needs-model', label: 'Needs model', params: { modelStatus: 'pending' } },
   { key: 'needs-review', label: 'Needs review (<70)', params: { maxScore: 69 } },
+  // A second, wider review band. 70 is the pass threshold, so the first chip only ever
+  // surfaces props that FAILED; this one catches everything that passed without being
+  // finished -- a 0.85 made of a strong silhouette and a weak material surface still has
+  // work in it, and nothing else in the grid brings those props together.
+  { key: 'needs-review-90', label: 'Needs review (<90)', params: { maxScore: 89 } },
   { key: 'ready', label: 'Ready', params: { modelStatus: 'done' } },
 ];
 
@@ -165,6 +170,10 @@ export default function App() {
         ))}
       </div>
 
+      {/* The drawer is a flex SIBLING of the grid, not an overlay: opening it
+          narrows the grid, which reflows to fewer columns, so every asset stays
+          reachable while a prop's properties are up. */}
+      <div className="browse">
       {assets.length === 0 ? (
         <div className="empty">
           <h2>No assets yet</h2>
@@ -187,6 +196,7 @@ export default function App() {
       )}
 
       {open && <Drawer id={open} rev={rev} onClose={() => setOpen(null)} onChanged={load} />}
+      </div>
       {creating && (
         <CreateDialog
           onClose={() => setCreating(false)}

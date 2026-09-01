@@ -69,6 +69,101 @@ function buildLatheGeometry(profile: { points: [number, number][]; segments?: nu
   return new THREE.LatheGeometry(points, profile.segments ?? 24);
 }
 
+/* ------------------------------------------------------------------ deity arms
+ *
+ * THE PROXY RESOLVED THE ARMS THE PLATE COULD NOT. This component shipped as a bare lathe with a
+ * written note that the four arms were unmodelled because they are "occluded by garland masses in
+ * the only view available so there is no evidence for them" (unknown unk-deity-arms, confidence
+ * 0.3). That was true of the PLATE and it is not true of the reference mesh: the proxy's front
+ * elevation shows a seated figure with a crowned head and arms spread symmetrically on both sides
+ * at shoulder height, which is enough evidence for their number and their gesture. A four-armed
+ * seated Brahma is also canonical iconography, and the component has been named "Seated four-armed
+ * deity figure" throughout while being a solid of revolution -- a name promising something the
+ * geometry did not have.
+ *
+ * They merge into the deity's OWN geometry rather than becoming a component: this prop sits at
+ * 11 of 12 draw calls and 11 of 12 unique geometries, so a fifth component would spend the last
+ * slot on it, while the triangle budget has 5,296 spare. One geometry, one draw call, one material.
+ *
+ * `three` is the only import allowed here -- the host injects its own instance and any second
+ * module fails at runtime -- so BufferGeometryUtils is unavailable and the merge is hand-rolled.
+ * It converts to non-indexed first: LatheGeometry and CylinderGeometry are both indexed, and
+ * concatenating index buffers means rebasing every index, where concatenating vertices does not. */
+function mergeNonIndexed(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  const parts = geos.map((g) => (g.index ? g.toNonIndexed() : g));
+  let total = 0;
+  for (const part of parts) total += part.getAttribute('position').count;
+  const pos = new Float32Array(total * 3);
+  const nor = new Float32Array(total * 3);
+  const uv = new Float32Array(total * 2);
+  let o = 0;
+  for (const part of parts) {
+    const pa = part.getAttribute('position');
+    const na = part.getAttribute('normal');
+    const ua = part.getAttribute('uv');
+    for (let i = 0; i < pa.count; i += 1) {
+      pos[(o + i) * 3] = pa.getX(i); pos[(o + i) * 3 + 1] = pa.getY(i); pos[(o + i) * 3 + 2] = pa.getZ(i);
+      if (na) { nor[(o + i) * 3] = na.getX(i); nor[(o + i) * 3 + 1] = na.getY(i); nor[(o + i) * 3 + 2] = na.getZ(i); }
+      if (ua) { uv[(o + i) * 2] = ua.getX(i); uv[(o + i) * 2 + 1] = ua.getY(i); }
+    }
+    o += pa.count;
+  }
+  const merged = new THREE.BufferGeometry();
+  merged.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  merged.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  merged.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return merged;
+}
+
+/* One limb segment: a tapered cylinder aimed from a to b. Aimed point to point rather than
+ * composed from angles, because an arm that has to meet the shoulder at one end and the lap at the
+ * other is defined by its endpoints and nothing else. */
+function limbSegment(a: number[], b: number[], r0: number, r1: number, seg = 7): THREE.BufferGeometry {
+  const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+  const len = d.length();
+  const g = new THREE.CylinderGeometry(r1, r0, len, seg, 1);
+  g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0), d.clone().normalize()));
+  g.translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+  return g;
+}
+
+/* The four arms, in the deity's own absolute frame -- the lathe profile is authored in absolute y
+ * (lap 1.87, waist 2.42, shoulder 2.70, neck 2.80) and the mesh sits at the origin, so these share
+ * that frame directly.
+ *
+ * The FRONT pair comes down and forward to hands resting at the lap, which is the pair the plate
+ * shows through the garlands. The REAR pair lifts out and up, which is the spread the proxy's front
+ * elevation resolves at shoulder height. A shoulder ball at each root stops the upper arm reading
+ * as a rod pushed into the torso. */
+function deityArms(): THREE.BufferGeometry[] {
+  const out: THREE.BufferGeometry[] = [];
+  for (const sx of [-1, 1]) {
+    const shoulder = [sx * 0.25, 2.66, 0.0];
+    out.push(new THREE.SphereGeometry(0.075, 8, 6)
+      .translate(shoulder[0], shoulder[1], shoulder[2]));
+    /* The pose is TUCKED, not splayed. The first attempt ran the rear pair to y 2.99 and x 0.60 --
+     * above the shoulder at 2.68 and two thirds of the lap's own half-width out -- and the figure
+     * read as a man surrendering rather than as a seated deity. On both the plate and the proxy
+     * the rear arms sit at about shoulder height and lift only slightly, and the front pair comes
+     * to rest on the lap rather than dangling in front of it. The torso is only 0.93 m tall, so an
+     * arm that reaches far from it stops looking like an arm. */
+    // front arm: shoulder -> elbow (out and down) -> hand resting on the lap
+    const elbowF = [sx * 0.33, 2.36, 0.12];
+    const handF = [sx * 0.27, 2.12, 0.24];
+    out.push(limbSegment(shoulder, elbowF, 0.070, 0.054));
+    out.push(limbSegment(elbowF, handF, 0.054, 0.045));
+    out.push(new THREE.SphereGeometry(0.050, 7, 5).translate(handF[0], handF[1], handF[2]));
+    // rear arm: shoulder -> elbow (out, level) -> hand lifted a little
+    const elbowR = [sx * 0.39, 2.65, -0.07];
+    const handR = [sx * 0.45, 2.85, -0.11];
+    out.push(limbSegment(shoulder, elbowR, 0.067, 0.052));
+    out.push(limbSegment(elbowR, handR, 0.052, 0.043));
+    out.push(new THREE.SphereGeometry(0.048, 7, 5).translate(handR[0], handR[1], handR[2]));
+  }
+  return out;
+}
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let index = 0; index < value.length; index += 1) {
@@ -773,7 +868,10 @@ export function createBrahmanStreetShrineModel(options: ProceduralModelOptions =
   nodes["deity-body"] = node_deity_body_3;
   const mesh_deity_body_3Geometry = endpoint_deity_body_3
     ? new THREE.CylinderGeometry(endpoint_deity_body_3.endRadius, endpoint_deity_body_3.baseRadius, endpoint_deity_body_3.length, 16, 6)
-    : buildLatheGeometry({"points": [[0.0001, 1.87], [0.44, 1.87], [0.46, 1.91], [0.43, 1.99], [0.35, 2.09], [0.27, 2.19], [0.22, 2.31], [0.215, 2.42], [0.26, 2.53], [0.32, 2.63], [0.33, 2.7], [0.28, 2.76], [0.16, 2.8]], "segments": 8});
+    : mergeNonIndexed([
+        buildLatheGeometry({"points": [[0.0001, 1.87], [0.44, 1.87], [0.46, 1.91], [0.43, 1.99], [0.35, 2.09], [0.27, 2.19], [0.22, 2.31], [0.215, 2.42], [0.26, 2.53], [0.32, 2.63], [0.33, 2.7], [0.28, 2.76], [0.16, 2.8]], "segments": 8}),
+        ...deityArms(),
+      ]);
   if (!endpoint_deity_body_3) {
     mesh_deity_body_3Geometry.scale(1.0, 1.0, 1.0);
   }

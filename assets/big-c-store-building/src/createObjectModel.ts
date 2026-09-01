@@ -119,6 +119,9 @@ type MatSpec = {
   metalness: number;
   opacity?: number;
   envMapIntensity?: number;
+  /** Internally illuminated surfaces only. See the sign-face note below. */
+  emissive?: number;
+  emissiveIntensity?: number;
 };
 
 /**
@@ -135,14 +138,27 @@ type MatSpec = {
  * that is the documented route for a brand fascia.
  */
 const MATERIAL_SPECS: MatSpec[] = [
-  { id: 'render-wall', color: 0x9c948b, roughness: 0.88, metalness: 0.0 },
+  // SOLVED against the harness, not copied from the plate. The transfer on this elevation at the
+  // solved camera is affine with a large NEGATIVE offset -- R = 0.933 A - 26.2, fit on two renders
+  // (albedo luma 149.1 landing at 112.9, and 193.9 landing at 154.7) -- so the plate's own measured
+  // #9c948b renders 24% dark, at 112.9 against the plate's 148.6. Inverting 148.6 gives albedo
+  // luma 187.4, i.e. #C2BAB0 at the plate's hue. The wall is the largest surface on the prop and
+  // it was the largest single tonal error on it.
+  { id: 'render-wall', color: 0xc2bab0, roughness: 0.88, metalness: 0.0 },
   { id: 'roof-deck', color: 0xc2c2c3, roughness: 0.85, metalness: 0.0 },
   // WHITE, deliberately. This material is only ever used by an InstancedMesh that sets a
   // per-instance colour, and InstancedMesh.setColorAt MULTIPLIES with material.color. Authored
   // at the measured #B0ADA8 the measured block tones were being multiplied down by it and the
   // cap course rendered brown. The measured colours now live in CAP_BLOCK_TONES, unmodulated.
   { id: 'parapet-block', color: 0xffffff, roughness: 0.8, metalness: 0.0 },
-  { id: 'sign-face', color: 0xd9d9d8, roughness: 0.35, metalness: 0.0, envMapIntensity: 0.6 },
+  // EMISSIVE, because a Big C fascia is an internally illuminated acrylic lightbox and the plate
+  // renders it as one: measured in the normalised frame its white field reads luma 224.6, against
+  // 148.6 for the wall beside it -- brighter than any surface in the picture including the roof
+  // deck at 193. Lit only by the harness's key it came back at 142.7, DARKER than the plate's
+  // wall, so the one surface on this prop that is a light source was the dimmest thing on the
+  // front. The 7-Eleven sibling carries its fascia the same way at 0.30.
+  { id: 'sign-face', color: 0xd9d9d8, roughness: 0.35, metalness: 0.0, envMapIntensity: 0.6,
+    emissive: 0xfff6e8, emissiveIntensity: 0.34 },
   // Metalness is capped well below the physical value for aluminium and galvanised steel. The
   // thaikit harness supplies a hemisphere light and three directionals and NO environment map,
   // and a metal with nothing to reflect renders black -- at the physical 0.85 the canopy plates,
@@ -150,7 +166,13 @@ const MATERIAL_SPECS: MatSpec[] = [
   // The albedo stays at the measured value; it is the metalness that is wrong for this lighting
   // rig, so that is what moves. The shipped 7-Eleven sibling caps the same two at 0.35 and 0.30.
   { id: 'aluminium', color: 0xbdbcb9, roughness: 0.42, metalness: 0.35 },
-  { id: 'glass-tinted', color: 0x6b6f6e, roughness: 0.18, metalness: 0.0, opacity: 0.92, envMapIntensity: 1.1 },
+  // SOLVED. Two renders fit this pane's transfer -- albedo luma 110.5 landing at 115.6 and 66.4
+  // landing at 64.1, so R = 1.168 A - 13.5, measured over the exact pixel set the glass colour
+  // changes rather than at a hand-picked point. The plate's panes read a median of 100.7 in the
+  // same frame, which inverts to albedo luma 97.2. It was #6b6f6e, copied from the plate, and
+  // rendered 16% bright -- the shopfront read as pale panels where the plate shows dark smoked
+  // glass, and it was the single largest contributor to interiorDifference.
+  { id: 'glass-tinted', color: 0x5e6261, roughness: 0.18, metalness: 0.0, opacity: 0.92, envMapIntensity: 1.1 },
   { id: 'galv-plant', color: 0x90969a, roughness: 0.52, metalness: 0.3 },
 ];
 
@@ -164,6 +186,10 @@ function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.M
       wireframe: options.wireframe ?? false,
     });
     if (s.envMapIntensity !== undefined) m.envMapIntensity = s.envMapIntensity;
+    if (s.emissive !== undefined) {
+      m.emissive = new THREE.Color(s.emissive);
+      m.emissiveIntensity = s.emissiveIntensity ?? 1;
+    }
     if (s.opacity !== undefined) {
       // Mostly opaque ON PURPOSE. The building is an exterior shell with no interior geometry
       // behind the glass, so a fully transparent pane would read as a hole punched through the
@@ -180,7 +206,12 @@ function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.M
 
 /* ------------------------------------------------------------------ the model */
 
-const CAP_BLOCK_TONES = [0x9d9992, 0xc3c3c2, 0xb9b7b4, 0xa9a6a1];
+// Darkened 4.7% (2026-08-31). Measured over the pixel set the tones actually drive, the course
+// rendered a mean of 185.8 against the plate's 177.6, and the same two-render fit gives
+// R = 0.998 A + 11.6 -- so the albedo mean wanted 166.3 rather than 174.5. A small correction,
+// and worth recording as small: a hand-picked sample point had suggested the blocks were 40%
+// too bright, and it had landed on the lightbox.
+const CAP_BLOCK_TONES = [0x96928b, 0xbabab9, 0xb0aeac, 0xa19e99];
 
 export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {}): THREE.Group {
   const root = new THREE.Group();
@@ -328,7 +359,7 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
       boxAt(3.285, 1.3525, 2.58, 0.07, 2.345, 0.12), // right stile
       boxAt(0, 2.56, 2.58, 6.64, 0.07, 0.12), // head, just under the canopy soffit at 2.60
       boxAt(0, 0.14, 2.58, 6.64, 0.08, 0.12), // sill / kick rail
-      boxAt(0, 1.85, 2.58, 6.5, 0.08, 0.12), // transom, 0.75 m below the head as in the plate
+      boxAt(0, 1.97, 2.58, 6.5, 0.08, 0.12), // transom. Re-measured on the shopfront crop: the clerestory strip is 27% of the 2.56 m opening, so the transom sits 0.59 m below the head, not 0.71
       boxAt(-1.185, 0.995, 2.58, 0.07, 1.63, 0.12), // door jamb L, sill top to transom
       boxAt(1.185, 0.995, 2.58, 0.07, 1.63, 0.12), // door jamb R
       boxAt(0, 2.0, 2.58, 2.3, 0.22, 0.12), // door header box, 1.89..2.11 on the transom
@@ -345,6 +376,11 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * face -- which the bounding-box coplanarity check flags even though the two never overlap
    * in Y. */
   {
+    // z centre -2.10, not 1.35. The plate puts the shutter at the REAR end of this elevation --
+    // at azimuth 315 the -X wall runs away to the left of frame and the shutter is at its far
+    // left, which is -Z. It was at the front end, next to the shopfront corner, where a service
+    // shutter never is.
+    const SHUTTER_Z = -2.10;
     const slats: THREE.BufferGeometry[] = [];
     const SLAT_COUNT = 20;
     const SLAT_H = 2.25 / SLAT_COUNT;
@@ -356,9 +392,9 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
       // coplanar co-facing pair this whole layout is arranged to avoid. Both slat depths share
       // the inner face at -3.90; only the outer face moves, between -3.99 and -3.975.
       const thickness = i % 2 === 0 ? 0.09 : 0.075;
-      slats.push(boxAt(-3.9 - thickness / 2, y, 1.35, thickness, SLAT_H * 0.92, 1.5));
+      slats.push(boxAt(-3.9 - thickness / 2, y, SHUTTER_Z, thickness, SLAT_H * 0.92, 1.5));
     }
-    slats.push(boxAt(-3.935, 2.485, 1.35, 0.11, 0.27, 1.6)); // head box
+    slats.push(boxAt(-3.935, 2.485, SHUTTER_Z, 0.11, 0.27, 1.6)); // head box
     const shutter = mergeGeos(slats);
     {
       // Shares galv-plant with the condensers, whose atlas is assigned to the material after
@@ -375,8 +411,11 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * tonal variation measured at standard deviation 25 is carried by instanceColor, which costs
    * nothing, rather than by a texture set -- a colour difference is not a material difference.
    * Blocks stop 0.02 m short of the parapet outer face so the two are never coplanar, and
-   * overhang the sign wall front to z=2.80, which is what a coping does. Depth 2.18..2.80
-   * covers the wall's whole 2.20..2.74 so no wall top shows behind the course. */
+   * overhang the sign wall front, which is what a coping does. Depth was 0.62 (z 2.18..2.80) and
+   * is 0.52 (z 2.24..2.76): at the solved camera the course showed 0.62 m of TOP FACE and read as
+   * a wall of slabs rather than as a cap, which is the "chunkier and deeper than the plate's"
+   * residual the last review recorded after an earlier trim. It still overhangs the sign wall
+   * front (2.74) by 0.02 and still covers the wall's own top, so no wall shows behind it. */
   {
     const mats: THREE.Matrix4[] = [];
     const cols: number[] = [];
@@ -392,18 +431,39 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
     // 1.4, 1.4 m, read at 76 px/m along the front) and 0.58 m tall, capping the sign wall from
     // 4.02 to 4.60. The first build ran twelve uniform 0.64 x 0.28 m bricks, which read as a
     // brick soldier course; the plate's blocks are near-square slabs ~0.6 m tall.
+    // Z 2.40..2.92 (centre 2.66), not 2.24..2.76. The course used to sit BEHIND the lightbox --
+    // the box's face is at 2.86 and the blocks stopped at 2.76 -- so the fascia stood proud of its
+    // own coping. In the plate the blocks are the outermost thing on the elevation and throw a
+    // shadow line down the lightbox's edge, which is what a coping and a quoin do. They now stand
+    // 0.06 m proud of it. The wall top behind them (2.20..2.40) is hidden at the solved elevation:
+    // the blocks overhang it by 0.10 m in height and 19 degrees needs 0.29 m of run to see past
+    // that, against the 0.20 m strip there is.
+    const CAP_Z = 2.66, CAP_D = 0.52;
     const widths = [0.9, 1.35, 1.35, 1.4, 1.4];
     let x = -3.2;
     for (const w of widths) {
-      push(x + w / 2, 4.31, 2.49, w - 0.02, 0.58, 0.62);
+      push(x + w / 2, 4.31, CAP_Z, w - 0.02, 0.58, CAP_D);
       x += w;
     }
     // Piers: 0.8 m wide, THREE courses each -- cap, then two ~0.6 m blocks -- running from the
     // cap course down to the canopy plates, which is where the plate's corner stacks end.
+    // The piers are QUOINS and a quoin turns the corner. Each course is TWO blocks: the front one
+    // on the +Z elevation and a RETURN running back along the side wall, so the stack reads as a
+    // corner pier from both elevations the way the plate shows it -- three courses of blocks whose
+    // front face and side return are both visible, with the lightbox butting into the inner face.
+    // Built as front-only they were invisible at the corner: the left pier occupied the cell where
+    // the plate has a shaded quoin and the render had a bright cap block, the single worst cell in
+    // the 8x8 interior comparison at 70 of 255.
+    //
+    // The return butts the front block's back face at z = 2.40 -- opposed faces, not a same-facing
+    // overlap -- and its outer face stops at 3.99, inside the parapet's own 4.00 plane, for the
+    // same reason the roller shutter does.
     for (const sx of [-3.6, 3.6]) {
-      push(sx, 4.31, 2.49, 0.76, 0.58, 0.62);
-      push(sx, 3.67, 2.49, 0.76, 0.62, 0.62);
-      push(sx, 3.02, 2.49, 0.76, 0.6, 0.62);
+      const rx = Math.sign(sx) * 3.74;
+      for (const [y, h] of [[4.31, 0.58], [3.67, 0.62], [3.02, 0.6]] as [number, number][]) {
+        push(sx, y, CAP_Z, 0.76, h, CAP_D);
+        push(rx, y, CAP_Z - CAP_D, 0.50, h, CAP_D);
+      }
     }
     addInstanced('parapet-cap-blocks', 'Parapet cap blocks and quoins', new THREE.BoxGeometry(1, 1, 1), 'parapet-block', mats, cols);
   }
@@ -449,14 +509,32 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
    * (2.52..2.64) at both ends, so they are not coplanar with it, while still standing proud of
    * the glazing at 2.56 so the glass reads as recessed. */
   {
+    // The spacing was WRONG, not the count. `-3.25 + 0.3383 * k` for k = 1..5 with its mirror puts
+    // ten mullions at +-1.56, +-1.90, +-2.23, +-2.57 and +-2.91 -- a picket at 0.34 m pitch
+    // crowded against each END of the shopfront, with 3.1 m of unbroken glass between +-1.56 and
+    // one lone mullion at the centre of it. The plate shows an EVEN grid, and the geometry it is
+    // even ACROSS is the two zones the door bay leaves: 1.185 (door jamb) to 3.25 (stile) is
+    // 2.065 m a side, divided into four bays of 0.516 m by three mullions. Counted off the plate's
+    // shopfront crop, three interior verticals a side is what is there.
+    //
+    // The eleventh instance stays, and it is now the DOOR'S MEETING STILE rather than a mullion
+    // that happened to land at the centre: it stops at the door header (2.11) instead of running
+    // the full height, because in the plate the leaves meet under their own head rail.
     const mats: THREE.Matrix4[] = [];
-    const xs: number[] = [0];
-    for (let k = 1; k <= 5; k++) {
-      xs.push(-3.25 + 0.3383 * k, 3.25 - 0.3383 * k);
+    const JAMB = 1.185, STILE = 3.25, BAYS = 4;
+    const pitch = (STILE - JAMB) / BAYS;
+    for (let k = 1; k < BAYS; k++) {
+      for (const sx of [-1, 1]) {
+        mats.push(new THREE.Matrix4().setPosition(sx * (JAMB + pitch * k), 1.32, 2.58));
+      }
     }
-    for (const x of xs.sort((a, b) => a - b)) {
-      mats.push(new THREE.Matrix4().setPosition(x, 1.32, 2.58));
-    }
+    // meeting stile: 1.93 m tall (sill 0.18 to door header underside 2.11), so it is scaled down
+    // from the shared 2.4 m box rather than given a geometry of its own.
+    mats.push(new THREE.Matrix4().compose(
+      new THREE.Vector3(0, 1.145, 2.58),
+      new THREE.Quaternion(),
+      new THREE.Vector3(1, 1.93 / 2.4, 1),
+    ));
     addInstanced('shopfront-mullions', 'Shopfront mullions', new THREE.BoxGeometry(0.07, 2.4, 0.08), 'aluminium', mats);
   }
 
@@ -509,13 +587,43 @@ export function createBigCStoreBuildingModel(options: ProceduralModelOptions = {
     for (const lz of [-0.4, 0.4]) parts.push(plain(boxAt(0, 0.195, lz, W + 0.06, 0.05, 0.05)));
     for (const lx of [-0.5, 0.5]) parts.push(plain(boxAt(lx, 0.19, 0, 0.05, 0.05, 0.8)));
     const unit = mergeGeos(parts);
+    // TIGHTENED 2026-08-31. The plate's four units are two PAIRS that nearly touch, each pair
+    // stepped diagonally by roughly half a unit; the build had them 0.95 x 0.85 apart, which reads
+    // as four units scattered over the roof rather than as two plant sets, and was the residual
+    // the last review named for this feature. Group centres are unchanged -- left pair at
+    // (-2.53, 0.58), right pair at (2.78, -1.95) -- because those were measured and only the
+    // intra-pair spacing was wrong.
+    //
+    // The offset is (0.75, 0.95) and the SECOND number is the one that is load-bearing. A first
+    // cut at (0.61, 0.70) put the casings 0.44 x 0.20 m INSIDE one another: the units are
+    // 1.05 x 0.90, so any pair that overlaps in x must clear 0.90 in z or the two boxes
+    // interpenetrate. check-coplanar caught it as four same-facing pairs sharing the y = 4.582
+    // lid plane -- which is what an instanced set of identical units looks like once their
+    // bounding boxes start to overlap, and is exactly why that check compares boxes.
     const placements: [number, number, number][] = [
-      [-3.0, 3.6, 1.0],
-      [-2.05, 3.6, 0.15],
-      [2.35, 3.6, -1.5],
-      [3.2, 3.6, -2.4],
+      [-2.90, 3.6, 1.05],
+      [-2.15, 3.6, 0.10],
+      [2.40, 3.6, -1.475],
+      [3.15, 3.6, -2.425],
     ];
-    const mats = placements.map(([x, y, z]) => new THREE.Matrix4().setPosition(x, y, z));
+    // TWO UNIT TYPES, at no cost. The last review recorded "the plate shows two visually similar
+    // unit types; collapsing them to one instanced geometry costs a little fidelity and saves a
+    // whole draw call" -- a real trade against a ceiling that finished at 11 of 12. It is not a
+    // trade that has to be made: an instance matrix carries SCALE as well as position, so the
+    // second type is the same geometry at different proportions. On the plate's roof crop the
+    // right pair's front unit is visibly wider and squatter than the other three, so it is built
+    // 12% wider, 10% lower and 6% deeper. Still one geometry, still one draw call.
+    //
+    // The scaled unit clears its pair partner: x centres are 0.75 apart against half-widths of
+    // 0.525 and 0.59, so they overlap in x, but z centres are 0.95 apart against half-depths of
+    // 0.45 and 0.477, so the boxes never intersect. Its rim tops out at 4.49, inside the 4.60 m
+    // envelope, and its far corner at x 3.74 / z -2.90 is inside the deck's 3.90 / -3.42.
+    const SCALES: [number, number, number][] = [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1.12, 0.90, 1.06]];
+    const mats = placements.map(([x, y, z], i) => new THREE.Matrix4().compose(
+      new THREE.Vector3(x, y, z),
+      new THREE.Quaternion(),
+      new THREE.Vector3(...SCALES[i]),
+    ));
     addInstanced('plant-condensers', 'Rooftop condenser units', unit, 'galv-plant', mats);
   }
 
@@ -631,6 +739,10 @@ function applyFasciaGraphic(root: THREE.Group): void {
   baked.needsUpdate = true;
 
   material.map = baked;
+  // The box is emissive, so the graphic has to drive the EMISSION as well as the albedo -- an
+  // emissive colour with no emissiveMap adds the same glow to every texel, which would wash a
+  // flat cream over the badge and lose the green field the brand is read by.
+  material.emissiveMap = baked;
   // A `map` MULTIPLIES `color`: the measured lightbox white is already painted into the image,
   // so the colour slot must be white or the albedo is applied twice.
   material.color.setHex(0xffffff);

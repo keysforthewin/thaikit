@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { GizmoHelper, GizmoViewport, Grid, OrbitControls } from '@react-three/drei';
+import { GizmoHelper, GizmoViewport, Grid } from '@react-three/drei';
 import * as THREE from 'three';
 
 import { useLevel } from './store.js';
@@ -15,6 +15,7 @@ import { SelectionGizmo } from './SelectionGizmo.jsx';
 import { SnapHint } from './SnapHint.jsx';
 import { CellOverlay } from './CellOverlay.jsx';
 import { PlayMode } from './play/PlayMode.jsx';
+import { FlyControls } from './FlyControls.jsx';
 
 /**
  * The invisible pick plane every "add here" reads. It sits at the ground's
@@ -167,10 +168,13 @@ export function Viewport({ stats }) {
         {!play && <SnapHint />}
         {!play && <SelectionGizmo />}
         {play && <PlayMode />}
-        {/* OrbitControls is `makeDefault`, so anything still calling update()
-            would fight the character for the camera. It has to be disabled, not
-            merely ignored. */}
-        <OrbitControls makeDefault enabled={!play} maxPolarAngle={Math.PI / 2 - 0.01} />
+        {/* The viewport navigates as a flythrough, not an orbit: right-drag
+            looks, WASD moves, Space and C go up and down. It publishes itself as
+            the default controls the way OrbitControls did, so TransformControls
+            still suspends navigation for the length of a gizmo drag -- and like
+            OrbitControls it has to be disabled rather than merely ignored during
+            play, where the character owns the camera. */}
+        <FlyControls enabled={!play} />
         {!play && (
           <GizmoHelper alignment="bottom-right" margin={[70, 70]}>
             <GizmoViewport axisColors={['#e2686d', '#4ec98a', '#6ea8fe']} labelColor="white" />

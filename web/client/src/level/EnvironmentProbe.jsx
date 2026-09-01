@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
-import { buildEnvironment, applyEnvironment } from '@thai-kit/level-runtime/environment';
+import { buildEnvironment, applyEnvironment, environmentIntensity } from '@thai-kit/level-runtime/environment';
 
 /**
  * Image-based lighting in the editor viewport.
@@ -26,8 +26,10 @@ export function EnvironmentProbe({ sky, base = null, hemisphere = null, ibl = nu
 
   const enabled = ibl?.enabled !== false;
   const size = ibl?.size ?? 256;
-  const intensity = ibl?.intensity ?? 1;
   const rotationDeg = sky?.base?.rotationDeg ?? 0;
+  // `sky.base.intensity` folded in, so turning the sky up lights the level and
+  // not just the backdrop. Shared with `loadLevel`, so the preview matches.
+  const intensity = environmentIntensity({ ibl, sky, base });
 
   /**
    * Everything the PREFILTER actually reads, as a value.
@@ -47,7 +49,8 @@ export function EnvironmentProbe({ sky, base = null, hemisphere = null, ibl = nu
   // The prefilter depends on the PIXELS and the probe size, and on nothing
   // else. Intensity and bearing ride on `scene.environmentIntensity` and
   // `scene.environmentRotation`, so dragging either slider must not re-run it --
-  // which is what the separate effect below is for.
+  // which is what the separate effect below is for. That is also why
+  // `sky.base.intensity` is NOT in `bakeKey`: it is applied there, not here.
   useEffect(() => {
     if (!enabled || !renderer) return undefined;
     const env = buildEnvironment(renderer, sky, { base, hemisphere, size });

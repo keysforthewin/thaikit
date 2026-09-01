@@ -1,0 +1,1991 @@
+{
+  "targetName": "Tarpaulin Canopy Module",
+  "targetId": "tarpaulin-canopy-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "modular-canopy-bay",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "four-tube-posts",
+        "bottom-perimeter-rail",
+        "no-top-rail",
+        "four-point-tie",
+        "sagging-fabric",
+        "orange-lining",
+        "open-all-sides"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "galvanised-steel-tube",
+        "woven-polypropylene-tarpaulin"
+      ],
+      "notes": "ONE BAY of a modular outdoor roof kit and the FABRIC member of the set: a 4 x 4 m cell on a 4 m grid, four galvanised tube posts, a bottom perimeter rail, and a woven polypropylene tarp lashed over the four post heads. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. Market stalls, building sites, funerals and every wet-season pavement in the country. Blue-and-orange woven tarp is the single most recognisable Thai street material there is, so the colour is identity and not decoration; the frame is scaffold tube, always rusting at the joints and the feet."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE steel merge -- four posts, four bottom rails, eight rust collars and eight rope pieces -- and ONE tarp height grid: TWO draw calls of 4.",
+        "Two materials of three: galvanised tube (vertex colours -- two tube tones, rust, rope) and the tarp, which is WHITE and carries its blue top and ORANGE lining as a colour attribute written per grid by the sheet helper. That is the only way two surfaces 22 mm apart in y can differ on one material; a component axis tint cannot separate them and a second sheet would double the roof.",
+        "No repetition system: four posts, four rails and four ties are not enough of anything to instance.",
+        "The tarp is 1,152 of the 1,888 triangles, and the registry notes say why: \"the sag between the four tie points is what makes it read as fabric... that sag has to be real geometry -- a flat quad with a fabric texture reads as painted board\".",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the four-point catenary. There is no top rail on this frame -- the plate ties the tarp straight to the post heads and the proxy finds no band there -- so the tarp is held at four points and sags on every edge and in the middle, and that shape is the whole prop. The weave, the fold creases and the sun bleaching are a canvas; the orange lining is a colour on the underside and rim."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 60 mm galvanised tube posts at the module corners, full height to the tie",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-rail",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a bottom perimeter rail at 0.11 m, and NO top rail",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-sag",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a four-point catenary: held at the corners at 2.70, sagging to 2.49 mid-edge and 2.34 at the centre, with fold creases",
+          "mapsTo": {
+            "ref": "tarp"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-weave",
+          "zone": "roof",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "the coarse woven tape grid of a builder's tarp, with fold creases and sun bleaching",
+          "mapsTo": {
+            "ref": "d4-weave"
+          },
+          "onMaterial": "tarp",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-rust",
+          "zone": "frame",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rust at every rail-to-post joint and at the post feet",
+          "mapsTo": {
+            "ref": "d5-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-lining",
+          "zone": "roof",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "an orange lining showing along the whole rim of the tarp",
+          "mapsTo": {
+            "ref": "d6-lining"
+          },
+          "onMaterial": "tarp",
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-ties",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a rope collar and a hanging knot at each of the four post heads",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+    "resolvedUnknowns": [
+      "There is NO TOP RAIL. The plate ties the tarp straight to the four post heads and the proxy finds a surface band at the bottom of the frame and none at the top. This is what makes the sag a four-point catenary rather than a dish over a square rim, and it is the difference between this bay and every other one in the set.",
+      "The tarp stops ON the module edge rather than overhanging it, so the drape is sag between the ties rather than a skirt hanging outside the frame.",
+      "The tarp is 22 mm thick, against a real tarp's one. The harness camera sits at 20 degrees ELEVATION and never sees the underside, so the orange lining exists only as the rim, and at a realistic gauge that rim is a hairline. The thickness is carrying a colour, not a gauge.",
+      "The wrinkles are a deterministic ripple along both axes rather than noise: a tarp that has been folded keeps its creases, and a perfectly smooth sag reads as rubber."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 4.00 x 2.70 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 4.00 x 2.70 x 4.00 m with nothing crossing the cell edge",
+          "Four tube posts at the cell corners with a bottom rail and NO top rail",
+          "The tarp held at four points at 2.70 and sagging everywhere else",
+          "Open on all four sides"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a top rail, which turns the catenary into a dish",
+          "a flat tarp",
+          "a tarp overhanging the cell",
+          "no bottom rail"
+        ]
+      },
+      {
+        "id": "tarp-sag",
+        "name": "Four-point sag and fabric read",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "A real catenary in geometry, sagging on the edges and deeper at the centre",
+          "Fold creases, not smooth rubber",
+          "A woven tape grid at prop distance",
+          "An orange lining visible along the rim"
+        ],
+        "evidenceRefs": [
+          "region-blue",
+          "region-bluelit",
+          "region-orange"
+        ],
+        "failureModes": [
+          "a flat quad with a fabric texture",
+          "a smooth dish",
+          "a white sail where the vertex colours were overwritten",
+          "a hairline rim"
+        ]
+      },
+      {
+        "id": "frame-and-materials",
+        "name": "Tube frame, rust and rope",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Round tube, not box section",
+          "Rust at the joints and feet rather than over the whole frame",
+          "A rope collar and knot at each post head",
+          "Blue at the plate's hue and no face rendering as background"
+        ],
+        "evidenceRefs": [
+          "region-tube",
+          "region-tuberust",
+          "region-rope"
+        ],
+        "failureModes": [
+          "square posts",
+          "uniform rust",
+          "no ties",
+          "a blue rendering blown out from the up-facing transfer"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "tarp"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "tarp-sag",
+      "name": "Four-point sag and fabric read",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "tarp"
+      ],
+      "evidenceRefs": [
+        "region-blue",
+        "region-bluelit",
+        "region-orange"
+      ]
+    },
+    {
+      "id": "frame-and-materials",
+      "name": "Tube frame, rust and rope",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-tube",
+        "region-tuberust",
+        "region-rope"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "There is NO TOP RAIL. The plate ties the tarp straight to the four post heads and the proxy finds a surface band at the bottom of the frame and none at the top. This is what makes the sag a four-point catenary rather than a dish over a square rim, and it is the difference between this bay and every other one in the set.",
+    "The tarp stops ON the module edge rather than overhanging it, so the drape is sag between the ties rather than a skirt hanging outside the frame.",
+    "The tarp is 22 mm thick, against a real tarp's one. The harness camera sits at 20 degrees ELEVATION and never sees the underside, so the orange lining exists only as the rim, and at a realistic gauge that rim is a hairline. The thickness is carrying a colour, not a gauge.",
+    "The wrinkles are a deterministic ripple along both axes rather than noise: a tarp that has been folded keeps its creases, and a perfectly smooth sag reads as rubber."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner posts then pair at the shared edge."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 2.7,
+      "d": 4.0
+    },
+    "description": "A 4.00 x 4.00 m bay: four 60 mm galvanised tubes at the corners, a bottom perimeter rail at 0.11 m and no top rail, with a woven tarp lashed to the four post heads at 2.70 m. The tarp sags to 2.49 at the middle of each edge and 2.34 at the centre, and shows an orange lining along its whole rim. Open on all four sides.",
+    "envelopeDerivation": "x and z span exactly -2.000..+2.000 at the tarp, which owns both cell-edge planes; the tube posts stand at +-1.958 with their surfaces at 1.988 and the rope collars at 1.998, after the first build's 44 mm collars crossed the edge at 2.002. The posts also stop 20 mm UNDER the tie, because a post top on y = 2.700 shares that plane with the tarp's corner and check-coplanar reads it as a 15.97 m2 same-facing pair; the tarp drapes over the post head anyway. y 0.000 to 2.700 at the four corner ties, which is the tarp's highest point and the declared height. Proxy (Meshy v7): w:h:d 1 : 0.783 : 0.974 with the frame a SQUARE 1.06 x 1.07 H of constant extent from the ground up, a 4.6-5.6% surface band at y/H 0.025-0.075 -- a bottom rail -- and NOTHING at the top, which is what says the tarp is tied straight to the post heads. The proxy's tarp reaches 1.206 x 1.174 H at y/H 0.775, so the plate's tarp overhangs its frame by 14%; that cannot be built on a 4 m grid, where the posts have to sit at the cell corners for two bays to pair. The overhang becomes 42 mm and the drape happens INSIDE the cell, as sag between the ties rather than as a skirt outside them.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.783 : 0.974, frame 1.06 x 1.07 H of constant extent, a bottom-rail surface band at y/H 0.025-0.075, tarp reaching 1.206 x 1.174 H. Used for the absence of a top rail, the presence of the bottom one and the tube section. NOT used for the overhang, which the 4 m grid forbids."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-blue",
+      "viewpoint": "top",
+      "path": "crops/blue.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-bluelit",
+      "viewpoint": "top",
+      "path": "crops/bluelit.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-bluedark",
+      "viewpoint": "front",
+      "path": "crops/bluedark.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-orange",
+      "viewpoint": "front",
+      "path": "crops/orange.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-orange2",
+      "viewpoint": "front",
+      "path": "crops/orange2.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-tube",
+      "viewpoint": "front",
+      "path": "crops/tube.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-tuberust",
+      "viewpoint": "front",
+      "path": "crops/tuberust.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-rope",
+      "viewpoint": "front",
+      "path": "crops/rope.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.94,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.94: the bay is symmetric about both axes, open on all four sides, and the tarp is a four-fold symmetric surface; every elevation is the one the plate shows."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Galvanised tube frame and rope ties",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four posts, four rails, eight rust collars and eight rope pieces are one merge and one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts r 0.030 at x,z +-1.958 from the ground to 2.68, 20 mm under the tie so the tarp owns y = 2.700; a bottom perimeter rail r 0.030 at y 0.11 on all four sides, the two Z-axis rails passing the X-axis pair; rust collars r 0.036 at each rail joint and r 0.035 at each foot; a rope collar r 0.040 at 2.57 and a hanging knot tapering 0.016 to 0.010 at 2.48 on every post.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The collars are concentric with the tubes they wrap and stand 5 to 10 mm proud; the rails on the two axes cross rather than meeting in a plane; the tarp owns the cell-edge planes at 2.000 and the frame stops at 1.998. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.70 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "tube posts",
+          "delivery": "four 8-segment cylinders"
+        },
+        {
+          "id": "d2-rail",
+          "description": "bottom perimeter rail",
+          "delivery": "four cylinders at 0.11 m, and deliberately none at the top"
+        },
+        {
+          "id": "d7-ties",
+          "description": "rope collars and knots",
+          "delivery": "eight short cylinders concentric with the post heads"
+        },
+        {
+          "id": "d5-rust",
+          "description": "rust",
+          "delivery": "eight collars plus a bloom canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#b6b6b2",
+        "recipe": "Galvanised grey as vertex colours on a white material -- two tube tones, rust collars and sisal rope -- with a rust-bloom multiply canvas.",
+        "evidenceRef": "region-tube",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(182, 182, 178, 1.0)",
+        "secondaryAlbedo": "rgba(182, 182, 178, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "tarp",
+      "name": "Woven tarpaulin, blue over an orange lining",
+      "level": "macro",
+      "role": "surface",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "plane-card",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One 16 x 16 height grid is the whole roof in one draw call, and its edge strips ARE the orange rim.",
+      "materialId": "tarp",
+      "material": "tarp",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 16 x 16 grid over x,z -2.00..2.00, 22 mm thick. The top surface is 2.70 at the four corners less 0.21 times max(q, r) and less 0.15 times q times r, where q and r are 1 minus the squared normalised distance across each axis -- so max(q, r) is zero ONLY at the four corners, which is the edge catenary, and q times r adds the dish in the middle. A 12 mm deterministic ripple along both axes carries the fold creases.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The tarp is the only thing at its heights and it owns both cell-edge planes; the rope collars sit 130 mm below the tie.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 1.10 m. The sheet helper writes the colour attribute itself and the component tint is SKIPPED for it -- tinting the merge overwrote both tones with one hex on the first build and shipped the tarp as a white sail."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-sag",
+          "description": "four-point sag and creases",
+          "delivery": "the height grid"
+        },
+        {
+          "id": "d4-weave",
+          "description": "woven tape grid",
+          "delivery": "the canvas as map and bump"
+        },
+        {
+          "id": "d6-lining",
+          "description": "orange lining",
+          "delivery": "the under grid and the edge strips of the sheet"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "tarp",
+        "baseColor": "#ffffff",
+        "recipe": "A WHITE material carrying blue on the top grid and orange on the underside and rim as a colour attribute, with a woven-tarp canvas as map and bump.",
+        "evidenceRef": "region-blue",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(255, 255, 255, 1.0)",
+        "secondaryAlbedo": "rgba(255, 255, 255, 1.0)",
+        "materialClass": "fabric",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Galvanised scaffold tube",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b6b6b2",
+      "color": "#b6b6b2",
+      "roughness": {
+        "base": 0.52,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.28,
+      "albedo": {
+        "dominant": "#b6b6b2",
+        "secondary": [
+          "#b6b6b2",
+          "#c6c6c2",
+          "#a87a54",
+          "#c0b9a8"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tube.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-rust",
+          "region": "the rail-to-post joints and the post feet",
+          "roughness": 0.7,
+          "palette": [
+            "#A87A54"
+          ],
+          "evidence": "crops/tuberust.png -- rust at every joint and foot on the plate; carried as eight collars plus a bloom canvas."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-tube (0.90) at #8e8e8a sd 39 and region-tuberust (0.84) at #a4a4a4 sd 18 -- matt galvanised grey, mean luma about 140; region-rope (0.84) at #888278 sd 39 for the sisal lashings.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER (two-point solve from the nipa module: authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). Carried at #b6b6b2 with a second tube tone #c6c6c2, rust #a87a54 and rope #c0b9a8 as vertex colours.",
+          "Metalness 0.28, not physical: the thaikit harness has no environment map and a full metal renders black.",
+          "Textureless as DECLARED: one 512 px rust-bloom multiply canvas after construction, world UVs at 0.70 m."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tube.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "tarp",
+      "name": "Woven polypropylene tarpaulin",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/tarp_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#5B6F83",
+          "#A8562F"
+        ],
+        "samplingNotes": "Measured as the mean of crops/blue.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-weave",
+          "region": "the whole tarp",
+          "roughness": 0.92,
+          "palette": [
+            "#62788D",
+            "#8095A9"
+          ],
+          "evidence": "crops/blue.png and crops/bluelit.png -- the woven tape grid and its creases; carried as a canvas over the modelled sag."
+        },
+        {
+          "id": "d6-lining",
+          "region": "the underside and the rim",
+          "roughness": 0.92,
+          "palette": [
+            "#683122"
+          ],
+          "evidence": "crops/orange.png #683122 sd 41 -- the orange lining showing where the edge lifts; carried as the sheet's under-grid colour, which is also the rim."
+        }
+      ],
+      "finishClass": "fabric",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-blue (0.90) at #62788d sd 33, region-bluelit (0.88) at #8095a9 sd 20 and region-bluedark (0.86) at #596a7b sd 33 -- a mid slate blue, luma 118 in the shade and 145 lit. The ORANGE lining measures #683122 sd 41 on region-orange (0.86) and #5f423c on region-orange2 (0.80).",
+          "The material colour is WHITE and both tones are a COLOUR ATTRIBUTE written per grid by the sheet helper: blue #5b6f83 on the top surface, orange #a8562f on the underside AND the rim. Two surfaces 22 mm apart in y cannot be separated by a component axis tint, and a second sheet would double the roof for a colour.",
+          "The BLUE is authored DARKER than the plate (luma 96 against 118) because the tarp is mostly up-facing, where the harness transfer is roughly 1.05A + 60; measured back at 128 to 135 across the four azimuths against the plate's 118 shaded and 145 lit.",
+          "The ORANGE is authored LIGHTER, and for the opposite reason: it faces downward, sees almost no key, and at the plate's luma 60 it would render inside the backdrop band. Lifted to luma 92 and kept at saturation 0.55 -- the chroma route rather than the grey one.",
+          "Textureless as DECLARED: one 512 px woven-tarp canvas after construction, bound as map and bump (0.006) -- 72 warp and weft tapes with a shadow at each join, eight fold creases with a pale ridge and a shadow on one side, and sun-bleached streaks. World UVs at 1.10 m."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/blue.png",
+        "pbrReport": "material-evidence/tarp.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T12:10:25.892867+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:25.972525+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.052529+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.131897+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.223337+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.304132+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.384655+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.466519+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.548986+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.629209+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        },
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T12:10:25.892867+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components, no repetition system, 2 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:25.972525+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Posts shortened 20 mm so they stop under the tie: a post top on y = 2.700 shares that plane with the tarp corner, and check-coplanar read it as one same-facing pair of 15.97 m2. The tarp drapes over the post head anyway. Clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.052529+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: four tube posts, a bottom perimeter rail and NO top rail, read off the plate and confirmed by the proxy's surface bands.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.131897+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the four-point catenary as real geometry -- max(q, r) is zero only at the four corners, which is the edge sag, and q times r adds the centre dish -- plus fold creases as a deterministic ripple.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.223337+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Sheet tinting fixed in the shared body template: a sheet given hexUnder writes its OWN colour attribute per grid, and tintGeo was overwriting both tones with a single hex -- the tarp shipped as a white sail. The blue top and orange rim are now the colours the material was authored for.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.304132+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: galvanised tube 0.90 and woven tarp 0.90, both textureless. The tarp material is WHITE and carries blue over orange as a colour attribute written per grid, which is the only way two surfaces 22 mm apart in y differ on one draw call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.384655+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: rust-bloom canvas on the steel; a woven-tape canvas as map and bump on the tarp. Blue authored DARKER than the plate for the up-facing transfer and orange LIGHTER for the downward-facing one, both measured.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.466519+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.548986+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:10:26.629209+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.86,
+        "formDetail": 0.87,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
+          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+        },
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
+          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 1,888/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. The largest opening in the set -- about 240,000 px of enclosed background per frame -- so the turntable runs with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing the red over exactly that volume.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "Two components, no repetition system: 2 of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "steel and tarp: 2 of 3. Two tube tones, rust and rope are vertex colours on the steel; blue and orange are a colour attribute on the tarp."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 6,
+        "headroom": 4,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1888,
+        "budget": 4000,
+        "headroom": 2112,
+        "note": "1,888 of 4,000: 736 in the frame merge (24 cylinders at 6 or 8 segments), 1,152 in the tarp -- two 16 x 16 grids at 512 each and 128 in the wound edge strips, which are the orange rim."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Cylinders throughout the frame; the tarp is a height grid with thickness."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: four posts, four rails and four ties are not enough of anything to instance. In a scene the HOST places whole bays on the 4 m grid."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM; the tarp canvas is bound as map and bump."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "no-overhang",
+      "severity": "low",
+      "description": "The proxy's tarp overhangs its frame by 14% and the plate shows the edge hanging outside the posts; the built tarp stops on the cell edge, 42 mm outside them.",
+      "mitigation": "A 4 m grid bay that overhangs collides with its neighbour, and the posts have to sit at the cell corners for two bays to pair. The drape happens inside the cell as sag between the ties, which is the shape the notes actually name."
+    },
+    {
+      "id": "thick-tarp",
+      "severity": "low",
+      "description": "The tarp is 22 mm thick against a real one's one millimetre.",
+      "mitigation": "The harness camera never sees the underside, so the orange lining exists only as the rim and at a realistic gauge it is a hairline. Recorded in assumptions: the thickness is carrying a colour, not a gauge."
+    },
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "The whole volume between the four posts, the bottom rail and the tarp is background enclosed by the silhouette -- about 240,000 px per frame, the largest opening in the set.",
+      "mitigation": "Turntable run with --allow-holes on the _holecc measurement and a holeviz read per azimuth: the red covers exactly that volume and no solid surface. Every frame tone measured off the backdrop band first."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Tarpaulin Canopy Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2404,
+        "aspectRatioDelta": 0.0433,
+        "scaleDelta": 0.1395,
+        "bilateralSymmetryError": 0.019,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 47.13,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 24.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 47.13
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.240 is below threshold 0.85",
+        "scale delta 0.140 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "db90663a841f9f61",
+      "passId": "blockout"
+    }
+  ]
+}

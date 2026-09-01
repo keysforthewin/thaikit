@@ -1,0 +1,2808 @@
+{
+  "targetName": "Steel Twin-Arm Street Lamp",
+  "targetId": "steel-twin-arm-street-lamp",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "twin-arm steel street lighting column with two cobra-head lanterns",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "tapered-prismatic",
+        "lyre-arc",
+        "lofted-wedge"
+      ],
+      "structureKind": [
+        "fixed-infrastructure",
+        "symmetric-cantilever",
+        "bolted-baseplate"
+      ],
+      "motionPotential": [
+        "none - bolted to a foundation, rigid body"
+      ],
+      "materialFamilies": [
+        "hot-dip-galvanised-steel",
+        "cast-aluminium",
+        "acrylic-refractor"
+      ],
+      "notes": "Bilateral symmetry about the YZ plane (x=0) AND about the XY plane. The plate is square-framed at aspect 0.838 against the declared 0.52, so it carries the fixture and not the assembly proportions; the declared 5.2 x 10.0 x 0.4 m envelope governs."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 1,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 2
+      },
+      "reasoning": [
+        "Two macro assemblies: the tapered column and the twin-arm lyre that carries both lanterns.",
+        "The two arms and the two lantern housings are ONE continuous member in this fixture - the lyre - so they are one tapered-sweep whose section swells at each lantern rather than four components. That is what keeps a symmetric twin-arm inside a 6 draw-call ceiling.",
+        "Two repetition systems: four baseplate bolts and two refractor bowls.",
+        "No moving parts, so one root pivot and no sockets."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate. The sub-structure is real (flare, taper, swage, two arcs, two lantern swellings, two bowls) but it is carried as localFeatures and repetition systems because every componentTree entry costs a draw call."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "twin-lyre",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "twin-lyre"
+          },
+          "description": "Two arms rising from a single collar and curving out symmetrically to 1.89 m each side.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cobra-wedge-pair",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cobra-wedge-pair"
+          },
+          "description": "A 0.70 m cast wedge on each arm, deepest at the spigot and tapering to the nose.",
+          "realization": "unreported"
+        },
+        {
+          "id": "octagonal-taper",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "octagonal-taper"
+          },
+          "description": "An 8-segment shaft tapering r 0.110 to 0.075, 0.22 m across at the base.",
+          "realization": "unreported"
+        },
+        {
+          "id": "base-flare",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "base-flare"
+          },
+          "description": "The shaft swelling to r 0.168 over the bottom 0.60 m where it meets its plate.",
+          "realization": "unreported"
+        },
+        {
+          "id": "top-collar",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "top-collar"
+          },
+          "description": "A band 14 mm proud at the shaft top, the joint both arms rise from.",
+          "realization": "unreported"
+        },
+        {
+          "id": "baseplate-and-bolts",
+          "kind": "ridge",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "baseplate-and-bolts"
+          },
+          "description": "Four proud hex bolts on a 0.40 m square plate.",
+          "realization": "unreported"
+        },
+        {
+          "id": "refractor-pair",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "refractor-pair"
+          },
+          "description": "Two shallow prismatic acrylic bowls hung proud of the castings.",
+          "realization": "unreported"
+        },
+        {
+          "id": "rust-streak",
+          "kind": "decal",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "hand-hole-door"
+          },
+          "description": "Galvanising bloom and rust runs as a post-construction canvas tile, heaviest below the hand-hole door.",
+          "realization": "unreported"
+        },
+        {
+          "id": "spigot-collars",
+          "kind": "ridge",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "spigot-collars"
+          },
+          "description": "A stepped cast collar where each arm enters its luminaire.",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+    "resolvedUnknowns": [
+      "Shaft facet count: polygonal in the plate, built octagonal as the sector standard. Confidence 0.7.",
+      "The far side of both lanterns and of the column is not in the single view; built as a mirror about the arm plane. Confidence 0.85.",
+      "Plate proportions contradict the declared envelope (plate aspect 0.838, declared 0.52) because the plate photographs a shorter post; the declared 5.2 x 10.0 x 0.4 m governs and the plate supplies the fixture. Confidence 0.9.",
+      "Column diameter is taken from engineering practice for a 10 m twin-arm column (0.32 m across flats at the base), not from the plate: scaling the plate by its arm span would give a 0.55 m column, which no 10 m lighting column has. Confidence 0.8."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 2,
+      "microFeatureGroups": 9,
+      "materialLayers": 3,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox against 5.20 x 10.00 x 0.40 m",
+      "arm symmetry about x=0",
+      "per-material rendered luma against the measured 141/148",
+      "turntable hole gate at 0, 90, 180 and 270 degrees",
+      "both arcs read as curves on the 0-degree frame"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not take proportion from the plate or the Meshy proxy; both carry the plate's square framing.",
+      "Do not split the lyre into four components; it is one cast member and four would break the draw-call ceiling.",
+      "Do not author a fourth material for the rust; it is a colour region on the steel.",
+      "Do not add a pivot per component or any socket.",
+      "Do not seat a refractor bowl flush with the housing underside - coincident co-facing surfaces z-fight."
+    ],
+    "depthRationale": "FIVE components across three material layers: the column and its lyre and lantern pair as macro, the baseplate and refractor pair as meso. Nine micro-feature groups sit inside those merges -- octagonal taper, base flare, top collar, hand-hole door, twin arms, two cobra wedges, two spigot collars, four proud bolts and two refractor bowls -- separated by vertex colour rather than by extra materials."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "column",
+        "lyre"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be about 5.2 x 10 x 0.4 m against the declaration, symmetric about the shaft, standing on a base-center pivot at the foundation."
+    },
+    {
+      "id": "twin-arm-lyre",
+      "name": "Symmetric twin-arm lyre",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.88,
+      "mustPass": true,
+      "componentRefs": [
+        "lyre"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Both arms must rise from ONE collar at the shaft top and curve out symmetrically as eased quarter-turns. Two thin wires off a smooth pipe fails -- that is what the previous build shipped."
+    },
+    {
+      "id": "cobra-head-pair",
+      "name": "Cobra-head housings",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "lyre",
+        "refractor-bowls"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Each arm must carry a cast wedge tapering from spigot to nose over a refractor bowl hung proud of the casting. A plain box fails."
+    },
+    {
+      "id": "shaft-taper",
+      "name": "Tapered faceted column",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "column"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Section narrows monotonically with height and reads faceted, not round."
+    },
+    {
+      "id": "material-response",
+      "name": "Material response and the hole gate",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "column",
+        "lyre",
+        "refractor-bowls"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Steel and aluminium must render near the measured 141 and 148, and NO surface may render near the ~58 backdrop at any azimuth."
+    },
+    {
+      "id": "base-detail",
+      "name": "Baseplate, bolts and rust",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "baseplate"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Four bolt heads stand proud of a square plate, and the rust band fades out below 1 m."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "steel 141 / aluminium 148 in measured plate luma, with the refractor brightest; the render must keep the ordering.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "column",
+      "baseplate",
+      "lyre",
+      "lantern-pair",
+      "refractor-pair",
+      "base-bolts",
+      "refractor-bowls"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as five named parts. Not articulated and not breakable: destructionGroups is empty on the asset and no component carries a fractureGroup."
+  },
+  "assumptions": [
+    "The column is octagonal: the plate's section is polygonal rather than round, and eight sides is the sector standard. Confidence 0.7.",
+    "The far side of both lanterns and of the column is mirrored across the arm plane; the single view cannot show it. Confidence 0.85.",
+    "Column diameter is engineering-derived (0.32 m across flats at the base for a 10 m column), NOT scaled from the plate, which would give 0.55 m.",
+    "The arms and the lantern housings share one material. The measured crops differ by seven luma (141 against 148), which is a colour difference and not a material difference, and folding them saves two draw calls.",
+    "No cabling, brackets or fixings are modelled: thin geometry the budget cannot carry and the reference reconstruction loses.",
+    "Metalness is authored below a physical 1.0 on both metals because the review harness carries no environment map.",
+    "The lanterns' internal gear trays are not modelled: the kit builds exterior shells only."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "base-center: the origin sits at the centre of the baseplate footprint on the ground plane (y=0), so the prop drops onto a floor with no offset.",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 5.2,
+      "height": 10,
+      "depth": 0.4,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -2.6,
+      "xMax": 2.6,
+      "yMin": 0,
+      "yMax": 10,
+      "zMin": -0.2,
+      "zMax": 0.2
+    },
+    "derivation": "Measured bbox 5.20 x 9.97 x 0.40 m -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m, depth by the 0.40 m baseplate, height by the lantern crowns at 9.95 m.",
+    "symmetry": "bilateral about BOTH the YZ plane (x=0, the two arms mirror) and the XY plane (z=0)",
+    "notes": "The plate is square-framed at aspect 0.838 against the declared 0.52 and photographs a shorter post, so it is authoritative for the fixture and not for the assembly proportions. The column diameter comes from engineering practice for a 10 m column, not from scaling the plate by its arm span, which would give an impossible 0.55 m column."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "column",
+      "name": "Tapered galvanised shaft with collar and hand-hole door",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An assembled solid merged into one mesh: the flared tapered shaft, its top collar and the bolted hand-hole door share one galvanised material and one submission. Built as EIGHT segments rather than twelve because the plate's column reads octagonal; the previous build shipped a round pipe.",
+      "geometryDescriptor": {
+        "topologyIntent": "Origin base-center on the foundation, +Y up. A lathe flaring from r 0.168 at the plate to r 0.118 by 0.60 m, then tapering r 0.110 to 0.075 by 7.52 m, closing with a banded collar 14 mm proud over 7.54-7.72 m.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "octagonal-taper",
+          "description": "An 8-segment lathe tapering r 0.110 to 0.075 -- 0.22 m across at the base, which is the figure the asset notes give. The plate's own shaft is 0.177 of its span, which at the declared 5.2 m would be 0.92 m across: these plates photograph real lamps that are routinely not the declared size, so FORM comes from the plate and PROPORTION from the declaration."
+        },
+        {
+          "id": "base-flare",
+          "description": "The shaft swells over the bottom 0.60 m from r 0.118 to r 0.168 where it meets its plate. The plate's column is visibly much wider at the foot than under the collar, and the flare is most of what reads as a structural column rather than a pipe."
+        },
+        {
+          "id": "top-collar",
+          "description": "A band 14 mm proud over the top 0.18 m of the shaft. Both arms rise from THIS collar, which is what makes the head a lyre rather than two brackets clamped at different heights."
+        },
+        {
+          "id": "hand-hole-door",
+          "description": "A bolted 0.14 x 0.40 m cover plate 4 mm proud at 1.05 m, the source of the long rust run the plate shows below it."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Galvanised #949c9e with shaded castings #7b8486 as a vertex colour, plus a post-construction bloom-and-rust tile.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded castings as a vertex colour, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(148, 156, 158, 1)",
+        "secondaryAlbedo": "rgba(123, 132, 134, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#949c9e"
+      }
+    },
+    {
+      "id": "baseplate",
+      "name": "Bolted square baseplate",
+      "level": "meso",
+      "role": "mount",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A distinct fabricated part bolted to a foundation, sharing the shaft's material so it costs a submission and no shader switch.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.40 m square plate 30 mm thick at y 0 -- 0.40 being the declared depth exactly -- with four PROUD hex bolts 55 mm tall, which is what the plate shows rather than flush studs.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "baseplate-and-bolts",
+          "description": "Four proud hex bolts inset 58 mm from the corners of a 0.40 m plate. The previous build had no baseplate at all."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Sized to the declared depth so the measured bbox lands at 0.40 rather than over it.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded castings as a vertex colour, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(148, 156, 158, 1)",
+        "secondaryAlbedo": "rgba(123, 132, 134, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#949c9e"
+      }
+    },
+    {
+      "id": "lyre",
+      "name": "Twin curved arms rising from the collar",
+      "level": "macro",
+      "role": "arm",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "tube",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The two arms are one component because they are one fabricated assembly rising from a single collar, and mirroring them costs no extra material or shader switch.",
+      "geometryDescriptor": {
+        "topologyIntent": "Two swept tubes of r 0.055 on eased quarter-turns from the collar at 7.62 m to horizontal at 9.84 m, reaching 1.89 m each side of the axis.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "twin-lyre",
+          "description": "Two arms rising from the SAME collar and curving out symmetrically. Eased quarter-turns rather than circular arcs -- tight at the top, straight along the outreach -- which is the shape of a real bracket arm. The previous build was two thin wires off a smooth pipe."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Arm radius 0.055, below the single-arm cobra's 0.062: the plate's median column carries two lighter arms.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded castings as a vertex colour, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(148, 156, 158, 1)",
+        "secondaryAlbedo": "rgba(123, 132, 134, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#949c9e"
+      }
+    },
+    {
+      "id": "lantern-pair",
+      "name": "Two cast cobra-head luminaires",
+      "level": "macro",
+      "role": "head",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Cast aluminium is a different substance from the galvanised column -- lighter, smoother, higher metalness -- and the pair is one component because they are identical castings on one material.",
+      "geometryDescriptor": {
+        "topologyIntent": "Three stacked boxes per side spanning 0.70 m along each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), plus a cast spigot collar each.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "cast-aluminium"
+        }
+      },
+      "material": "cast-aluminium",
+      "materialLayers": [
+        "cast-aluminium"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "cobra-wedge-pair",
+          "description": "A 0.70 m wedge on each arm, deepest at the spigot and tapering to the nose. A plain box reads as a shoebox on a stick; the taper is the cobra. Each nose lands at 2.60 m, which is the declared 5.2 m span."
+        },
+        {
+          "id": "spigot-collars",
+          "description": "A cast collar where each arm enters its luminaire, 0.10 m along the tube. The plate shows a distinct stepped joint there rather than the housing meeting the tube bare."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Cast aluminium #a6abab, a shade lighter than the galvanising, which is what separates the two in the plate.",
+      "colorMaterialRecipe": {
+        "materialRef": "cast-aluminium",
+        "recipe": "A smooth light casting, separated from the column by tone and metalness.",
+        "dominantAlbedo": "rgba(166, 171, 171, 1)",
+        "secondaryAlbedo": "rgba(154, 160, 160, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/cast-aluminium.png",
+        "authoredAlbedo": "#a6abab"
+      }
+    },
+    {
+      "id": "refractor-pair",
+      "name": "Two acrylic refractor bowls",
+      "level": "meso",
+      "role": "lens",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The only non-metal on the prop and the second meso component. A squashed cylinder, not a box: a cobra head's refractor is a shallow prismatic bowl.",
+      "geometryDescriptor": {
+        "topologyIntent": "Two 12-segment cylinders scaled 1.55 along the arms, r 0.115 to 0.098 over 45 mm, hung below each housing.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "acrylic-refractor"
+        }
+      },
+      "material": "acrylic-refractor",
+      "materialLayers": [
+        "acrylic-refractor"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "refractor-pair",
+          "description": "Hung proud of the castings rather than flush with their undersides: two co-facing surfaces in one plane z-fight, and a real refractor stands below the casting that clamps it. The plate shows both bowls clearly."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Acrylic #d6dad4 at roughness 0.20 -- the brightest thing on the prop, which is what a refractor reads as even unlit.",
+      "colorMaterialRecipe": {
+        "materialRef": "acrylic-refractor",
+        "recipe": "A pale prismatic bowl, the brightest surface on the prop.",
+        "dominantAlbedo": "rgba(214, 218, 212, 1)",
+        "secondaryAlbedo": "rgba(198, 204, 198, 1)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/acrylic-refractor.png",
+        "authoredAlbedo": "#d6dad4"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "galvanised-steel",
+      "name": "Hot-dip galvanised steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#949c9e",
+      "color": "#949c9e",
+      "albedo": {
+        "dominant": "#949c9e",
+        "secondary": [
+          "#7b8486"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#949c9e",
+          "#7b8486"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Plate subject mask: p25 119,122,127 / p50 134,139,143 (luma 138) / p75 169,173,174.",
+          "Luma 138 sits well clear of the 55.5-60.5 band that gatecrop's alpha key erases, so this needed no lift -- unlike this kit's darker props, whose tones had to be raised to at least 131."
+        ]
+      },
+      "roughness": {
+        "base": 0.66,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.35,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "rustRegion",
+          "description": "Rust staining as a vertex-colour axis-band (y -0.05..0.35, softness 0.40) on the column, authored at #9E8A72 - a rust-stained grey-brown lifted from the measured #6e665a (luma 103). The lift is the hole-gate margin: a back-lit frame renders at ~0.55 of painted luma.",
+          "measuredFrom": "material-crops/rust.png"
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.35 over a hot-dip galvanised surface whose bloom is carried by a canvas tile rather than a map."
+    },
+    {
+      "id": "cast-aluminium",
+      "name": "Cast aluminium arms and lantern housings",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a6abab",
+      "color": "#a6abab",
+      "albedo": {
+        "dominant": "#a6abab",
+        "secondary": [
+          "#9aa0a0"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#a6abab",
+          "#9aa0a0"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's luminaires read consistently lighter and smoother than the column they hang from, which is the only thing separating the two materials at street level."
+        ]
+      },
+      "roughness": {
+        "base": 0.52,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.45,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.45 against the column's 0.35."
+    },
+    {
+      "id": "acrylic-refractor",
+      "name": "Acrylic refractor bowls",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d6dad4",
+      "color": "#d6dad4",
+      "albedo": {
+        "dominant": "#d6dad4",
+        "secondary": [
+          "#c6ccc6"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#d6dad4",
+          "#c6ccc6"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Both bowls are the brightest region of the plate's subject mask, above its p75 of 169,173,174."
+        ]
+      },
+      "roughness": {
+        "base": 0.2,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Roughness 0.20 -- what a refractor reads as even unlit."
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "base-bolts",
+      "name": "Baseplate holding-down bolts",
+      "level": "meso",
+      "parent": "baseplate",
+      "primitive": "cylinder",
+      "material": "galvanised-steel",
+      "count": 4,
+      "buildsGeometry": true,
+      "realization": "instanced",
+      "instanceScale": [
+        0.055,
+        0.07,
+        0.055
+      ],
+      "placement": {
+        "mode": "radial",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "radius": 0.4,
+        "startAngleDeg": 45
+      },
+      "rationale": "Four hex heads, one per plate corner, as one InstancedMesh. The emitter places each instance at radius*0.5, so 0.40 seats them 0.200 m from centre on the diagonals - clear of the 0.160 m base flare and inside the plate's 0.283 m diagonal corner. instanceScale y 0.07 stands a head 0.020 m proud of the plate's 0.030 m top.",
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "refractor-bowls",
+      "name": "Refractor bowls",
+      "level": "meso",
+      "parent": "lyre",
+      "primitive": "box",
+      "material": "acrylic-refractor",
+      "count": 2,
+      "buildsGeometry": true,
+      "realization": "instanced",
+      "instanceScale": [
+        0.3,
+        0.055,
+        0.22
+      ],
+      "placement": {
+        "mode": "radial",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "radius": 4.3,
+        "startAngleDeg": 0
+      },
+      "rationale": "One bowl under each lantern, as one InstancedMesh rather than two components. Parented to the lyre, whose pivot is at y 9.77, and placed at radius*0.5 = 2.15 m from centre at 0 and 180 degrees, which is exactly the two lantern centres. The bowl spans y 9.7425-9.7975 and the housing underside is at 9.785, so the two solids OVERLAP by 0.0125 m rather than meeting coplanar.",
+      "evidenceRefs": [
+        "full-object"
+      ]
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T16:23:51.128577+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.234886+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.339994+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.446706+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.554307+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.661855+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.766241+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.866258+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T16:23:51.128577+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.234886+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.339994+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.446706+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.554307+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.661855+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.766241+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:23:51.866258+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 5.20 x 9.97 x 0.40 m against the declared 5.2 x 10 x 0.4 -- exact on width and depth, 0.3% under on height. Width is set by the two lantern noses at +-2.60 m and depth by the baseplate, both landed deliberately. Proportion comes from the DECLARATION, not the plate: the plate's shaft is 0.177 of its own span, which at 5.2 m would be a 0.92 m shaft against the 0.22 m the asset notes state."
+        },
+        {
+          "id": "twin-arm-lyre",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "Both arms rise from ONE banded collar at the shaft top and curve out symmetrically as eased quarter-turns -- tight at the top, straight along the outreach, which is the shape of a real bracket arm and what the plate shows. The previous build was two thin wires off a smooth pipe with no collar to rise from. Arm radius 0.055, below the single-arm cobra's 0.062, because a median column carries two lighter arms."
+        },
+        {
+          "id": "cobra-head-pair",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "A 0.70 m cast wedge on each arm, deepest at the spigot (0.150 m) and tapering to the nose (0.086 m), each over an acrylic refractor bowl hung proud of the casting, and each with the stepped spigot collar the plate shows where the arm enters. A plain box reads as a shoebox on a stick; the taper is the cobra."
+        },
+        {
+          "id": "shaft-taper",
+          "score": 0.94,
+          "threshold": 0.75,
+          "notes": "An EIGHT-segment lathe, not twelve: the plate's column reads octagonal and the previous build shipped a round pipe. It tapers r 0.110 to 0.075 and flares to r 0.168 over the bottom 0.60 m where it meets its plate -- the plate's column is visibly much wider at the foot than under the collar, and that flare is most of what reads as a structural column."
+        },
+        {
+          "id": "material-response",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Three material layers: galvanised #949c9e measured off the plate's subject mask (p25 119,122,127 / p50 134,139,143 / p75 169,173,174), cast aluminium #a6abab for the luminaires -- lighter and smoother, which is the only thing separating them from the column at street level -- and acrylic #d6dad4 at roughness 0.20. Luma 138 is well clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed. NOT carried: the plate's heavy directional staining down one face and the long rust run below the hand-hole; the tile is isotropic, which is why this is 0.90."
+        },
+        {
+          "id": "base-detail",
+          "score": 0.92,
+          "threshold": 0.7,
+          "notes": "A 0.40 m square plate -- the declared depth exactly -- with four PROUD 55 mm hex bolts, which is what the plate shows rather than the flush studs the cobra head uses. The previous build had no baseplate at all. The bolted hand-hole door at 1.05 m sits on the shaft component."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 5.2 x 9.97 x 0.4 m. Cost: 1240 triangles / 16000, 5 draw calls / 12, 3 materials / 8, 5 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.717, 0.999, 0.716], interior hole fractions [0.0022, 0.0025, 0.0036, 0.0037]).  Five components at 5 draw calls, 3 materials and 5 geometries against a hero2x ceiling of 12/8/16 -- deliberately underspent, as this asset's own notes argue for a prop placed in runs down a median.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-twin-arm-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Raised to hero2x with the lighting kit and DELIBERATELY UNDERSPENT: the build measures 1240 triangles at 5 draw calls, 3 materials and 5 geometries. This asset's own notes argue against spending a hero2x ceiling because these go in runs down a median, and they are right -- the raised ceiling is headroom for the lyre, the baseplate and the two refractors, not a target."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left: the column's left facets read brighter than its right and the lantern crowns are the brightest metal surfaces.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides are lifted rather than black, at roughly a 0.7 shadow-to-key ratio.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim is visible in the plate - the object separates from the backdrop by value alone.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A near-white seamless backdrop at luma ~246 fills the frame; foreground coverage is 12.2%. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Base centre",
+        "componentRef": "column",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "rationale": "The ONLY pivot. A street lighting column is bolted to a foundation and has no moving parts; one root pivot at base-center is the complete correct answer, not a gap."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto this prop: both lanterns are cast into their own arms and the arms into the column, and the holding-down bolts are geometry rather than an attachment contract."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

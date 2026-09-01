@@ -1,0 +1,2681 @@
+{
+  "targetName": "Soi LED Floodlight on Utility Pole",
+  "targetId": "soi-led-floodlight-on-utility-pole",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "concrete distribution pole with a short insulator crossarm and a clamped flat LED flood panel",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "tapered-square-prism",
+        "swept-arc",
+        "lofted-wedge"
+      ],
+      "structureKind": [
+        "fixed-infrastructure",
+        "clamped-bracket",
+        "direct-buried-pole"
+      ],
+      "motionPotential": [
+        "none - a direct-buried concrete pole, rigid body"
+      ],
+      "materialFamilies": [
+        "weathered-precast-concrete",
+        "galvanised-steel",
+        "painted-aluminium-housing",
+        "led-lens"
+      ],
+      "notes": "The informal soi lighting variant: a cheap flat LED flood clamped to an ordinary distribution pole. The plate is square-framed at aspect 0.310 against the declared 0.053, so it carries the fixture and not the assembly proportions, and the declared 0.45 x 8.5 x 0.55 m envelope is narrow enough that only a SHORT crossarm stub fits - the plate's full-width distribution crossarm is outside this asset's declared envelope."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 0,
+        "materialLayerCount": 3,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 2,
+        "microFeatureGroups": 3,
+        "materialLayers": 4,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Four drawn parts: the concrete pole, a short insulator crossarm, the clamped flood housing and its lens.",
+        "The crossarm's four insulators are SWELLINGS on the crossarm's own swept spine, not four components and not a repetition system: a radial repetition places instances around a circle, and these sit in a LINE along the arm.",
+        "No baseplate and no bolts: a distribution pole is direct-buried.",
+        "No moving parts, so one root pivot and no sockets."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate. Four drawn parts and the sub-structure - taper, bracket clamp, arm rise, lantern wedge, bowl seating - carried as localFeatures because each component costs a draw call."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "square-taper",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "square-taper"
+          },
+          "description": "A tapered square section 0.225 m at the foot and 0.140 m at the top.",
+          "realization": "unreported"
+        },
+        {
+          "id": "chamfered-cap",
+          "kind": "contour",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "chamfered-cap"
+          },
+          "description": "A chamfered cap closing the pole's top on all four faces.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cast-holes",
+          "kind": "groove",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cast-holes"
+          },
+          "description": "Fourteen recessed lifting and fixing holes down one face.",
+          "realization": "unreported"
+        },
+        {
+          "id": "algae-stain",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "algae-band"
+          },
+          "description": "Green algae over the bottom 3.2 m as an axis tint on the concrete.",
+          "realization": "unreported"
+        },
+        {
+          "id": "insulator-row",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "insulator-row"
+          },
+          "description": "Four cream porcelain pin insulators on a single crossarm.",
+          "realization": "unreported"
+        },
+        {
+          "id": "flat-flood",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "tilted-slab"
+          },
+          "description": "A plain rectangular slab tilted 35 degrees nose-down, with a bezel proud of its face.",
+          "realization": "unreported"
+        },
+        {
+          "id": "no-outreach",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "no-outreach"
+          },
+          "description": "A band and a 75 mm stub instead of an arm, so the panel hangs tight against the pole.",
+          "realization": "unreported"
+        },
+        {
+          "id": "recessed-lens",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "recessed-lens"
+          },
+          "description": "An 18-band diode array recessed behind the bezel.",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+    "resolvedUnknowns": [
+      "The pole section is square: the plate shows flat faces meeting at vertical arrises. Confidence 0.85.",
+      "The far side of the pole and housing is mirrored; the single view cannot show it. Confidence 0.85.",
+      "The plate's distribution crossarm is much wider than the declared 0.55 m depth envelope. The envelope governs, so the crossarm is built as a 0.55 m stub carrying four insulators rather than the full-width arm in the plate. Confidence 0.8.",
+      "Conductors, cabling and the clamp band are not built: thin geometry the budget cannot carry. Confidence 0.9."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 1,
+      "microFeatureGroups": 8,
+      "materialLayers": 4,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox against 0.45 x 8.50 x 0.55 m",
+      "the flood reads as a flat slab, not a wedge",
+      "per-material rendered luma against the measured 146/120/140",
+      "turntable hole gate at all four azimuths"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not take proportion from the plate or the proxy.",
+      "Do not build the plate's full-width distribution crossarm; it is outside the declared 0.55 m depth envelope.",
+      "Do not give this pole a baseplate or bolts - it is direct-buried.",
+      "Do not build the flood as a cobra head; the two soi variants exist to be different.",
+      "Do not make the lens emissive, and do not seat it flush with the housing face."
+    ],
+    "depthRationale": "FOUR components across four material layers: the pole, its crossarm and the flood housing as macro, the lens as meso. Eight micro-feature groups sit inside them -- square taper, chamfered cap, cast holes, algae band, the insulator row, the no-outreach band-and-stub, the tilted slab and the recessed lens."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "flood-housing"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be 0.45 x 8.50 x 0.55 m within the asset's 10% tolerance."
+    },
+    {
+      "id": "square-taper",
+      "name": "Square tapered concrete pole",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "pole"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Four flat faces with vertical arrises, narrowing monotonically."
+    },
+    {
+      "id": "flat-flood",
+      "name": "Flat LED flood, not a cobra head",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.88,
+      "mustPass": true,
+      "componentRefs": [
+        "flood-housing",
+        "lens"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The head must be a PLAIN RECTANGULAR SLAB with a bezel and a recessed lens, hanging tight against the pole on a band and a stub with NO outreach arm. A shaped lantern, or any arm, is the wrong prop -- those are the two give-aways the asset notes lead with."
+    },
+    {
+      "id": "insulator-row",
+      "name": "Insulator crossarm",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "crossarm"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "ONE crossarm carrying a short row of porcelain pin insulators. Two arms would be the formal soi variant, not this one."
+    },
+    {
+      "id": "material-response",
+      "name": "Material response and the hole gate",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "flood-housing",
+        "lens"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Concrete, steel, housing and lens must separate by value against the measured 146 / 120 / 140, and NO surface may render near the ~58 backdrop."
+    },
+    {
+      "id": "algae-stain",
+      "name": "Algae staining",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "pole"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "A green-grey band over the lower pole fading out by about 3.4 m."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "concrete 146 / crossarm steel 120 / housing 140 / lens brightest, in measured plate luma.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "pole",
+      "crossarm",
+      "flood-housing",
+      "lens"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as four named parts. Not articulated and not breakable."
+  },
+  "assumptions": [
+    "The pole section is square: flat faces meeting at vertical arrises in the plate. Confidence 0.85.",
+    "The far side of the pole and housing is mirrored; the single view cannot show it. Confidence 0.85.",
+    "The crossarm is built as a 0.55 m stub because the declared depth envelope is 0.55 m; the plate's full-width distribution arm is outside this asset's envelope.",
+    "The housing's heatsink fins are NOT built: sub-pixel at 7.3 m and each would need geometry the budget cannot carry.",
+    "No conductors, cabling or clamp bands are modelled.",
+    "The lens is opaque and NOT emissive: the factory ships no lights, and an emissive lens would double-count against the level's lighting.",
+    "Metalness is authored below a physical 1.0 on the metals because the harness carries no environment map."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "base-center: the origin sits at the centre of the pole's square section on the ground plane. Direct-buried, so there is no baseplate.",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 0.45,
+      "height": 8.5,
+      "depth": 0.55,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -0.113,
+      "xMax": 0.337,
+      "yMin": 0,
+      "yMax": 8.5,
+      "zMin": -0.275,
+      "zMax": 0.275
+    },
+    "derivation": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm.",
+    "symmetry": "bilateral about the XY plane (z=0) for the housing, and about the YZ plane for the crossarm",
+    "notes": "The declared envelope is narrow enough that the plate's full-width distribution crossarm does not fit; it is built as a 0.55 m stub carrying the insulator row."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "pole",
+      "name": "Tapered square prestressed pole with cast holes and algae",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A tapered SQUARE frustum, not a cylinder -- 12 triangles for the whole shaft, which leaves the crossarm, its insulators and the flood slab affordable as real geometry.",
+      "geometryDescriptor": {
+        "topologyIntent": "Origin base-center, +Y up. One frustum 0.225 m square at the foot tapering to 0.140 m, chamfered cap, fourteen recessed cast holes down the +Z face between 1.15 and 7.00 m, algae as an axis tint over the bottom 3.2 m.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "weathered-concrete"
+        }
+      },
+      "material": "weathered-concrete",
+      "materialLayers": [
+        "weathered-concrete"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "square-taper",
+          "description": "0.225 m square at the base tapering to 0.140 m. Proportion from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall against the declared 0.45."
+        },
+        {
+          "id": "chamfered-cap",
+          "description": "A short frustum pulling in on all four faces at the top."
+        },
+        {
+          "id": "cast-holes",
+          "description": "Fourteen recessed lifting and fixing holes down one face, as recesses rather than through-holes."
+        },
+        {
+          "id": "algae-band",
+          "description": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Shared verbatim with the other two concrete poles in this kit.",
+      "colorMaterialRecipe": {
+        "materialRef": "weathered-concrete",
+        "recipe": "Cast concrete carrying its cap, hole recesses and algae as vertex colours, with spalled patches as a post-construction tile.",
+        "dominantAlbedo": "rgba(154, 153, 143, 1)",
+        "secondaryAlbedo": "rgba(103, 112, 79, 1)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/weathered-concrete.png",
+        "authoredAlbedo": "#9a998f"
+      }
+    },
+    {
+      "id": "crossarm",
+      "name": "Crossarm with four pin insulators",
+      "level": "macro",
+      "role": "gear",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "ONE arm, not the two the formal soi lamp carries -- that is part of what separates the two variants, and the previous build had neither.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.055 x 0.045 m steel channel spanning 0.55 m along Z -- the declared depth IS the crossarm span -- carrying four pin insulators.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "crossarm-steel"
+        }
+      },
+      "material": "crossarm-steel",
+      "materialLayers": [
+        "crossarm-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "insulator-row",
+          "description": "Four cream porcelain pin insulators, each a skirt disc under a head disc. FOUR rather than the formal variant's six per arm, and one arm rather than two, which is what the declared 0.55 m depth encodes."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Steel #9a8f80 and porcelain #d8d2bc as vertex colours on one material.",
+      "colorMaterialRecipe": {
+        "materialRef": "crossarm-steel",
+        "recipe": "Weathered channel steel carrying its porcelain insulators as a vertex colour.",
+        "dominantAlbedo": "rgba(154, 143, 128, 1)",
+        "secondaryAlbedo": "rgba(216, 210, 188, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/crossarm-steel.png",
+        "authoredAlbedo": "#ffffff"
+      }
+    },
+    {
+      "id": "flood-housing",
+      "name": "Flat LED slab on a banded L bracket",
+      "level": "macro",
+      "role": "head",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A plain rectangular SLAB with a bezel, not a shaped lantern, hanging TIGHT against the pole -- the two give-aways the asset notes name. It is a third material because a painted aluminium panel is neither concrete nor weathered channel steel.",
+      "geometryDescriptor": {
+        "topologyIntent": "A band round the pole at 7.25 m, a 75 mm stub bracket, and a 0.30 x 0.29 m slab tilted 0.62 rad nose-down with a bezel frame proud of its face. Panel centre at x 0.196 so the far corner lands on the declared 0.45 m width.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "panel-housing"
+        }
+      },
+      "material": "panel-housing",
+      "materialLayers": [
+        "panel-housing"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "no-outreach",
+          "description": "NO outreach arm: a band and a 75 mm stub, so the slab hangs against the pole. This is the whole reason the declared width is 0.45 m against the formal variant's 1.6, and it is the give-away the asset notes lead with."
+        },
+        {
+          "id": "tilted-slab",
+          "description": "A plain rectangular slab tilted 35 degrees nose-down toward the alley, with a bezel frame standing proud of its face. A shaped lantern would be the wrong prop."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Housing #8f979b at luma 146 and its bezel #7c8488, both clear of the erased luma window.",
+      "colorMaterialRecipe": {
+        "materialRef": "panel-housing",
+        "recipe": "Painted aluminium slab and bezel, cooler than the crossarm steel and quite unlike the concrete.",
+        "dominantAlbedo": "rgba(143, 151, 155, 1)",
+        "secondaryAlbedo": "rgba(124, 132, 136, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/panel-housing.png",
+        "authoredAlbedo": "#ffffff"
+      }
+    },
+    {
+      "id": "lens",
+      "name": "LED lens face",
+      "level": "meso",
+      "role": "lens",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The lens is separate ONLY so its diode-band tile has somewhere to live: a tile binds per MATERIAL, and on the housing material the band pattern would print across the casting and the bracket too.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.272 x 0.262 m pane 8 mm thick set inside the bezel, sharing the slab's tilt.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "led-lens"
+        }
+      },
+      "material": "led-lens",
+      "materialLayers": [
+        "led-lens"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "recessed-lens",
+          "description": "Set INSIDE the bezel rather than flush with its face: co-facing surfaces in one plane z-fight, and a real panel's lens sits behind its frame. It carries an 18-band tile as the diode array."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Lens #dfe3dd at roughness 0.22.",
+      "colorMaterialRecipe": {
+        "materialRef": "led-lens",
+        "recipe": "A pale diode array behind a diffuser, carried as an 18-band canvas tile bound after construction.",
+        "dominantAlbedo": "rgba(223, 227, 221, 1)",
+        "secondaryAlbedo": "rgba(191, 199, 189, 1)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/led-lens.png",
+        "authoredAlbedo": "#dfe3dd"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "weathered-concrete",
+      "name": "Weathered precast concrete",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9a998f",
+      "color": "#9a998f",
+      "albedo": {
+        "dominant": "#9a998f",
+        "secondary": [
+          "#8b8a83",
+          "#4c4b46",
+          "#67704f"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#9a998f",
+          "#8b8a83",
+          "#4c4b46",
+          "#67704f"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Shared with the other concrete poles in this kit; their plate subject masks read p50 118,114,102 and 127,126,121, luma 114-126.",
+          "Both clear the 55.5-60.5 window that gatecrop's alpha key erases, so the concrete needed no lift."
+        ]
+      },
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "algaeRegion",
+          "description": "Green-grey staining as a vertex-colour axis-band (y -0.05..2.40, softness 1.00) authored at #8A8870, lifted from the measured #6e6d5f for the hole-gate margin.",
+          "measuredFrom": "probe bands 8-9"
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Roughness 0.90, metalness 0."
+    },
+    {
+      "id": "crossarm-steel",
+      "name": "Galvanised crossarm and insulators",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#9a8f80",
+          "#d8d2bc"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#ffffff",
+          "#9a8f80",
+          "#d8d2bc"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's arm is a warm weathered grey and its insulators a distinctly cream porcelain, both well above the erased luma window.",
+          "One material for both because they are never seen apart; splitting them would double the draw calls for no visual gain."
+        ]
+      },
+      "roughness": {
+        "base": 0.78,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.25,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.25 -- weathered channel, not galvanised."
+    },
+    {
+      "id": "panel-housing",
+      "name": "Painted aluminium flood housing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#7c8488"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#ffffff",
+          "#7c8488"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's panel is the coolest and cleanest element on the prop, clearly newer than the pole it is banded to.",
+          "Authored at luma 146: the safe range is luma < 55 or > 110, because a face renders between about 0.55 and 1.0 of its albedo and anything between straddles the 55.5-60.5 window on some faces."
+        ]
+      },
+      "roughness": {
+        "base": 0.6,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.3,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.30."
+    },
+    {
+      "id": "led-lens",
+      "name": "LED lens",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#dfe3dd",
+      "color": "#dfe3dd",
+      "albedo": {
+        "dominant": "#dfe3dd",
+        "secondary": [
+          "#bfc7bd"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#dfe3dd",
+          "#bfc7bd"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The lens is the brightest region of the plate's flood, well above the housing around it.",
+          "Textureless is NOT declared here: the band pattern is the one identity-defining texture on the prop, and the tile is bound AFTER construction so no procedural set is synthesised."
+        ]
+      },
+      "roughness": {
+        "base": 0.22,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "The only patterned surface, which is the whole reason it is a fourth material."
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T16:39:31.594864+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.692653+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.787632+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.890379+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.990541+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.095303+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.200406+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.302550+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T16:39:31.594864+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.692653+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.787632+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.890379+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:31.990541+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.095303+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.200406+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:39:32.302550+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.449 x 8.500 x 0.550 m against the declared 0.45 x 8.5 x 0.55 -- exact on all three axes. Depth is the crossarm span; width is the pole plus the slab's far corner and nothing else, because this variant has no outreach arm. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 285 x 919 px, implying 2.48 m of width at 8.5 m tall."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum 0.225 m at the foot to 0.140 m at the top, chamfered cap, fourteen recessed cast holes down one face. The previous build was a bare smooth pipe with none of it. The shaft is 12 triangles as one frustum, which is why the crossarm, its insulators and the slab are all real geometry at 4% of the triangle ceiling."
+        },
+        {
+          "id": "flat-flood",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A plain rectangular slab tilted 35 degrees nose-down with a bezel proud of its face and a recessed 18-band lens, carried on a steel band and a 75 mm stub with NO outreach arm. Both give-aways the asset notes lead with are now legible; the previous build had a tiny featureless box and no bracket, bezel or lens at all. The plate's panel stands slightly further off the pole than mine, which the declared 0.45 m width does not allow."
+        },
+        {
+          "id": "insulator-row",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "ONE crossarm spanning the declared 0.55 m depth with four cream porcelain pin insulators, each a skirt disc under a head disc. One arm and four insulators rather than the formal soi variant's two arms of six -- that difference is what the declared depth encodes, and the previous build had no arm and no insulators."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9a998f, crossarm steel carrying its porcelain as a vertex colour, painted panel aluminium #8f979b and the lens. The housing is authored at luma 146 deliberately -- gatecrop's erased band is 55.5-60.5, a narrow window rather than a floor, and a face renders between about 0.55 and 1.0 of its albedo, so the safe range is luma < 55 or > 110. NOT carried: the plate's rust bleed from the crossarm bolts, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3.2 m as an axis tint multiplied into the concrete rather than a second material, with spalled patches as a post-construction tile on the same material. The plate's spalling is heavier and more clustered low down than the isotropic tile gives."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 0.449 x 8.5 x 0.55 m. Cost: 656 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 1.0, 0.986, 1.018], interior hole fractions [0.0003, 0.0, 0.0001, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- 4% of the triangle ceiling, because the pole is 12 triangles as one frustum.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/soi-led-floodlight-on-utility-pole/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Raised to hero2x with the lighting kit and deliberately underspent: 656 triangles at 4 draw calls, 4 materials and 4 geometries -- 4% of the triangle ceiling. The pole is 12 triangles as one frustum."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left; the pole's left face reads brighter than its right.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides lifted rather than black, roughly a 0.7 shadow-to-key ratio.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim in the plate - the object separates from the backdrop by value alone.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A near-white seamless backdrop at luma ~241; foreground coverage is 7.5%. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Base centre",
+        "componentRef": "pole",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "rationale": "The ONLY pivot. A direct-buried distribution pole has no moving parts."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto this prop; the flood is clamped to the pole and the insulators are part of the crossarm."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

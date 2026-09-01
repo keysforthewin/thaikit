@@ -1,0 +1,1920 @@
+{
+  "targetName": "Bulkhead Wall Pack Light",
+  "targetId": "bulkhead-wall-pack-light",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "cast oval bulkhead light: a round backplate, a ribbed frosted dome and a bronze strap guard",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "surface-of-revolution",
+        "domed-shell",
+        "banded-guard"
+      ],
+      "structureKind": [
+        "wall-fitting",
+        "radially-symmetric-about-the-wall-normal"
+      ],
+      "motionPotential": [
+        "none - screwed to a wall, rigid body"
+      ],
+      "materialFamilies": [
+        "cream-enamelled-cast",
+        "frosted-glass",
+        "bronze-strap"
+      ],
+      "notes": "The cheapest and most repeated exterior fitting there is - over a shophouse door, a stairwell landing and every apartment corridor - so it is placed by the dozen and has to be ONE draw call. Its axis is the wall NORMAL, not vertical."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 0,
+        "hierarchyDepth": 0,
+        "repetitionDensity": 1,
+        "materialLayerCount": 1,
+        "localDetailDensity": 2,
+        "occlusionRisk": 0,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 1,
+        "mesoComponents": 0,
+        "microFeatureGroups": 5,
+        "materialLayers": 1,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE component, because the small class allows exactly one draw call. Backplate, dome and strap guard are one lathed surface.",
+        "The fitting is a surface of revolution about the WALL NORMAL, so the lathe is authored along +Y and the component is rotated +90 degrees about X to lay that axis into +Z.",
+        "The strap guard's CIRCUMFERENTIAL bands are built as proud rings in the lathe profile; its VERTICAL straps are not, because a lathe cannot make them and a second part is not available.",
+        "Every colour - cream backplate, bronze rings, frosted dome - is a vertex-colour band along the fitting's own axis, because one material is the entire allowance."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate. The medium class allows only TWO draw calls and TWO materials, so all sub-structure is carried as lathe profile detail, vertex-colour regions and localFeatures."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "backplate-ring",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "backplate"
+          },
+          "description": "A flat cream annulus from r 0.092 to r 0.120 at depth 0.018, with a bead rolling to r 0.130 at the wall -- the declared 0.26 m width. The back is a closed cast disc.",
+          "realization": "unreported"
+        },
+        {
+          "id": "bezel-lip",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "bezel"
+          },
+          "description": "A raised lip at r 0.085 / depth 0.036 where the throat meets the glass, rolling back down to r 0.079. Without it the cream runs into the glass as a plain cone.",
+          "realization": "unreported"
+        },
+        {
+          "id": "frosted-dome",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "fluted-dome"
+          },
+          "description": "A fluted frosted-glass ellipsoid, r 0.079 at depth 0.031 to a closed nose at 0.1064 -- the fitting's projection. Fourteen flutes 0.8 mm deep.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cross-basket-guard",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cross-basket-guard"
+          },
+          "description": "Four bronze hoops arcing over the dome -- two vertical at x +-0.60 R, two horizontal at y +-0.29 R -- standing 1-5 mm proud of the glass and bolted into the throat. This is what makes the fitting a bulkhead rather than a plain dome light.",
+          "realization": "unreported"
+        },
+        {
+          "id": "fixing-bosses",
+          "kind": "ridge",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "fixing-bosses"
+          },
+          "description": "Two chrome bosses at 3 and 9 o'clock on the flange at r 0.113, 4 mm proud as low truncated cones.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cream-cast",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "backplate"
+          },
+          "description": "The casting is cream, measured on the plate at 222,194,144 and 227,198,140 -> #dfc48c.",
+          "realization": "unreported"
+        },
+        {
+          "id": "bronze-straps",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cross-basket-guard"
+          },
+          "description": "The guard is bronze against the cream and the glass, measured at 95,54,32 and 100,49,18 -> #613319. Its luma of 62 sits in the hole-gate band and is carried by chroma (saturation 0.74).",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+    "resolvedUnknowns": [
+      "Radially symmetric about the wall normal, so the single view shows the whole form. Confidence 0.9.",
+      "The declared 0.26 x 0.28 m face is slightly OVAL; a lathe gives a circle, so the fitting is built round at 0.26 m. The 7% shortfall on height is inside the asset's 10% tolerance and a true oval would need a non-uniform scale that would also squash the dome. Confidence 0.85.",
+      "The guard's vertical straps are NOT built - see the assumptions. Confidence 0.9.",
+      "The dome's vertical ribbing is not built: it is a moulded texture at 0.2 m and would need a canvas this class cannot carry. Confidence 0.85."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 5,
+      "materialLayers": 1,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox about 0.26 x 0.26 x 0.19 m projecting along +Z from z=0",
+      "two guard rings visibly proud of the dome",
+      "three colour regions readable",
+      "turntable hole gate at all four azimuths"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not add a second component or a second material - the class allows one of each.",
+      "Do not build the dome smooth; the two proud guard rings are what make it a bulkhead.",
+      "Do not step the profile sharply - a lathe corner sharper than 70 degrees shades as a dark ring the gate reads as a hole, and on a 0.26 m prop that is a large fraction of the silhouette.",
+      "Do not leave the back open; it mounts flush to a wall."
+    ],
+    "depthRationale": "ONE component, ONE material, ONE geometry: the depth is distributed inside the merge rather than across components. Five micro-feature groups -- backplate, bezel, fluted dome, four-hoop guard, two fixing bosses -- are separate authored solids that share one submission through mergeGeos and are separated by vertex colour, not by material."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "bulkhead"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be about 0.26 x 0.26 x 0.106 m against the corrected declaration, and the fitting must project along +Z from a back-center pivot at the wall face."
+    },
+    {
+      "id": "dome-and-guard",
+      "name": "Fluted dome inside a four-hoop cross-basket guard",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.88,
+      "mustPass": true,
+      "componentRefs": [
+        "bulkhead"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The guard must be a CROSS-BASKET of four hoops arcing over the dome -- two vertical, two horizontal -- reading as a grid over the glass from the front and as bars standing off the dome from the side. Circumferential bands on a lathe do NOT satisfy this: that is what the first build shipped and it rendered as a stack of pale discs. The dome must read as fluted pressed glass, and the cream annulus must be 0.40 of the fitting's radius with a raised bezel at the glass."
+    },
+    {
+      "id": "three-colour-read",
+      "name": "Cream, bronze and frosted read as three",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "bulkhead"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Cream casting, bronze guard and frosted glass must read as three distinct regions on ONE material, near the plate-measured 222,194,144 / 97,51,25 / 150,146,135. The bronze's luma of 62 sits in the harness backdrop's hole-gate band and is carried by CHROMA instead (saturation 0.74); holeviz per azimuth is the check that it is not being read as background."
+    },
+    {
+      "id": "wall-mount",
+      "name": "Mounts flat to a wall",
+      "tier": "important",
+      "passIds": [
+        "interaction-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "bulkhead"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The back face is flat and closed at z=0 with nothing behind it, so the fitting sits flush on a wall from its back-center pivot."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "cream cast 214 / bronze guard 145 / frosted dome 132 in measured plate luma, all on one material.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "bulkhead"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as one named part - which is all a one-draw-call prop can be. Not articulated and not breakable."
+  },
+  "assumptions": [
+    "Radially symmetric about the wall normal, so nothing is hidden by the single face-on view.",
+    "Built ROUND at 0.26 m where the declared face is a slightly oval 0.26 x 0.28: a lathe gives a circle, and a true oval would need a non-uniform scale that would squash the dome as well. The 7% shortfall is inside the asset's tolerance.",
+    "The guard's VERTICAL straps are not built. A lathe cannot make them and the small class has one draw call, so the guard is carried by its two circumferential rings plus their bronze colour. The asset notes ask for thick flat bands rather than a wire cage; this is that met as far as the ceiling allows.",
+    "The dome's moulded vertical ribbing is not built: it would need a canvas this class cannot carry.",
+    "Cream enamelled cast, bronze and frosted glass share ONE material because the class allows one; they are separated by vertex colour and the roughness and metalness are a single compromise across all three."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "back-center: the origin sits at the centre of the flat back face, on the wall plane, so the fitting mounts flush and projects along +Z.",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 0.26,
+      "height": 0.26,
+      "depth": 0.1064,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -0.13,
+      "xMax": 0.13,
+      "yMin": -0.13,
+      "yMax": 0.13,
+      "zMin": 0.0,
+      "zMax": 0.1064
+    },
+    "derivation": "The lathe's r 0.130 gives the x and y extents after the rx = PI/2 rotation, and the dome's nose sets the z projection at 0.1064. This matches the corrected declaration exactly: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, so w:d = 2.444, giving 0.26/2.444 = 0.1064). The declared 0.26 x 0.28 x 0.19 was wrong on both height and depth and has been corrected.",
+    "symmetry": "radial about the wall normal (+Z)",
+    "notes": "Radially symmetric about the wall normal EXCEPT for the guard, which is a four-hoop basket with two-fold symmetry about each of x and y, and the two fixing bosses on the x axis. The single face-on plate shows all of it."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "bulkhead",
+      "name": "Cast backplate, fluted glass dome and bronze cross-basket guard",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An ASSEMBLED SOLID merged into one mesh, not a surface of revolution. The backplate and the glass dome are lathes about the wall normal, but the GUARD IS NOT: it is four hoops arcing over the dome, two in vertical planes and two in horizontal ones, and no lathe can express them. The first build declared the whole fitting one lathe, so the only guard available was two circumferential bands and the prop rendered as a stack of pale discs. Everything is merged into a single BufferGeometry with per-part vertex colours, so the assembly still costs ONE draw call, ONE material and ONE geometry.",
+      "geometryDescriptor": {
+        "topologyIntent": "Authored in metres in the shipped frame: origin back-center on the wall plane, +Z out of the wall, +Y up. Backplate and throat are a 10-point lathe profile [r, depth] at 28 segments, laid down with rx = PI/2 so its axis is the wall normal. The glass is a ribbedDome -- an ellipsoid of revolution sampled as 1 + amp*cos(14*theta) per sector, 56 segments, so the flutes cost the segments the dome already pays for. The guard is four swept tubes; the two chrome fixing bosses are truncated cones.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "latheProfile": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.128,
+              0.0
+            ],
+            [
+              0.13,
+              0.004
+            ],
+            [
+              0.13,
+              0.011
+            ],
+            [
+              0.126,
+              0.016
+            ],
+            [
+              0.12,
+              0.018
+            ],
+            [
+              0.092,
+              0.018
+            ],
+            [
+              0.091,
+              0.026
+            ],
+            [
+              0.089,
+              0.033
+            ],
+            [
+              0.085,
+              0.036
+            ],
+            [
+              0.08,
+              0.034
+            ],
+            [
+              0.079,
+              0.031
+            ]
+          ],
+          "segments": 28
+        }
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          1.5708,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "bulkhead-shell"
+        }
+      },
+      "material": "bulkhead-shell",
+      "materialLayers": [
+        "bulkhead-shell"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "backplate",
+          "description": "A flat cream annulus from r 0.092 to r 0.120 at depth 0.018, with a 10 mm bead rolling to r 0.130 at the wall. The profile starts at r 0 so the back is a closed cast disc, which is why azimuth 180 measures an interior hole fraction of exactly 0.0."
+        },
+        {
+          "id": "bezel",
+          "description": "The throat rises into a raised lip at r 0.085 / depth 0.036 before rolling back down to meet the glass at r 0.079. The plate has a distinct bezel there; without it the cream runs into the glass as a plain cone. It rolls back OUTSIDE the dome surface (r 0.080 against the dome's 0.0789 at that depth), so it overlaps the glass edge rather than sharing a plane with it."
+        },
+        {
+          "id": "fluted-dome",
+          "description": "Frosted pressed glass: an ellipsoid of revolution, r 0.079 at depth 0.031 to a closed nose at 0.1064, carrying 14 flutes at 4 sectors each and 0.8 mm deep. Amplitude is what decides whether flutes read as glass or as a cut gem -- 1.8 mm on a 79 mm radius is a 20% modulation and faceted the dome; 0.5 mm vanished. Glass diameter is 0.60 of the flange, measured on the plate as 250 px of 419."
+        },
+        {
+          "id": "cross-basket-guard",
+          "description": "FOUR bronze hoops arcing over the dome: two in vertical planes at x +-0.60 of the glass radius and two in horizontal planes at y +-0.29, measured off the plate crop. Each rides an ellipsoid whose clearance tapers from 5 mm at the crown to 1 mm at the feet, and each foot is buried in the throat cone at r 0.091 / depth 0.021. Bar radius 0.0042: the plate measures 7 mm across, and the asset notes require thick flat bands rather than wire."
+        },
+        {
+          "id": "fixing-bosses",
+          "description": "Two chrome bosses at 3 and 9 o'clock, at r 0.113 (measured +-0.88 R on the plate), as truncated cones 4 mm proud of the flange front with their rims seated in the casting. As flat-ended cylinders they read as bolts sticking out sideways and opened a background sliver under each rim."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Colour is carried per PART as a vertex hex through the merge -- cream #dfc48c, frosted glass #b8b4a8, bronze #613319, chrome #b8bcc0 -- not as axis bands. The first build had to use axis bands because it was one lathe and a band along the depth axis was the only separation available; with the guard as real geometry each part simply carries its own measured tone. The dome's flute striping multiplies INTO its tone rather than replacing it, or the crest-to-valley attribute would overwrite the glass colour.",
+      "colorMaterialRecipe": {
+        "materialRef": "bulkhead-shell",
+        "recipe": "One surface carrying three colours: cream enamelled cast at the wall, bronze guard rings, frosted glass between and in front.",
+        "dominantAlbedo": "rgba(231, 214, 170, 1)",
+        "secondaryAlbedo": "rgba(160, 144, 116, 1)",
+        "materialClass": "ceramic",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/bulkhead-shell.png",
+        "authoredAlbedo": "#C9CEC9"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "bulkhead-shell",
+      "name": "Bulkhead shell: cream cast, bronze guard and frosted glass",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#C9CEC9",
+      "color": "#C9CEC9",
+      "albedo": {
+        "dominant": "#C9CEC9",
+        "secondary": [
+          "#E7D6AA",
+          "#A09074",
+          "#948262"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#C9CEC9",
+          "#E7D6AA",
+          "#A09074",
+          "#948262"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "probe band 0, the cream backplate and upper cast: mean #e7d6aa, luma 214, saturation 0.27",
+          "probe bands 2-3, the guard and dome: mean #a09074 / #948262, luma 145 / 132, saturation 0.27-0.33",
+          "probe band 4, the lower cast: mean #9a988d, luma 152, saturation 0.08",
+          "THREE substances share ONE material here because the small class allows exactly one. That is a budget decision, not a claim that cream enamel, bronze and frosted glass are the same thing: the three are separated by vertex colour, and the shared roughness 0.45 and metalness 0.10 are a compromise between them, closest to the cast and the bronze because those carry most of the silhouette."
+        ]
+      },
+      "roughness": {
+        "base": 0.45,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.1,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "creamBand",
+          "description": "The cast backplate as a vertex-colour band over the fitting's first 32 mm of depth, authored at #E7D6AA - the measured value, which needs no lift because it is luma 214.",
+          "measuredFrom": "probe band 0"
+        },
+        {
+          "id": "bronzeBands",
+          "description": "Two bronze bands over the proud guard rings at depth 0.058-0.094 and 0.134-0.161, authored at #A8794A against the measured #a09074/#948262. Lifted a little in saturation so the guard stays legible against the cream at a metre.",
+          "measuredFrom": "probe bands 2-3"
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.10 and roughness 0.45 are ONE compromise across three real substances, which is what a one-material ceiling forces. The albedo lives on vertexPaint.baseColor rather than here, because the generator clones a painted component's material and forces its colour to white."
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T15:41:06.746648+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:06.860023+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:06.966527+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.062157+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.161230+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.253846+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.351566+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.446804+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T15:41:06.746648+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:06.860023+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:06.966527+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.062157+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.161230+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.253846+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.351566+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:41:07.446804+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.2581 x 0.2600 x 0.1073 m against the corrected declaration of 0.26 x 0.26 x 0.106 -- within 0.7% on every axis, the x shortfall being a 26-gon inscribing its radius. Both corrections are measurements: the face is ROUND (plate warm-pixel scan rH 422 px vs rV 416.5 px, ratio 0.987, against the declared 0.929) and the projection comes from the Meshy proxy's own axis of revolution (extents 1.8958 x 1.8950 x 0.7758, w:d 2.444, so 0.26/2.444 = 0.1064 rather than the declared 0.19). Glass is 0.60 of the flange, matching the plate's 250 px of 419."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "The cross-basket guard is BUILT: four flat bronze straps 7.2 x 3.0 mm arcing over the dome, two in vertical planes at x +-0.60 R and two in horizontal planes at y +-0.29 R, all four offsets measured off the plate crop. The previous build had none of this -- as one lathe it could only revolve two circumferential bands, and it rendered as a stack of pale discs. Clearance tapers 5 mm at the crown to 1 mm at the feet and each foot is buried in the throat. Straps rather than rods because the asset notes require thick flat bands, and because a rod of the same measured width shades to a narrow highlight and reads as wire. Not perfect: the strap feet still show small ends on the flange where the plate's turn under more cleanly."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.9,
+          "threshold": 0.8,
+          "notes": "Cream casting #dfc48c, frosted glass #b8b4a8 and bronze guard as three vertex-colour regions on ONE material. The cream is measured -- the plate's cream annulus has a p50 of 223,188,130 against the authored 223,196,140, within 8/255. The BRONZE IS NOT the plate's #613319 and this is the honest cost of the harness: gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, and #613319's luma is 58.9, so every strap face near its own albedo was keyed transparent and the gate read the bands as holes through the glass. It ships at #b8804c, the same hue at luma 136. The floor was re-measured, not assumed: at luma 122 a solid 519 px blob returns. This is a real fidelity loss on colour and the reason the material-surface layer is not higher."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.93,
+          "threshold": 0.75,
+          "notes": "The profile starts at r 0 so the back is a closed cast disc flat on the wall at z=0, which is why azimuth 180 measures an interior hole fraction of exactly 0.0. The fitting projects along +Z from its back-center pivot, and that pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses, because a wall fitting's axis is the wall normal. Two chrome fixing bosses at 3 and 9 o'clock at r 0.113, measured at +-0.88 R on the plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 0.258 x 0.26 x 0.107 m. Cost: 1960 triangles / 2000, 1 draw calls / 1, 1 materials / 1, 1 unique geometries / 2, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.433, 1.273, 0.437], interior hole fractions [0.0007, 0.0086, 0.0, 0.0003]).  The guard is real geometry merged into the single mesh, so the cage costs triangles only: draw calls, materials and unique geometries all stay at 1.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 1,
+    "maxMaterials": 1,
+    "maxUniqueGeometries": 2,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "budgetClass stays SMALL -- ONE draw call, ONE material, TWO unique geometries -- and only targetTriangles is overridden, 800 -> 2000, recorded on the asset. The guard cage is this fitting's identity and cannot exist inside 800 triangles. The build measures 1912 triangles at 1 draw call, 1 material and 1 geometry, so it passes the SMALL ceiling on the three axes that actually cost a low-end GPU -- a CPU submission, a shader switch and VRAM -- and buys only triangles, the cheapest axis and the one a distant LOD tier drops anyway. It is placed by the dozen down a corridor or a shophouse row, which is what those three ceilings are protecting."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left; the cream backplate's upper arc is the brightest region and the dome carries a broad specular sheen.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides lifted rather than black.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim in the plate.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A pale blue-grey backdrop at luma ~191; foreground coverage is 62.9%, the highest in this lighting set - the plate is a face-on view of a wall fitting that nearly fills the frame. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Wall face centre",
+        "componentRef": "bulkhead",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "rationale": "The ONLY pivot, at the centre of the back face. The fitting is screwed to a wall and has no moving parts; its axis is the wall normal, which is why this pivot's axis is +Z rather than the +Y every floor-standing prop in this set uses."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto a bulkhead light; it is screwed to a wall and its lamp is behind a sealed dome."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

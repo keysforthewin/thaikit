@@ -71,10 +71,10 @@
       "primaryDomain": "object",
       "formLanguage": [
         "precast-cylinder",
-        "domed-lid",
+        "domed-lid-on-an-overhanging-flange",
         "exposed-aggregate-band",
-        "rectangular-throw-in-opening",
-        "angled-pipe-stub"
+        "recessed-rectangular-throw-in-void",
+        "raised-collar-hole"
       ],
       "structureKind": [
         "lathe",
@@ -87,7 +87,7 @@
         "precast-concrete",
         "exposed-aggregate"
       ],
-      "notes": "A precast concrete park bin: one solid casting with a loose domed lid, too heavy to move. Nothing hinges, nothing attaches, so one root pivot and zero sockets is the whole contract; the lid is modelled seated as the asset notes require. Public parks, temple grounds, beachfronts. Weathered grey render with moss creeping over the foot, a pebble-dash band, a dark slot opening."
+      "notes": "A precast concrete park bin: one solid casting with a loose domed lid, too heavy to move. Nothing hinges, nothing attaches, so one root pivot and zero sockets is the whole contract; the lid is modelled seated as the asset notes require. Public parks, temple grounds, beachfronts. Weathered grey render with moss creeping over the foot, a pebble-dash band, a deep dark throw-in void."
     },
     "complexity": {
       "tier": "moderate",
@@ -109,9 +109,9 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE body lathe (foot, straight barrel, closed top), ONE lid lathe (overhanging rim and dome), a tilted pipe-stub cylinder with a shadowed mouth disc, and three partial-cylinder patches for the throw-in opening and its lips -- all merged on the concrete material.",
-        "ONE exposed-aggregate sleeve lathe 5 mm proud of the barrel on its own material, because the pebble field is a texture the concrete grime canvas cannot carry.",
-        "Two materials: concrete and aggregate. The moss at the foot and the dome tone are vertex colours on the concrete material.",
+        "ONE component carries the whole casting: the lower body lathe, the barrel ring over the void with its arc LEFT OUT, the upper lathe with the lid-seam groove and proud collar, the flange soffit, the lid flange and dome, the collar hole's bore cup and rim, the void's sill and soffit wedges, its back wall and its two reveal jambs -- all merged on the concrete material for one draw call.",
+        "ONE exposed-aggregate sleeve lathe 13.5 mm proud of the barrel on its own material, because the pebble field is a texture the concrete grime canvas cannot carry.",
+        "Two materials: concrete and aggregate. The dome, the flange soffit, the lid seam and every surface inside the void are vertex colours on the concrete material, and the moss is a canvas.",
         "No repetition system. Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
       ]
     },
@@ -126,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the grey cylinder with a domed lid, the pebble band low on the body and the dark rectangular opening; each is one lathe or one patch. Grime and the pebble field are post-construction canvases, not geometry."
+      "rationale": "The identity is the grey cylinder under an overhanging flanged lid, the pebble band low on the body and the dark rectangular void; the void is real geometry because the plate shows a chamber with a lit sill, a reveal and darkness behind it, which no painted patch reproduces. Grime, moss and the pebble field are post-construction canvases."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -146,24 +146,24 @@
           "realization": "unreported"
         },
         {
-          "id": "d2-dome",
+          "id": "d2-lid",
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "overhanging lid rim and dome with an angled pipe stub",
+          "description": "overhanging lid flange, dome and raised collar hole",
           "mapsTo": {
             "ref": "body"
           },
           "realization": "unreported"
         },
         {
-          "id": "d3-opening",
+          "id": "d3-void",
           "zone": "body",
           "kind": "groove",
           "identityDefining": true,
-          "description": "dark rectangular throw-in opening on the front-right with a pale lip",
+          "description": "recessed rectangular throw-in void with a lit sill and reveal jambs",
           "mapsTo": {
-            "ref": "d3-opening"
+            "ref": "d3-void"
           },
           "onMaterial": "concrete",
           "realization": "unreported"
@@ -173,7 +173,7 @@
           "zone": "base",
           "kind": "stain",
           "identityDefining": false,
-          "description": "green moss over the foot",
+          "description": "moss over the foot and the sleeve's lower edge",
           "mapsTo": {
             "ref": "d4-moss"
           },
@@ -185,7 +185,7 @@
           "zone": "body",
           "kind": "stain",
           "identityDefining": true,
-          "description": "exposed-aggregate pebble band 0.107-0.335 m",
+          "description": "exposed-aggregate pebble band 0.072-0.344 m",
           "mapsTo": {
             "ref": "aggregate-band"
           },
@@ -196,10 +196,22 @@
           "zone": "body",
           "kind": "stain",
           "identityDefining": false,
-          "description": "rain streaks and grime on the render",
+          "description": "sandy grain, rain streaks and grime on the render",
           "mapsTo": {
             "ref": "body"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-seam",
+          "zone": "top",
+          "kind": "groove",
+          "identityDefining": false,
+          "description": "lid-seam undercut under the proud collar",
+          "mapsTo": {
+            "ref": "d7-seam"
+          },
+          "onMaterial": "concrete",
           "realization": "unreported"
         }
       ]
@@ -231,8 +243,9 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
     "resolvedUnknowns": [
-      "The opening is a shadowed recess patch 2 mm proud of the barrel, not a hole cut through the lathe: a hole through a closed lathe costs a boolean the budget does not have, and the bin is an exterior shell.",
-      "The moss edge is a vertical gradient over 0.04-0.15 m, not the plate's ragged line; the ragged edge is below the resolvable band at prop distance.",
+      "The void is a REAL opening: the barrel ring over 0.487-0.625 m is a partial cylinder with the 1.30 rad arc left out, closed behind by a sill wedge, a soffit wedge, a back wall 0.10 m in and two reveal jambs. Nothing is see-through and no boolean is taken.",
+      "The chamber's depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable. 0.10 m is what a 0.41 m bin can hold behind a 0.14 m opening.",
+      "The moss edge is a seeded cluster field in the grime canvas rather than a map of the plate's ragged line.",
       "The pebble field is a seeded tile in the crop's palette, not a map of the plate's stones.",
       "The base underside is unobserved and modelled flat."
     ],
@@ -262,15 +275,15 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.44 x 0.85 m",
-          "Barrel, rim and dome match the proxy within 0.02 H per band"
+          "Envelope 0.44 x 0.85 m at the lid flange",
+          "Every band within 0.0125 H of the plate over 0.25-0.85 of H"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "a drum wider than tall",
-          "no dome"
+          "a barrel given the whole envelope and a flange that barely overhangs"
         ]
       },
       {
@@ -279,26 +292,27 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Band from 0.107 to 0.335 m",
-          "Reads as stones, not a flat brown stripe"
+          "Band from 0.072 to 0.344 m",
+          "Reads as 18-26 mm stones with mortar between them, at the crop's luma and saturation"
         ],
         "evidenceRefs": [
           "region-pebble"
         ],
         "failureModes": [
-          "flat brown band",
+          "a brown speck field",
+          "overlapping flat discs with no mortar",
           "band at the wrong height"
         ]
       },
       {
         "id": "opening-and-moss",
-        "name": "Opening, moss and dome",
+        "name": "Throw-in void, moss and lid",
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Dark rectangular opening on the front-right",
-          "Moss over the foot",
-          "Pipe stub on the dome"
+          "A real recessed void with a lit sill, reveal jambs and a dark chamber",
+          "Moss over the foot and the sleeve's lower edge",
+          "Overhanging flange and collar hole"
         ],
         "evidenceRefs": [
           "region-opening",
@@ -306,8 +320,9 @@
           "region-dome"
         ],
         "failureModes": [
-          "opening read as a hole",
-          "no pipe stub"
+          "a painted patch instead of a recess",
+          "the void read as a hole through the model",
+          "no collar hole"
         ]
       }
     ],
@@ -489,7 +504,7 @@
     },
     {
       "id": "opening-and-moss",
-      "name": "Opening, moss and dome",
+      "name": "Throw-in void, moss and lid",
       "tier": "critical",
       "passIds": [
         "form-refinement"
@@ -635,8 +650,9 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The opening is a shadowed recess patch 2 mm proud of the barrel, not a hole cut through the lathe: a hole through a closed lathe costs a boolean the budget does not have, and the bin is an exterior shell.",
-    "The moss edge is a vertical gradient over 0.04-0.15 m, not the plate's ragged line; the ragged edge is below the resolvable band at prop distance.",
+    "The void is a REAL opening: the barrel ring over 0.487-0.625 m is a partial cylinder with the 1.30 rad arc left out, closed behind by a sill wedge, a soffit wedge, a back wall 0.10 m in and two reveal jambs. Nothing is see-through and no boolean is taken.",
+    "The chamber's depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable. 0.10 m is what a 0.41 m bin can hold behind a 0.14 m opening.",
+    "The moss edge is a seeded cluster field in the grime canvas rather than a map of the plate's ragged line.",
     "The pebble field is a seeded tile in the crop's palette, not a map of the plate's stones.",
     "The base underside is unobserved and modelled flat."
   ],
@@ -654,9 +670,9 @@
       "h": 0.85,
       "d": 0.44
     },
-    "description": "Chamfered foot r 0.16-0.21 over 0-0.05 m; straight barrel r 0.21 to 0.71 m; lid rim r 0.22 from 0.71 to 0.735 m; dome closing from r 0.178 at 0.74 to the crown at 0.85 m; a pipe stub r 0.034 leaning outward on the front-right of the dome; pebble sleeve r 0.215 from 0.107 to 0.335 m.",
-    "envelopeDerivation": "x and z span -0.22..+0.22 at the lid rim, the declared 0.44 m (corrected from 0.60 at model time: the Meshy proxy reads r 0.21 m at 0.85 m tall in every body slice and the plate w/h is 0.49; 0.60 x 0.85 would be a squat drum the plate does not show). y 0.00 to 0.85 at the dome crown; the pipe stub is placed so its mouth stays inside 0.85. Body r 0.21 from 0.05 to 0.71 m over a chamfered foot r 0.16-0.19 (proxy slices 0-1: r50 0.15-0.16), lid rim r 0.22 at 0.71-0.735, dome r 0.178 -> 0 over 0.74-0.85 (proxy: 0.18 at 0.75, 0.15 at 0.80, 0.12 at 0.82, 0.08 at 0.84).",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, scaled to 0.85 m: r 0.21 in every barrel slice, dome from 0.73 m. Band table (scratch/_mon/bands.mjs): mean |delta width| 0.0134, |delta depth| 0.0192; every band within 0.02 H except band 9 (+0.039 wide: the pipe stub, absent from the proxy crown) and band 6 depth (+0.066: the proxy dents at the opening, the candidate does not)."
+    "description": "Chamfered foot r 0.165-0.205 over 0-0.040 m; straight barrel r 0.205 to 0.652 m; a 4.5 mm lid-seam undercut at 0.652-0.673; proud collar r 0.2135 to 0.698; overhanging lid flange r 0.220 over 0.700-0.717; dome cap r 0.166 closing at 0.85 m; a raised collar hole r 0.041 on the dome's front-right at 56.5 degrees off vertical; pebble sleeve r 0.2185 over 0.072-0.344 m with 20 mm splayed lead-ins; a 1.30 rad void from 0.487 to 0.625 m whose sill lip stands 3 mm proud.",
+    "envelopeDerivation": "Solved off the plate rather than assumed. The camera elevation is 7.03 degrees, read from the lid flange ellipse (semi-minor 27.5 px over semi-major 225); the horizontal scale is 962 px/m from the barrel diameter 404 px = 0.42 m and the vertical 954 px/m; on those the object stands 0.914 m, so every plate row is converted and then scaled by 0.85 / 0.914 = 0.930 into the declared envelope. What that changes: the 0.44 m envelope is filled by the LID FLANGE (r 0.220, plate 0.234), not by the barrel, which is r 0.205 -- the plate reads w/h 0.459 and the first build carried 0.518 by giving the barrel the whole envelope and the flange a 10 mm overhang. x and z therefore span -0.220..+0.220 at the flange and -0.2185..+0.2185 at the pebble sleeve. y 0 to 0.85 at the dome crown. Barrel r 0.205 from 0.040 to 0.652 over a chamfered foot r 0.165-0.205; lid-seam groove undercut to r 0.2005 over 0.652-0.673; proud collar r 0.2135 to 0.698; flange r 0.220 over 0.700-0.717; dome a spherical cap r 0.166 from 0.724 to the crown -- checked by predicting the plate widths at rows 108 and 152 (235 and 314 px) against the measured 232 and 311.",
+    "meshyCrossCheck": "NO Meshy band table this round: the first build's proxy was cleaned with the scratch tree and regenerating one is a metered call, so the silhouette is measured against the PLATE instead (scratch/_prop/binbands.mjs). It reads the plate silhouette row by row as a DIAMETER -- which needs no assumption about where the axis projects -- skips rows below y 728 where the contact shadow merges with the right edge, normalises both columns by their own height and compares them in tenths of H. Mean |delta| 0.0119 of H over ten bands; bands 0-7, which cover the foot, the barrel, the pebble sleeve and the flange from 0.25 to 0.85 of H, are ALL within 0.0125 H. Bands 8 and 9 read +0.031 and +0.023 and are not a build error: a row scan of a perspective plate smears the flange over the +-27 px of its own ellipse, which is +-0.030 H, so the lid region cannot be resolved more finely than the disagreement. The first build's Meshy comparison is kept in the review history and its numbers describe that geometry, not this one."
   },
   "viewEvidence": [
     {
@@ -700,25 +716,25 @@
       "viewpoint": "rear",
       "path": null,
       "confidence": 0.92,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: a surface of revolution, and the proxy is round to 1% (halfX = halfZ in every slice); only the opening breaks symmetry and it is on the observed side."
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: a surface of revolution, and only the void and the collar hole break the symmetry -- both on the observed side."
     }
   ],
   "componentTree": [
     {
       "id": "body",
-      "name": "Precast body and domed lid",
+      "name": "Precast body, lid and throw-in void",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Two lathes, two cylinders and three partial-cylinder patches merged into one geometry on one material: one draw call.",
+      "topologyRationale": "Five lathes, four partial cylinders and two boxes merged into one geometry on one material: one draw call.",
       "materialId": "concrete",
       "material": "concrete",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Body lathe closed on the axis at 0 and 0.71 m, 28 segments; lid lathe from 0.71 to 0.85 m; pipe stub cylinder r 0.034 tilted -0.5 rad; opening patch r 0.212 over 0.43-0.58 m and 0.76 rad.",
+        "topologyIntent": "Lower lathe closed on the axis at 0 and running to 0.487 m at r 0.205, 26 segments. The barrel ring over 0.487-0.625 m is an OPEN partial cylinder starting at +1.10 rad and sweeping 4.983 rad, which leaves the 1.30 rad void. Upper lathe 0.625-0.698 carrying the seam undercut and the proud collar; flange soffit ring; lid flange and dome cap; a bore cup and a raised rim on the dome at 56.5 degrees off vertical. The void is closed by a sill wedge at 0.470-0.487 whose top disc is the shelf, a soffit wedge at 0.625-0.640 whose bottom disc is the ceiling, a back wall at r 0.105 and two radial jamb boxes 16 mm thick at the arc ends.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -727,8 +743,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The lid bottom disc at 0.71 faces down onto the body top disc at 0.71: opposed faces, a butt joint. The opening patch is 2 mm proud of the barrel, the lips 4-6 mm; the pipe mouth disc is on the stub's end face, 0 mm proud of a face that faces the same way -- both are end caps of the same cylinder, replaced by the disc.",
-        "mergeNote": "One merged BufferGeometry with height UVs at 0.42 m."
+        "zFightingNote": "The lid flange's soffit ring at 0.700 sits 2 mm above the body's inner cap at 0.698, so nothing is coincident. The sill wedge stands 3 mm proud of the barrel across EXACTLY the void's arc -- a wedge any wider puts that lip proud of the wall to either side of the reveal -- and the soffit wedge is 2 mm inside it. The pebble sleeve is 13.5 mm proud over its whole height and its lead-ins run INTO the barrel. check-coplanar reports no coincident co-facing pair.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.95 m, one tile over the whole prop."
       },
       "localFeatures": [
         {
@@ -737,30 +753,35 @@
           "delivery": "lathe profile"
         },
         {
-          "id": "d2-dome",
-          "description": "lid and dome",
-          "delivery": "lid lathe + tilted cylinder"
+          "id": "d2-lid",
+          "description": "flange, dome and collar hole",
+          "delivery": "lathe + tilted bore cup and rim"
         },
         {
-          "id": "d3-opening",
-          "description": "opening",
-          "delivery": "partial cylinder patches, vertex colour"
+          "id": "d3-void",
+          "description": "throw-in void",
+          "delivery": "partial-cylinder barrel gap, wedges, back wall and jambs"
         },
         {
           "id": "d4-moss",
           "description": "moss",
-          "delivery": "axis tint"
+          "delivery": "grime canvas cluster field"
         },
         {
           "id": "d6-grime",
-          "description": "grime",
+          "description": "grain and grime",
           "delivery": "grime canvas"
+        },
+        {
+          "id": "d7-seam",
+          "description": "lid seam",
+          "delivery": "lathe undercut on its own tone"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "concrete",
         "baseColor": "#bfbfbd",
-        "recipe": "Concrete grey as vertex colour on white with a grime canvas; dome #bababa; moss axis tint at the foot; opening patch #858583.",
+        "recipe": "Concrete grey as vertex colour on white with a whole-height grime canvas; dome #bababa; flange soffit and lid seam lifted; every surface inside the void authored dark and saturated.",
         "evidenceRef": "region-concrete",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(191, 191, 189, 1.0)",
@@ -829,7 +850,7 @@
       "material": "aggregate",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "Sleeve r 0.215 from 0.107 to 0.335 m with 7 mm lead-in chamfers, 28 segments, seamless around-by-up UVs at 0.12 m.",
+        "topologyIntent": "Sleeve r 0.2185 from 0.072 to 0.344 m with 20 mm splayed lead-ins, 26 segments, seamless around-by-up UVs at 0.125 m. The lead-ins are 20 mm and not 4: latheUV writes v = y / 0.12, so a short chamfer samples one texel row of the pebble tile all the way round and combs the band edge into wicker.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -838,7 +859,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "5 mm proud of the barrel over its whole height; its chamfers run INTO the barrel, so no face is coplanar with the body.",
+        "zFightingNote": "13.5 mm proud of the barrel over its whole height; its lead-ins run INTO the barrel, so no face is coplanar with the body.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -846,16 +867,21 @@
           "id": "d5-pebble",
           "description": "pebble band",
           "delivery": "sleeve lathe + pebble canvas"
+        },
+        {
+          "id": "d4-moss",
+          "description": "moss on the sleeve",
+          "delivery": "axis tint"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "aggregate",
-        "baseColor": "#8c7a63",
-        "recipe": "Tan envelope with a seeded pebble canvas multiplied in.",
+        "baseColor": "#dcc9ae",
+        "recipe": "Tan envelope with a seeded pebble canvas multiplied in, and a moss axis tint over its bottom 0.07 m.",
         "evidenceRef": "region-pebble",
         "confidence": 0.86,
-        "dominantAlbedo": "rgba(140, 122, 99, 1.0)",
-        "secondaryAlbedo": "rgba(140, 122, 99, 1.0)",
+        "dominantAlbedo": "rgba(220, 201, 174, 1.0)",
+        "secondaryAlbedo": "rgba(220, 201, 174, 1.0)",
         "materialClass": "stone",
         "materialClassConfidence": 0.86
       },
@@ -897,37 +923,51 @@
         "secondary": [
           "#bfbfbd",
           "#bababa",
-          "#4f5c3a"
+          "#3a2a16"
         ],
         "samplingNotes": "Measured as the mean of crops/concrete.png. extract_pbr_evidence confidence 0.770. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d4-moss",
-          "region": "foot 0.00-0.15 m",
+          "region": "foot 0.00-0.14 m",
           "roughness": 0.95,
           "palette": [
-            "#4F5C3A"
+            "#4A6B28"
           ],
-          "evidence": "crops/moss.png -- #444f32 at 0.816; a per-vertex axis tint from the foot to 0.15 m, lifted to luma 85."
+          "evidence": "crops/moss.png -- crop mean #4a5235 with the concrete showing through; carried as seeded cluster blobs plus a wash in the grime canvas, and as an axis tint over the pebble sleeve's bottom 0.07 m, because in the plate the green band crosses the sleeve's lower edge rather than stopping under it."
         },
         {
-          "id": "d3-opening",
-          "region": "throw-in opening 0.43-0.58 m, azimuth +0.35 rad",
+          "id": "d3-void",
+          "region": "throw-in void 0.487-0.625 m, 1.30 rad at +0.45 rad",
           "roughness": 0.92,
           "palette": [
-            "#858583"
+            "#3A2A16",
+            "#40301C",
+            "#574C3F"
           ],
-          "evidence": "crops/opening.png -- #0c0c0b at 0.806; shipped at #858583 for the silhouette gate."
+          "evidence": "crops/opening.png -- luma 3-18, a true void; chamber, jambs and sill as above, each clear of the gate's background window on saturation."
+        },
+        {
+          "id": "d7-seam",
+          "region": "lid seam and flange soffit 0.652-0.703 m",
+          "roughness": 0.92,
+          "palette": [
+            "#A89A80",
+            "#D0CEC9"
+          ],
+          "evidence": "Measured on the plate at rows 284-293, #4b4b46; shipped warm and pale for the turntable gate and recorded with the pixel counts above."
         }
       ],
       "finishClass": "matte",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-concrete (0.77) at #bfbfbd; carried as a vertex colour on a WHITE material so the dome (#bababa, region-dome 0.769), the moss (region-moss #444f32, lifted to #4f5c3a) and the opening (#0c0c0b, lifted to #858583) ride the same shader.",
-          "Opening interior lifted from luma 12 to 133 and moss from 73 to 85: the turntable gate reads anything enclosed by the silhouette at the backdrop's luma 58 as a hole, and a side-lit face renders at ~0.56 of its painted luma -- #545452 (84) came back as a 22,000 px hole at azimuth 0.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction, wash (0.66, 0.66, 0.62) at 0.35 over the bottom 30%."
+          "Measured on viewEvidence region-concrete: the crop means #cdcdcb and the plate's mid-tone body reads #bfbfbd, which is what ships; the render returns 189 against the plate's 189 at the same point.",
+          "Carried as a vertex colour on a WHITE material so the dome (#bababa, region-dome #b3b3b1), the flange soffit, the lid-seam ring and every surface inside the void ride the same shader and the same draw call.",
+          "The void interior is authored DARK, not lifted. The turntable gate calls a pixel background only inside |rgb - 58| <= 24 AND saturation <= 0.16, so a recess is safe on either side of that window: the chamber ships #3a2a16 (renders luma 36, saturation 0.34), the jambs #40301c (50 / 0.24) and the sill #574c3f (96 / 0.28). That is what lets the opening read as the void the plate measures at luma 3-18 instead of the luma-133 patch the first build had to ship.",
+          "The two DOWN-facing rings are the exception and they are lifted: the lid-seam groove and the flange soffit rendered at neutral luma 58 -- dead centre of that window -- and were read as a 1,034 px hole ring at azimuth 90. They ship as #a89a80 and #d0cec9, warm enough to clear the window on saturation as well as luma, which is also what a dirt-filled precast joint looks like. Enclosed-background pixels 48-133 across the four azimuths, against 321-1,034 before.",
+          "Textureless as DECLARED: one 512 px grime canvas after construction, stretched over the WHOLE height (uvScale 0.95) so its ground wash and its moss band land once at the foot instead of repeating every 0.42 m."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -943,8 +983,8 @@
       "name": "Exposed aggregate",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#8c7a63",
-      "color": "#8c7a63",
+      "baseColor": "#dcc9ae",
+      "color": "#dcc9ae",
       "roughness": {
         "base": 0.95,
         "variation": 0.05,
@@ -953,11 +993,11 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#8c7a63",
+        "dominant": "#dcc9ae",
         "secondary": [
-          "#8c7a63",
-          "#76614c",
-          "#4a3624"
+          "#907b65",
+          "#a98f6f",
+          "#6f5842"
         ],
         "samplingNotes": "Measured as the mean of crops/pebble.png. extract_pbr_evidence confidence 0.829. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -966,8 +1006,10 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-pebble (0.829): band mean #76614c, extractor palette #4a3624 / #241409 / #735c45. The material carries a tan envelope #8c7a63 and a 512 px pebble canvas multiplies in the stones (tan, brown, grey, cream) over a dark mortar ground.",
-          "Textureless as DECLARED: the pebble field is a post-construction canvas, bound as map and bump."
+          "region-pebble crops at #907b65. #dcc9ae is the ENVELOPE the pebble canvas multiplies, not what the surface reads as: the shipped band renders #8c7757 (luma 121, saturation 0.379) against the crop's 129 and 0.353.",
+          "The stones are sized off the plate: 18-26 mm across, which on a 0.125 m tile is a radius fraction of 0.062-0.100. The first build shipped 0.012-0.026 -- a 1.4-3 mm speck field -- and that is why the band rendered as brown noise at luma 88.",
+          "Each stone is drawn over a contact shadow offset down-right at 0.70 of the mortar ground, so what survives between stones is a dark crescent; without it a packed field reads as overlapping flat discs.",
+          "Textureless as DECLARED: the pebble field is a post-construction canvas, bound as map and bump 0.035."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1088,58 +1130,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T18:13:07.777959+00:00",
+      "timestamp": "2026-09-01T01:00:54.315125+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.93,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T18:13:07.857659+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1150,27 +1161,88 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:07.937223+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "timestamp": "2026-09-01T01:00:54.398717+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.482222+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.562328+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.643815+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "opening-and-moss",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
-          "notes": "Moss edge is a gradient, not the plate's ragged line."
+          "evidence": "A REAL void, not a patch: the barrel ring over 0.487-0.625 m is an open partial cylinder sweeping 4.983 rad so the 1.30 rad arc is missing, closed by a sill wedge whose top disc is the lit shelf (3 mm proud across exactly the void's arc), a soffit wedge whose bottom disc is the ceiling, a back wall 0.10 m in and two 16 mm reveal jambs. Void rows and arc measured at x 460/500/560/600 (0.487-0.625 m, 5-79 deg). Moss as a 70-cluster field in the grime canvas plus an axis tint over the sleeve's bottom 0.07 m. Lid flange r 0.220 overhanging the barrel by 15 mm, seam undercut, proud collar, and a raised collar HOLE (bore r 0.030, rim r 0.041) at 56.5 deg off vertical where the first build had a stub.",
+          "notes": "The chamber's 0.10 m depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1181,27 +1253,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:08.016538+00:00",
+      "timestamp": "2026-09-01T01:00:54.726973+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.808496+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "pebble-band",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1212,27 +1299,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:08.095474+00:00",
+      "timestamp": "2026-09-01T01:00:54.892506+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.978971+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "pebble-band",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1243,17 +1345,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:08.179525+00:00",
+      "timestamp": "2026-09-01T01:00:55.062279+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1264,17 +1366,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:08.267469+00:00",
+      "timestamp": "2026-09-01T01:00:55.150676+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1285,45 +1387,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:13:08.349641+00:00",
+      "timestamp": "2026-09-01T01:00:55.233043+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         },
         {
           "id": "pebble-band",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
         },
         {
           "id": "opening-and-moss",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
-          "notes": "Moss edge is a gradient, not the plate's ragged line."
+          "evidence": "A REAL void, not a patch: the barrel ring over 0.487-0.625 m is an open partial cylinder sweeping 4.983 rad so the 1.30 rad arc is missing, closed by a sill wedge whose top disc is the lit shelf (3 mm proud across exactly the void's arc), a soffit wedge whose bottom disc is the ceiling, a back wall 0.10 m in and two 16 mm reveal jambs. Void rows and arc measured at x 460/500/560/600 (0.487-0.625 m, 5-79 deg). Moss as a 70-cluster field in the grime canvas plus an axis tint over the sleeve's bottom 0.07 m. Lid flange r 0.220 overhanging the barrel by 15 mm, seam undercut, proud collar, and a raised collar HOLE (bore r 0.030, rim r 0.041) at 56.5 deg off vertical where the first build had a stub.",
+          "notes": "The chamber's 0.10 m depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
@@ -1336,31 +1438,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T18:13:07.777959+00:00",
+      "timestamp": "2026-09-01T01:00:54.315125+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 2; body and lid lathes at the proxy radii, pebble sleeve 5 mm proud.",
+      "summary": "Blockout: two components at 2 draw calls of 2; body, lid and pebble sleeve at the plate-solved radii, with the throw-in void carried in the blockout rather than added later.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1377,31 +1479,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:07.857659+00:00",
+      "timestamp": "2026-09-01T01:00:54.398717+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
-      "aiVisionScore": 0.92,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: envelope re-derived from a plate camera solve. The 0.44 m goes to the LID FLANGE (r 0.220) and the barrel drops to r 0.205, because the plate reads w/h 0.459 against the 0.518 the first build shipped by giving the barrel the whole envelope; the lid-seam undercut, the proud collar and the overhanging flange replace a single 0.02 m rim, and the pebble sleeve moves from 0.107-0.335 to 0.072-0.344 at 13.5 mm proud (the plate steps out 12.5 px at row 562, not 5 mm).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.482222+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: body top raised to 0.71 m to close the 5 mm gap under the lid rim; pipe stub lowered so its mouth stays under 0.85 m (bounds max y 0.850); lathe corners split so the rim underside no longer shades as a dark ring (turntable holes 1,352 -> 387 px at 90).",
+      "summary": "Structural pass: envelope re-derived off the plate (elevation 7.03 deg from the flange ellipse; 962 px/m across, 954 up; 0.930 to the declared height) -- flange r 0.220 fills the 0.44 m and the barrel drops to 0.205. Band table against the plate: mean |delta| 0.0119 of H, bands 0-7 all within 0.0125 H.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1417,31 +1543,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:07.937223+00:00",
+      "timestamp": "2026-09-01T01:00:54.562328+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the painted opening -- a dark patch 2 mm proud of the barrel -- replaced with a real recessed void through the barrel, and the pipe STUB replaced with the raised collar HOLE the plate actually shows. The void also moved: measured at 0.487-0.625 m and 1.30 rad, against the 0.43-0.58 m and 0.76 rad shipped before.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.643815+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "opening-and-moss",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
-          "notes": "Moss edge is a gradient, not the plate's ragged line."
+          "evidence": "A REAL void, not a patch: the barrel ring over 0.487-0.625 m is an open partial cylinder sweeping 4.983 rad so the 1.30 rad arc is missing, closed by a sill wedge whose top disc is the lit shelf (3 mm proud across exactly the void's arc), a soffit wedge whose bottom disc is the ceiling, a back wall 0.10 m in and two 16 mm reveal jambs. Void rows and arc measured at x 460/500/560/600 (0.487-0.625 m, 5-79 deg). Moss as a 70-cluster field in the grime canvas plus an axis tint over the sleeve's bottom 0.07 m. Lid flange r 0.220 overhanging the barrel by 15 mm, seam undercut, proud collar, and a raised collar HOLE (bore r 0.030, rim r 0.041) at 56.5 deg off vertical where the first build had a stub.",
+          "notes": "The chamber's 0.10 m depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: opening lips, pipe mouth disc, foot chamfer from proxy slices 0-1.",
+      "summary": "Form refinement: the void built as real geometry -- barrel gap, sill and soffit wedges, back wall, two reveal jambs; the sill wedge cut back to EXACTLY the void arc after a wider one ran its 3 mm lip proud of the wall to either side of the reveal; raised collar hole on the dome; lid seam and proud collar.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1457,31 +1607,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:08.016538+00:00",
+      "timestamp": "2026-09-01T01:00:54.726973+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "pebble-band",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.77-0.829, both textureless with measured albedo; moss and opening lifted above the hole band and recorded.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the void interior authored DARK instead of lifted to luma 133. The gate calls a pixel background only inside |rgb - 58| <= 24 AND sat <= 0.16, so the chamber (#3a2a16, renders 36/0.34), jambs (#40301c, 50/0.24) and sill (#574c3f, 96/0.28) clear it on chroma and on luma both. The two DOWN-facing rings went the other way: the lid seam and flange soffit rendered at neutral 58 and were read as a 1,034 px hole ring at azimuth 90, so they ship warm and pale (#a89a80, #d0cec9). Enclosed pixels 48-133 across the four azimuths.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1497,31 +1631,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:08.095474+00:00",
+      "timestamp": "2026-09-01T01:00:54.808496+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.77-0.829, both textureless with measured albedo; the void authored dark and every interior tone measured against the turntable gate window; the two down-facing rings lifted after they read as a 1,034 px hole ring.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:00:54.892506+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "pebble-band",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: grime canvas on the render, pebble canvas brightened to the crop palette after the first render read too dark.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild correction: the pebble tile re-sized off the plate (radius fraction 0.062-0.100 for 18-26 mm stones, against 0.012-0.026 -- a 1.4-3 mm speck field that rendered as brown noise at luma 88) and each stone given a contact shadow, without which a packed field reads as overlapping flat discs. The grime canvas moved to 512 px over the WHOLE height (uvScale 0.95) so its ground wash and its new moss cluster field land once at the foot rather than repeating every 0.42 m, with 16,000 sandy grains for the plate's speckle.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1537,21 +1695,61 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:08.179525+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "timestamp": "2026-09-01T01:00:54.978971+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "pebble-band",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: pebble stones re-sized off the plate and given contact shadows; grime canvas over the whole height with a moss cluster field and 16,000 grains; band renders 121/0.379 against the crop 129/0.353.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T01:00:55.062279+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The render now returns the plate's own values where they can be compared: body 189 against 189, dome 208 against 205.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1567,17 +1765,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:08.267469+00:00",
+      "timestamp": "2026-09-01T01:00:55.150676+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
@@ -1597,49 +1795,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:13:08.349641+00:00",
+      "timestamp": "2026-09-01T01:00:55.233043+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m; band table vs the proxy: mean |delta width| 0.0134, |delta depth| 0.0192, eight of ten bands within 0.02 H; band 9 +0.039 is the pipe stub the proxy crown lacks.",
-          "notes": ""
+          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         },
         {
           "id": "pebble-band",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Sleeve 0.107-0.335 m, 5 mm proud; 512 px pebble canvas in the crop palette (#4a3624/#735c45/#76614c mean) on #8c7a63; visible at 0, 90, 180, 270.",
-          "notes": "Seeded field, not a map of the plate's stones."
+          "evidence": "Sleeve r 0.2185 over 0.072-0.344 m, 13.5 mm proud (the plate's silhouette steps out 12.5 px at row 562), 20 mm splayed lead-ins. 512 px pebble canvas at 18-26 mm stones sized off the plate, each over a contact shadow at 0.70 of the mortar ground; renders #8c7757 (luma 121, sat 0.379) against the crop's #907b65 (129, 0.353). Visible at 0, 90, 180, 270.",
+          "notes": "Seeded field, not a map of the plate's stones; the band's top edge ships straight where the plate's is ragged."
         },
         {
           "id": "opening-and-moss",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Opening patch 0.43-0.58 m at +0.35 rad, shipped #545452 (luma 84 vs measured 12); moss tint 0.04-0.15 m at #4f5c3a; pipe stub r 0.034 on the dome, mouth inside 0.85 m.",
-          "notes": "Moss edge is a gradient, not the plate's ragged line."
+          "evidence": "A REAL void, not a patch: the barrel ring over 0.487-0.625 m is an open partial cylinder sweeping 4.983 rad so the 1.30 rad arc is missing, closed by a sill wedge whose top disc is the lit shelf (3 mm proud across exactly the void's arc), a soffit wedge whose bottom disc is the ceiling, a back wall 0.10 m in and two 16 mm reveal jambs. Void rows and arc measured at x 460/500/560/600 (0.487-0.625 m, 5-79 deg). Moss as a 70-cluster field in the grime canvas plus an axis tint over the sleeve's bottom 0.07 m. Lid flange r 0.220 overhanging the barrel by 15 mm, seam undercut, proud collar, and a raised collar HOLE (bore r 0.030, rim r 0.041) at 56.5 deg off vertical where the first build had a stub.",
+          "notes": "The chamber's 0.10 m depth is inferred: the plate's interior measures luma 3-18 everywhere, so how far back it goes is not observable."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.88. 1,544/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two canvases at 1.25 MB.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92 -- the five layers mean 0.912 and the three critical features 0.923. 1,638/2,000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two 512 px canvases at 2.0 MB.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1689,7 +1887,7 @@
         "projectedTotal": 2,
         "budget": 2,
         "headroom": 0,
-        "note": "concrete and aggregate: 2 of 2; dome, moss and opening tones are vertex colours."
+        "note": "concrete and aggregate: 2 of 2; dome, flange soffit, lid seam and every void surface are vertex colours."
       },
       "uniqueGeometries": {
         "projectedTotal": 2,
@@ -1698,10 +1896,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1544,
+        "measured": 1638,
         "budget": 2000,
-        "headroom": 456,
-        "note": "1,544 of 2,000: three 28-segment lathes (sharp profile corners split for clean normals), two 12-segment cylinders and three 8-segment patches."
+        "headroom": 362,
+        "note": "1,638 of 2,000: five 26-segment lathes (sharp profile corners split for clean normals), two 12-segment lathes for the collar hole, four partial cylinders and two jamb boxes."
       }
     }
   },
@@ -1759,7 +1957,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Lathes for the body, lid and pebble sleeve; a tilted cylinder for the pipe stub; partial open cylinders for the opening and its lips."
+      "strategy": "Lathes for the body, lid, seam, pebble sleeve and collar hole; partial cylinders for the barrel gap over the void, its sill and soffit wedges and its back wall; boxes for the two reveal jambs."
     },
     {
       "id": "instancing",
@@ -1771,23 +1969,29 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 256 px grime canvas and one 512 px pebble canvas after construction, 1.25 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. One 512 px grime canvas over the whole height and one 512 px pebble canvas after construction, 2.0 MB of texture VRAM."
     }
   ],
   "animationAnchors": [],
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "opening-luma",
+      "id": "void-luma",
       "severity": "low",
-      "description": "The measured opening interior (luma 12) would be read as a hole by the silhouette gate.",
-      "mitigation": "Shipped at #858583, luma 133 (side-lit ~74); the moss at 85. Recorded on the material overrides."
+      "description": "A real void is exactly what the turntable gate is built to catch, and the surfaces inside it are dark.",
+      "mitigation": "Every interior tone clears the gate's background window on SATURATION as well as luma (chamber 36/0.34, jamb 50/0.24, sill 96/0.28); measured 48-133 enclosed pixels across the four azimuths, against 321-1,034 before the lid seam and flange soffit were lifted."
+    },
+    {
+      "id": "no-proxy",
+      "severity": "low",
+      "description": "There is no Meshy proxy for this rebuild, so the silhouette is measured against the plate rather than an independent reconstruction.",
+      "mitigation": "The plate solve is stated in full and reproducible (scratch/_prop/binbands.mjs); its camera elevation is cross-checked by predicting two dome widths to within 3 px, and the lid bands are declared unresolvable finer than the flange ellipse's own +-0.030 H smear."
     },
     {
       "id": "declared-width",
       "severity": "low",
-      "description": "The list-time declared width of 0.60 m contradicted the plate and proxy (0.42-0.44 m).",
-      "mitigation": "Declared width corrected to 0.44 m before the build and recorded in the asset notes."
+      "description": "The list-time declared width of 0.60 m contradicted the plate and proxy.",
+      "mitigation": "Corrected to 0.44 m at the first build; this build keeps that number and moves it onto the LID FLANGE, which is the widest thing on the prop."
     }
   ],
   "localSpecSearch": {
@@ -1804,34 +2008,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.6057,
-        "aspectRatioDelta": 0.3303,
-        "scaleDelta": 0.3235,
-        "bilateralSymmetryError": 0.014,
+        "silhouetteIoU": 0.5136,
+        "aspectRatioDelta": 0.346,
+        "scaleDelta": 0.5244,
+        "bilateralSymmetryError": 0.0091,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 20.06,
+          "maxDeltaE": 16.56,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 10.85
+              "deltaE": 6.62
             },
             {
               "componentId": null,
-              "deltaE": 20.06
+              "deltaE": 16.56
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.606 is below threshold 0.85",
-        "aspect-ratio delta 0.330 exceeds threshold 0.05",
-        "scale delta 0.324 exceeds threshold 0.08",
+        "silhouette IoU 0.514 is below threshold 0.85",
+        "aspect-ratio delta 0.346 exceeds threshold 0.05",
+        "scale delta 0.524 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "13c3cdd0cccc3ced",
+      "renderHash": "0e1e312dd0852e59",
       "passId": "blockout"
     }
   ]

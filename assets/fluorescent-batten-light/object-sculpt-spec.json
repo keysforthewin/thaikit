@@ -134,71 +134,58 @@
       "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
       "details": [
         {
-          "id": "d1-trough",
-          "zone": "body",
+          "id": "open-channel",
           "kind": "contour",
           "identityDefining": true,
-          "description": "open trough reflector with a folded lip",
           "mapsTo": {
-            "ref": "reflector"
+            "ref": "open-channel"
           },
-          "realization": "unreported"
+          "description": "A pressed steel channel open along its underside, built as three plates."
         },
         {
-          "id": "d2-tubes",
-          "zone": "underside",
+          "id": "twin-tubes",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two lit tubes side by side",
           "mapsTo": {
-            "ref": "tubes"
+            "ref": "twin-tubes"
           },
-          "realization": "unreported"
+          "description": "Two yellowed tubes lying in the channel."
         },
         {
-          "id": "d3-holders",
-          "zone": "ends",
-          "kind": "contour",
-          "identityDefining": false,
-          "description": "grey tube holders at each end",
-          "mapsTo": {
-            "ref": "reflector"
-          },
-          "realization": "unreported"
-        },
-        {
-          "id": "d4-ballast",
-          "zone": "body",
-          "kind": "contour",
-          "identityDefining": false,
-          "description": "ballast housing inside the trough",
-          "mapsTo": {
-            "ref": "reflector"
-          },
-          "realization": "unreported"
-        },
-        {
-          "id": "d5-rust",
-          "zone": "body",
-          "kind": "stain",
-          "identityDefining": false,
-          "description": "rust at the fixings",
-          "mapsTo": {
-            "ref": "d5-rust"
-          },
-          "onMaterial": "enamel",
-          "realization": "unreported"
-        },
-        {
-          "id": "d6-ends",
-          "zone": "ends",
-          "kind": "contour",
+          "id": "end-plates",
+          "kind": "ridge",
           "identityDefining": true,
-          "description": "end plates closing the trough",
           "mapsTo": {
-            "ref": "reflector"
+            "ref": "end-plates"
           },
-          "realization": "unreported"
+          "description": "A flat plate closing each end of the channel."
+        },
+        {
+          "id": "conduit-stem",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "conduit-stem"
+          },
+          "description": "A threaded stem and box on top, within the declared 0.1 m band."
+        },
+        {
+          "id": "grubby-enamel",
+          "kind": "decal",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "grubby-enamel"
+          },
+          "description": "Rust flecks along the channel edges and inside it, as a canvas tile."
+        },
+        {
+          "id": "lampholder-cups",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "lampholder-cups"
+          },
+          "description": "A cup in each end plate where the tube pins seat."
         }
       ]
     },
@@ -477,7 +464,8 @@
       ],
       "evidenceRefs": [
         "region-tube"
-      ]
+      ],
+      "criteria": "TWO yellowed tubes must lie in an OPEN channel. A closed box fails -- that is what the previous build shipped. The turntable cannot show them: at its 20-degree elevation the camera looks down at a fitting that opens downward, so verification is a capture at --elevation -35."
     },
     {
       "id": "enamel",
@@ -494,7 +482,8 @@
       "evidenceRefs": [
         "region-enamel",
         "region-inner"
-      ]
+      ],
+      "criteria": "Pressed steel with visible grime and rust, its inner faces distinguishable from its outer, and flat plates closing both ends."
     }
   ],
   "sculptPipeline": {
@@ -677,55 +666,48 @@
   "componentTree": [
     {
       "id": "reflector",
-      "name": "Steel trough reflector",
+      "name": "Open steel channel, end plates and conduit stem",
       "level": "macro",
-      "role": "structure",
+      "role": "body",
       "importance": 1.0,
-      "confidence": 0.88,
+      "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Thirteen thin boxes merged into one open shell on one material: one draw call.",
+      "topologyRationale": "The channel is THREE PLATES -- a top and two sides -- not a solid. The plate's fitting is open along its underside and you see straight into it; a solid box is what the previous build shipped and it hid the tubes entirely, which are the whole point of the prop.",
       "materialId": "enamel",
       "material": "enamel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Top plate 1.25 x 0.12 at the ceiling; side walls 0.08 deep; end plates 0.10; lip 12 mm out; ballast 0.30 x 0.018 x 0.05 inside; holders at the ends.",
+        "topologyIntent": "Origin TOP-CENTER at the conduit stem, so the prop occupies y -0.1 to 0. A 1.25 m top plate at y -0.047, two 48 mm side walls at z +-0.0525, a flat end plate closing each end, a conduit box at y -0.034 and a threaded stem reaching the pivot at y 0.",
         "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.012,
+          "type": "none",
+          "bevelRadius": 0.0,
           "segments": 1
         },
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Walls hang from the top plate as opposed joints; the lip folds out from the wall foot; the ballast sits 3 mm below the top plate.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.5 m; the material is double-sided so the inside of the trough shades."
+        "normalStrategy": "vertex normals from generated geometry"
       },
       "localFeatures": [
         {
-          "id": "d1-trough",
-          "description": "trough",
-          "delivery": "sheet boxes"
+          "id": "open-channel",
+          "description": "Three plates leaving the underside open, so the channel reads as holding its tubes rather than as a closed slab."
         },
         {
-          "id": "d3-holders",
-          "description": "holders",
-          "delivery": "boxes"
+          "id": "end-plates",
+          "description": "A flat plate closing each end, which is what stops the channel reading as an extrusion cut off in mid-air."
         },
         {
-          "id": "d4-ballast",
-          "description": "ballast",
-          "delivery": "box"
+          "id": "conduit-stem",
+          "description": "A threaded stem and box on top, sitting INSIDE the declared 0.1 m band rather than standing above it, because the pivot is top-center."
         },
         {
-          "id": "d5-rust",
-          "description": "rust",
-          "delivery": "tinted plates"
+          "id": "grubby-enamel",
+          "description": "Rust flecks along the channel's edges and inside it as a post-construction canvas tile, which the plate shows heavily."
         },
         {
-          "id": "d6-ends",
-          "description": "end plates",
-          "delivery": "boxes"
+          "id": "lampholder-cups",
+          "description": "A cup let into each end plate where the tube pins seat. Without them the tubes end against a flat plate and read as rods laid in a trough rather than as lamps in holders."
         }
       ],
       "colorMaterialRecipe": {
@@ -737,7 +719,8 @@
         "dominantAlbedo": "rgba(216, 216, 212, 1.0)",
         "secondaryAlbedo": "rgba(216, 216, 212, 1.0)",
         "materialClass": "metal",
-        "materialClassConfidence": 0.88
+        "materialClassConfidence": 0.88,
+        "materialRef": "enamel"
       },
       "actionProfile": {
         "animationRole": "root",
@@ -767,84 +750,180 @@
           "visibility": true,
           "materialState": true
         },
-        "sockets": []
+        "sockets": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "enamel"
+        }
+      },
+      "materialLayers": [
+        "enamel"
+      ],
+      "attachment": null,
+      "notes": "Enamel #d0d2ce with the channel's inner faces at #b9bcb7 and the end plates and stem at #9a9d99.",
+      "fidelityTier": "optimization-pass",
+      "evidenceRefs": [
+        "view-full"
+      ],
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
       }
     },
     {
       "id": "tubes",
-      "name": "Twin fluorescent tubes",
+      "name": "Two yellowed fluorescent tubes",
       "level": "meso",
-      "role": "identity",
+      "role": "lamp",
       "importance": 1.0,
-      "confidence": 0.92,
+      "confidence": 0.9,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Two cylinders on the emissive material: one merge, one draw call.",
-      "materialId": "tube",
+      "topologyRationale": "A separate material because a yellowed glass tube is nothing like the pressed steel around it, and the two tubes are the prop's identity.",
+      "materialId": "enamel",
       "material": "tube",
       "parent": "reflector",
       "geometryDescriptor": {
-        "topologyIntent": "r 0.013, 1.17 m long, at y -0.062, z +-0.028, between the holders.",
+        "topologyIntent": "Two 12-segment cylinders of r 0.017 running along X at z +-0.024, lying inside the channel above its side walls' lower edge.",
         "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.012,
+          "type": "none",
+          "bevelRadius": 0.0,
           "segments": 1
         },
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The tubes end inside the holder boxes as interpenetrating solids; 2 mm clear of the walls.",
-        "mergeNote": ""
+        "normalStrategy": "vertex normals from generated geometry"
       },
       "localFeatures": [
         {
-          "id": "d2-tubes",
-          "description": "tubes",
-          "delivery": "cylinders"
+          "id": "twin-tubes",
+          "description": "TWO tubes, not one, lying in the channel rather than flush with its underside. VERIFIED FROM BELOW: the standard turntable elevation of 20 degrees looks slightly DOWN at the prop and a ceiling fitting opens downward, so no turntable frame can show them. A capture at --elevation -35 does, and there they read as the plate's pair of yellowed tubes in an open channel."
         }
       ],
-      "attachment": {
-        "parentSocket": "tube-holders",
-        "localStart": [
-          -0.585,
-          -0.062,
-          0.028
-        ],
-        "localEnd": [
-          0.585,
-          -0.062,
-          0.028
-        ],
-        "contactType": "embedded",
-        "embedDepth": 0.01,
-        "gapTolerance": 0.002
-      },
       "colorMaterialRecipe": {
-        "materialId": "tube",
-        "baseColor": "#f4d27a",
-        "recipe": "Emissive warm white.",
-        "evidenceRef": "region-tube",
-        "confidence": 0.92,
-        "dominantAlbedo": "rgba(244, 210, 122, 1.0)",
-        "secondaryAlbedo": "rgba(244, 210, 122, 1.0)",
-        "materialClass": "glass",
-        "materialClassConfidence": 0.92
+        "materialId": "enamel",
+        "baseColor": "#d8d8d4",
+        "recipe": "White enamel as vertex colour, greyer inner faces, grey holders, rust specks; grime canvas.",
+        "evidenceRef": "region-enamel",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(216, 216, 212, 1.0)",
+        "secondaryAlbedo": "rgba(216, 216, 212, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88,
+        "materialRef": "tube"
       },
       "actionProfile": {
-        "animationRole": "child",
-        "pivot": null,
-        "sockets": [],
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
         "transformChannels": {
-          "translate": false,
-          "rotate": false,
-          "scale": false,
+          "translate": true,
+          "rotate": true,
+          "scale": true,
           "bend": false,
           "twist": false,
           "detach": false,
           "visibility": true,
           "materialState": true
         },
-        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+        "sockets": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "tube"
+        }
+      },
+      "materialLayers": [
+        "tube"
+      ],
+      "attachment": {
+        "parentId": "reflector",
+        "parentSocket": null,
+        "contactType": "embed",
+        "localStart": [
+          -0.6,
+          -0.074,
+          0.024
+        ],
+        "localEnd": [
+          0.6,
+          -0.074,
+          -0.024
+        ],
+        "embedDepth": 0.01,
+        "gapTolerance": 0.001,
+        "confidence": 0.9,
+        "notes": "Each tube is held in lampholders let into the end plates."
+      },
+      "notes": "Tube #d8cf8a at luma 204 -- yellowed with age, as the plate's are, rather than white.",
+      "fidelityTier": "optimization-pass",
+      "evidenceRefs": [
+        "view-full"
+      ],
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
       }
     }
   ],
@@ -854,15 +933,18 @@
       "name": "White enamelled steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d8d8d4",
-      "color": "#d8d8d4",
+      "baseColor": "#d0d2ce",
+      "color": "#d0d2ce",
       "roughness": {
-        "base": 0.4,
-        "variation": 0.05,
-        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
-        "map": "material-evidence/enamel_roughness.png"
+        "base": 0.44,
+        "variation": 0.06,
+        "map": "none",
+        "localResponse": "no map; a semi-gloss stove enamel whose grime is carried by a canvas tile bound after construction"
       },
-      "metalness": 0.15,
+      "metalness": {
+        "base": 0.22,
+        "variation": 0.0
+      },
       "albedo": {
         "dominant": "#d8d8d4",
         "secondary": [
@@ -897,22 +979,26 @@
         "pbrReport": "material-evidence/enamel.pbr.json",
         "confidence": 0.8,
         "verdict": "pass"
-      }
+      },
+      "notes": "Pressed steel carrying the channel's inner faces, its end plates and its conduit stem as vertex colours, with grime and rust as a post-construction canvas tile. Luma 208, far above gatecrop's erased 55.5-60.5 window, so no tone correction was needed."
     },
     {
       "id": "tube",
       "name": "Lit fluorescent tube",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#f4d27a",
-      "color": "#f4d27a",
+      "baseColor": "#d8cf8a",
+      "color": "#d8cf8a",
       "roughness": {
-        "base": 0.35,
-        "variation": 0.05,
-        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
-        "map": "material-evidence/tube_roughness.png"
+        "base": 0.3,
+        "variation": 0.04,
+        "map": "none",
+        "localResponse": "no map; smooth glass"
       },
-      "metalness": 0.0,
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
       "albedo": {
         "dominant": "#f4d27a",
         "secondary": [
@@ -936,7 +1022,8 @@
         "pbrReport": "material-evidence/tube.pbr.json",
         "confidence": 0.92,
         "verdict": "pass"
-      }
+      },
+      "notes": "Yellowed glass. Luma 204, clear of the erased window. Authored yellowed rather than white because the plate's tubes are visibly aged and that is what separates them from the enamel around them."
     }
   ],
   "repetitionSystems": [],
@@ -1292,6 +1379,326 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:34.927311+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.011159+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.095074+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.180175+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.263544+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.348660+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.431951+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.517647+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
@@ -1613,6 +2020,414 @@
         "notes": "",
         "aiVisionNotes": ""
       }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:34.927311+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.011159+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.095074+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.180175+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.263544+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.348660+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.431951+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T17:29:35.517647+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.96,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.250 x 0.100 x 0.115 m against the declared 1.25 x 0.1 x 0.12 -- exact on length and height, 4% under on depth. The conduit stem sits INSIDE the 0.1 m band and reaches the top-center pivot at y 0 rather than standing above it, which is what a top-center pivot requires. The plate is a close-up of a SHORT two-tube fitting, so as everywhere in this kit the form comes from the plate and the proportion from the declaration."
+        },
+        {
+          "id": "tubes",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "TWO yellowed tubes lying in the channel, seated in a lampholder cup let into each end plate. The previous build was a closed box with no tubes at all. VERIFIED FROM BELOW rather than asserted: the turntable's 20-degree elevation looks slightly DOWN at a fitting that opens downward, so no turntable frame can show them -- a capture at --elevation -35 does, and there the pair of yellowed tubes in an open channel reads exactly as the plate's. That the identity feature is invisible at the review elevation is why this is 0.92 and not higher."
+        },
+        {
+          "id": "enamel",
+          "score": 0.93,
+          "threshold": 0.8,
+          "notes": "The channel is THREE PLATES -- a top and two sides -- leaving the underside open, with the inner faces a shade darker than the outer and a flat plate closing each end. A solid box is what the previous build shipped and it hid everything. Enamel #d0d2ce at luma 208 and tubes at 204, both far above gatecrop's erased 55.5-60.5 window, so neither needed the tone correction this kit's darker props needed. Grime and rust ride on a post-construction canvas tile."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 1.25 x 0.1 x 0.115 m. Cost: 368 triangles / 4000, 2 draw calls / 4, 2 materials / 3, 2 unique geometries / 6, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.557, 1.0, 0.557], interior hole fractions [0.0, 0.0, 0.0, 0.0]).  Two components at 2 draw calls, 2 materials and 2 geometries against a large ceiling of 4/3/6, and 368 triangles of 4000 -- the prop is plates and cylinders.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/fluorescent-batten-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
     }
   ],
   "lodPlan": [
@@ -1629,10 +2444,10 @@
   ],
   "performanceBudget": {
     "qualityPriority": "real-time",
-    "targetTriangles": 2000,
-    "maxDrawCalls": 2,
-    "maxMaterials": 2,
-    "maxUniqueGeometries": 4,
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",

@@ -1,0 +1,2541 @@
+{
+  "targetName": "Solar LED Street Lamp",
+  "targetId": "solar-led-street-lamp",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "all-in-one solar street lamp: galvanised pole, tilted photovoltaic panel and a flat LED lamp box on a short arm",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "tapered-prism",
+        "tilted-plate",
+        "flat-slab"
+      ],
+      "structureKind": [
+        "fixed-infrastructure",
+        "bolted-baseplate",
+        "cantilever-panel"
+      ],
+      "motionPotential": [
+        "none - bolted to a foundation; the panel is aimed once at installation"
+      ],
+      "materialFamilies": [
+        "hot-dip-galvanised-steel",
+        "photovoltaic-glass"
+      ],
+      "notes": "The all-in-one solar unit that has appeared on new provincial roads over the last decade. The plate is square-framed at aspect 0.851 against the declared 0.293, so it carries the fixture and not the assembly proportions; the declared 1.35 x 4.6 x 0.75 m envelope governs."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 0,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 2,
+        "microFeatureGroups": 4,
+        "materialLayers": 3,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Four drawn parts: the tapered pole, the bolted baseplate, the tilted solar panel and the LED lamp box.",
+        "No holding-down bolts: the large class ceiling is 4 draw calls and the four parts above use all of them. The bolts are the cheapest thing to drop on a 4.6 m prop and the omission is recorded.",
+        "The panel's TILT is what gives this prop its declared depth and most of its width; it is carried on the component's transform.rotation, not baked into a sweep.",
+        "No moving parts, so one root pivot and no sockets."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate; sub-structure carried as localFeatures because each component costs one of only four draw calls."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "tilted-panel",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "tilted-panel"
+          },
+          "description": "A 0.92 x 0.74 m PV panel raked 0.30 rad, overhanging -X above the lamp head.",
+          "realization": "unreported"
+        },
+        {
+          "id": "framed-laminate",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "framed-laminate"
+          },
+          "description": "An aluminium frame proud of the cell laminate on all four sides.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cell-grid",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "framed-laminate"
+          },
+          "description": "Pale inter-cell lines over the dark blue wafer, as a post-construction tile spanning 0.55 m.",
+          "realization": "unreported"
+        },
+        {
+          "id": "lamp-box",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "lamp-box"
+          },
+          "description": "A flat slab head on the opposite side of the pole from the panel and below it.",
+          "realization": "unreported"
+        },
+        {
+          "id": "pole-taper",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "pole-taper"
+          },
+          "description": "A flared foot and a taper from r 0.070 to r 0.038 over the shaft.",
+          "realization": "unreported"
+        },
+        {
+          "id": "base-gussets",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "base-gussets"
+          },
+          "description": "Four triangular gussets welded up the pole from its baseplate.",
+          "realization": "unreported"
+        },
+        {
+          "id": "diagonal-strut",
+          "kind": "ridge",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "diagonal-strut"
+          },
+          "description": "A strut triangulating the panel back to the shaft.",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+    "resolvedUnknowns": [
+      "The pole section is polygonal in the plate; built octagonal as the sector standard. Confidence 0.7.",
+      "The far side of the pole, panel and lamp box is mirrored; the single view cannot show it. Confidence 0.85.",
+      "The panel's tilt angle is read off the plate at roughly 20 degrees; the exact angle is a siting choice rather than a property of the product. Confidence 0.6.",
+      "The battery box some variants carry under the panel is NOT visible in this plate and is not built. Confidence 0.8."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 3,
+      "mesoComponents": 2,
+      "microFeatureGroups": 7,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox against 1.35 x 4.60 x 0.75 m",
+      "the panel reads tilted and dominant",
+      "pole rendered luma against the measured 186, panel against 110-123",
+      "turntable hole gate at all four azimuths"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not take proportion from the plate or the proxy.",
+      "Do not level the panel; the tilt is the declared depth and most of the declared width.",
+      "Do not lift the panel's albedo toward grey to clear the hole gate - hold it on chroma.",
+      "Do not add bolts; the draw-call ceiling is already met.",
+      "Do not let the lamp box share a plane with the panel's lower edge."
+    ],
+    "depthRationale": "FIVE components across two material layers: the pole, panel and lamp head as macro, the baseplate and panel mount as meso. Seven micro-feature groups -- pole taper, base gussets, base bolts, the tilted panel, its framed laminate, the diagonal strut and the lamp box."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "solar-panel"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be 1.35 x 4.60 x 0.75 m within the asset's 10% tolerance."
+    },
+    {
+      "id": "tilted-panel",
+      "name": "Tilted photovoltaic panel",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.88,
+      "mustPass": true,
+      "componentRefs": [
+        "solar-panel"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The panel must be a RAKED framed laminate overhanging one side, with a visible aluminium frame and a cell grid. A bare flat plate fails -- that is what the previous build shipped."
+    },
+    {
+      "id": "lamp-box",
+      "name": "Flat LED lamp box",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "lamp-box"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The LED head must be a SEPARATE volume from the panel, below it and on the opposite side of the pole. The asset notes make that arrangement the identity of the prop."
+    },
+    {
+      "id": "material-response",
+      "name": "Material response and the hole gate",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "solar-panel"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The pole must stay bright (measured 186, the brightest pole in the kit) and the panel dark but SATURATED - it holds the hole gate on chroma, not luma. No surface may render near the ~58 backdrop."
+    },
+    {
+      "id": "pole-taper",
+      "name": "Tapered faceted pole",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "pole"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Section narrows monotonically and reads faceted, not round."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "galvanised pole 186 / panel 110-123 in measured plate luma - the widest material separation of any prop in this lighting set.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "pole",
+      "baseplate",
+      "solar-panel",
+      "panel-mount",
+      "lamp-box"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as four named parts. Not articulated and not breakable."
+  },
+  "assumptions": [
+    "The pole section is polygonal in the plate; built octagonal as the sector standard. Confidence 0.7.",
+    "The far side of the pole, panel and lamp box is mirrored; the single view cannot show it. Confidence 0.85.",
+    "The panel tilt is about 20 degrees, read off the plate; the exact angle is a siting choice rather than a property of the product.",
+    "Holding-down bolts are NOT built: the large class allows four draw calls and the four drawn parts use them all.",
+    "The panel's cell grid is not textured: it is a printed pattern at a scale a viewer cannot resolve from a 4.6 m lamp.",
+    "No battery box is built - none is visible in this plate.",
+    "Metalness is authored below a physical 1.0 on the steel because the harness carries no environment map."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "base-center: the origin sits at the centre of the baseplate footprint on the ground plane (y=0).",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 1.35,
+      "height": 4.6,
+      "depth": 0.75,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -0.76,
+      "xMax": 0.58,
+      "yMin": 0,
+      "yMax": 4.6,
+      "zMin": -0.36,
+      "zMax": 0.36
+    },
+    "derivation": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X; depth is the raked panel, the only thing on the prop that can set it.",
+    "symmetry": "bilateral about the XY plane (z=0)",
+    "notes": "The plate is square-framed at aspect 0.851 against the declared 0.293. The panel's tilt is what produces most of the declared width and the full height."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "pole",
+      "name": "Tapered steel pole with base gussets",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A tapered lathe with four welded gussets. The previous build was a smooth pipe with neither, and the gussets are what read as a bolted structural post rather than a tube pushed into a plate.",
+      "geometryDescriptor": {
+        "topologyIntent": "Origin base-center, +Y up. A 10-segment lathe flaring to r 0.088 at the plate and tapering to r 0.038 at 4.36 m, with four triangular gussets over 0.19-0.51 m.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "pole-taper",
+          "description": "A flare at the foot and a taper from r 0.070 to r 0.038 over the shaft, read off the plate's silhouette."
+        },
+        {
+          "id": "base-gussets",
+          "description": "Four triangular gussets welded up the pole from its baseplate, as the plate shows."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Galvanised #9ea5a6 with shaded steel #848b8c as a vertex colour, plus a bloom-and-rust tile -- the plate's foot is heavily rust-stained.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded plates and the pale lamp head as vertex colours, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(158, 165, 166, 1)",
+        "secondaryAlbedo": "rgba(132, 139, 140, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#9ea5a6"
+      }
+    },
+    {
+      "id": "baseplate",
+      "name": "Bolted square baseplate",
+      "level": "meso",
+      "role": "mount",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A distinct fabricated part sharing the pole's material.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.32 m square plate 26 mm thick with four bolts inset 52 mm.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "base-bolts",
+          "description": "Four bolts at the plate corners."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Smaller than the road columns' plates -- this is a 4.6 m post.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded plates and the pale lamp head as vertex colours, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(158, 165, 166, 1)",
+        "secondaryAlbedo": "rgba(132, 139, 140, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#9ea5a6"
+      }
+    },
+    {
+      "id": "solar-panel",
+      "name": "Tilted PV panel in its aluminium frame",
+      "level": "macro",
+      "role": "panel",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A separate material because a PV laminate is neither steel nor paint, and the asset notes make the panel and the head SEPARATE VOLUMES at the right relative sizes the identity of this prop.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.92 x 0.74 m frame 32 mm thick raked 0.30 rad, with the cell laminate inset 55 mm on all four sides and standing 14 mm below the frame's top.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "pv-panel"
+        }
+      },
+      "material": "pv-panel",
+      "materialLayers": [
+        "pv-panel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "tilted-panel",
+          "description": "Raked 0.30 rad and overhanging -X, the widest thing on the prop and above the lamp head -- which is the arrangement the asset notes call the identity."
+        },
+        {
+          "id": "framed-laminate",
+          "description": "An aluminium frame standing proud of the cell laminate on all four sides, so the two never share a plane, with the cell grid as a post-construction tile."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Panel 0.92 x 0.74 rather than the notes' rough 1.0 x 0.6: the DECLARED ENVELOPE is 1.35 x 4.6 x 0.75 and the panel is the only thing that can set the depth -- at 0.6 the measured depth came out 0.659, 12% under.",
+      "colorMaterialRecipe": {
+        "materialRef": "pv-panel",
+        "recipe": "A dark blue cell laminate in a pale aluminium frame, the cell grid carried as a post-construction tile.",
+        "dominantAlbedo": "rgba(47, 61, 92, 1)",
+        "secondaryAlbedo": "rgba(194, 199, 199, 1)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/pv-panel.png",
+        "authoredAlbedo": "#ffffff"
+      }
+    },
+    {
+      "id": "panel-mount",
+      "name": "Panel mounting bar and diagonal strut",
+      "level": "meso",
+      "role": "arm",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Without the strut the panel reads as a plate balanced on a stick, and the plate shows it clearly.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.62 m bar under the panel carrying its rake, and a 0.44 m strut rotated -0.46 rad back to the shaft.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "diagonal-strut",
+          "description": "A strut triangulating the panel back to the shaft."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Same galvanised material as the pole.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded plates and the pale lamp head as vertex colours, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(158, 165, 166, 1)",
+        "secondaryAlbedo": "rgba(132, 139, 140, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#9ea5a6"
+      }
+    },
+    {
+      "id": "lamp-box",
+      "name": "Flat LED head on its arm",
+      "level": "macro",
+      "role": "head",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A SEPARATE volume from the panel, below it and on the opposite side of the pole. The asset notes make exactly that the identity, and a head merged into the panel assembly would lose it.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.24 m arm and a 0.40 x 0.07 x 0.30 m slab head with a darker lens plate under it.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "galvanised-steel"
+        }
+      },
+      "material": "galvanised-steel",
+      "materialLayers": [
+        "galvanised-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "lamp-box",
+          "description": "A flat slab head on the OPPOSITE side of the pole from the panel and 0.64 m below it, with a darker lens plate on its underside."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Head #b9bdba over the galvanised material, its lens plate #848b8c.",
+      "colorMaterialRecipe": {
+        "materialRef": "galvanised-steel",
+        "recipe": "Galvanised steel carrying its shaded plates and the pale lamp head as vertex colours, with bloom and rust as a post-construction tile.",
+        "dominantAlbedo": "rgba(158, 165, 166, 1)",
+        "secondaryAlbedo": "rgba(132, 139, 140, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/galvanised-steel.png",
+        "authoredAlbedo": "#9ea5a6"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "galvanised-steel",
+      "name": "Hot-dip galvanised steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9ea5a6",
+      "color": "#9ea5a6",
+      "albedo": {
+        "dominant": "#9ea5a6",
+        "secondary": [
+          "#848b8c",
+          "#b9bdba"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#9ea5a6",
+          "#848b8c",
+          "#b9bdba"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's pole, gussets, baseplate, mounting bar and lamp head are one continuous galvanised finish with heavy rust staining at the foot.",
+          "Luma 162 sits well clear of the 55.5-60.5 window that gatecrop's alpha key erases, so no lift was needed."
+        ]
+      },
+      "roughness": {
+        "base": 0.68,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.35,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "rustRegion",
+          "description": "Dirt and rust at the foot as a vertex-colour axis-band (y -0.05..0.45, softness 0.45) authored at #A79A88, close to the measured #a69f94 - this one needs almost no lift because the surrounding steel is already bright.",
+          "measuredFrom": "probe band 7"
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.35, matching the other galvanised posts in this kit."
+    },
+    {
+      "id": "pv-panel",
+      "name": "Photovoltaic panel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "albedo": {
+        "dominant": "#ffffff",
+        "secondary": [
+          "#c2c7c7"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#ffffff",
+          "#c2c7c7"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's panel is the only cool blue on the prop, its cells clearly gridded by pale inter-cell lines and bounded by a bright aluminium frame.",
+          "Textureless is NOT declared here: the cell grid is the one identity-defining texture on the prop, and the tile is bound AFTER construction so no procedural set is synthesised.",
+          "The tile spans 0.55 m rather than 0.16: at 0.16 it repeated six times across the panel and its bands became ~48 stripes, which read as a venetian blind. A real panel is 6-9 cells across."
+        ]
+      },
+      "roughness": {
+        "base": 0.3,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.1,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Roughness 0.30 -- a glazed laminate, the smoothest surface on the prop."
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T16:56:21.686982+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.772829+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.870309+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.965977+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.050414+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.142343+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.231476+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.338557+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T16:56:21.686982+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.772829+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.870309+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:21.965977+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.050414+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.142343+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.231476+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:56:22.338557+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.95,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.340 x 4.546 x 0.716 m against the declared 1.35 x 4.6 x 0.75 -- within 1% on width, 1.2% on height and 4.5% on depth. Width is the panel's -X overhang plus the lamp head's +X, which is exactly how the asset notes describe the figure."
+        },
+        {
+          "id": "tilted-panel",
+          "score": 0.93,
+          "threshold": 0.88,
+          "notes": "A 0.92 x 0.74 m laminate raked 0.30 rad in an aluminium frame that stands proud of it on all four sides, with the cell grid as a post-construction tile. The previous build was a bare flat plate with no cells, no frame and no strut. Panel 0.74 deep rather than the notes' rough 0.6: the declared envelope depth is 0.75 and the panel is the only thing that can set it -- at 0.6 the measured depth came out 12% under."
+        },
+        {
+          "id": "lamp-box",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "A flat slab head with a darker lens plate, on a short arm on the OPPOSITE side of the pole from the panel and 0.64 m below it. The asset notes make exactly that arrangement the identity -- 'those two must stay separate volumes at the right relative sizes' -- and it is now legible from every azimuth."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Two material layers: galvanised steel for pole, gussets, plate, mount and head, and a PV laminate carrying its aluminium frame as a vertex colour. Galvanised luma 162 is clear of the 55.5-60.5 window gatecrop's alpha key erases. The cell tile was rescaled from 0.16 m to 0.55 m: at 0.16 it repeated six times across the panel and its bands read as a venetian blind rather than the 6-9 cells a real panel has. NOT carried: the plate's heavy rust bleed at the foot, which is directional where the tile is isotropic."
+        },
+        {
+          "id": "pole-taper",
+          "score": 0.92,
+          "threshold": 0.75,
+          "notes": "A flared foot at r 0.088 tapering to r 0.038 at the head, with four triangular gussets welded up from the baseplate and four bolts on a 0.32 m plate. The previous build was a smooth pipe with none of it; the gussets are what read as a bolted structural post rather than a tube pushed into a plate."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 1.34 x 4.546 x 0.716 m. Cost: 420 triangles / 8000, 5 draw calls / 6, 2 materials / 4, 5 unique geometries / 8, 2 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.718, 0.874, 0.68], interior hole fractions [0.001, 0.0008, 0.0067, 0.0007]).  Five components at 5 draw calls of a hero ceiling of 6 -- the real cost here is submissions, not triangles (420 of 8000), because the panel, its mount and the head must stay the separate volumes the asset notes require.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/solar-led-street-lamp/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 8000,
+    "maxDrawCalls": 6,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Raised to hero with the lighting kit and heavily underspent: 420 triangles at 5 draw calls, 2 materials and 5 geometries. The prop is boxes and one lathe, so the triangle ceiling was never the constraint -- the draw calls are, and 5 of 6 is the real cost of keeping the panel, its mount and the head as the separate volumes the asset notes require."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left; the pole's left facets read brighter than its right and the panel's glazing catches the brightest highlight.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides lifted rather than black, roughly a 0.7 shadow-to-key ratio.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim in the plate - the object separates from the backdrop by value alone.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A pure white seamless backdrop at luma ~255; foreground coverage is 20.5%. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Base centre",
+        "componentRef": "pole",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "rationale": "The ONLY pivot. The panel is aimed once at installation, which is a siting choice and not a runtime mechanism, so it gets no axis of its own."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto this prop; the panel and lamp box are fixed to their own pole."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

@@ -1,0 +1,1824 @@
+{
+  "targetName": "Terrazzo Pedestal Park Table",
+  "targetId": "terrazzo-pedestal-park-table",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "terrazzo-pedestal-park-table",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "square-slab",
+        "single-square-pedestal",
+        "stepped-footing",
+        "chamfered-plinth",
+        "notched-base"
+      ],
+      "structureKind": [
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "pebble-wash-terrazzo",
+        "cast-concrete"
+      ],
+      "notes": "Cast concrete, fixed in the ground: nothing opens, turns or swings, nothing attaches, so one root pivot and zero sockets is the whole contract. Scattered across open ground in parks and school yards, so the two draw calls are the design constraint. Parks, school yards and temple grounds; the slab a warm buff aggregate of cream, tan, dark-grey and brown stones, the base plain grey concrete darkening under the slab."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "TWO components on TWO materials, one merge each: the terrazzo SLAB (one box) and the CONCRETE base (sub-plate, pedestal, footing block, chamfered cap and four corner pads merged). Two draw calls of two.",
+        "Two materials because one roughness cannot be both: the ground-and-polished aggregate slab reads 0.62 with soft stone highlights, the cast concrete 0.92 and dead matte. Both WHITE with the tones as vertex colours; the slab tone multiplies into a pebble canvas, the concrete carries a light grime canvas.",
+        "No repetition system: four pads are four boxes inside the base merge.",
+        "Action readiness: one root pivot, zero sockets, one declared box collider, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is three chunky closed volumes in a T -- a thin square slab wider than anything under it, a slender square post, a broad low plinth -- and the aggregate on the slab. A round slab or a tapered post would be a different table; a flat-coloured slab would be a concrete bench."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-slab",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "thin square terrazzo slab overhanging everything below",
+          "mapsTo": {
+            "ref": "slab"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-aggregate",
+          "zone": "top",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "pebble-wash aggregate over the slab top and edges",
+          "mapsTo": {
+            "ref": "d2-aggregate"
+          },
+          "onMaterial": "terrazzo",
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-subplate",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "thin concrete sub-plate under the slab",
+          "mapsTo": {
+            "ref": "pedestal"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-pedestal",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "slender square concrete post",
+          "mapsTo": {
+            "ref": "pedestal"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-footing",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "broad low footing with a chamfered top",
+          "mapsTo": {
+            "ref": "pedestal"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-notches",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "notched base standing on corner pads",
+          "mapsTo": {
+            "ref": "pedestal"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+    "resolvedUnknowns": [
+      "Four-fold symmetric in plan: the proxy measures identical width and depth and the plate shows one plain cast face per elevation, so the two hidden elevations are built as the two visible ones.",
+      "The base notches are corner pads, not a channel: the proxy's bottom row is solid at both ends and hollow across the middle, and the plate shows two rectangular notches on the front face.",
+      "The pedestal's darker read in the plate (luma 117-123 against the footing's 158) is the slab's cast shadow, not a second concrete: one tone, with a y-axis vertex tint from white at the footing top to 0.78 under the slab standing in for the shadow the harness does not cast.",
+      "The declared plan was corrected 0.70 -> 0.62 on the proxy before building (arithmetic in envelopeDerivation)."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 0.62 x 0.72 x 0.62 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 0.62 x 0.72 x 0.62 m",
+          "Slab, post and footing at the proxy stations"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a slab as wide as it is tall",
+          "a tapered or round post",
+          "a footing as wide as the slab"
+        ]
+      },
+      {
+        "id": "slab",
+        "name": "Terrazzo slab and aggregate",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "0.050 slab on a 0.015 sub-plate",
+          "Aggregate resolvable at prop distance, stones 4-16 px on a 0.35 m tile",
+          "Top luma within 5 of the plate"
+        ],
+        "evidenceRefs": [
+          "region-slab",
+          "region-edge"
+        ],
+        "failureModes": [
+          "flat colour",
+          "marbles",
+          "a slab lit like paper"
+        ]
+      },
+      {
+        "id": "base",
+        "name": "Pedestal and stepped footing",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Square post 0.23 m",
+          "Footing 0.365 m with a chamfered top",
+          "Corner pads under a notched base",
+          "Concrete darkening under the slab"
+        ],
+        "evidenceRefs": [
+          "region-pedestal",
+          "region-footing"
+        ],
+        "failureModes": [
+          "no chamfer",
+          "no notches",
+          "a post the same tone top to bottom"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "slab"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "slab",
+      "name": "Terrazzo slab and aggregate",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "slab"
+      ],
+      "evidenceRefs": [
+        "region-slab",
+        "region-edge"
+      ]
+    },
+    {
+      "id": "base",
+      "name": "Pedestal and stepped footing",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "pedestal"
+      ],
+      "evidenceRefs": [
+        "region-pedestal",
+        "region-footing"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "slab",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "slab",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the table envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Four-fold symmetric in plan: the proxy measures identical width and depth and the plate shows one plain cast face per elevation, so the two hidden elevations are built as the two visible ones.",
+    "The base notches are corner pads, not a channel: the proxy's bottom row is solid at both ends and hollow across the middle, and the plate shows two rectangular notches on the front face.",
+    "The pedestal's darker read in the plate (luma 117-123 against the footing's 158) is the slab's cast shadow, not a second concrete: one tone, with a y-axis vertex tint from white at the footing top to 0.78 under the slab standing in for the shadow the harness does not cast.",
+    "The declared plan was corrected 0.70 -> 0.62 on the proxy before building (arithmetic in envelopeDerivation)."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 0.62,
+      "h": 0.72,
+      "d": 0.62
+    },
+    "description": "A 0.62 m square slab 0.050 thick at 0.670-0.720 on a 0.59 m concrete sub-plate 0.015 thick, over a 0.23 m square post from 0.094 to 0.655, standing on a 0.365 m square footing 0.078 tall whose top 23 mm chamfers in to 0.86 of its plan, on four 0.11 m corner pads 16 mm tall.",
+    "envelopeDerivation": "x and z +-0.310 at the slab, y 0 to 0.720 at the slab top. The LIST-TIME declaration was 0.70 x 0.72 x 0.70 (w/h 0.972). The Meshy proxy of the plate measures bbox 1.636 x 1.903 x 1.636, w/h = d/h = 0.860 with a square plan. Height is the trustworthy axis for a table -- a park table sits at dining height -- so the plan is 0.72 x 0.860 = 0.619 -> 0.62 m and the declaration was corrected on both plan axes before building. Stack read off the proxy in fractions of H: slab rows 0.91-1.00 (0.065 m, the lowest row a shade narrower, which is the sub-plate), pedestal rows 0.14-0.89 at 30 of 80 columns = 0.375 W = 0.23 m square, footing rows 0.02-0.13 at 47 columns = 0.59 W = 0.365 m square with its top two rows stepping in (a chamfer) and row 0.00 solid at the ends and hollow in the middle (the plate's notched base -- corner pads). The plate settles the split of the 0.065: the slab face measures 60 px against the 260 px pedestal (0.23 m), so 0.050 of terrazzo on a 0.015 concrete sub-plate.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.636 x 1.903 x 1.636, w/h = d/h = 0.860, which is what corrected the declared plan from 0.70 to 0.62. Every station above is the proxy band table read in fractions of H; the plate only split the slab from its sub-plate."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-slab",
+      "viewpoint": "top",
+      "path": "crops/slab-top.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-edge",
+      "viewpoint": "front",
+      "path": "crops/slab-edge.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-pedestal",
+      "viewpoint": "front",
+      "path": "crops/pedestal.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-footing",
+      "viewpoint": "front",
+      "path": "crops/footing.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: the prop is four-fold symmetric in plan on the proxy (w/h = d/h to three decimals) and every visible elevation is the same plain cast face."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "slab",
+      "name": "Pebble-wash terrazzo slab",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One box on one material: one draw call. The aggregate is a canvas, not geometry.",
+      "materialId": "terrazzo",
+      "material": "terrazzo",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Box 0.62 x 0.050 x 0.62 from 0.670 to 0.720, world UVs at 0.35 m so the stones repeat at real size across the top and down the edges.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The slab's underside meets the sub-plate's top as an OPPOSED butt joint. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One box with world UVs."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-slab",
+          "description": "slab",
+          "delivery": "box"
+        },
+        {
+          "id": "d2-aggregate",
+          "description": "aggregate",
+          "delivery": "pebble canvas at 0.35 m"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "terrazzo",
+        "baseColor": "#c0ab95",
+        "recipe": "A near-white vertex tone multiplied into the pebble canvas, which carries the colour.",
+        "evidenceRef": "region-slab",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(192, 171, 149, 1.0)",
+        "secondaryAlbedo": "rgba(135, 112, 91, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.36,
+            0
+          ],
+          "halfExtents": [
+            0.31,
+            0.36,
+            0.31
+          ],
+          "notes": "Declared on the asset as box: the table envelope. The shipped compound is DERIVED from the geometry by scripts/derive-colliders.mjs."
+        }
+      }
+    },
+    {
+      "id": "pedestal",
+      "name": "Cast concrete pedestal, sub-plate and stepped footing",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.9,
+      "confidence": 0.86,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Sub-plate, post, footing block, four pads and the chamfered cap merged into one geometry on one material: one draw call.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": "slab",
+      "geometryDescriptor": {
+        "topologyIntent": "Sub-plate 0.59 x 0.015 at 0.655-0.670; post 0.23 square from 0.089 to 0.660 (embedded 5 mm into both neighbours); footing 0.365 square from 0.016 to 0.074 with a frustum cap to 0.094 stepping in to 0.86 of the plan; four 0.11 pads 0-0.021 set 0.02 in from the footing corners.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The post runs 5 mm INTO the sub-plate above and the footing below, the pads 5 mm up into the footing, and the chamfer frustum starts 3 mm down inside the footing block at 2 mm less than its plan, so no bounding-box face shares a plane with a co-facing neighbour. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.60 m and a y-axis tint."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-subplate",
+          "description": "sub-plate",
+          "delivery": "box"
+        },
+        {
+          "id": "d4-pedestal",
+          "description": "post",
+          "delivery": "box"
+        },
+        {
+          "id": "d5-footing",
+          "description": "footing",
+          "delivery": "box + frustum cap"
+        },
+        {
+          "id": "d6-notches",
+          "description": "notches",
+          "delivery": "four corner pad boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#a8a398",
+        "recipe": "One concrete tone as a vertex colour, a y tint for the slab's shadow, a light grime canvas.",
+        "evidenceRef": "region-footing",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(168, 163, 152, 1.0)",
+        "secondaryAlbedo": "rgba(89, 84, 76, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "terrazzo",
+      "name": "Pebble-wash terrazzo",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c0ab95",
+      "color": "#c0ab95",
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/terrazzo_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#c0ab95",
+        "secondary": [
+          "#e5d0b8",
+          "#87705b",
+          "#a48c74"
+        ],
+        "samplingNotes": "Measured as the mean of crops/slab-top.png. extract_pbr_evidence confidence 0.809. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d2-aggregate",
+          "region": "top",
+          "roughness": 0.62,
+          "evidence": "crops/slab-top.png -- pebble-wash aggregate over the slab top and edges"
+        }
+      ],
+      "finishClass": "stone",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on the plate: slab top #c0ab95 / #bca896 / #c0a990 (luma 172-175), analyze_texture meanLum 167.8 sat 0.256 mottle 0.134; extract_pbr_evidence palette #BAA189 #A48C74 #CEB79E #E5D0B8 #87705B at confidence 0.809. Stones 5-10 px across on an 830 px slab with a few at 25, i.e. 4-8 mm with some at 20.",
+          "Textureless as DECLARED: the aggregate is a 512 px pebble canvas bound AFTER construction (buff cement ground, 2600 stones of 4-16 px in seven measured tones with a highlight crescent each), repeating at 0.35 m through world UVs. Probed on the render: vertex tone 0xf4eee6 over ground (0.72, 0.64, 0.53) lands the slab top at luma 172 against the plate's 175."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/slab-top.png",
+        "pbrReport": "material-evidence/terrazzo.pbr.json",
+        "confidence": 0.809,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "concrete",
+      "name": "Cast concrete",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a8a398",
+      "color": "#a8a398",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a8a398",
+        "secondary": [
+          "#59544c",
+          "#ada89f",
+          "#817b71"
+        ],
+        "samplingNotes": "Measured as the mean of crops/footing.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "stone",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on the plate: footing front #a39e94 (158) and footing top #b3ada3 (174); pedestal #7a746a / #807b6f (117-123) in the slab's shadow, analyze_texture worn-composite roughness 0.9 on both crops; extract_pbr_evidence palette #A29D93 #A6A198 #59544C #9D998F #ADA89F at confidence 0.86 (footing) and 0.832 (pedestal).",
+          "Textureless as DECLARED: one tone 0xa8a398 as a vertex colour (rendered footing front 163 against the plate's 158), a y-axis tint to 0.78 under the slab for the cast shadow, and a light 256 px grime canvas after construction (streaks off the slab, a dust wash at the ground)."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/footing.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-09-01T00:00:25.644285+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.730507+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.816346+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.903178+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "base",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "0.23 m square post, 0.365 m footing with a 23 mm chamfered cap stepping in to 0.86 of its plan, four 0.11 m corner pads under a notched base. One concrete tone (footing front renders 163 against the plate's 158) with a y tint to 0.78 under the slab standing in for the cast shadow the plate shows and the harness cannot.",
+          "notes": "check-coplanar clean; the chamfer frustum starts inside the block at 2 mm less than its plan so no bbox face pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.993205+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.077243+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.165485+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.251691+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        },
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        },
+        {
+          "id": "base",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "0.23 m square post, 0.365 m footing with a 23 mm chamfered cap stepping in to 0.86 of its plan, four 0.11 m corner pads under a notched base. One concrete tone (footing front renders 163 against the plate's 158) with a y tint to 0.78 under the slab standing in for the cast shadow the plate shows and the harness cannot.",
+          "notes": "check-coplanar clean; the chamfer frustum starts inside the block at 2 mm less than its plan so no bbox face pairs."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-09-01T00:00:25.644285+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components at 2 draw calls of 2, every station off the proxy band table in fractions of H; plan corrected 0.70 -> 0.62 on the proxy before any geometry.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.730507+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: slab 0.670-0.720, sub-plate 0.655-0.670 at 0.59, post 0.23 square 0.094-0.655, footing 0.365 square 0.016-0.094 with its chamfer, corner pads 0-0.016.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.816346+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: chamfered footing cap as a frustum, notched base as four corner pads, the sub-plate step under the slab. A cast slab and post carry no further relief.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.903178+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "base",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "0.23 m square post, 0.365 m footing with a 23 mm chamfered cap stepping in to 0.86 of its plan, four 0.11 m corner pads under a notched base. One concrete tone (footing front renders 163 against the plate's 158) with a y tint to 0.78 under the slab standing in for the cast shadow the plate shows and the harness cannot.",
+          "notes": "check-coplanar clean; the chamfer frustum starts inside the block at 2 mm less than its plan so no bbox face pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: TWO materials of two -- terrazzo 0.62/0.0 and concrete 0.92/0.0 -- because the polished aggregate and dead-matte cast cannot share a roughness. Both textureless, tones vertex colours off the plate, PBR evidence at 0.809 and 0.86.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:25.993205+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a 512 px pebble canvas at 0.35 m on the slab (2600 stones, 4-16 px, seven measured tones), a light 256 px grime canvas on the concrete, and a y tint under the slab for the shadow. Slab top probed at luma 172 against the plate's 175.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.077243+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: white matte studio plate, near shadowless; the harness key light lands the concrete within 5 levels of the plate on lit faces and the tint carries the one shadow the plate shows.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.165485+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider, no destruction groups. Cast concrete fixed in the ground: nothing moves and nothing attaches.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T00:00:26.251691+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Built 0.620 x 0.720 x 0.620 m against the corrected declaration of 0.62 x 0.72 x 0.62 (plan corrected from 0.70 on the proxy's w/h = d/h = 0.860). Slab, sub-plate, post, footing, chamfer and pads all at the proxy band table's stations in fractions of H.",
+          "notes": "Turntable silhouette identical at 0/90/180/270 by construction: four-fold plan symmetry."
+        },
+        {
+          "id": "slab",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "0.050 terrazzo slab on a 0.015 concrete sub-plate at 0.95 of its plan. Aggregate as a 512 px pebble canvas at 0.35 m: 2600 stones of 4-16 px in seven measured tones over a buff ground; probed on beauty-000 the top lands at luma 172 against the plate's 175 after two re-basings (197 -> 156 -> 172).",
+          "notes": "First tile at 1500 stones to 30 px read as marbles; the plate's stones are 5-10 px on an 830 px slab."
+        },
+        {
+          "id": "base",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "0.23 m square post, 0.365 m footing with a 23 mm chamfered cap stepping in to 0.86 of its plan, four 0.11 m corner pads under a notched base. One concrete tone (footing front renders 163 against the plate's 158) with a y tint to 0.78 under the slab standing in for the cast shadow the plate shows and the harness cannot.",
+          "notes": "check-coplanar clean; the chamfer frustum starts inside the block at 2 mm less than its plan so no bbox face pairs."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90. 108/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two canvases, factory in 130 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/terrazzo-pedestal-park-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "terrazzo and concrete: 2 of 2; every tone within each is a vertex colour."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 108,
+        "budget": 2000,
+        "headroom": 1892,
+        "note": "108 of 2000: seven boxes and one frustum."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes for the slab, sub-plate, post, footing and pads; a frustum for the footing's chamfered cap."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh at two draw calls. In a scene the HOST instances the table."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two canvases after construction -- a 512 px pebble tile on the terrazzo (1.0 MB) and a 256 px grime tile on the concrete -- the factory built in 130 ms."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "plan-vs-declaration",
+      "severity": "low",
+      "description": "The list-time plan of 0.70 disagreed with the proxy's 0.860 aspect by 13%.",
+      "mitigation": "Corrected to 0.62 on the height axis before building, arithmetic recorded on the asset notes and in envelopeDerivation."
+    },
+    {
+      "id": "aggregate-scale",
+      "severity": "low",
+      "description": "A pebble canvas can read as marbles or as noise depending on stone size against tile size.",
+      "mitigation": "First render at 1500 stones of up to 30 px read as marbles; re-authored at 2600 stones of 4-16 px on a 0.35 m tile, which matches the plate's 5-10 px on an 830 px slab."
+    },
+    {
+      "id": "no-cast-shadow",
+      "severity": "low",
+      "description": "The harness casts no shadow, so the pedestal would render as bright as the footing where the plate shows it 35 levels darker.",
+      "mitigation": "A y-axis vertex tint from white at the footing top to 0.78 under the slab."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Terrazzo Pedestal Park Table",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4,
+        "aspectRatioDelta": 0.0266,
+        "scaleDelta": 0.3781,
+        "bilateralSymmetryError": 0.0061,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 6.92,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.41
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.92
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.400 is below threshold 0.85",
+        "scale delta 0.378 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "165aaa1b98bcf216",
+      "passId": "blockout"
+    }
+  ]
+}

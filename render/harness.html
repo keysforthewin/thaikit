@@ -288,11 +288,17 @@ window.__thaikit = {
     const az = THREE.MathUtils.degToRad(azimuthDeg);
     const el = THREE.MathUtils.degToRad(elevationDeg);
     // r / sin(fov/2) is the distance at which the bounding sphere is exactly
-    // tangent to the frustum. Anything below ~1.0 crops props whose height
-    // approaches their bounding-sphere diameter -- a 0.88 m drum lost its rims
-    // at 0.62. Stay just inside the tangent fit so every prop is whole, with a
-    // little margin, and framed identically pass to pass.
-    const dist = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(35) / 2)) * 0.92;
+    // tangent to the frustum, so the factor on it is a MARGIN and must be >= 1.0.
+    // It was 0.62, which lost a 0.88 m drum's rims, and then 0.92, which is still
+    // inside the tangent fit and so still crops anything whose extent actually
+    // reaches its bounding-sphere radius. A 9 m lighting column is the clean case:
+    // r 4.71 at 0.92 puts the camera at 14.41, where the sphere subtends
+    // asin(4.71/14.41) = 19.1 degrees against a 17.5 degree frustum half-angle, and
+    // the lantern -- the whole identity of the prop -- was cut off the top of all
+    // five frames. Compact props never noticed because their geometry sits well
+    // inside their bounding sphere; extreme-aspect props sit ON it.
+    // 1.08 is the tangent fit plus 8% of breathing room.
+    const dist = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(35) / 2)) * 1.08;
     // The clip planes follow the fit. They were a fixed 0.01..100, which is fine
     // for a 20 m building and clips a 300 m skyline imposter (dist ~480 m) out of
     // the frame entirely -- a blank render that the coverage gate then reports

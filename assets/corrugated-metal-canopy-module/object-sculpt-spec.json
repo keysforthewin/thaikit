@@ -1,0 +1,2005 @@
+{
+  "targetName": "Corrugated Metal Canopy Module",
+  "targetId": "corrugated-metal-canopy-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "modular-canopy-bay",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "four-corner-posts",
+        "steel-channel-section",
+        "deep-perimeter-fascia",
+        "single-slope",
+        "corrugated-sheet-deck",
+        "fluted-edge",
+        "open-all-sides"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "red-oxide-painted-steel",
+        "galvanised-corrugated-sheet"
+      ],
+      "notes": "ONE BAY of a modular outdoor roof kit and the SINGLE SLOPE member of the set: a 4 x 4 m cell on a 4 m grid, four red-oxide steel channel posts, a deep perimeter beam and a galvanised corrugated deck falling from 2.90 m to 2.40 m. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. Workshop yards, bus stops, market backs and every builder's lean-to in the country; the cheapest permanent roof there is. Red oxide primer left as the finish, going chalky and rusting at the welds, over zinc sheet gone matt grey with rust blooms at the fixings."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE steel merge -- four three-box channel posts, four perimeter beams, two purlins and four bolt heads -- and ONE corrugated height grid: TWO draw calls of 4.",
+        "Two materials of three: red-oxide painted steel (vertex colours -- post web, flange, fascia, bolt) and galvanised zinc. Both textureless, each with one post-construction canvas.",
+        "No repetition system. The corrugation is a height grid, not 52 instanced flutes: instancing a flute would be 52 submissions of a two-triangle strip, which is the wrong axis to spend on.",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "A corrugated roof is read at its EDGES. The registry notes say to carry the corrugation as a normal map on a flat deck because modelled flutes \"would eat the whole triangle budget for a ripple a normal map carries exactly\" -- and a normal map does carry the ripple, but it cannot carry the fluted eave and the fluted rake, which are the whole tell. This is the same argument the bamboo module's own notes make for its scalloped eave. The cost claim was measured rather than assumed and came out at 1,676 triangles for the deck and 1,940 for the bay: half the budget, not all of it. The corrugation canvas is still bound, as a BUMP map over the modelled flutes, for the roll marks between them."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 120 x 58 mm steel channel posts at the module corners",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-fascia",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a 200 mm deep perimeter beam under the deck, raking on two sides and level on the other two",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-slope",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a single plane falling 2.90 to 2.40 across the bay",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-flutes",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "52 modelled flutes 36 mm deep with a deepened sheet lap every 20, so the eave and the rake are a sawtooth",
+          "mapsTo": {
+            "ref": "d4-flutes"
+          },
+          "onMaterial": "zinc",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-rust",
+          "zone": "frame",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "rust blooming through the red-oxide primer on the fascia and post feet",
+          "mapsTo": {
+            "ref": "d5-rust"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-bolts",
+          "zone": "frame",
+          "kind": "fastener",
+          "identityDefining": false,
+          "description": "a bolt head where each post meets the perimeter beam",
+          "mapsTo": {
+            "ref": "bolts"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-purlins",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "two purlins across the fall carrying the deck between the rakes",
+          "mapsTo": {
+            "ref": "d7-purlins"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+    "resolvedUnknowns": [
+      "The corrugations are MODELLED, against the registry notes, which ask for a normal map on a flat deck. The notes' reason is a cost claim and it measures false at this budget; the silhouette a normal map cannot carry is the reason to spend it. Arithmetic in depthRationale, and the canvas is still bound as a bump map.",
+      "Two samples per flute -- a triangle wave, which under smooth shading reads as the sine a roll former makes. Four samples would double the deck for a difference nobody resolves at prop distance.",
+      "The deck stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+      "The declared 2.90 and 2.40 are the tops of the CRESTS, which is how a roofer quotes a height.",
+      "The channel posts are built as three boxes each rather than an extruded C profile: the section is 8 mm and the saving is one geometry, not any triangles."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 4.00 x 2.90 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 4.00 x 2.90 x 4.00 m with nothing crossing the cell edge",
+          "Four channel posts at the cell corners under a deep perimeter beam",
+          "A SINGLE slope, 2.90 at -Z to 2.40 at +Z, not a gable",
+          "Open on all four sides"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a gable",
+          "a deck overhanging the cell",
+          "a crest above the declared height",
+          "walls"
+        ]
+      },
+      {
+        "id": "roof-corrugation",
+        "name": "Corrugated deck and fluted edges",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "A fluted SILHOUETTE at both the eave and the rake, not a straight cut line",
+          "About 52 flutes across the 4 m, at a real 36 mm depth",
+          "A visible sheet lap",
+          "Galvanised grey that does not render blown"
+        ],
+        "evidenceRefs": [
+          "region-zinc",
+          "region-edge",
+          "region-joint"
+        ],
+        "failureModes": [
+          "a flat deck with only a normal map",
+          "flutes so deep the deck reads as a fence panel",
+          "a deck rendering at 240 against the plate's 185"
+        ]
+      },
+      {
+        "id": "frame-and-materials",
+        "name": "Channel frame, primer and rust",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Channel section legible at the post corners",
+          "Red-oxide primer at the plate's hue, kept chromatic rather than lifted grey",
+          "Rust blooming through rather than sheets of rust",
+          "No face rendering as background"
+        ],
+        "evidenceRefs": [
+          "region-paint",
+          "region-paintlit",
+          "region-fascia"
+        ],
+        "failureModes": [
+          "plain box posts",
+          "a post face inside the gate band",
+          "a pure saturated red instead of oxide"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "deck"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "roof-corrugation",
+      "name": "Corrugated deck and fluted edges",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "deck"
+      ],
+      "evidenceRefs": [
+        "region-zinc",
+        "region-edge",
+        "region-joint"
+      ]
+    },
+    {
+      "id": "frame-and-materials",
+      "name": "Channel frame, primer and rust",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "bolts"
+      ],
+      "evidenceRefs": [
+        "region-paint",
+        "region-paintlit",
+        "region-fascia"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 3,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The corrugations are MODELLED, against the registry notes, which ask for a normal map on a flat deck. The notes' reason is a cost claim and it measures false at this budget; the silhouette a normal map cannot carry is the reason to spend it. Arithmetic in depthRationale, and the canvas is still bound as a bump map.",
+    "Two samples per flute -- a triangle wave, which under smooth shading reads as the sine a roll former makes. Four samples would double the deck for a difference nobody resolves at prop distance.",
+    "The deck stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+    "The declared 2.90 and 2.40 are the tops of the CRESTS, which is how a roofer quotes a height.",
+    "The channel posts are built as three boxes each rather than an extruded C profile: the section is 8 mm and the saving is one geometry, not any triangles."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up, the fall running from -Z (high, 2.90) to +Z (low, 2.40). A neighbouring bay sits at +-4.00 m on X or Z; butted along the fall the bays step by 0.50 m, butted across it they continue one plane."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 2.9,
+      "d": 4.0
+    },
+    "description": "A 4.00 x 4.00 m bay: four 120 x 58 mm steel channel posts at the corners under a 200 mm deep perimeter beam, and a single corrugated plane falling 2.90 m at the -Z side to 2.40 m at the +Z side. 52 flutes 36 mm deep across the 4 m, with a deepened lap flute every 20, so both the eave and the rake are a sawtooth. Open on all four sides.",
+    "envelopeDerivation": "x and z span exactly -2.000..+2.000 at the deck, which OWNS both planes -- the frame stops at 1.988 at the post flanges, so no bounding-box face is shared and check-coplanar is clean at 0.001 m. y 0.000 to 2.900 at the top of the corrugation CRESTS: the declared height is a crest, not the mean plane, and authored the other way the deepened lap flute stood at 2.926 and the bay was over its own envelope. Proxy (Meshy v7): w:h:d 1 : 0.903 : 1.147 with 68.8% of the sampled surface in the top band -- the deck is nearly the whole prop -- over a perimeter frame of CONSTANT extent 1.084 x 1.263 H from the ground to the deck, which is what a channel-section post and a deep fascia look like to a surface sampler. The proxy footprint is rectangular at 0.858:1 where the notes fix a square 4 x 4 cell; the notes govern. The proxy IS used for the constant section and for confirming the deck is a single plane and not a shallow gable.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.903 : 1.147, 68.8% of the surface in the top band, a frame of constant 1.084 x 1.263 H extent to the ground. Used for the section and for confirming a single plane. NOT used for the footprint, which the proxy reads as rectangular and the notes fix square."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-zinc",
+      "viewpoint": "top",
+      "path": "crops/zinc.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-zincrust",
+      "viewpoint": "top",
+      "path": "crops/zincrust.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-paint",
+      "viewpoint": "front",
+      "path": "crops/paint.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-paintlit",
+      "viewpoint": "front",
+      "path": "crops/paintlit.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-fascia",
+      "viewpoint": "front",
+      "path": "crops/fascia.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-edge",
+      "viewpoint": "front",
+      "path": "crops/edge.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-joint",
+      "viewpoint": "top",
+      "path": "crops/joint.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: the bay is symmetric about X and open on all four sides; the plate shows the high side, one rake and the low eave, which between them cover every distinct elevation."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "bolts",
+      "name": "Bolt heads at the post-to-beam joints",
+      "level": "micro",
+      "role": "detail",
+      "importance": 0.3,
+      "confidence": 0.84,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four 30 mm heads, merged into the frame geometry rather than submitted separately -- a micro part, not a repetition system, because four of anything is not worth an InstancedMesh.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "One 30 x 30 x 12 mm head standing proud of the perimeter beam face at each of the four post joints.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Each head stands 12 mm proud of the beam face it sits on rather than meeting it.",
+        "mergeNote": "Part of the frame merge."
+      },
+      "localFeatures": [
+        {
+          "id": "d6-bolts",
+          "description": "bolt heads",
+          "delivery": "four boxes proud of the beam face"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#d8d4cc",
+        "recipe": "The same red-oxide steel material; the bolt head is a bare galvanised vertex colour on it.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(216, 212, 204, 1.0)",
+        "secondaryAlbedo": "rgba(216, 212, 204, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "frame",
+      "name": "Steel channel posts and perimeter beam",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four three-box channel posts, four beams, two purlins and four bolt heads are one merge and one draw call.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts 120 x 58 x 8 mm channels at x,z +-1.928, opening outward in z, from the ground to the beam soffit; perimeter beam 120 x 200 mm, the two rake sides rotated onto the 7.1 degree fall and the two ends level at their own heights; two purlins 70 x 50 mm at z +-0.67, 50 mm under the deck; bolt heads 30 mm at each post-to-beam joint.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The flanges stand inside the web's own section; the beams meet the posts as solids; the purlins run under the deck by more than the corrugation depth; the deck owns +-2.000 in both axes and the frame stops at 1.988. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.80 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "channel posts",
+          "delivery": "three boxes each -- a web and two flanges"
+        },
+        {
+          "id": "d2-fascia",
+          "description": "perimeter beam",
+          "delivery": "four boxes, two rotated onto the fall"
+        },
+        {
+          "id": "d7-purlins",
+          "description": "purlins",
+          "delivery": "two boxes under the deck"
+        },
+        {
+          "id": "d5-rust",
+          "description": "rust",
+          "delivery": "bloom canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#d38672",
+        "recipe": "Red-oxide primer as vertex colours on a white material -- web #d38672, flanges #df9683, fascia #c97e6c, bolt heads #d8d4cc -- with a rust-bloom multiply canvas.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(211, 134, 114, 1.0)",
+        "secondaryAlbedo": "rgba(211, 134, 114, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "deck",
+      "name": "Corrugated galvanised roof deck",
+      "level": "macro",
+      "role": "surface",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "plane-card",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A 104 x 3 height grid is one merge and one draw call for the whole roof, and its edge strips ARE the fluted eave and rake -- the silhouette a normal map cannot carry.",
+      "materialId": "zinc",
+      "material": "zinc",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "A 104 x 3 grid over x,z -2.00..2.00, 8 mm thick; the top surface is a single plane falling from 2.90 at z -2.00 to 2.40 at z +2.00 with a 36 mm triangle-wave corrugation in x at 52 flutes, every 20th flute deepened 45% as the sheet lap.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The deck is the only thing at its heights and it owns both cell-edge planes; the purlins run under it by more than the corrugation depth.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.90 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-slope",
+          "description": "single slope",
+          "delivery": "a linear base height in z across the grid"
+        },
+        {
+          "id": "d4-flutes",
+          "description": "corrugation and sheet lap",
+          "delivery": "a triangle wave in the height grid, plus the canvas as a bump map"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "zinc",
+        "baseColor": "#8c9094",
+        "recipe": "One galvanised grey on a white material, authored DARKER than the plate because the deck is up-facing, with a corrugation canvas bound as map and bump.",
+        "evidenceRef": "region-zinc",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(140, 144, 148, 1.0)",
+        "secondaryAlbedo": "rgba(140, 144, 148, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Red-oxide painted steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d38672",
+      "color": "#d38672",
+      "roughness": {
+        "base": 0.72,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.18,
+      "albedo": {
+        "dominant": "#d38672",
+        "secondary": [
+          "#d38672",
+          "#df9683",
+          "#c97e6c",
+          "#d8d4cc"
+        ],
+        "samplingNotes": "Measured as the mean of crops/paint.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-rust",
+          "region": "the fascia and the post feet",
+          "roughness": 0.8,
+          "palette": [
+            "#88746E"
+          ],
+          "evidence": "crops/fascia.png #88746e sd 55 -- the sd is the rust blooming through the primer; carried as a bloom canvas rather than as geometry."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-paint (0.88) at #6a4e49 sd 30 and region-paintlit (0.86) at #6f5b58 sd 30, with the deep fascia at #88746e sd 55 -- a brownish red-oxide primer, mean luma about 87.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER (two-point solve from the nipa module: authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). The first build authored #b0705f, luma 129, and the posts came back at 40 to 52 -- BELOW the backdrop's 58. Lifted 20% to #d38672, luma 155, and re-measured at 74 / 61 / 62 / 59 across the four azimuths. The lift keeps the CHROMA rather than going grey: the rendered post is #853328, saturation 0.67 and 48 away from the backdrop in RGB, so the silhouette gate reads it as prop on distance alone even where it is dark. Grey at the same luma would not.",
+          "Metalness 0.18, not physical: the thaikit harness has no environment map and a full metal renders black.",
+          "Textureless as DECLARED: one 512 px rust-bloom multiply canvas after construction, world UVs at 0.80 m."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/paint.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "zinc",
+      "name": "Galvanised corrugated sheet",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8c9094",
+      "color": "#8c9094",
+      "roughness": {
+        "base": 0.46,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/zinc_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#8c9094",
+        "secondary": [
+          "#8c9094",
+          "#83878b"
+        ],
+        "samplingNotes": "Measured as the mean of crops/zinc.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-flutes",
+          "region": "the whole deck",
+          "roughness": 0.46,
+          "palette": [
+            "#B6B9BD",
+            "#AAA09D"
+          ],
+          "evidence": "crops/zinc.png and crops/edge.png -- the deck and its fluted edge; the flutes are geometry and the canvas carries only the roll marks between them."
+        }
+      ],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-zinc (0.90) at #b6b9bd sd 23, region-zincrust (0.86) at #bcbdbf sd 28 and region-joint (0.82) at #b9bbbe -- matt galvanised grey, luma about 185, with rust blooms rather than sheets of rust. region-edge (0.88) at #aaa09d sd 48 is the fluted eave, and that standard deviation IS the flute shadow.",
+          "THE ONE MATERIAL IN THE SET AUTHORED DARKER THAN THE PLATE. The deck is up-facing, where the harness transfer is roughly 1.05A + 60, so a grey authored anywhere near its measured value renders blown: the first build authored #d8dbdf, luma 218, and came back at 241. Authored at luma 143 (#8c9094), times the corrugation canvas's ~0.90 mean, and re-measured at 228 on the fully lit slope and 145 to 151 at glancing angles -- a mean of about 168 against the plate's 185.",
+          "Metalness 0.30, not physical, for the same reason as the steel.",
+          "Textureless as DECLARED: one 512 px corrugation canvas bound as map AND bump (0.012) over the MODELLED flutes, at a pitch of four canvas ripples per modelled flute so the two do not beat against each other. World UVs at 0.90 m."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/zinc.png",
+        "pbrReport": "material-evidence/zinc.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T12:03:23.846935+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:23.923425+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.000914+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.078738+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.155495+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
+          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.236267+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.316901+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.396524+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        },
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
+          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T12:03:23.846935+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components, no repetition system, 2 draw calls of 4.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:23.923425+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: four channel posts, a deep perimeter beam raking on the fall sides and level on the ends, two purlins.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.000914+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the corrugation MODELLED as a triangle wave in the height grid so the eave and rake are fluted in silhouette; the notes' cost claim measured at 42% of budget rather than assumed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.078738+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: red-oxide steel 0.88 and galvanised zinc 0.90, both textureless; the zinc is the one material in the set authored DARKER than its plate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.155495+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
+          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: rust-bloom canvas on the steel; corrugation canvas bound as map AND bump over the modelled flutes, at four canvas ripples per flute so the two do not beat.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.236267+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. The up-facing deck was re-authored after measuring 241 against the plate's 185.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.316901+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:03:24.396524+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.87,
+        "componentStructure": 0.85,
+        "formDetail": 0.87,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 4.000 x 2.900 x 4.000 m off the built module, the deck owning both cell-edge planes and the frame stopping at 1.988, so check-coplanar is clean. Four 120 x 58 mm channel posts at +-1.928 under a 200 mm perimeter beam; a SINGLE plane falling 2.90 at -Z to 2.40 at +Z. The declared 2.90 is the top of the crests, which is what put the mean plane 26 mm lower after the first build stood a lap flute at 2.926.",
+          "notes": "The proxy reads the footprint as rectangular at 0.858:1; the notes fix a square 4 m cell and govern."
+        },
+        {
+          "id": "roof-corrugation",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "52 modelled flutes 36 mm deep across the 4 m with a deepened sheet lap every 20, so BOTH the eave and the rake are a sawtooth in silhouette -- visible at every azimuth. 1,676 triangles for the deck and 1,940 for the bay, against the registry notes' prediction that modelled flutes would eat the whole budget. Zinc authored darker than the plate and measured back at a mean of ~168 against the plate's 185.",
+          "notes": "Deliberately against the notes, on a measured cost claim; the corrugation canvas is still bound as a bump map over the modelled flutes."
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.83,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Channel section built as a web and two flanges per post, legible at the corners; 200 mm perimeter beam raking on two sides and level on the other two; two purlins and four bolt heads. Red oxide lifted 20% from the first build, which rendered the posts at 40-52, BELOW the backdrop's 58; now 74 / 61 / 62 / 59, and the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the gate reads it as prop on distance rather than on luma.",
+          "notes": "Enclosed background is 0 to 162 px across the four azimuths, so this is the one bay in the set that needs no --allow-holes."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,940/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Enclosed background 0-162 px, so the turntable is run WITHOUT --allow-holes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/corrugated-metal-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 3,
+        "repetitionSystems": 0,
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Three spec components on two materials, no repetition system: the bolt heads are merged into the frame geometry, so 2 DRAW CALLS of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "steel and zinc: 2 of 3. Web, flange, fascia and bolt are vertex colours on one material."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 6,
+        "headroom": 3,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1940,
+        "budget": 4000,
+        "headroom": 2060,
+        "note": "1,940 of 4,000: 264 in the frame merge (22 boxes), 1,676 in the corrugated height grid -- 1,248 in the two 104 x 3 surfaces and 428 in the wound edge strips, which ARE the fluted eave and rake. The registry notes predicted modelled flutes would eat the whole budget; measured, they are 42% of it."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes throughout the frame, two rotated onto the 7.1 degree fall; the deck is a height grid with thickness."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh. In a scene the HOST places whole bays on the 4 m grid; butted along the fall they step 0.50 m, butted across it they continue one plane."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM; the corrugation canvas is bound as map and bump."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "modelled-flutes-against-the-notes",
+      "severity": "medium",
+      "description": "The registry notes ask for a flat deck with a normal map and say modelled corrugations would eat the whole triangle budget.",
+      "mitigation": "The cost claim was measured, not assumed: the deck is 1,676 triangles and the bay 1,940 of 4,000. What the notes are right about is that a normal map carries the ripple; what it cannot carry is the fluted eave and rake, which is what a corrugated roof is read by -- the same argument the bamboo module's own notes make for its scalloped eave. The canvas is still bound, as a bump map over the modelled flutes. Recorded in assumptions and depthRationale."
+    },
+    {
+      "id": "up-facing-deck-blowout",
+      "severity": "low",
+      "description": "The deck is up-facing, where the harness transfer has a large additive term, so a galvanised grey authored at its measured value renders blown -- 241 on the first build against the plate's 185.",
+      "mitigation": "Authored DARKER than the plate at luma 143, the only material in the set that is; re-measured at a mean of about 168 across the azimuths. The measurement and the inverse are both on the material."
+    },
+    {
+      "id": "dark-primer-vs-gate",
+      "severity": "low",
+      "description": "Red oxide measures luma 87 on the plate and the first build rendered the posts at 40 to 52, below the backdrop's 58.",
+      "mitigation": "Lifted 20% keeping the CHROMA rather than going grey: the rendered post is 48 away from the backdrop in RGB at saturation 0.67, so the silhouette gate reads it as prop on distance alone. Measured at 74 / 61 / 62 / 59 across the azimuths, and the enclosed-background count is 0 to 162 px, so this bay needs no --allow-holes at all."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Corrugated Metal Canopy Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-anisotropy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[6]",
+        "score": 2.97305122627,
+        "snippets": [
+          "Directional specular stretching seen on brushed or grooved metal, where reflections elongate along the grain direction. Hiện tượng phản xạ specular kéo dài theo một hướng, thấy trên kim loại được chải xước hoặc có rãnh, phản xạ kéo dài theo ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-metalness",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[0]",
+        "score": 2.829638435022,
+        "snippets": [
+          "Binary or scalar property defining whether a surface is dielectric (0.0) or conductive metal (1.0); intermediate values blend the two. Thuộc tính nhị phân hoặc vô hướng xác định bề mặt là điện môi (0.0) hay kim loại dẫn điện (1.0); giá trị trung ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[0]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2724,
+        "aspectRatioDelta": 0.1582,
+        "scaleDelta": 0.2322,
+        "bilateralSymmetryError": 0.0601,
+        "colorDelta": {
+          "checked": 3,
+          "maxDeltaE": 35.44,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 25.86
+            },
+            {
+              "componentId": null,
+              "deltaE": 35.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 0.57
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.272 is below threshold 0.85",
+        "aspect-ratio delta 0.158 exceeds threshold 0.05",
+        "scale delta 0.232 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "71d79a4a00c2eb68",
+      "passId": "blockout"
+    }
+  ]
+}

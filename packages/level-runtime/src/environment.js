@@ -199,3 +199,28 @@ export function applyEnvironment(scene, texture, { intensity = 1, rotationDeg = 
     scene.environmentRotation.copy(previous.rotation);
   };
 }
+
+/**
+ * How bright the environment is applied, given the level's own settings.
+ *
+ * TWO dials reach it, and only one of them is the sky's own brightness:
+ *
+ *   - `sky.base.intensity` says how bright the sky IS. It multiplies the
+ *     backdrop dome's pixels in `buildSky`, and it must multiply the light that
+ *     sky casts too -- otherwise turning the sky up brightens the picture
+ *     behind the level and leaves everything in it exactly as dark, which is
+ *     what "the intensity does nothing" means when you hear it. The PREFILTER
+ *     cannot carry it: `buildEnvironment` deliberately forces `intensity: 1` so
+ *     that dragging the dial costs no re-prefilter, so it is folded in here
+ *     instead, on `scene.environmentIntensity`, for free.
+ *   - `environment.ibl.intensity` is the ambient trim on top of that.
+ *
+ * Only when the probe was built from a BASE TEXTURE, though. With no sky
+ * picture the source is the hemisphere ramp, whose own intensity is already
+ * baked into the prefiltered pixels -- multiplying by a sky that is not being
+ * drawn would apply it twice.
+ */
+export function environmentIntensity({ ibl = null, sky = null, base = null } = {}) {
+  const trim = ibl?.intensity ?? 1;
+  return base ? trim * (sky?.base?.intensity ?? 1) : trim;
+}

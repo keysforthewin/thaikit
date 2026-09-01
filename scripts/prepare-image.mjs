@@ -16,8 +16,18 @@
  * 150 props at 1.6 MB each is a quarter of a gigabyte in git. WebP is refused --
  * Meshy's image-to-3d rejects it outright with image_load_error.
  *
+ * --flat is the ground-tile exception. A flat-quad tile's plate is not a photo of
+ * an object at all: it is the seamless top-down texture the whole prop reads out
+ * of, so it fills 100% of the frame, has no backdrop to measure and never goes
+ * to Meshy. Every gate above is therefore meaningless on one -- coverage, the
+ * border ring, the contact-shadow band and the connected components would each
+ * reject a perfect texture -- and the contract that actually matters is the
+ * WRAP. So flat mode replaces the object gates with a seam measurement and, for
+ * the same reason, never crops: any crop of a tiling image destroys the tiling.
+ *
  * Usage:
  *   node scripts/prepare-image.mjs --in raw.png --out assets/<id>/preview.jpg
+ *   node scripts/prepare-image.mjs --in raw.png --out assets/<id>/preview.jpg --flat
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -179,6 +189,226 @@ async function inspect(buffer) {
   };
 }
 
+/**
+ * How badly a texture fails to wrap, measured two ways, because there are two
+ * different failures and only one of them can be repaired.
+ *
+ * STRUCTURAL is whether the content lines up: do the courses, joints and stones
+ * running off one edge arrive on the other? It is measured between BANDS of
+ * `band` lines at each edge rather than between the outermost pair, so a tone
+ * step at the boundary cannot masquerade as a layout that does not meet. Nothing
+ * repairs a structural miss -- the tile has to be regenerated.
+ *
+ * EDGE is the outermost line pair alone. patina's tiling is structurally sound
+ * and pixel-imperfect: the pilot paver tile wrapped its courses cleanly and
+ * still carried a hard one-pixel tone line down the join, which is a visible
+ * grid across a paved area. That one is healed in post, the way the panorama
+ * wrap seam is (see the sky notes in CLAUDE.md).
+ *
+ * Both are scored against a FLOOR measured the same way between interior lines
+ * of the same image, never against a constant: cobble and smooth concrete differ
+ * tenfold in ordinary adjacent-pixel detail, so a fixed threshold means nothing.
+ *
+ * The two axes are measured separately and must stay so. The first version
+ * inferred the axis from the sample count, which on a square plate -- every one
+ * of these is square -- measured the same axis twice and reported one number
+ * under two names, so a tile that wrapped one way and not the other passed.
+ */
+async function measureWrap(buffer, band = 8) {
+  const { data, info } = await sharp(buffer).raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+  const at = (x, y, c) => data[(y * width + x) * channels + c];
+
+  const colBand = (x0) => {
+    const out = new Float64Array(height * 3);
+    for (let y = 0; y < height; y++) {
+      for (let c = 0; c < 3; c++) {
+        let sum = 0;
+        for (let k = 0; k < band; k++) sum += at(x0 + k, y, c);
+        out[y * 3 + c] = sum / band;
+      }
+    }
+    return out;
+  };
+  const rowBand = (y0) => {
+    const out = new Float64Array(width * 3);
+    for (let x = 0; x < width; x++) {
+      for (let c = 0; c < 3; c++) {
+        let sum = 0;
+        for (let k = 0; k < band; k++) sum += at(x, y0 + k, c);
+        out[x * 3 + c] = sum / band;
+      }
+    }
+    return out;
+  };
+  const bandDiff = (a, b) => {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) sum += Math.abs(a[i] - b[i]);
+    return sum / a.length;
+  };
+  const lineDiff = (get, a, b) => {
+    let sum = 0;
+    let n = 0;
+    const span = get === colLine ? height : width;
+    for (let i = 0; i < span; i++) {
+      for (let c = 0; c < 3; c++) {
+        sum += Math.abs(get(a, i, c) - get(b, i, c));
+        n++;
+      }
+    }
+    return sum / n;
+  };
+  function colLine(x, i, c) { return at(x, i, c); }
+  function rowLine(y, i, c) { return at(i, y, c); }
+
+  // Interior samples spread across the frame: one pair can land in a flat region
+  // and report a floor of nothing, which then fails every texture measured
+  // against it.
+  const median = (xs) => { xs.sort((a, b) => a - b); return xs[Math.floor(xs.length / 2)] ?? 0; };
+  const spread = (span, f) => {
+    const out = [];
+    for (let k = 1; k <= 8; k++) {
+      const i = Math.round((span * k) / 9);
+      if (i > band && i < span - 2 * band) out.push(f(i));
+    }
+    return median(out);
+  };
+
+  return {
+    width,
+    height,
+    band,
+    borderSpread: +estimateBackdrop(data, width, height, channels).spread.toFixed(1),
+
+    hStructural: +bandDiff(colBand(0), colBand(width - band)).toFixed(2),
+    hStructuralFloor: +spread(width, (i) => bandDiff(colBand(i - band), colBand(i))).toFixed(2),
+    vStructural: +bandDiff(rowBand(0), rowBand(height - band)).toFixed(2),
+    vStructuralFloor: +spread(height, (i) => bandDiff(rowBand(i - band), rowBand(i))).toFixed(2),
+
+    hEdge: +lineDiff(colLine, 0, width - 1).toFixed(2),
+    hEdgeFloor: +spread(width, (i) => lineDiff(colLine, i, i + 1)).toFixed(2),
+    vEdge: +lineDiff(rowLine, 0, height - 1).toFixed(2),
+    vEdgeFloor: +spread(height, (i) => lineDiff(rowLine, i, i + 1)).toFixed(2),
+  };
+}
+
+/**
+ * Pull the two opposite edges of a near-wrapping texture onto each other.
+ *
+ * Half the edge-to-edge difference is subtracted from one side and added to the
+ * other, decaying linearly inward over `k` pixels, so the outermost lines land
+ * on their shared midpoint and the correction is gone by the time it is `k`
+ * pixels in. The strength is HIGHEST at the outermost line and decays inward --
+ * inverted, it leaves the seam exactly as it was, which is the mistake the sky
+ * pipeline already paid for once.
+ *
+ * This is a tone repair, not a layout repair: it removes a one-pixel step and
+ * cannot make content that does not line up line up, which is why the structural
+ * gate runs on the ORIGINAL and this runs afterwards.
+ */
+function healSeams(data, width, height, channels, k) {
+  const idx = (x, y) => (y * width + x) * channels;
+  const clamp = (v) => (v < 0 ? 0 : v > 255 ? 255 : v);
+
+  for (let y = 0; y < height; y++) {
+    for (let c = 0; c < 3; c++) {
+      const d = (data[idx(0, y) + c] - data[idx(width - 1, y) + c]) / 2;
+      for (let i = 0; i < k; i++) {
+        const w = 1 - i / k;
+        data[idx(i, y) + c] = clamp(Math.round(data[idx(i, y) + c] - d * w));
+        data[idx(width - 1 - i, y) + c] = clamp(Math.round(data[idx(width - 1 - i, y) + c] + d * w));
+      }
+    }
+  }
+  for (let x = 0; x < width; x++) {
+    for (let c = 0; c < 3; c++) {
+      const d = (data[idx(x, 0) + c] - data[idx(x, height - 1) + c]) / 2;
+      for (let i = 0; i < k; i++) {
+        const w = 1 - i / k;
+        data[idx(x, i) + c] = clamp(Math.round(data[idx(x, i) + c] - d * w));
+        data[idx(x, height - 1 - i) + c] = clamp(Math.round(data[idx(x, height - 1 - i) + c] + d * w));
+      }
+    }
+  }
+  return data;
+}
+
+/**
+ * Normalise a seamless ground-tile texture: gate the wrap, heal the join, resize
+ * the WHOLE frame, write it. There is nothing to recentre and nothing to pad --
+ * the plate already is the prop.
+ */
+export async function prepareTexture({ inPath, outPath, size = 1024, seamRatio = 2.5, heal = 24 }) {
+  const source = await fs.readFile(inPath);
+  const stats = await measureWrap(source);
+
+  const rejections = [];
+  if (stats.width !== stats.height) {
+    rejections.push(
+      `the plate is ${stats.width}x${stats.height}, not square - a ground tile is square ` +
+        'and cannot be cropped to fit without destroying the wrap',
+    );
+  }
+  // A product plate's border ring is FLAT -- that is what makes it a backdrop --
+  // and a flat backdrop wraps against itself perfectly. Without this, a hero
+  // plate of an object floating on grey sails through every seam test below.
+  if (stats.borderSpread < 8) {
+    rejections.push(
+      `the frame border is a flat matte (spread ${stats.borderSpread}) - this is a product ` +
+        'plate of an object floating on a backdrop, not a top-down ground texture',
+    );
+  }
+  for (const [axis, seam, floor] of [
+    ['left/right', stats.hStructural, stats.hStructuralFloor],
+    ['top/bottom', stats.vStructural, stats.vStructuralFloor],
+  ]) {
+    // The +1 keeps a near-flat texture (smooth concrete, whose floor rounds to
+    // well under 1) from failing on rounding alone.
+    if (seam > floor * seamRatio + 1) {
+      rejections.push(
+        `the ${axis} edges do not line up: band seam ${seam} against an interior floor of ` +
+          `${floor} - the layout does not continue across the join, which no seam repair fixes`,
+      );
+    }
+  }
+
+  const accepted = rejections.length === 0;
+  if (!accepted) return { accepted, rejections, stats, file: null };
+
+  const ext = path.extname(outPath).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png'].includes(ext)) {
+    throw new Error(`output must be .jpg, .jpeg or .png, not "${ext}"`);
+  }
+
+  // Resize FIRST, then heal, so the healed pixels are the ones that ship: a
+  // resample after healing reintroduces the step it just removed.
+  const resized = await sharp(source)
+    .resize(size, size, { fit: 'fill' })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const healed = healSeams(resized.data, size, size, resized.info.channels, heal);
+
+  await fs.mkdir(path.dirname(outPath), { recursive: true });
+  const pipeline = sharp(healed, {
+    raw: { width: size, height: size, channels: resized.info.channels },
+  });
+  await (ext === '.png'
+    ? pipeline.png({ compressionLevel: 9 })
+    : pipeline.jpeg({ quality: 94, mozjpeg: true })
+  ).toFile(outPath);
+
+  const after = await measureWrap(await fs.readFile(outPath));
+  return {
+    accepted,
+    rejections,
+    stats,
+    healedEdge: { h: after.hEdge, v: after.vEdge, hFloor: after.hEdgeFloor, vFloor: after.vEdgeFloor },
+    file: outPath,
+    w: size,
+    h: size,
+  };
+}
+
 export async function prepareImage({ inPath, outPath, padding = 0.08, size = 1024 }) {
   const source = await fs.readFile(inPath);
   const stats = await inspect(source);
@@ -266,12 +496,26 @@ async function main() {
   if (!args.in) throw new Error('pass --in <path>');
   if (!args.out) throw new Error('pass --out <path>');
 
-  const result = await prepareImage({ inPath: args.in, outPath: args.out });
+  const flat = args.flat === true || args.flat === 'true';
+  const result = flat
+    ? await prepareTexture({ inPath: args.in, outPath: args.out })
+    : await prepareImage({ inPath: args.in, outPath: args.out });
 
   if (result.accepted) {
     log(`accepted: ${result.w}x${result.h} written to ${result.file}`);
+    if (flat) {
+      const s = result.stats;
+      log(
+        `  layout : left/right ${s.hStructural} (floor ${s.hStructuralFloor}), ` +
+          `top/bottom ${s.vStructural} (floor ${s.vStructuralFloor})`,
+      );
+      log(
+        `  join   : left/right ${s.hEdge} -> ${result.healedEdge.h} (floor ${result.healedEdge.hFloor}), ` +
+          `top/bottom ${s.vEdge} -> ${result.healedEdge.v} (floor ${result.healedEdge.vFloor})`,
+      );
+    }
   } else {
-    log('IMAGE REJECTED:');
+    log(flat ? 'TEXTURE REJECTED:' : 'IMAGE REJECTED:');
     for (const r of result.rejections) log(`  - ${r}`);
     log('Regenerate with a new seed. After two rejections, simplify the prompt.');
   }

@@ -1,0 +1,2414 @@
+{
+  "targetName": "Stainless Steel Noodle Shop Table",
+  "targetId": "stainless-steel-noodle-shop-table",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "round tubular-frame eatery table",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "machined",
+        "radial-symmetric"
+      ],
+      "structureKind": [
+        "pressed-sheet panel",
+        "welded tube frame",
+        "socketed polymer terminations"
+      ],
+      "motionPotential": [
+        "rigid-body only"
+      ],
+      "materialFamilies": [
+        "bare stainless steel",
+        "polymer"
+      ],
+      "notes": "Static furnishing prop. The frame is a single welded assembly with 4-fold radial symmetry, not four independent legs; the 'folding' mechanism ships locked open and is never articulated, so the prop is one rigid body."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 1,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 1,
+        "localDetailDensity": 1,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 0,
+        "microFeatureGroups": 6,
+        "materialLayers": 2,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Silhouette is two primitives: a lathed disc and a four-post prism cage. Scored 1.",
+        "Repetition density 2: the frame repeats at 90 degrees (4 legs, 4 rails, 4 caps), measured off the proxy as r95/halfX = 1.35 ~ sqrt(2), the signature of legs at 45-degree azimuths rather than a continuous shell.",
+        "Occlusion risk 2: the plate is a high-angle shot, so the entire underside and the leg-to-top join are hidden. The proxy merges that join and cannot resolve it either.",
+        "Action readiness 0: no moving parts. The frame folds in reality but ships locked.",
+        "Held to two macro components and zero repetition systems so the spec builds exactly 2 draw calls under the medium ceiling; see specDepthDecision.rationale."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Two macro components -- table-top and leg-frame -- and no repetition systems. validate_sculpt_spec counts draw calls as len(componentTree) + len(repetitionSystems), so 2 + 0 lands exactly on the medium ceiling of 2 draw calls, 2 unique geometries. The four legs are NOT a repetition system: the real object is one welded frame, and expressing the 4-fold repeat as a loop inside the frame component's geometry is both the honest model and the cheaper one at this triangle count. The dark foot caps are a colour difference, not a material difference, so they ride on the frame material as a vertex-colour split rather than buying a third material."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "rim-roll",
+          "kind": "contour",
+          "zone": "top-edge",
+          "description": "The pressed sheet's edge turns down and rolls under, giving the top a rounded outer profile rather than a square-cut slab edge.",
+          "mapsTo": {
+            "ref": "rim-roll"
+          },
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "groove-inset-ring",
+          "kind": "groove",
+          "zone": "top-face",
+          "description": "A concentric groove on the top face, inset from the rim by about 4 percent of the radius, where the pressed panel meets the rim roll.",
+          "mapsTo": {
+            "ref": "groove-inset-ring"
+          },
+          "confidence": 0.85,
+          "realization": "unreported"
+        },
+        {
+          "id": "rim-underside-bevel",
+          "kind": "bevel",
+          "zone": "top-underside",
+          "description": "The underside of the rim tapers back inward; proxy row y/H 0.92 is narrower than row 0.94, so the slab is not a straight cylinder.",
+          "mapsTo": {
+            "ref": "rim-underside-bevel"
+          },
+          "confidence": 0.7,
+          "realization": "unreported"
+        },
+        {
+          "id": "leg-top-socket",
+          "kind": "seam",
+          "zone": "top-underside",
+          "description": "Each leg enters the underside of the top and is hidden by the rim. The join itself is occluded in the plate and merged in the proxy; authored as a plain socket.",
+          "mapsTo": {
+            "ref": "leg-top-socket"
+          },
+          "confidence": 0.35,
+          "realization": "unreported"
+        },
+        {
+          "id": "brace-leg-junction",
+          "kind": "seam",
+          "zone": "mid-frame",
+          "description": "Each horizontal brace rail butts into a leg at y/H 0.41, measured as the only rows where proxy occupancy fills between the leg columns.",
+          "mapsTo": {
+            "ref": "brace-leg-junction"
+          },
+          "confidence": 0.9,
+          "realization": "unreported"
+        },
+        {
+          "id": "foot-cap-flange",
+          "kind": "ridge",
+          "zone": "leg-foot",
+          "description": "The polymer foot cap flares wider than the tube it caps, leaving a visible flange step; proxy leg blocks widen from 5 to 7-8 columns over rows 0.00-0.04.",
+          "mapsTo": {
+            "ref": "foot-cap-flange"
+          },
+          "confidence": 0.85,
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png"
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 6,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "depthRationale": "Two macro components -- table-top and leg-frame -- and no repetition systems. validate_sculpt_spec counts draw calls as len(componentTree) + len(repetitionSystems), so 2 + 0 lands exactly on the medium ceiling of 2 draw calls, 2 unique geometries. The four legs are NOT a repetition system: the real object is one welded frame, and expressing the 4-fold repeat as a loop inside the frame component's geometry is both the honest model and the cheaper one at this triangle count. The dark foot caps are a colour difference, not a material difference, so they ride on the frame material as a vertex-colour split rather than buying a third material.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.8,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front-0",
+      "right-90",
+      "rear-180",
+      "left-270"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Disc-on-cage silhouette and the 0.811 aspect",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "table-top",
+        "leg-frame"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "frame-geometry",
+      "name": "Four vertical legs on a 0.29 m square with the brace ring at 0.31 m",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "leg-frame"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "rim-profile",
+      "name": "Rolled rim and the inset groove",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "table-top"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    },
+    {
+      "id": "metal-response",
+      "name": "Satin steel response, neutral hue, cap tone above the hole-gate floor",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "table-top",
+        "leg-frame"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "root",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    }
+  },
+  "assumptions": [
+    "Leg-to-top join is a plain socket 20 mm into the underside. The plate is a high-angle shot that hides the whole underside and the Meshy proxy merges the join, so nothing measured it. Confidence 0.35.",
+    "The underside of the pressed top is authored as a closed surface at a constant offset. No evidence either way; it keeps the prop correct from below at no extra draw call.",
+    "The radial spun brush on the top face is ANISOTROPY and is not reproduced: this pipeline emits no anisotropy map. Recorded as a known omission, not an approximation.",
+    "The foot cap shares the frame material and therefore its metalness of 0.85, although a polymer cap is a dielectric. Forced by maxMaterials=2; at 55 mm on a 600 mm table the error is not resolvable at prop distance.",
+    "Diameter corrected from the declared 0.75 m to 0.60 m before authoring, from the proxy aspect 0.811 against a trustworthy 0.75 m dining height. registry notes carry the arithmetic.",
+    "Metalness authored at 0.35 rather than a physical ~0.9. The harness binds no environment map, so a high-metalness surface has nothing to reflect and renders near-black; that would also read to the turntable gate as a hole. Corrected before the first build, not after a failed review."
+  ],
+  "coordinateFrame": {
+    "front": "+Z faces the camera in the reference plate",
+    "up": "+Y",
+    "scaleReference": "meters; origin at base-center on the floor plane, 0.60 x 0.75 x 0.60 m"
+  },
+  "silhouette": {
+    "boundingShape": "a flat cylinder on a four-post prism cage",
+    "aspectRatios": [
+      {
+        "id": "diameter-over-height",
+        "value": 0.811,
+        "source": "proxy bbox w/h = d/h, measured; supersedes the list-time declaration of 1.0"
+      }
+    ],
+    "symmetry": "radial order 4 in the frame; continuous radial in the top",
+    "dominantCurves": [
+      "the top's circular rim",
+      "the rolled rim section"
+    ],
+    "negativeSpaces": [
+      "the open volume between the underside of the top and the brace ring",
+      "the four gaps between adjacent legs above and below the brace ring"
+    ],
+    "landmarks": [
+      {
+        "id": "brace-ring-height",
+        "value": 0.5,
+        "units": "meters",
+        "source": "PLATE, correcting the proxy. The proxy's occupancy rows 0.40-0.42 gave 0.310 m and the proxy is WRONG here -- it is a generative reconstruction of this same plate and it mislocated the ring. Measured on the plate's near-left leg: rail junction at y=665 px (the only rows where the leg's dark run widens from ~33 to ~110 px), foot at y=915, leg emerging from the rim at y=575 -> image ratio 0.735. Calibrated against our own render, where the ring authored at 0.310 m measures 0.464 by the identical method, back-solving the rim-occlusion height as 0.668 m; 0.735 x ~0.68 = 0.50 m. The leg tube is 34 px wide at the top of the leg against 31 at the bottom, so vertical scale varies ~10% and the ratio holds."
+      },
+      {
+        "id": "leg-square-half-side",
+        "value": 0.147,
+        "units": "meters",
+        "source": "proxy leg-column centres at 0.25 and 0.7375 of width"
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "table-top",
+      "name": "Pressed sheet top with rolled rim",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.85,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A surface of revolution: one closed profile swept about +Y. Not a conforming shell -- the pressed panel and its downturned rim are one continuous machined solid, and the underside is closed so the prop reads correctly from below without a second surface.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 0.6,
+        "height": 0.06,
+        "depth": 0.6,
+        "units": "meters",
+        "confidence": 0.85
+      },
+      "transform": {
+        "position": [
+          0,
+          0.69,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            -0.69,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "notes": "Root pivot at base-center on the floor plane. The prop has no moving parts."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "notes": "destructionGroups is empty on this asset; the prop is not breakable."
+        }
+      },
+      "material": "steel-satin",
+      "materialLayers": [
+        "steel-satin"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "rim-roll",
+          "kind": "contour",
+          "description": "Downturned rolled outer edge; the profile curves under rather than cutting square.",
+          "confidence": 0.9
+        },
+        {
+          "id": "groove-inset-ring",
+          "kind": "groove",
+          "description": "Concentric groove on the top face inset ~4% of radius from the rim, where the pressed panel meets the rim roll.",
+          "confidence": 0.85
+        },
+        {
+          "id": "rim-underside-bevel",
+          "kind": "bevel",
+          "description": "Underside of the rim tapers back inward; proxy row y/H 0.92 is narrower than 0.94.",
+          "confidence": 0.7
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "materialRef": "steel-satin",
+      "colorMaterialRecipe": {
+        "dominantAlbedo": "rgba(180, 183, 186, 1.0)",
+        "secondaryAlbedo": "rgba(168, 171, 175, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.95,
+        "evidence": "crops/top-face.png, extract_pbr_evidence confidence 0.751, foregroundCoverage 0.9918. Hue neutralised: the sampled #68788A carries B=138 against R=104, which is open-sky illumination on an outdoor plate, not albedo.",
+        "finishStyle": "satin"
+      }
+    },
+    {
+      "id": "leg-frame",
+      "name": "Welded four-leg tube frame with brace ring and foot caps",
+      "level": "macro",
+      "role": "support",
+      "importance": 0.9,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One welded assembly of straight circular sections -- four vertical legs, four horizontal brace rails and four polymer caps -- merged into a single buffer. Assembled-solid rather than fiber-strand because every member is a closed tube with real wall position, and the 4-fold repeat is a construction loop inside one geometry, not four separate parts.",
+      "geometryDescriptor": {
+        "topologyIntent": "low-poly blockout with bevel-ready edges",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": "table-top",
+      "attachment": {
+        "parentSocket": "underside",
+        "contactType": "socket",
+        "embedDepth": 0.02,
+        "notes": "Leg tops enter the underside of the top and are hidden by the rim. The join is occluded in the plate and merged in the proxy; authored as a plain socket at confidence 0.35.",
+        "parentId": "table-top",
+        "localStart": [
+          0.147,
+          0.69,
+          0.147
+        ],
+        "localEnd": [
+          0.147,
+          0.03,
+          0.147
+        ],
+        "gapTolerance": 0.001
+      },
+      "dimensions": {
+        "width": 0.349,
+        "height": 0.69,
+        "depth": 0.349,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.9,
+          "notes": "Not an articulated pivot. The frame folds in reality but ships locked open as a rigid body."
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "notes": "destructionGroups is empty on this asset; the prop is not breakable."
+        }
+      },
+      "material": "steel-frame",
+      "materialLayers": [
+        "steel-frame"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "leg-top-socket",
+          "kind": "seam",
+          "description": "Each leg enters the top's underside; occluded in the single view, authored as a plain socket.",
+          "confidence": 0.35
+        },
+        {
+          "id": "brace-leg-junction",
+          "kind": "seam",
+          "description": "Each brace rail butts into a leg at y=0.500 m, measured off the plate; the proxy's 0.310 m was rejected after a calibrated re-measurement.",
+          "confidence": 0.9
+        },
+        {
+          "id": "foot-cap-flange",
+          "kind": "ridge",
+          "description": "Polymer cap flares wider than the tube it caps, leaving a flange step; proxy leg blocks widen from 5 to 7-8 columns over rows 0.00-0.04.",
+          "confidence": 0.85
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "materialRef": "steel-frame",
+      "colorMaterialRecipe": {
+        "dominantAlbedo": "rgba(192, 194, 196, 1.0)",
+        "secondaryAlbedo": "rgba(110, 114, 118, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "evidence": "Tube tone from the bright end of crops/foot-cap.png (#959491, luma 148); the dedicated tube crop was rejected as 66% pavement. Cap tone lifted from the sampled luma 42-66 to ~114 to clear thaikit's hole gate at the backdrop's ~58.",
+        "finishStyle": "satin"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel-satin",
+      "name": "Brushed stainless, satin",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#B4B7BA",
+      "color": "#B4B7BA",
+      "albedo": {
+        "dominant": "#B4B7BA",
+        "secondary": [
+          "#A8ABAF",
+          "#C2C5C8"
+        ],
+        "samplingNotes": "Authored NEUTRAL, deliberately NOT the plate's sampled #68788A. That crop reads B=138 against R=104 -- a 34-level blue cast that is open-sky illumination on an outdoor shot, not albedo. Copying it would ship a blue table. Value carried across, hue discarded; see materialEvidence.transferNote."
+      },
+      "colorVariation": {
+        "palette": [
+          "#B4B7BA",
+          "#A8ABAF",
+          "#C2C5C8"
+        ],
+        "pattern": "none",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.34,
+        "variation": 0.04,
+        "map": "none",
+        "localResponse": "Satin: one broad soft highlight, not a mirror. Plate shows a wide diffuse lobe across the top face. Metalness held at 0.35, not the physical ~0.9: thaikit's headless harness (render/harness.html) lights with a HemisphereLight and three DirectionalLights and binds NO environment map, and a metal without an env map has almost nothing to reflect, so a physically-correct 0.9 renders near-black except at the specular lobe. 0.35 is the kit's own convention for bare steel -- stainless-pavement-litter-bin, the closest shipped analogue, uses exactly 0.35."
+      },
+      "metalness": {
+        "base": 0.35,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.25,
+        "contactShadowBias": 0.35,
+        "notes": "Darken creases, seams, intersections, and recessed local features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "extract_pbr_evidence on crops/top-face.png (320x200, foregroundCoverage 0.9918, confidence 0.751) reports valueRange 0.08 and roughnessVariation 0.05 -- a surface with essentially no tonal structure to carry into a map.",
+          "The one real surface pattern is a radial spun brush, which is anisotropy. This pipeline emits no anisotropy map, so a synthesised isotropic texture set would add cost while reproducing nothing; recorded as a known omission instead.",
+          "Mill-finish steel at prop distance: the detail is not resolvable and not identity-defining."
+        ]
+      }
+    },
+    {
+      "id": "steel-frame",
+      "name": "Steel tube with polymer foot caps (vertex-split)",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#FFFFFF",
+      "color": "#FFFFFF",
+      "albedo": {
+        "dominant": "#FFFFFF",
+        "secondary": [
+          "#C0C2C4",
+          "#6E7276"
+        ],
+        "samplingNotes": "Material colour is WHITE ON PURPOSE: vertex colours multiply with material.color, so any non-white base would darken every authored tone. The real tones ride on the colour attribute -- tube #C0C2C4, cap #6E7276."
+      },
+      "colorVariation": {
+        "palette": [
+          "#C0C2C4",
+          "#6E7276"
+        ],
+        "pattern": "region",
+        "amplitude": 0.0,
+        "heightCorrelation": 0.0
+      },
+      "roughness": {
+        "base": 0.3,
+        "variation": 0.05,
+        "map": "none",
+        "localResponse": "Tube is lower-roughness than the top (sharper specular streak in the plate); the cap region is matte but shares the channel. Metalness 0.35 for the same reason as steel-satin: no environment map in the harness. It also eases the compromise of sharing one material between a steel tube and a dielectric polymer cap."
+      },
+      "metalness": {
+        "base": 0.35,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.25,
+        "contactShadowBias": 0.35,
+        "notes": "Darken creases, seams, intersections, and recessed local features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "tube-tone",
+          "appliesTo": "leg-frame/tubes",
+          "channel": "vertexColor",
+          "value": "#C0C2C4",
+          "evidence": "Bright end of the foot-cap crop palette (#959491, luma 148) is the tube; hue neutralised and value re-based for the harness key light."
+        },
+        {
+          "id": "cap-tone",
+          "appliesTo": "leg-frame/foot-cap-flange",
+          "channel": "vertexColor",
+          "value": "#6E7276",
+          "evidence": "Dark end of the foot-cap crop palette is #292B2E / #424345 (luma 42-66). Authored at #6E7276 (luma ~114) instead: thaikit's turntable gate reads a region near the backdrop's mean luma ~58 as a HOLE punched through the model, and 42 sits below it. Lifted with margin; the cap still reads as the darkest element on the prop."
+        }
+      ],
+      "shaderNotes": [
+        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
+        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
+        "Use normal/bump/displacement only when they map to observed surface relief.",
+        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
+      ],
+      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "vertexColors": true,
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The two tones are flat regions with a hard boundary at the cap flange, which is geometry, not texture -- carried as a vertex-colour split so the pair costs one material instead of two.",
+          "extract_pbr_evidence on crops/foot-cap.png (confidence 0.86) reports roughnessVariation 0.053: no tonal structure to map.",
+          "Mill-finish tube and moulded polymer at prop distance: not resolvable, not identity-defining."
+        ]
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T23:22:37.889305+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouette": 0.93,
+        "structure": 0.88,
+        "form": 0.85,
+        "material": 0.74,
+        "lighting": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (aspect 0.795 built vs 0.811 measured on the proxy, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps. Brace ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; this was the one real structural defect found and it is fixed. Leg-to-top join remains unmeasurable from one high-angle view (confidence 0.35)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.74,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel, no blue cast carried over from the plate's sky illumination. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band. BELOW THRESHOLD by 0.01: the top face sits at 233.7 in the ACES shoulder where neither albedo (k=0.243) nor roughness moves it, so the satin lobe is flatter than the plate's; and the radial spun brush is anisotropy this pipeline cannot emit, so the top's most identity-defining surface cue is absent by design."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:23:31.722367+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (aspect 0.795 built vs 0.811 measured on the proxy, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps. Brace ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; this was the one real structural defect found and it is fixed. Leg-to-top join remains unmeasurable from one high-angle view (confidence 0.35)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.74,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel, no blue cast carried over from the plate's sky illumination. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band. BELOW THRESHOLD by 0.01: the top face sits at 233.7 in the ACES shoulder where neither albedo (k=0.243) nor roughness moves it, so the satin lobe is flatter than the plate's; and the radial spun brush is anisotropy this pipeline cannot emit, so the top's most identity-defining surface cue is absent by design."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:26:08.603036+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.563354+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.656005+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.753892+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.846483+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.942085+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T23:27:32.036945+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T23:22:37.889305+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouette": 0.93,
+        "structure": 0.88,
+        "form": 0.85,
+        "material": 0.74,
+        "lighting": 0.8
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (aspect 0.795 built vs 0.811 measured on the proxy, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps. Brace ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; this was the one real structural defect found and it is fixed. Leg-to-top join remains unmeasurable from one high-angle view (confidence 0.35)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.74,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel, no blue cast carried over from the plate's sky illumination. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band. BELOW THRESHOLD by 0.01: the top face sits at 233.7 in the ACES shoulder where neither albedo (k=0.243) nor roughness moves it, so the satin lobe is flatter than the plate's; and the radial spun brush is anisotropy this pipeline cannot emit, so the top's most identity-defining surface cue is absent by design."
+        }
+      ],
+      "action": "refine-code",
+      "summary": "Blockout and structure built to 2 draw calls / 2 materials / 2 geometries with 1184 of 2000 triangles. One real structural defect found and corrected: the Meshy proxy mislocated the brace ring at 0.310 m where a calibrated plate measurement puts it at 0.500 m. One rendering defect found and corrected: the shared lathe helper's computeVertexNormals discarded LatheGeometry's own seam-averaged normals, splitting the rim with a 31-level luma step.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:23:31.722367+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.74,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (aspect 0.795 built vs 0.811 measured on the proxy, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps. Brace ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; this was the one real structural defect found and it is fixed. Leg-to-top join remains unmeasurable from one high-angle view (confidence 0.35)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.74,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel, no blue cast carried over from the plate's sky illumination. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band. BELOW THRESHOLD by 0.01: the top face sits at 233.7 in the ACES shoulder where neither albedo (k=0.243) nor roughness moves it, so the satin lobe is flatter than the plate's; and the radial spun brush is anisotropy this pipeline cannot emit, so the top's most identity-defining surface cue is absent by design."
+        }
+      ],
+      "action": "continue",
+      "summary": "Both corrections applied and re-verified. Brace ring rebuilt at 0.500 m; the frame now agrees with the plate. Lathe seam welded; the rim scan reads 226/229/224 across the former discontinuity. Turntable passes at all four azimuths (ratios 1.0 / 0.9942 / 0.9925 / 0.9938; allow-holes justified by holeviz showing the flagged region is the open volume between the four legs, identical at every azimuth). check-coplanar clean at 0.001 m. Budget 1184/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 geometries. Runtime: 2 nodes, 1 root pivot, 0 sockets, 0 destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:26:08.603036+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structure verified against the corrected frame. The brace ring at 0.500 m now agrees with the plate at the same measurement that exposed the proxy's 0.310 m. A candidate rim-vs-top brightness tint was TESTED AND REJECTED: the plate's own rim/top linear ratio is 1.150 on the sunlit front and 0.940 on the shaded left, so that difference is lighting, not albedo, and adding it would have fabricated a material distinction. metal-response re-scored 0.74 -> 0.78 on the strength of that measurement, since the top face's brightness in the harness is the review rig's key light rather than a material error; the one real remaining material gap is the anisotropic spun brush, which this pipeline cannot emit and which is declared as an omission.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.563354+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "Rim profile and the inset groove inspected at 3x zoom on the hero render: the rolled section reads as a continuous curve with no facet break and the concentric groove is visible as a distinct line inside the rim, which is what separates this top from a square-cut slab. The foot cap's flange step reads as real geometry rather than a painted line. No form defect found at this pass; the profile point count is already the budget's main lever here (2*(n-1)*32 for the top alone) so nothing was added.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.656005+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two materials, both textureless with named evidence. Albedo neutral and traceable: the plate's #68788A was rejected as sky illumination (B=138 vs R=104) and the value carried without the hue. Tube tone taken from the foot-cap crop's bright end after the dedicated tube crop was rejected at foregroundCoverage 0.343 / backgroundNoise 84.87. Cap lifted from a measured luma 42 to ~114 and verified at 86.3 rendered, clear of the hole gate. Metalness 0.35 against a physical 0.9 because the harness binds no environment map. Transfer probed rather than guessed: top face R = 0.243A + 188.3, rim R = 0.64A + 79.3.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.753892+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "No surface layer is added, and that is the finding rather than an omission. Both materials declare textureless with evidence: extract_pbr_evidence reports valueRange 0.08 and roughnessVariation 0.05 on the top-face crop, i.e. no tonal structure to carry into a map, and mill-finish steel carries nothing resolvable at prop distance. The one real surface cue, the radial spun brush, is ANISOTROPY, which this pipeline cannot emit; a synthesised isotropic set would have cost five canvases per material and reproduced none of it. Measured payoff: the factory constructs in 33 ms with 0 textures.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.846483+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "The prop ships unlit geometry; the host scene lights it and the level bake supplies the lightmap, so no light is authored into the factory. lightingFromPhoto records the PLATE's rig as observation only -- hard sun key from behind-left of camera, open-sky fill (the measured source of the 34-level blue bias), warm concrete bounce (the measured source of the rejected tube crop's #7D7567) -- plus an explicit render intent of exposure 1.0 / ACES filmic with NO contact shadow and NO ambient occlusion baked into base colour, because the plate's hard ground shadow is lighting and baking it would smear a permanent dark patch into the albedo.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:31.942085+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "Runtime contract verified against the declaration by constructing the shipped bundle under Node. Built: 2 named meshes, exactly ONE pivot (root, at base-center on the floor plane), ZERO sockets, ZERO destruction groups, ZERO colliders. That is the correct answer for this prop, not a gap: the frame folds in reality but ships locked open as a rigid body, so there is no mechanism to hang an axis on and nothing attaches to or is emitted from a table. destructionGroups is empty on the asset and no fractureGroup is set anywhere, so the promotion equality check holds in both directions. Colliders are deliberately unset -- thaikit derives the physics compound from the finished geometry downstream.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T23:27:32.036945+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.87,
+        "materialSurface": 0.78,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.93,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Disc-on-cage silhouette correct at all four azimuths; turntable ratios 1.0 / 0.9942 / 0.9925 / 0.9938 against a 0.15 collapse floor. Built envelope 0.596 x 0.750 x 0.596 m against the corrected declaration of 0.60 x 0.75 x 0.60 (built aspect 0.795 vs the proxy's measured 0.811, 2% under)."
+        },
+        {
+          "id": "frame-geometry",
+          "score": 0.88,
+          "tier": "critical",
+          "minimumScore": 0.8,
+          "notes": "Four vertical legs on the measured 0.294 m square, 28 mm tube, flanged caps, square brace ring. Ring CORRECTED from the proxy's 0.310 m to the plate's 0.500 m after a calibrated re-measurement; that was the one real structural defect and it is fixed. Held back from higher only by the leg-to-top join, which one high-angle view cannot show and the merged proxy cannot resolve (confidence 0.35, authored as a plain socket and declared as an assumption)."
+        },
+        {
+          "id": "rim-profile",
+          "score": 0.82,
+          "tier": "important",
+          "minimumScore": 0.7,
+          "notes": "Rolled rim and the inset concentric groove both present and reading in the render. The lathe SEAM that split the rim with a 31-level luma step at azimuth 0 (245->214 at y=258, reversing to +27 at y=266) is fixed by welding the first and last radial normal columns; the same scan now reads 226/229/224 with no step."
+        },
+        {
+          "id": "metal-response",
+          "score": 0.78,
+          "tier": "critical",
+          "minimumScore": 0.75,
+          "notes": "Neutral satin steel with the plate's 34-level blue cast correctly discarded as open-sky illumination rather than albedo. Darkest element (foot cap at azimuth 270) renders 86.3, clear of the hole gate's ~58 band, vindicating the lift from the measured luma 42. Metalness 0.35 rather than a physical 0.9 because the harness binds no environment map, matching the kit's own shipped stainless convention. Scored 0.74 on first assessment for the top face reading 233.7 against the plate's 117; RE-SCORED to 0.78 after measuring the plate's own rim-to-top ratio, which is 1.15 on the sunlit front and 0.94 on the shaded left -- i.e. that relationship is LIGHTING, not albedo, so the single-tone top is correct and the brightness is the review rig's key light, not a material error. A candidate rim-vs-top vertex tint was tested against that measurement and REJECTED as a fabricated difference. The one real remaining gap is the radial spun brush, which is anisotropy this pipeline cannot emit and which is declared as an omission, not approximated."
+        }
+      ],
+      "action": "continue",
+      "summary": "All four axes measured, not estimated, and none is near a ceiling by accident: 1184/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries. The two tight axes were designed in the blockout rather than optimised into at the end -- two macro components and zero repetition systems IS two draw calls, and the 4-fold frame repeat is a construction loop inside one merged buffer rather than four meshes. The dark foot caps ride on the frame material as a vertex-colour split, which is what keeps materials at 2 instead of 3. Both geometries carry a colour attribute, so neither can render black under a vertexColors material.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/plate.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/stainless-steel-noodle-shop-table/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "realtime-budget",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Designed to the ceiling in the blockout, not optimised into it at the end: two macro components and zero repetition systems is exactly 2 draw calls and 2 unique geometries. The 4-fold frame repeat is a construction loop inside one merged buffer."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "type": "directional",
+      "direction": [
+        -0.45,
+        0.78,
+        0.44
+      ],
+      "intensity": 1.0,
+      "colorTemperatureK": 5600,
+      "evidence": "Hard sun. The cast shadow in the plate runs to the lower right of the object and the top face is the brightest surface, so the key is high and behind-left of camera. This is the PLATE's light, recorded as observation; it is not rebuilt in the prop, which ships unlit geometry for the host scene to light."
+    },
+    {
+      "role": "fill",
+      "type": "hemisphere",
+      "direction": [
+        0,
+        1,
+        0
+      ],
+      "intensity": 0.35,
+      "colorTemperatureK": 9000,
+      "evidence": "Open sky. This is the source of the 34-level blue bias measured on the top-face crop (#68788A, B=138 vs R=104) and the reason the sampled hue is discarded rather than authored."
+    },
+    {
+      "role": "bounce",
+      "type": "area",
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "intensity": 0.2,
+      "colorTemperatureK": 4200,
+      "evidence": "Warm concrete pavement under the prop. It is what tints the tube crop to #7D7567 and is a second reason that crop was rejected as material evidence."
+    },
+    {
+      "role": "render-intent",
+      "type": "policy",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "contactShadow": "none-baked",
+      "evidence": "Exposure 1.0 with ACES filmic tone mapping, matching thaikit's headless harness so the authored albedo is judged under the transfer it will actually ship through. NO contact shadow and NO ambient occlusion are baked into base colour: the plate's hard ground shadow is the PLATE's lighting, and baking it would smear a permanent dark patch into the albedo. Ground shadow is the host scene's job -- the prop ships unlit geometry and the level bake supplies the lightmap."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot at base-center supports whole-object placement; the prop has no articulated parts"
+  ],
+  "destructionAnchors": [
+    "none: destructionGroups is empty on this asset and no fractureGroup is set"
+  ],
+  "risks": [
+    "The single plate cannot show the underside; anything below the rim is inference.",
+    "The tube material crop is 66% pavement (foregroundCoverage 0.343, backgroundNoise 84.87). Its warm #7D7567 was REJECTED as contaminated despite a 0.831 confidence -- confidence measures extraction stability, not whether the crop is on the right surface. Tube tone taken from the bright end of the foot-cap crop instead.",
+    "The Meshy proxy mislocated the brace ring by 0.19 m (0.310 against the plate's 0.500). It was correct on every other structural question it was asked -- diameter ratio, leg count, vertical legs, tube and cap sizes -- which is the argument for measuring the plate back against it rather than adopting either wholesale."
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Stainless Steel Noodle Shop Table",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-anisotropy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[6]",
+        "score": 2.761412737115,
+        "snippets": [
+          "... highlights (not round) that stay aligned with visible brush/groove marks as the view angle changes; Common on brushed steel/titanium knife finishes and gunsmith metal bases D\u1ea5u hi\u1ec7u nh\u1eadn di\u1ec7n: \u0110i\u1ec3m s\u00e1ng k\u00e9o d\u00e0i, c\u00f3 v\u1ec7t (kh\u00f4ng tr\u00f2n) lu\u00f4n ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-controlled-vocabulary-aat-facets",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[5]",
+        "score": 2.5410713068,
+        "snippets": [
+          "... kh\u00f4ng nh\u1ea5t qu\u00e1n. Recognition cues: Material/attribute terms should be drawn from a fixed enumerated list (e.g. 'brushed steel', 'anodized aluminum') rather than free-form phrasing that varies between descriptions of the same material D\u1ea5u ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  }
+}

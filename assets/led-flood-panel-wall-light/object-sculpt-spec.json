@@ -1,0 +1,2062 @@
+{
+  "targetName": "LED Flood Panel Wall Light",
+  "targetId": "led-flood-panel-wall-light",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "slab LED floodlight on a wall bracket: a wall plate, a short neck and a finned die-cast body with a recessed lens",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "rectangular-slab",
+        "stepped-neck"
+      ],
+      "structureKind": [
+        "wall-fitting",
+        "bilateral"
+      ],
+      "motionPotential": [
+        "aimed once on its bracket at installation; not a runtime mechanism"
+      ],
+      "materialFamilies": [
+        "dark-grey-painted-die-cast",
+        "led-lens"
+      ],
+      "notes": "The cheap slab LED flood bolted over a gate, a car park or a shophouse forecourt - the same family of fixture as the one clamped to a soi pole. Bilateral rather than radial, so unlike the bulkhead it is a swept slab and not a lathe."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 1,
+        "componentCount": 0,
+        "hierarchyDepth": 0,
+        "repetitionDensity": 0,
+        "materialLayerCount": 1,
+        "localDetailDensity": 2,
+        "occlusionRisk": 0,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 1,
+        "mesoComponents": 0,
+        "microFeatureGroups": 4,
+        "materialLayers": 1,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "ONE component, because the small class allows exactly one draw call. Wall plate, neck and body are one swept slab.",
+        "A tapered-sweep along the wall normal with radialSegments 4 and a 45 degree twist gives an axis-aligned rectangular section that CHANGES along the spine - which is exactly a wall plate stepping down to a neck and back out to a body. A lathe would be wrong here: this fitting is bilateral, not radial.",
+        "The lens is a vertex-colour band on the front of the same slab, because one material is the entire allowance.",
+        "The heatsink fins are not built: they are a few millimetres apart on a 0.3 m prop and would need either geometry this class cannot carry or a canvas it cannot carry either."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate. The medium class allows only TWO draw calls and TWO materials, so all sub-structure is carried as lathe profile detail, vertex-colour regions and localFeatures."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "slab-body",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "finned-heat-sink"
+          },
+          "description": "A slab head 0.21 x 0.175 m over z 0.095-0.245, its rear 70% carrying eight proud heat-sink fins.",
+          "realization": "unreported"
+        },
+        {
+          "id": "heatsink-fins",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "finned-heat-sink"
+          },
+          "description": "Eight 7.5 mm chunky ribs standing proud of the core, the identifying feature the asset notes name.",
+          "realization": "unreported"
+        },
+        {
+          "id": "stirrup-yoke",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "stirrup-yoke"
+          },
+          "description": "A flat 30 x 7 mm strap arching over the head from tilt bolt to tilt bolt, 0.30 m across -- the widest thing on the fixture and what the declared width measures.",
+          "realization": "unreported"
+        },
+        {
+          "id": "wall-plate",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "wall-plate"
+          },
+          "description": "A 0.190 x 0.230 m plate flat on the wall with four recessed chrome screws.",
+          "realization": "unreported"
+        },
+        {
+          "id": "recessed-lens",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "prismatic-diffuser"
+          },
+          "description": "A prismatic diffuser recessed 6 mm inside its bezel, carrying a 26-band canvas tile.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cable-gland",
+          "kind": "ridge",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "bezel-and-gland"
+          },
+          "description": "A brass-collared gland hanging under the front of the head, the brass being the only warm tone on the fixture.",
+          "realization": "unreported"
+        },
+        {
+          "id": "dark-cast",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "wall-plate"
+          },
+          "description": "A blue-grey charcoal casting measured at p50 76,89,98, authored lifted to luma 117 to clear the mask's luma key.",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+    "resolvedUnknowns": [
+      "The back of the wall plate is flat against the wall and is not visible in the plate; built closed. Confidence 0.9.",
+      "The U-bracket some variants carry is not built as a separate part - this plate shows a fixed wall plate and neck, and the class allows one component either way. Confidence 0.8.",
+      "The heatsink fin count is not resolvable and is not built. Confidence 0.85."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 6,
+      "materialLayers": 2,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox against 0.30 x 0.36 x 0.28 m projecting along +Z from z=0",
+      "the neck step visible in the 90-degree silhouette",
+      "lens reads bright against the body",
+      "turntable hole gate at all four azimuths, especially the back-lit 180"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not add a second component or a second material - the class allows one of each.",
+      "Do not sit the slab straight on the wall; the standoff neck is the fitting.",
+      "Do not push the housing to a neutral dark grey - at this luma a neutral reads as background to the mask.",
+      "Do not make the lens emissive.",
+      "Do not use a lathe: this fitting is bilateral, not radial."
+    ],
+    "depthRationale": "TWO components -- the merged fixture and the lens -- with six micro-feature groups inside the merge: wall plate, rear boss, stirrup yoke, finned heat sink, bezel and cable gland. They are separate authored solids sharing one submission through mergeGeos, separated by vertex colour rather than by material."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "flood"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be about 0.30 x 0.36 x 0.28 m against the declaration, projecting along +Z from a back-center pivot at the wall face."
+    },
+    {
+      "id": "fixture-assemblies",
+      "name": "Six real assemblies, not a slab",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.88,
+      "mustPass": true,
+      "componentRefs": [
+        "fixture"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Wall plate, rear boss, stirrup yoke, finned heat sink, bezel frame and cable gland must all be present as real geometry. A rounded slab with one fin beside it does NOT satisfy this -- that is what the previous build shipped, and it read as a featureless grey blob rather than a floodlight."
+    },
+    {
+      "id": "lens-read",
+      "name": "Lens reads against the housing",
+      "tier": "critical",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "lens"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The lens must read as a pale prismatic diffuser recessed inside a bezel frame, distinct from the casting. A black opening fails: the tile helper takes 0..1 RGB triples and a hex int silently ships an unpainted canvas."
+    },
+    {
+      "id": "dark-prop-hole-gate",
+      "name": "The darkest prop in the set clears the hole gate",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "fixture"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "No enclosed background may come from the CASTING. The turntable gate runs with --allow-holes because the stirrup yoke encloses air by design -- verified per azimuth on the alpha-keyed crops -- but any hole on a solid face means the casting has fallen into the mask's 55.5-60.5 luma band and must be lifted."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "dark die-cast 91-101 / lens 134 in measured plate luma, on one material.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "fixture",
+      "lens"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as one named part - which is all a one-draw-call prop can be. Not articulated and not breakable."
+  },
+  "assumptions": [
+    "The back of the wall plate is closed and flat; it is against a wall and not visible in the plate.",
+    "The heatsink fins are NOT built: a few millimetres apart on a 0.3 m prop, needing geometry or a canvas the small class cannot carry.",
+    "No separate U-bracket is built - the plate shows a fixed wall plate and neck, and the class allows one component either way.",
+    "The lens is authored opaque and NOT emissive: the factory ships no lights, and an emissive lens would double-count against the level's own lighting.",
+    "The housing is authored above its measured luma AND kept off neutral: this is the darkest prop in the lighting set and the closest to the backdrop the hole gate reads against."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "back-center: the origin sits at the centre of the flat wall plate, on the wall plane, so the fitting mounts flush and projects along +Z.",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 0.3,
+      "height": 0.36,
+      "depth": 0.28,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -0.15,
+      "xMax": 0.15,
+      "yMin": -0.18,
+      "yMax": 0.18,
+      "zMin": 0.0,
+      "zMax": 0.28
+    },
+    "derivation": "xMin/xMax and yMin/yMax are the body slab's 0.300 x 0.361 m face, the declared width and height; zMax 0.280 is the lens face and zMin 0 the wall plate. The 45 degree twist means the authored rx 0.212 and rz 0.255 give half-extents of 0.150 and 0.180.",
+    "symmetry": "bilateral about both the XZ and YZ planes",
+    "notes": "Bilateral, not radial - which is why this fitting is a swept slab where the bulkhead beside it is a lathe."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "fixture",
+      "name": "Wall plate, stirrup yoke, finned heat sink, bezel and cable gland",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An ASSEMBLED SOLID merged into one mesh. Six real assemblies -- wall plate, four-plate rear boss, stirrup yoke, finned heat sink, bezel frame and cable gland -- share one material through per-part vertex colours, so the whole fixture is ONE draw call and the second one the class allows is spent on the lens instead.",
+      "geometryDescriptor": {
+        "topologyIntent": "Authored in metres in the shipped frame: origin back-center on the wall plane, +Z out of the wall, +Y up. Boxes for the plate, boss, core, bezel bars and fins; cylinders for the screws, tilt bolts and gland; the yoke is one flat strap swept along a ten-station polyline.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "flood-shell"
+        }
+      },
+      "material": "flood-shell",
+      "materialLayers": [
+        "flood-shell"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "wall-plate",
+          "description": "A 0.190 x 0.230 x 0.012 m plate flat on the wall at z 0, with four recessed chrome screws at +-0.072, +-0.088."
+        },
+        {
+          "id": "rear-boss",
+          "description": "Four parallel 10 mm plates standing the head off the wall plate over z 0.012-0.092, which is the finned mounting boss the plate shows between plate and head."
+        },
+        {
+          "id": "stirrup-yoke",
+          "description": "One flat 30 x 7 mm strap from the tilt bolt on the head's left side, up and over the crown at y 0.190, and back down to the right. It stands 15 mm off the head on each side -- the asset notes size the head at 0.25 m and the envelope at 0.30, so the stand-off IS the declaration -- and the two chrome tilt bolts are 30 mm long to bridge it. THE YOKE ENCLOSES AIR, which is why the turntable gate runs with --allow-holes."
+        },
+        {
+          "id": "finned-heat-sink",
+          "description": "Eight 7.5 mm fins standing proud of a solid core over the rear 70% of the body, z 0.130-0.238. The plate's comb is ~13 slots; the asset notes ask for chunky ribs instead because fine repeated slots are thin geometry the reconstruction loses. They stand proud of the core rather than replacing it -- wider than the core, the head reads as nothing but comb from the side."
+        },
+        {
+          "id": "bezel-and-gland",
+          "description": "A 0.250 x 0.205 m bezel frame of four bars at z 0.245-0.280 with four chrome corner screws, and the cable gland under the front of the head as a brass collar, a grey body and a brass tail."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Colour is carried per PART as a vertex hex through the merge: casting #6b7780, fin flanks and bezel #5a656d, chrome #b9bec2, brass #b08a3c.",
+      "colorMaterialRecipe": {
+        "materialRef": "flood-shell",
+        "recipe": "One blue-grey casting carrying its chrome fasteners and brass gland as vertex colours.",
+        "dominantAlbedo": "rgba(107, 119, 128, 1)",
+        "secondaryAlbedo": "rgba(90, 101, 109, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/flood-shell.png",
+        "authoredAlbedo": "#6b7780"
+      }
+    },
+    {
+      "id": "lens",
+      "name": "Diffuser lens over the LED array",
+      "level": "meso",
+      "role": "detail",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "plane-card",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A separate component ONLY so the diffuser tile has somewhere to live: a canvas tile binds per MATERIAL, and on the shared housing material the prismatic grid would print across the casting too. It is the second and last draw call the class allows.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.196 x 0.161 m pane set 6 mm behind the bezel's front face -- recessed rather than flush, because two surfaces in the same plane facing the same way z-fight and a real lens sits inside its frame.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "flood-lens"
+        }
+      },
+      "material": "flood-lens",
+      "materialLayers": [
+        "flood-lens"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "prismatic-diffuser",
+          "description": "The lens carries a 26-band prismatic tile as a post-construction canvas texture, which is what the plate's textured diffuser reads as at prop distance."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "The tile helper takes 0..1 RGB triples; hex ints build an invalid fillStyle and the lens ships pure black.",
+      "colorMaterialRecipe": {
+        "materialRef": "flood-lens",
+        "recipe": "A pale prismatic diffuser, carrying its band pattern as a post-construction canvas tile.",
+        "dominantAlbedo": "rgba(228, 230, 226, 1)",
+        "secondaryAlbedo": "rgba(201, 207, 198, 1)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/flood-lens.png",
+        "authoredAlbedo": "#e4e6e2"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "flood-shell",
+      "name": "Flood shell: dark die-cast with a bright lens",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#6b7780",
+      "color": "#6b7780",
+      "albedo": {
+        "dominant": "#6b7780",
+        "secondary": [
+          "#5a656d",
+          "#b9bec2",
+          "#b08a3c"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#6b7780",
+          "#5a656d",
+          "#b9bec2",
+          "#b08a3c"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Subject mask of the plate (background is a pale 225 wall, so luma < 170 isolates the fixture): p25 51,58,68 / p50 76,89,98 / p75 89,104,111 / p95 127,140,149. The casting is a BLUE-GREY charcoal at luma 87, not neutral and not black.",
+          "AUTHORED LIGHTER THAN MEASURED, at luma 117 against the plate's 87. gatecrop keys the backdrop to alpha on LUMA ALONE at +-2.5 around 58, so a surface rendering in the 55.5-60.5 band is erased by the mask and an enclosed one reads to the turntable gate as a hole punched through the model -- and the plate's own p25 is 57. Verified per azimuth with scratch/_lights/blob.mjs.",
+          "Chrome #b9bec2 on the screws and tilt bolts and brass #b08a3c on the gland are vertex colours on this same material, so three substances cost one submission."
+        ]
+      },
+      "roughness": {
+        "base": 0.62,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.18,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "lensBand",
+          "description": "The lens as a vertex-colour band over the front 0.03 m of the slab (local z 0.252-0.285), authored at #C9CDCE. The generator clones a painted component's material and forces its colour to white, so vertexPaint.baseColor IS the albedo and this is a final colour.",
+          "measuredFrom": "probe band 4"
+        },
+        {
+          "id": "castTone",
+          "description": "The housing's own tone, carried by the authored albedo rather than a synthesised map."
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.18 is one compromise across a powder-coated casting, chrome fasteners and a brass gland, closest to the casting because it carries the silhouette."
+    },
+    {
+      "id": "flood-lens",
+      "name": "Diffuser lens",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#e4e6e2",
+      "color": "#e4e6e2",
+      "albedo": {
+        "dominant": "#e4e6e2",
+        "secondary": [
+          "#c9cfc6"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#e4e6e2",
+          "#c9cfc6"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's lens is the brightest region of the fixture; the subject-mask p95 is 127,140,149 over the casting while the lens reads far above it.",
+          "Textureless is NOT declared on this material: it is the one surface whose pattern is identity-defining at prop distance, and the tile is bound AFTER construction so no procedural set is synthesised."
+        ]
+      },
+      "roughness": {
+        "base": 0.22,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "lensBand",
+          "description": "The lens as a vertex-colour band over the front 0.03 m of the slab (local z 0.252-0.285), authored at #C9CDCE. The generator clones a painted component's material and forces its colour to white, so vertexPaint.baseColor IS the albedo and this is a final colour.",
+          "measuredFrom": "probe band 4"
+        },
+        {
+          "id": "castTone",
+          "description": "The housing's own tone, carried by the authored albedo rather than a synthesised map."
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "The only patterned surface on the fixture, which is the whole reason it is a second material."
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T15:58:20.801313+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:20.899264+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.001789+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.087598+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.197339+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.293136+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.387264+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.487554+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T15:58:20.801313+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:20.899264+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.001789+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.087598+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.197339+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.293136+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.387264+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T15:58:21.487554+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 0.300 x 0.361 x 0.280 m against the declared 0.30 x 0.36 x 0.28 -- exact on width and depth, 0.3% over on height. The 0.30 width is carried by the stirrup yoke standing 15 mm off each side of a 0.25 m head, which is what the asset notes describe. Depth is the declaration rather than the proxy: axprof reads the proxy's axis of smallest extent at 1.377 against 1.896 and 1.654, which would only be the projection if the fixture were a flat plate, and it is a deep head on a yoke."
+        },
+        {
+          "id": "fixture-assemblies",
+          "score": 0.94,
+          "threshold": 0.88,
+          "notes": "All six assemblies are real geometry: wall plate with four recessed screws, the four-plate rear boss, the stirrup yoke, eight proud heat-sink fins, the bezel frame with corner screws, and the brass-collared cable gland. The previous build had NONE of them -- a rounded white slab with a single fin beside it. Two things the rebuild had to correct against the plate: the fins were 22 mm wider than the core on each side, so the head read as nothing but comb from the side where the plate shows a solid housing; and the yoke raked back to z 0.072, presenting its full 30 mm width to a side view as a flap rather than a handle."
+        },
+        {
+          "id": "lens-read",
+          "score": 0.92,
+          "threshold": 0.8,
+          "notes": "A pale prismatic diffuser recessed 6 mm inside the bezel, carrying a 26-band canvas tile bound after material construction. Recessed rather than flush because two co-facing surfaces in one plane z-fight. It shipped pure BLACK first: the tile helper takes 0..1 RGB triples and the hex ints I passed build an invalid fillStyle, so the canvas was never painted. Not the plate's LED-chip grid -- a band tile is a stand-in for the diode array at prop distance."
+        },
+        {
+          "id": "dark-prop-hole-gate",
+          "score": 0.88,
+          "threshold": 0.75,
+          "notes": "No enclosed background comes from the casting. The gate runs with --allow-holes and the reason is measured, not assumed: at azimuth 0 the enclosed region is a single 476 x 205 px blob at 46% fill sitting inside the stirrup's arch, confirmed by eye on the alpha-keyed crop -- a handle enclosing air, exactly the case the flag exists for. Azimuth 270 measures 0.009 with the yoke edge-on. The casting is authored at luma 117 against the plate's measured 87 precisely so no SOLID face falls in the mask's 55.5-60.5 band; that lift is a real colour departure and is why the material layer is 0.90."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 0.3 x 0.361 x 0.28 m. Cost: 712 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 4, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.575, 0.897, 0.872], interior hole fractions [0.1971, 0.047, 0.1732, 0.009]).  Two components: the whole fixture merged onto one material, and the lens alone so its diffuser tile cannot print across the casting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/led-flood-panel-wall-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "The MEDIUM class (raised one step from small across the lighting kit) allows TWO draw calls, TWO materials and FOUR unique geometries. The build measures 712 triangles at 2 draw calls, 2 materials and 2 geometries -- barely a third of the triangle ceiling, because the fixture is boxes and cylinders rather than curves. The second draw call is spent entirely on the lens, so its prismatic tile does not print across the casting."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left; the body's upper edge catches the strongest highlight and the lens is the brightest region.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides lifted rather than black - the load-bearing one on this prop, because it is the darkest in the set.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim in the plate.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A light grey backdrop at luma ~226; foreground coverage is 43.4%. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Wall face centre",
+        "componentRef": "flood",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "rationale": "The ONLY pivot, at the centre of the wall plate, with its axis along the wall normal. The head is aimed once at installation, which is a siting choice rather than a runtime mechanism, so it gets no axis of its own."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto a wall flood; it is bolted to a wall and its lens is sealed."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

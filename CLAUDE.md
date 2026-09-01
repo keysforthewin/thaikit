@@ -700,9 +700,28 @@ placed geometry. Export writes a second, self-contained GLB.
   - `scene.environment` also OVERRIDES per-material `envMapIntensity` with
     `scene.environmentIntensity` (`WebGLRenderer.js`), so the values the asset factories author stay
     dead. glTF cannot carry the property anyway and `GLTFLoader` gives every material 1.0.
-  - The sky is LDR, so the IBL is a soft ambient shell with no sun glint; `ibl.intensity` is the
-    only lever. And the editor over-lights static geometry relative to the ship, because it has no
-    lightmap so the diffuse suppression never fires there.
+  - The sky is LDR, so the IBL is a soft ambient shell with no sun glint. And the editor
+    over-lights static geometry relative to the ship, because it has no lightmap so the diffuse
+    suppression never fires there.
+  - **`sky.base.intensity` is how bright the sky IS, so it must light the level and not only the
+    backdrop.** It multiplies the dome's pixels inside `buildSky`, and the prefilter deliberately
+    forces it to 1 so that dragging it costs no re-prefilter -- which for a while meant it reached
+    nothing but the picture behind the geometry, and turning the sky up left every object in the
+    level exactly as dark. `environmentIntensity()` in `packages/level-runtime/src/environment.js`
+    is now the ONE place the applied ambient is decided (`ibl.intensity * sky.base.intensity`, the
+    sky factor only when the probe was built from a base texture -- with no picture the source is
+    the gradient dome, whose intensity is already in the prefiltered pixels), and the editor's
+    `EnvironmentProbe` and `loadLevel` both go through it. It rides on
+    `scene.environmentIntensity`, so it is free: measured live, sky intensity 0.2/1/2.5 moved the
+    geometry's mean luma 9.7/40.7/80.5 with the texture uuid unchanged.
+  - **`environment.hemisphere.*` is the NO-SKY FALLBACK RAMP and nothing else.** With a sky picture
+    up and IBL on, the viewport retires the HemisphereLight, the probe takes the sky branch and
+    `loadLevel` retires it too -- so all three fields are inert, and `PropertiesPanel` hides them
+    in that configuration rather than offering dials that cannot change the level. The bake used to
+    be the one exception, multiplying `--env-strength` by `hemisphere.intensity`: a hidden second
+    gain on every lightmap, driven by a control the editor could not preview. `--env-strength` is
+    `sky.base.intensity` alone now. `--sky` / `--ground` still carry the ramp for the no-picture
+    case, which is the only case it means anything.
 - **`manifest.ibl` is null by default, and null means off.** A level baked before image lighting
   existed parses unchanged and renders identically; only a re-bake opts one in. Same shape as
   `lightmap.range` -- additive with a default, so no schema-version bump.
@@ -965,6 +984,28 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
   sleeping soi dog, twice), and `--fal-arg enable_safety_checker=false` is echoed back as `true` —
   the endpoint forces it. There is then no proxy and no band table: build from the plate alone,
   say so in `meshyNote` with the confidence, and keep the refused log in `scratch/<id>/`.
+- **A collider layer of thin separated legs falls back to ONE box over the whole footprint.**
+  `coverWithRects` in `scripts/lib/colliders.mjs` takes no rectangle smaller than **0.15 m** in
+  both axes, and when it takes none it falls back to the mask's bounding box. For four 0.10 m
+  bamboo posts at the corners of a 4 x 4 m canopy bay that bbox IS THE WHOLE BAY: the compound
+  shipped a solid 4 x 4 x 1.84 m block under the roof, and `promote-model.mjs` refused it with
+  "20% of the footprint stands more than the 0.30 m step height above the real surface" -- a player
+  standing on thin air at waist height inside a shelter whose whole point is to be walked under.
+  The fallback now splits into **connected components**, but only when the bbox is under 35% full
+  AND at least a square metre. Both conditions are measured, not chosen: splitting unconditionally
+  dropped the **soi dog from 0.973 coverage to 0.718** and the futsal mast from 0.974 to 0.889,
+  because for four legs under a SOLID BODY the bbox is the body and boxing the legs separately
+  leaves the space between them uncovered. Re-derived across all 122 existing compounds, the gated
+  version changes part geometry on four props (the bamboo bay, the stall cart, the songthaew, the
+  tuk-tuk) and coverage on none. **Re-derive the whole kit into a dry run and diff it before
+  touching that file**, and diff the PART GEOMETRY, not the part count: the bamboo bay's block and
+  its two walls both scored coverage 0.9998, and only `volumeRatio` (9.95 against 4.52) and the
+  parts themselves told them apart.
+- **`sheet()` writes its own colour attribute when given `hexUnder`, and `tintGeo` erases it.**
+  A tarp that is blue on top and orange underneath is two tones millimetres apart in y, which no
+  component axis tint can separate and no second sheet can afford. `sheet` paints the top grid, the
+  under grid and the rim itself; the body template must then NOT tint the merge, or both tones
+  become one hex -- which shipped the tarpaulin bay as a white sail.
 - **A baked `TextureLoader` graphic must be guarded with `typeof document === 'undefined'`.**
   `check-coplanar.mjs`, `derive-colliders.mjs` and the runtime probe evaluate the bundle under
   plain Node, where `ImageLoader` throws; unguarded, the prop passes the browser render and then

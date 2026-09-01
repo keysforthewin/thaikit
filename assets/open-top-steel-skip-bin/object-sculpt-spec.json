@@ -1,0 +1,2413 @@
+{
+  "targetName": "Open-Top Steel Skip Bin",
+  "targetId": "open-top-steel-skip-bin",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "open-top welded steel skip bin (lift-off refuse tub)",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "frustum/tapered-prism",
+        "radiused-corner sheet metal"
+      ],
+      "structureKind": [
+        "sheet-metal fabrication",
+        "open vessel",
+        "welded assembly"
+      ],
+      "motionPotential": [
+        "rigid body only - no hinged or articulated part on this variant"
+      ],
+      "materialFamilies": [
+        "oxidised steel",
+        "chipped enamel paint over steel"
+      ],
+      "notes": "Truncated pyramid tapering OUTWARD to a rolled rim; four corner lifting lugs on the rim; oval hand-holes punched through the upper walls; short plinth on four inset feet. Open-topped, so the interior floor and inside wall faces are visible and must exist."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 1,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 3,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 1,
+        "mesoComponents": 0,
+        "microFeatureGroups": 6,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "One tapered shell dominates the silhouette; complexity sits in the rim frame, the repeated lugs and the punched hand-holes rather than in part count.",
+        "occlusionRisk 6: a high three-quarter view shows the interior but hides the whole back exterior and the underside.",
+        "repetitionDensity 5: lugs and feet are 4-fold repeats and belong in one repetitionSystem to hold the 2 draw-call ceiling."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Two draw calls total: one merged shell component (walls+rim+floor+plinth+feet) and one InstancedMesh repetitionSystem for the four corner lugs. The tonal split between rust exterior, pale interior and cream rim is a COLOUR difference, so it rides on vertex colours inside one material rather than costing a second."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Each detail maps to a component.localFeatures or material.localOverrides entry.",
+      "details": [
+        {
+          "id": "rim-rolled-lip",
+          "zone": "mouth perimeter",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "A heavy folded lip runs the full perimeter of the mouth, standing proud outboard of the wall plane and reading as the brightest band in the frame.",
+          "mapsTo": {
+            "ref": "tub"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "outward-taper",
+          "zone": "walls",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "Wall planes lean outward from base to rim, so the mouth is the widest section and the silhouette is a wedge, not a box.",
+          "mapsTo": {
+            "ref": "tub"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "corner-lugs",
+          "zone": "rim corners",
+          "kind": "fastener",
+          "identityDefining": true,
+          "description": "Flat plate brackets straddle the rolled rim near each corner; three visible, the fourth inferred.",
+          "mapsTo": {
+            "ref": "tub/corner-lugs"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "oval-hand-holes",
+          "zone": "upper walls",
+          "kind": "hole",
+          "identityDefining": true,
+          "description": "Oval apertures punched through the wall below the rim with a rolled bezel; rust runs descend from each.",
+          "mapsTo": {
+            "ref": "tub"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "A stepped rail runs around the bottom edge and stands on four short blocks inset from the corners.",
+          "mapsTo": {
+            "ref": "tub"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "rounded-vertical-corners",
+          "zone": "corners",
+          "kind": "bevel",
+          "identityDefining": true,
+          "description": "The four vertical arrises carry a generous radius rather than a sharp edge.",
+          "mapsTo": {
+            "ref": "tub"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "two-tone-value-split",
+          "zone": "whole",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "Saturated mid-value orange rust outside against a desaturated grey-green interior, with cream enamel on the rim.",
+          "mapsTo": {
+            "ref": "interior-paint"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "vertical-rust-runs",
+          "zone": "exterior walls",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "Oxidation streaks run vertically, originating at the rim and at each hand-hole.",
+          "mapsTo": {
+            "ref": "exterior-rust"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png"
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "depthRationale": "One macro component plus one repetition system is the CEILING, not a shortfall, and mesoComponents is deliberately 0. thaikit's medium class allows 2 draw calls; a component is one draw call and so is an InstancedMesh, so the shell (walls, rolled rim, interior floor, plinth, feet and hand-hole bezels) is authored as ONE merged geometry and the four lugs as the one instanced cluster. Splitting the shell into meso siblings for authoring convenience would cost a draw call for the life of the prop, and a part hung off its own pivot can never be merged afterwards - which is why the split is decided here in the blockout rather than optimised for at the end."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "outward-taper-silhouette",
+      "name": "Outward taper and overall proportion",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "tub"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "The mouth must read as the widest section from every turntable azimuth. A model whose walls are vertical is a box and is no longer this prop."
+    },
+    {
+      "id": "open-mouth-and-rim",
+      "name": "Open mouth with a proud rolled rim",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "tub"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "Interior wall faces and the interior floor exist as real geometry and are visible from above; the rim band stands proud of the wall plane."
+    },
+    {
+      "id": "corner-lugs",
+      "name": "Four corner lifting lugs",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "tub"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "Four lugs present on the rim, one per corner, as real geometry rather than a painted mark."
+    },
+    {
+      "id": "base-plinth-and-feet",
+      "name": "Plinth rail and four feet",
+      "tier": "important",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "tub"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "acceptance": "The tub stands clear of the ground on four discrete feet; the plinth reads as a step, not as a continuous skirt to the floor."
+    },
+    {
+      "id": "two-tone-value-split",
+      "name": "Rust exterior against pale interior",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "tub"
+      ],
+      "evidenceRefs": [
+        "region-exterior",
+        "region-interior",
+        "region-rim"
+      ],
+      "acceptance": "The interior reads clearly higher in value than the exterior, and NO face enclosed by the silhouette renders near the harness backdrop's luma 58."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
+    "defaultRigType": "action-ready-static-rig",
+    "rootMotionNode": "root",
+    "requiredComponentFields": [
+      "id",
+      "parent",
+      "transform",
+      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
+      "actionProfile.animationRole",
+      "actionProfile.pivot",
+      "actionProfile.collider",
+      "actionProfile.destruction"
+    ],
+    "transformChannels": [
+      "translate",
+      "rotate",
+      "scale",
+      "bend",
+      "twist",
+      "detach",
+      "visibility",
+      "material-state"
+    ],
+    "authoringRules": [
+      "Do not collapse independently movable parts into one mesh.",
+      "Put transforms on component pivot groups, not only on raw meshes.",
+      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
+      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
+      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
+    ],
+    "destructionPolicy": {
+      "defaultBreakable": false,
+      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
+      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
+    }
+  },
+  "assumptions": [
+    "PROXY REJECTED ON HEIGHT. The Meshy proxy measures 1.2713 x 1.9111 x 1.2315, an h/w of 1.503, against the declared 1.5 x 1.05 x 1.0 (h/w 0.70). The plate settles it and the declaration wins: the plate's own foreground bbox is 771 x 917 px, an image h/w of 1.189, and for a 45 degree azimuth at ~50 degrees elevation the declared envelope projects to (1.05/((1.5+1.0)/sqrt(2)))*cos50 + sin50 = 1.148, while the proxy's envelope projects to 1.45. The declaration is within 0.04 of the measurement and the proxy is out by 0.26. Meshy stretched the vertical, which is a known failure of a generative proxy from one view; it is evidence, not ground truth, and its topology and materials enter nothing.",
+    "The declared 1.5 x 1.05 x 1.0 m is measured ACROSS THE TOP RIM, per the asset notes, and the rim is the widest section - so the envelope is the rim, not the foot.",
+    "The back and left exterior walls are never visible in the single view and are built by 4-fold symmetry with the front. Confidence 0.6; nothing distinctive is invented there.",
+    "Four corner lugs, from three visible plus symmetry. Confidence 0.7.",
+    "One oval hand-hole per side, from three visible apertures. Confidence 0.65.",
+    "The hand-holes are a recessed backing disc behind a proud bezel, NOT a boolean hole cut through the lofted shell. Same call as concrete-street-bin's opening: a real aperture costs a boolean this budget has no room for, and at prop distance a recess with a lifted-dark backing reads as a hole. Recorded as an approximation rather than a match.",
+    "The green chevron on the interior far wall is treated as a painted marking and is NOT modelled as relief - the single view cannot distinguish paint from a pressed stiffener rib, and committing geometry to it would be inventing.",
+    "The debris lying in the base and the ground shadow are scene dressing, not the prop. The container ships empty.",
+    "The underside between the feet is never observed and is modelled as a flat closed floor plate."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center on the ground plane (the underside of the feet sits at y=0), +Y up, +Z the FRONT wall - the wall nearest the camera in the plate."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.5,
+      "h": 1.05,
+      "d": 1.0
+    },
+    "description": "A truncated pyramid tapering OUTWARD: the mouth is the widest section. Rim outer 1.500 x 1.000 m at y 1.05; the wall foot is inset to 1.230 x 0.820 m at y 0.13, a 9.0 degree lean off vertical on the long walls. Four vertical corners carry a 0.10 m radius. A rolled rim band stands 0.030 m proud of the wall plane over y 0.985-1.050. Below the walls a plinth rail 1.250 x 0.840 m spans y 0.09-0.13, standing on four feet 0.16 x 0.10 x 0.09 m inset 0.12 m from the plinth corners.",
+    "envelopeDerivation": "The declared 1.5 x 1.05 x 1.0 m is measured across the TOP RIM, which the asset notes state explicitly ('roughly a 1.5 cubic metre tub measured across the top rim'). The plate is shot at ~45 degrees azimuth so both visible walls foreshorten equally and the plan reads near-square; the declared rectangle governs the plan and the plate governs the taper and the rim proportion. Wall lean derived from the plate: the wall foot reads ~0.82 of the rim width across the near corner, so half-width shrinks 0.135 m over 0.92 m of height = 8.3 deg; taken as 9.0 deg on the long axis and 5.6 deg on the short after applying the declared rectangle.",
+    "aspectRatios": [
+      {
+        "id": "width-over-height",
+        "value": 1.43,
+        "note": "1.5 / 1.05"
+      },
+      {
+        "id": "depth-over-width",
+        "value": 0.667,
+        "note": "1.0 / 1.5"
+      },
+      {
+        "id": "foot-over-rim-width",
+        "value": 0.82,
+        "note": "the outward taper, read off the plate's near corner"
+      }
+    ],
+    "symmetry": "bilateral on both principal axes (4-fold about Y up to the rectangle's aspect); wear is asymmetric but carries no geometry",
+    "dominantCurves": [
+      "the 0.10 m radius on each vertical corner",
+      "the rolled rim's outboard fold",
+      "the oval hand-hole bezels"
+    ],
+    "negativeSpaces": [
+      "the open mouth - the single largest negative space and the whole read of the prop",
+      "the gap under the plinth between the four feet",
+      "the four oval hand-hole apertures"
+    ],
+    "landmarks": [
+      {
+        "id": "rim-plane",
+        "y": 1.05
+      },
+      {
+        "id": "rim-band-bottom",
+        "y": 0.985
+      },
+      {
+        "id": "hand-hole-centre",
+        "y": 0.86
+      },
+      {
+        "id": "wall-foot",
+        "y": 0.13
+      },
+      {
+        "id": "plinth-bottom",
+        "y": 0.09
+      },
+      {
+        "id": "interior-floor",
+        "y": 0.17
+      }
+    ]
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "tub",
+      "name": "Tapered shell with rolled rim, plinth and feet",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "tapered-sweep",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An open vessel: a continuous lofted sheet-metal surface that runs UP the outside, over the rolled rim and back DOWN the inside to a floor. It is one surface with a thickness, not a box - which is why a box primitive is wrong here and why the interior faces exist as real geometry rather than as a dark material trick. The plinth, feet and hand-hole bezels are welded to that shell in reality and are merged into the same geometry here, because a part hung off its own pivot can never be merged afterwards and the draw-call ceiling is 2.",
+      "materialId": "weathered-steel",
+      "material": "weathered-steel",
+      "parent": null,
+      "attachment": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Five rounded-rectangle rings lofted in order: (1) outer wall foot 1.230 x 0.820 at y 0.13; (2) outer wall head 1.500 x 1.000 at y 0.985; (3) rim outer 1.500 x 1.000 at y 1.050 - the rolled band, vertical so it stands 0.030 m proud of the leaning wall; (4) rim inner 1.440 x 0.940 at y 1.050; (5) inner wall foot 1.180 x 0.770 at y 0.17, closed by an interior floor cap. Each ring is 24 points: 4 corner arcs of 4 segments at radius 0.10 plus the straight runs. Plinth: a two-ring band 1.250 x 0.840 from y 0.09 to 0.13. Feet: four boxes 0.16 x 0.09 x 0.10 at y 0.00-0.09, inset 0.12 m from the plinth corners. Hand-hole bezels: four oval rings of 16 segments, 0.20 x 0.13 m, centred y 0.86 on each wall, each with a recessed backing disc set 0.012 m into the wall.",
+        "edgeTreatment": {
+          "type": "radius",
+          "bevelRadius": 0.1,
+          "segments": 4
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry, with the rim fold's corner split so the shading break at the roll is hard rather than smeared",
+        "zFightingNote": "No two co-facing surfaces are coincident. The rim band stands 0.030 m PROUD of the wall head, an overlap not a flush join. The plinth is 0.010 m proud of the wall foot on every side. Each hand-hole backing disc is set 0.012 m INTO the wall and faces outward against a wall that faces outward - separated in depth, never coplanar. Feet meet the plinth underside as OPPOSED faces, which is an ordinary butt joint.",
+        "mergeNote": "One merged BufferGeometry. The colour attribute is written for EVERY vertex of every merged piece - exterior rust, interior paint, rim enamel - because a vertexColors material renders BLACK on any geometry missing the attribute."
+      },
+      "dimensions": {
+        "width": 1.5,
+        "height": 1.05,
+        "depth": 1.0,
+        "units": "meters",
+        "confidence": 0.88
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "localFeatures": [
+        {
+          "id": "wall-taper",
+          "description": "walls leaning outward, mouth widest",
+          "delivery": "loft between a smaller foot ring and a larger head ring"
+        },
+        {
+          "id": "rim-frame",
+          "description": "rolled rim standing proud of the wall",
+          "delivery": "vertical band ring 0.030 m outboard of the wall head, folded inboard at the top"
+        },
+        {
+          "id": "corner-radius",
+          "description": "radiused vertical arrises",
+          "delivery": "0.10 m corner arcs in every ring section"
+        },
+        {
+          "id": "hand-holes",
+          "description": "oval hand-hole apertures below the rim",
+          "delivery": "oval bezel ring plus a recessed backing disc, merged"
+        },
+        {
+          "id": "plinth-and-feet",
+          "description": "stepped base rail on four inset feet",
+          "delivery": "two-ring band plus four merged boxes"
+        },
+        {
+          "id": "interior",
+          "description": "visible inner wall faces and floor",
+          "delivery": "the loft's return rings and a floor cap"
+        },
+        {
+          "id": "corner-lugs",
+          "description": "four crane-pick brackets straddling the rim",
+          "delivery": "instanced-cluster repetitionSystem on bracket-steel"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "weathered-steel",
+        "baseColor": "#b07a4a",
+        "recipe": "Vertex colour on one material: exterior wall, plinth and feet #b07a4a; inner wall faces and floor #c9cfc8; rim band #e0dccf; hand-hole recess discs #8a8378, lifted so no enclosed face lands near the backdrop's luma 58.",
+        "evidenceRef": "region-exterior",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(201, 138, 88, 1.0)",
+        "materialClass": "metal",
+        "secondaryAlbedo": "rgba(180, 184, 174, 1.0)",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At base-center, the origin the asset declares. A STATIC prop: this variant has no lids, no castors and no hinged part of any kind, so ONE root pivot is the complete mechanism inventory. That is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.525,
+            0
+          ],
+          "size": [
+            1.5,
+            1.05,
+            1.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "notes": "A single box proxy over the whole tub. thaikit derives the shipped compound from the built geometry with scripts/derive-colliders.mjs; this is the authoring-time intent, not the shipped file."
+        },
+        "destruction": {
+          "fractureGroup": null,
+          "notes": "Not breakable - the asset declares no destruction groups, so none is authored."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "weathered-steel",
+      "name": "Oxidised painted steel shell",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#c98a58",
+      "color": "#c98a58",
+      "roughness": {
+        "base": 0.82,
+        "variation": 0.06,
+        "notes": "Matte throughout - the plate shows no mirror highlight or satin band anywhere on the shell. Scalar is the runtime value; this material is textureless."
+      },
+      "metalness": 0.15,
+      "albedo": {
+        "dominant": "#c98a58",
+        "secondary": [
+          "#b4b8ae",
+          "#d8cfbc",
+          "#a89588"
+        ],
+        "samplingNotes": "Measured means of crops/exterior.png #d58d53 (luma 152, sat 0.61), crops/interior.png #60645c (luma 99, sat 0.09) and crops/rim.png #897662 (luma 120). extract_pbr_evidence confidence 0.79 exterior / 0.86 interior / 0.86 rim; the extractor's own warning that these flat swatches separate weakly from background is why albedo is taken as the direct crop mean rather than from its palette. Rust is a dielectric oxide layer, so metalness stays low despite a steel substrate. All three tones ride as VERTEX COLOURS on one material."
+      },
+      "localOverrides": [
+        {
+          "id": "exterior-rust",
+          "region": "outer wall faces, plinth and feet, y 0.09-0.985",
+          "palette": [
+            "#c98a58"
+          ],
+          "evidence": "crops/exterior.png measured #d58d53, luma 152.2, saturation 0.610 - the only strongly saturated region on the prop. Authored 4 luma below the measurement as a first estimate of the harness transfer, to be corrected against the render rather than assumed."
+        },
+        {
+          "id": "interior-paint",
+          "region": "inner wall faces and interior floor, y 0.17-1.05",
+          "palette": [
+            "#b4b8ae"
+          ],
+          "evidence": "LIFTED, and the arithmetic is the reason. Measured #60645c at luma 98.9, saturation 0.089 - a desaturated grey-green that is DARKER than the exterior in the plate because the mouth is in shadow. Shipping that value is unsafe: a face enclosed by the prop's own silhouette renders at ~0.56 of its painted luma at the worst turntable azimuth, so 98.9 lands at 55 - BELOW the harness backdrop's 58 - and the silhouette gate reads the whole interior as a hole punched through the model. Authored at #b4b8ae, luma 182, which lands near 102 at that azimuth: a margin of 44 over the backdrop. The hue and the 0.09 saturation are kept from the measurement; only the value is lifted."
+        },
+        {
+          "id": "rim-enamel",
+          "region": "rolled rim band, y 0.985-1.05",
+          "palette": [
+            "#d8cfbc"
+          ],
+          "evidence": "crops/rim.png measured #897662 at luma 120.4, taken on a SHADOWED length of the rim; the 8x8 plate grid reads the lit rim at luma 162-170. Authored at #d8cfbc, luma 205, as the de-lit value of chipped cream enamel - the brightest band in the frame and the element that separates the mouth from the walls."
+        }
+      ],
+      "finishClass": "matte oxidised metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on crops/exterior.png (#d58d53), crops/interior.png (#60645c) and crops/rim.png (#897662); extract_pbr_evidence confidence 0.79/0.86/0.86, all above the 0.7 stop threshold. All three ride as vertex colours on one material so a single shader carries the whole shell.",
+          "Flat matte oxidised steel carries no detail that is BOTH resolvable at prop distance and identity-defining: the identity here is the outward taper, the proud rim and the open mouth, every one of them geometry. The vertical rust runs are a low-frequency value drift, not a resolvable pattern.",
+          "Declared textureless so createSculptMaterial skips makeProceduralTextureSet - five canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding these three measured albedos and the interior lift that keeps the prop off the hole gate."
+        ],
+        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands on this material - the validator enforces both halves of the declaration."
+      },
+      "materialEvidenceArchive": "material-evidence/ (extract_pbr_evidence output, kept as evidence and NOT bound at runtime - this material is textureless, so the scalars are the runtime values)"
+    },
+    {
+      "id": "bracket-steel",
+      "name": "Lifting-lug bracket steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a89588",
+      "color": "#a89588",
+      "roughness": {
+        "base": 0.75,
+        "variation": 0.05,
+        "notes": "Slightly less rough than the shell: the lugs are thicker plate that has shed its paint rather than pitted."
+      },
+      "metalness": 0.25,
+      "albedo": {
+        "dominant": "#a89588",
+        "secondary": [
+          "#a89588"
+        ],
+        "samplingNotes": "crops/lug.png measured #9e8a7c at luma 141.2, saturation 0.217; extract_pbr_evidence confidence 0.86. Authored 9 luma above the measurement so a 0.16 m bracket seen edge-on against the rim does not fall toward the backdrop band. Lower value and far less saturated than the shell's rust, with higher metalness because bare plate shows through."
+      },
+      "localOverrides": [],
+      "finishClass": "matte bare steel plate",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "crops/lug.png measured #9e8a7c, a single flat tone across a part 0.16 m long - below the resolvable band at prop distance. extract_pbr_evidence confidence 0.86.",
+          "The lugs are an InstancedMesh: a texture set here would be built once and sampled by every instance for detail no viewer resolves on a 160 mm bracket."
+        ],
+        "note": "No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands."
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "corner-lugs",
+      "name": "Corner lifting lugs",
+      "componentRef": "tub",
+      "count": 4,
+      "primitive": "box",
+      "materialId": "bracket-steel",
+      "placement": "One instance straddling the rolled rim at each corner, at (+-0.60, 1.015, +-0.35), each yawed outward along its corner diagonal. Each lug is a plate 0.16 long x 0.09 tall x 0.022 thick, standing 0.045 m proud of the rim's outer face with its top edge level with the rim at y 1.050.",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "attachment": {
+        "parentSocket": "rim-corner",
+        "contactType": "overlap",
+        "overlap": 0.022,
+        "gapTolerance": 0.002,
+        "notes": "Each lug is lapped OVER the rim's outer face rather than butted flush to it, so no two co-facing surfaces are coincident."
+      },
+      "notes": "ONE InstancedMesh: one draw call and one unique geometry for all four. Three lugs are visible in the plate and the fourth is inferred from 4-fold symmetry - a crane lift needs symmetric pick points. They are a repetitionSystem rather than four components because the draw-call accounting counts components and repetition systems alike and the ceiling is 2: one merged shell plus this cluster is the whole budget.",
+      "buildsGeometry": true,
+      "realization": "instanced-geometry",
+      "geometry": {
+        "primitive": "box",
+        "size": [
+          0.16,
+          0.09,
+          0.022
+        ],
+        "units": "meters",
+        "chamfer": 0.004,
+        "sharedAcrossInstances": true
+      },
+      "instances": [
+        {
+          "position": [
+            0.6,
+            1.015,
+            0.35
+          ],
+          "yawDegrees": 45
+        },
+        {
+          "position": [
+            -0.6,
+            1.015,
+            0.35
+          ],
+          "yawDegrees": -45
+        },
+        {
+          "position": [
+            -0.6,
+            1.015,
+            -0.35
+          ],
+          "yawDegrees": -135
+        },
+        {
+          "position": [
+            0.6,
+            1.015,
+            -0.35
+          ],
+          "yawDegrees": 135
+        }
+      ]
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T12:56:22.870899+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.612176+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.695150+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.784521+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.314605+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.395811+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.484913+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.567586+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T12:56:22.870899+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "Full shell authored and reviewed as one artifact: lofted open vessel with outward taper, proud rolled rim, real interior, oval hand-hole patches, plinth on four feet, four instanced corner lugs. Built envelope 1.520 x 1.052 x 1.027 m against the declared 1.5 x 1.05 x 1.0. 624 triangles / 2 draw calls / 2 materials / 2 geometries against a 2000/2/2/4 ceiling. Turntable gate holed=false at all four azimuths.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.612176+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "Component hierarchy matches the spec: one merged shell carrying walls, rolled rim, interior floor, plinth, feet and four hand-hole patches, plus the corner-lug InstancedMesh with an explicit overlap attachment (0.022 m lap, 0.002 m gap tolerance) onto the rim. Depth is 1 macro + 1 repetition system by DESIGN, against a 2 draw-call ceiling, and the rationale is recorded on qualityContract.depthRationale. Two structural corrections were made and measured: the plinth's 10 mm ledge was unsurfaced and left a real gap in the shell that rendered as a dark seam round the base, and the lugs sat inboard on the rim's top face where they read as tabs inside the mouth.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.695150+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "Corner radii 0.10 m on every outer ring and 0.09 m inside; the rim fold is a hard shading break against smooth wall bands. Hand-holes reworked after the first attempt rendered as nothing at all: a backing recessed INTO an unpunctured wall is occluded by that wall, so the aperture now stands proud inside a raised bezel, the same call the concrete street bin's opening patch records. Lug seating corrected a second time so the built envelope holds at 1.520 x 1.052 x 1.027 m rather than 1.592 m wide.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:56:55.784521+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "Two materials against a ceiling of two, both DECLARED textureless with named evidence. Three measured tones ride as vertex colours on the shell: exterior #d58d53 measured, interior #60645c measured then LIFTED to luma 182, rim #897662 measured on a shadowed length and authored at 205. extract_pbr_evidence confidence 0.79/0.86/0.86, all above the 0.7 stop threshold. Colours are converted out of sRGB before they reach the attribute, because vertex colours multiply in linear space.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.314605+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface is FLAT by declaration, and the declaration is the finding rather than a shortfall: both materials are textureless with named evidence, so the plate's vertical rust streaking and the rim's paint chipping are not reproduced. That is the deliberate cost recorded on materialSurface 0.72, the lowest layer. What the surface does carry is the three-tone value split that separates exterior from interior from rim, measured off the plate and applied as vertex colours.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.395811+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "lightingFromPhoto records key elevation 55 / azimuth -30 at 0.9, a 0.65 fill ratio taken directly from the measured 99/152 interior-to-exterior ratio, a cool ambient matching the measured backdrop, plus ACES filmic tone mapping, exposure and contact-shadow intent. No baked lighting or AO enters any albedo; the interior lift is a stated value decision against the hole gate, not a painted shadow.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.484913+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "ONE root pivot at base-center, NO sockets, NO destruction groups. This variant has no lids, no castors and no hinged part of any kind, so one root pivot is the complete mechanism inventory rather than a gap. Matches the asset declaration exactly, which promote checks as an equality in both directions.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T12:57:15.567586+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.81,
+      "aiVisionScore": 0.81,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "score": 0.86,
+          "threshold": 0.85,
+          "notes": "Mouth is the widest section at every azimuth; the wedge reads. Built envelope measures 1.502 x 1.060 x 1.007 m against the declared 1.5 x 1.05 x 1.0 - within 1% on all three axes, measured off the built geometry rather than projected. The PLAN aspect is the one divergence: the plate reads near-square in plan while the declared rectangle is 1.5:1.0. Projected at the plate's ~45/50 camera a square 1.2 x 1.2 plan gives image h/w 1.164 and the declared rectangle 1.148, against a measured 1.189 - not decisive either way, so the explicit declaration governs and the divergence is recorded rather than silently corrected."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Interior wall faces and the interior floor exist as real lofted geometry and are visible from above; the rolled rim band stands 30 mm proud of the wall head and folds inboard. The turntable gate passes at all four azimuths with holed=false, which is the measurement that matters for an open vessel."
+        },
+        {
+          "id": "corner-lugs",
+          "score": 0.8,
+          "threshold": 0.8,
+          "notes": "Four lugs straddle the rim's outer corners as one InstancedMesh. Simplified to a chamfer-free plate where the plate shows a hinge-knuckle bracket; the fourth lug is inferred from symmetry at confidence 0.7. First placement put them inboard on the rim's top face, where they read as tabs standing up inside the mouth; corrected to lap the outer corner."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "score": 0.76,
+          "threshold": 0.75,
+          "notes": "The tub stands clear of the ground on four discrete feet with a plinth step above them. Weakest of the geometry features: the feet are less prominent than the plate's, which shows them as distinct dark blocks at the corners. The 10 mm ledge where the plinth stands proud of the wall foot is now surfaced - left open it was a real gap in the shell and rendered as a dark seam round the whole base."
+        },
+        {
+          "id": "two-tone-value-split",
+          "score": 0.8,
+          "threshold": 0.75,
+          "notes": "Three measured tones on one material as vertex colours. NO face enclosed by the silhouette lands near the backdrop's luma 58: the interior is lifted from its measured 98.9 to 182 for exactly that reason, and the turntable gate confirms it with holed=false. The tones are flat where the plate carries heavy vertical rust streaking - the cost of the textureless declaration, and the reason materialSurface is the lowest layer."
+        }
+      ],
+      "action": "continue",
+      "summary": "624 triangles / 2 draw calls / 2 materials / 2 unique geometries against 2000 / 2 / 2 / 4. The draw-call split was decided in the blockout, not optimised for afterwards: every welded part is merged into the shell geometry and the four lugs share one geometry through an InstancedMesh. Both materials are textureless, so createSculptMaterial synthesises no canvases and the factory builds in ~20 ms.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/open-top-steel-skip-bin/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T14:49:26.014394+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.88,
+        "componentStructure": 0.88,
+        "formDetail": 0.78,
+        "materialSurface": 0.72,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "outward-taper-silhouette",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "A square tub 0.80 x 0.78 m in plan and 1.05 m tall, tapering inward toward the base to 0.82 of its head, on a plinth and four corner feet.",
+          "notes": "PLAN CORRECTED from 1.50 x 1.00 m. The declaration made this a long low skip and it is not one: the plate is a chest-height square steel hopper shot steeply from above, and a top-down view foreshortens height, so it is at least as tall as it looks. Two independent single-view reconstructions agree with the plate and not with the declaration -- Meshy 0.66/0.64 and trellis 0.84/0.80 for width/height and depth/height, against the build's 1.43/0.95 -- and both read the tub as SQUARE in plan where the build was 1.5:1. Shipped at the mean, 0.80 x 0.78, which is also the honest place to put it: the two proxies are 27% apart on width, so the build now sits between them rather than committing to either. The band table goes from mean |delta width| 0.79 and |delta depth| 0.34 to 0.151 and 0.137. Nine of ten bands are still just over the 0.12 flag, which is the residue of that 27% disagreement and is reported rather than tuned away by chasing the Meshy reading alone."
+        },
+        {
+          "id": "open-mouth-and-rim",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "An open mouth with a rolled rim, the interior lifted to luma 182 so the enclosed face clears the harness backdrop.",
+          "notes": "Unchanged; the rim and hand-hole bezels scale with the plan."
+        },
+        {
+          "id": "corner-lugs",
+          "tier": "important",
+          "score": 0.8,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Hinge lugs on the rim.",
+          "notes": "Unchanged."
+        },
+        {
+          "id": "base-plinth-and-feet",
+          "tier": "important",
+          "score": 0.76,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "A plinth band and four corner feet, inset 0.09 m.",
+          "notes": "Unchanged; feet and inset scale with the plan."
+        },
+        {
+          "id": "two-tone-value-split",
+          "tier": "important",
+          "score": 0.72,
+          "threshold": 0.7,
+          "passed": true,
+          "evidence": "Flat weathered-steel exterior at #c98a58 against a lifted interior at #b4b8ae.",
+          "notes": "THE REMAINING WEAKNESS ON THIS PROP, and it is stated rather than scored around. materialSurface sits at 0.72 -- the lowest layer here -- because the exterior is one FLAT tone where the plate's identity is heavy variegated rust: orange and brown streaks running down a pale grey-blue shell, pale flaking along the rim, a green chevron inside and debris in the bottom. None of that is built. It is a real opt-in for a texture rather than a reason to lower the textureless default: the oil drum in this kit earns the same opt-in on the same grounds, because rust at this density is identity and it resolves at prop distance. The route is a post-construction seeded canvas tile bound as map plus bumpMap, which costs no draw call and no material on a class already at 2 of 2 on both. Not attempted here."
+        }
+      ],
+      "action": "continue",
+      "summary": "Rebuild 2026-08-31. Plan corrected from 1.50 x 1.00 m to 0.80 x 0.78 m at an unchanged 1.05 m height, against two independent proxies (Meshy 0.66 and trellis 0.84 for width/height, against the build's 1.43) which both also read the tub as square in plan where the build was 1.5:1. Shipped at their mean, so the build sits between two readings that are 27% apart rather than committing to either. Band table mean |delta width| 0.79 -> 0.151, |delta depth| 0.34 -> 0.137; turntable passes at all four azimuths with no holes, check-coplanar clean. 624/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries. materialSurface is untouched at 0.72 and is now the binding constraint: the plate's rust is the prop's identity and the exterior is still one flat tone.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One merged shell component plus one InstancedMesh for the four corner lugs: 2 of 2. Rim, plinth, feet, floor and hand-hole bezels are folded INTO the shell component rather than authored as siblings - a part hung off its own pivot cannot be merged afterwards."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "weathered-steel (shell) and bracket-steel (lugs): 2 of 2. The exterior rust, the pale interior and the cream rim are ONE substance in three tones and ride vertex colours on the shell material, because a colour difference is not a material difference."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One merged shell geometry plus one lug geometry reused across all four instances."
+      },
+      "triangles": {
+        "estimated": 1180,
+        "budget": 2000,
+        "headroom": 820,
+        "note": "Shell loft 5 rings x 24-point rounded-rect sections = 4 strips x 24 quads = 192 quads = 384 tris; floor cap 24; plinth band 2 rings 48 quads = 96 tris; 4 feet boxes 12 tris = 48; 4 hand-hole bezels 16 segs x 2 rings = 128 tris each half-count... measured after the blockout render and recorded here."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 55,
+      "azimuthDegrees": -30,
+      "intensity": 0.9,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "soft, broad source",
+      "notes": "Elevation inferred from the plate showing the interior floor: the camera and key are both high. The lit exterior wall measures luma 152 against the shadowed interior's 99, a ratio of 0.65 - a soft key with substantial fill rather than a hard studio spot."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.6,
+      "fillRatio": 0.65,
+      "colorTemperature": "neutral 5600K",
+      "notes": "Fill ratio taken directly from the 99/152 interior-to-exterior measurement; the shadow side keeps two thirds of its value, so the fill is strong."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform light blue-grey studio surround",
+      "colorTemperature": "cool 6500K",
+      "notes": "The backdrop measures #9aa7af to #c1cfd7 (luma 165-204) and acts as a large cool source; it is what tints the desaturated interior grey-green rather than warm."
+    },
+    {
+      "id": "render-intent",
+      "role": "exposure",
+      "toneMapping": "ACES filmic",
+      "exposure": 1.0,
+      "contactShadow": "A soft ground shadow sits directly beneath the plinth and does not extend past the feet; the plate shows no hard cast shadow.",
+      "ambientOcclusion": "Contact occlusion is expected in the interior corners and under the rim fold and the plinth step; it is lighting, never painted into base colour.",
+      "backgroundColor": "#9aa7af to #c1cfd7 vertical gradient, measured off the plate corners",
+      "notes": "Exposure and tone mapping intent recorded so a render can be compared fairly with the plate. No baked lighting or AO enters any albedo: the interior lift is a value decision against the hole gate, stated as such, not an attempt to bake shadow."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": [
+    "root pivot node supports whole-object translation, rotation, scale, and visibility changes",
+    "component pivot groups support later local transforms without rebuilding geometry"
+  ],
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": [],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Open-Top Steel Skip Bin",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-anisotropy",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[6]",
+        "score": 2.761412737115,
+        "snippets": [
+          "... highlights (not round) that stay aligned with visible brush/groove marks as the view angle changes; Common on brushed steel/titanium knife finishes and gunsmith metal bases Dấu hiệu nhận diện: Điểm sáng kéo dài, có vệt (không tròn) luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.description-controlled-vocabulary-aat-facets",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.description_conventions[5]",
+        "score": 2.5410713068,
+        "snippets": [
+          "... không nhất quán. Recognition cues: Material/attribute terms should be drawn from a fixed enumerated list (e.g. 'brushed steel', 'anodized aluminum') rather than free-form phrasing that varies between descriptions of the same material Dấu ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.description_conventions[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4181,
+        "aspectRatioDelta": 0.4402,
+        "scaleDelta": 0.5149,
+        "bilateralSymmetryError": 0.0765,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 14.17,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 14.17
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.418 is below threshold 0.85",
+        "aspect-ratio delta 0.440 exceeds threshold 0.05",
+        "scale delta 0.515 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f763c75dc58aa8b4",
+      "passId": "blockout"
+    }
+  ]
+}

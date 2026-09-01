@@ -162,7 +162,16 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
     // only ever integrated over hemispheres. Paying for 2048 buys nothing.
     const equirect = await cubeToEquirect(faces, { width: 1024 });
     await fs.writeFile(envFile, equirect);
-    const skyIntensity = (hemi.intensity ?? 0.35) * (bake.settings?.sky?.base?.intensity ?? 1);
+    // `sky.base.intensity` ALONE. It used to be multiplied by
+    // `environment.hemisphere.intensity`, which made the ambient dial on the
+    // level tab a hidden second gain on the bake's world -- invisible in the
+    // editor (where the hemisphere light is retired the moment IBL is on and
+    // the probe prefilters the sky instead), so the one dial labelled "ambient
+    // intensity" changed nothing you could see and silently rescaled every
+    // future lightmap. The hemisphere settings are the NO-SKY fallback ramp
+    // now, nothing else, and they still reach Blender that way through
+    // `--sky` / `--ground` below.
+    const skyIntensity = bake.settings?.sky?.base?.intensity ?? 1;
     args.push(`--env=${toBlenderPath(envFile)}`);
     args.push(`--env-strength=${skyIntensity.toFixed(4)}`);
     // NEGATED on purpose. The runtime turns the DOME by +rotationDeg, which

@@ -42,6 +42,18 @@ services:
       # temp writes are seen by `node --watch` as a source change and the server
       # restart-loops. See the comment in web/client/vite.config.js.
       THAIKIT_VITE_CACHE: /tmp/vite-cache
+      # The img2threejs skill, mounted below. thaikit's model route is THIN by
+      # design -- it composes a prompt and hands the work to img2threejs, which
+      # owns the pass order, the gates and the on-disk state machine -- so the
+      # skill is a TOOL this image needs, exactly like blender and ktx, and not
+      # having it inside the container is what kept the model pipeline on the
+      # host. scripts/doctor.mjs already reads this variable; without it doctor
+      # probes $HOME/.claude/skills, and $HOME is /tmp in here.
+      IMG2THREEJS_ROOT: /skills/img2threejs
+      # The repo root as the container sees it, for the per-prop route runners
+      # under scratch/ (run_gates.py, gen_spec.py), which used to hardcode
+      # /home/mulligan/code/thaikit.
+      THAIKIT_REPO: /repo
       # Blender's Cycles bake runs on the GPU in here. NVIDIA_VISIBLE_DEVICES and
       # NVIDIA_DRIVER_CAPABILITIES are what the nvidia container runtime reads to
       # decide what to inject; `compute` is CUDA and OptiX, `utility` is
@@ -73,6 +85,16 @@ services:
       # generated kit it reads and writes.
       - ./:/repo
       - ./:/app
+      # img2threejs, READ-ONLY. It is a SHARED CHECKOUT -- its own SKILL.md has
+      # it symlinked into ~/.codex/skills too -- so the container gets to run it
+      # and never to edit it; a change there must be made deliberately on the
+      # host and be upstreamable. ${HOME} is the HOST's home here (compose
+      # expands it from the shell that runs compose), not the container's /tmp.
+      # It is 38 MB and pure Python, so mounting beats baking it into the image:
+      # baked, every skill update would need a rebuild, and the image would carry
+      # a second, frozen answer to "which gates ran" -- the exact drift the
+      # Dockerfile's header argues against for source.
+      - ${HOME}/.claude/skills/img2threejs:/skills/img2threejs:ro
       # NOTHING masks the mount, and NOTHING is ever run on the host.
       #
       # The container is the environment; the host is storage. Every tool this

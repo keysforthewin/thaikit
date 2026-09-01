@@ -458,7 +458,54 @@ export function largestRect(mask, nx, nz) {
   return best;
 }
 
-export function coverWithRects(mask, nx, nz, maxRects, minCells) {
+/** How empty a fallback bounding box has to be before it is split into its components. At 0.35 the
+ *  canopy bay's post layer (four 0.10 m posts filling 0.5% of a 16 m2 box) splits and the soi dog's
+ *  leg layer (0.21 m2, filled 0.4) does not. Both numbers are measured, not chosen. */
+const FALLBACK_SPLIT_FILL = 0.35;
+
+/** Bounding boxes of the mask's 4-connected components, largest first, capped at `max`. The
+ *  fallback for a layer no rectangle is big enough to cover: four thin legs are four boxes, and a
+ *  single blob is the one box `maskBBox` would have given. Components past the cap are folded into
+ *  the nearest kept box so nothing is dropped -- an uncovered leg is a player falling through. */
+function componentBoxes(mask, nx, nz, max) {
+  const seen = new Uint8Array(nx * nz);
+  const found = [];
+  for (let z0 = 0; z0 < nz; z0 += 1) {
+    for (let x0 = 0; x0 < nx; x0 += 1) {
+      const s = z0 * nx + x0;
+      if (!mask[s] || seen[s]) continue;
+      seen[s] = 1;
+      const stack = [s];
+      let ax0 = x0, ax1 = x0, az0 = z0, az1 = z0, n = 0;
+      while (stack.length) {
+        const i = stack.pop();
+        const x = i % nx, z = (i - x) / nx;
+        n += 1;
+        if (x < ax0) ax0 = x; if (x > ax1) ax1 = x;
+        if (z < az0) az0 = z; if (z > az1) az1 = z;
+        const nb = [x > 0 ? i - 1 : -1, x < nx - 1 ? i + 1 : -1, z > 0 ? i - nx : -1, z < nz - 1 ? i + nx : -1];
+        for (const j of nb) if (j >= 0 && mask[j] && !seen[j]) { seen[j] = 1; stack.push(j); }
+      }
+      found.push({ x0: ax0, x1: ax1, z0: az0, z1: az1, area: n });
+    }
+  }
+  if (found.length < 2) return found;
+  found.sort((a, b) => b.area - a.area);
+  const kept = found.slice(0, Math.max(1, max));
+  for (const r of found.slice(Math.max(1, max))) {
+    // nearest by centre, then grown to swallow it: a dropped component is a hole in the floor
+    let best = kept[0], bd = Infinity;
+    for (const k of kept) {
+      const d = Math.hypot((k.x0 + k.x1) / 2 - (r.x0 + r.x1) / 2, (k.z0 + k.z1) / 2 - (r.z0 + r.z1) / 2);
+      if (d < bd) { bd = d; best = k; }
+    }
+    best.x0 = Math.min(best.x0, r.x0); best.x1 = Math.max(best.x1, r.x1);
+    best.z0 = Math.min(best.z0, r.z0); best.z1 = Math.max(best.z1, r.z1);
+  }
+  return kept;
+}
+
+export function coverWithRects(mask, nx, nz, maxRects, minCells, splitMinCells = Infinity) {
   const work = Uint8Array.from(mask);
   const total = area(work);
   const rects = [];
@@ -473,12 +520,46 @@ export function coverWithRects(mask, nx, nz, maxRects, minCells) {
     for (let z = r.z0; z <= r.z1; z += 1) for (let x = r.x0; x <= r.x1; x += 1) work[z * nx + x] = 0;
     covered += r.area;
   }
+  if (rects.length) return rects;
+
   // The fallback is the MASK's own bounding box, never the whole grid. Returning
   // the grid made every layer too narrow to hold a 0.15 m rectangle come out at
   // the full width of the model: three of the traffic cone's layers shipped at
   // 0.40 m, wider than its own 0.38 m base, at volumeRatio 3.15 and 81% of
   // samples overshooting. A tip is small, and the honest answer is a small box.
-  return rects.length ? rects : [maskBBox(mask, nx, nz) ?? { x0: 0, x1: nx - 1, z0: 0, z1: nz - 1, area: total }];
+  //
+  // But ONE bounding box is only honest when the layer is one thing. A canopy
+  // bay standing on four 0.10 m bamboo posts has a layer of four separated
+  // dots, none of them the 0.15 m a rectangle has to be, so the greedy cover
+  // takes none of them -- and the bbox of four corner posts is the WHOLE BAY.
+  // That shipped a solid 4 x 4 x 1.84 m block under the roof of the bamboo
+  // module: 20% of its footprint standing more than the 0.30 m step height
+  // above the real surface, which is a player walking onto thin air at waist
+  // height in a shelter whose entire purpose is to be walked under. So the
+  // fallback is per CONNECTED COMPONENT: one box each for the four posts, and
+  // for a single blob -- the cone tip the paragraph above is about -- exactly
+  // the bbox it already returned.
+  const bb = maskBBox(mask, nx, nz);
+  if (!bb) return [{ x0: 0, x1: nx - 1, z0: 0, z1: nz - 1, area: total }];
+
+  // ...but ONLY when that bbox is actually dishonest, which is two things at
+  // once and neither alone. Measured across the whole kit by re-deriving all 122
+  // compounds: splitting unconditionally DROPPED coverage on nine props -- the
+  // soi dog from 0.973 to 0.718, the futsal mast from 0.974 to 0.889 -- because
+  // for four legs under a solid body the bbox IS the body, and boxing the legs
+  // separately leaves the space between them uncovered when there is something
+  // over it to stand on. The canopy is the opposite case: four posts inside a
+  // 16 m2 bay that is meant to be walked THROUGH.
+  //
+  // So: the components must fill little of the bbox (the bbox is mostly air) AND
+  // the bbox must be big enough that a player can walk into that air. A dog's
+  // leg layer is 0.21 m2 -- there is nowhere to walk -- and stays one box.
+  const bbCells = (bb.x1 - bb.x0 + 1) * (bb.z1 - bb.z0 + 1);
+  if (total / bbCells < FALLBACK_SPLIT_FILL && bbCells >= splitMinCells) {
+    const comps = componentBoxes(mask, nx, nz, maxRects);
+    if (comps.length > 1) return comps;
+  }
+  return [bb];
 }
 
 // ---------------------------------------------------------------------------
@@ -935,6 +1016,10 @@ export function deriveFromParts(rawParts, triangles, opts) {
 
   // --- layers -> rectangles ----------------------------------------------
   const minRectCells = Math.max(1, Math.ceil(0.15 / grid.v));
+  // A fallback bbox is only split into components when it is at least this big: below a square
+  // metre there is nowhere for a player to walk into the air it is claiming, and the single box
+  // is the better proxy. See FALLBACK_SPLIT_FILL.
+  const splitMinCells = Math.ceil(1.0 / (grid.v * grid.v));
   const layers = layerise(grid, opts);
 
   let parts = [];
@@ -958,7 +1043,7 @@ export function deriveFromParts(rawParts, triangles, opts) {
       continue;
     }
 
-    const rects = coverWithRects(filled, grid.nx, grid.nz, opts.maxRectsPerLayer, minRectCells);
+    const rects = coverWithRects(filled, grid.nx, grid.nz, opts.maxRectsPerLayer, minRectCells, splitMinCells);
     for (const [k, r] of rects.entries()) {
       parts.push(boxFromRect(grid, r, y0, y1, rects.length > 1 ? `layer${n}-${k}` : `layer${n}`));
     }

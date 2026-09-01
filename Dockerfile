@@ -35,8 +35,22 @@ WORKDIR /app
 # tiles come out of one rig. It costs a few hundred MB of image; puppeteer-core
 # is deliberately the dependency, so nothing downloads a SECOND browser at
 # npm install time.
+#
+# python3 is here because the MODEL pipeline is Python. img2threejs owns quality,
+# iteration and verification, and every one of its gates -- forge/next.py,
+# state.py, the stage4 review scripts, validate_sculpt_spec.py -- is a Python
+# program, as are the per-prop facts_*/go_* runners under scratch/. Without it
+# `npm run doctor` fails fatally on "python >= 3.10" and no prop can be built or
+# rebuilt inside the container, which left the whole model route as the one thing
+# that still had to run on the host. Bookworm's python3 is 3.11, which clears the
+# 3.10 floor. NOTHING is pip-installed: the gates this repo's routes invoke are
+# stdlib-only (argparse, json, pathlib, struct, zlib plus the skill's own
+# sibling modules), so the heavy optional deps -- numpy, PIL, torch, mediapipe,
+# trimesh -- belong to img2threejs's character/CS2 tracks, which thaikit never
+# takes. If a route ever needs one, add it explicitly here rather than pip
+# installing into a running container, where it would vanish on the next `up`.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      tini ca-certificates chromium fonts-liberation \
+      tini ca-certificates chromium fonts-liberation python3 \
  && rm -rf /var/lib/apt/lists/*
 ENV CHROME_PATH=/usr/bin/chromium
 

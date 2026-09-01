@@ -1,0 +1,1998 @@
+{
+  "targetName": "Vetiver Thatch Canopy Module",
+  "targetId": "vetiver-thatch-canopy-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "modular-canopy-bay",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "four-corner-posts",
+        "post-and-plate-frame",
+        "knee-braced",
+        "thick-gable",
+        "bound-ridge-roll",
+        "raking-barge-boards",
+        "open-all-sides"
+      ],
+      "structureKind": [
+        "post-and-rail",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "honey-sawn-timber",
+        "vetiver-grass-thatch"
+      ],
+      "notes": "ONE BAY of a modular outdoor roof kit, the thick-thatch member of the set: a 4 x 4 m cell on a 4 m grid, so a canopy grid lands two by two on the kit's 8 m ground and road tiles. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. Resort salas, temple rest shelters and roadside pavilions across the north-east; laid thick and re-ridged every few years. Vetiver bleaches silver-grey on the weather face and stays warm straw in the shade, and green moss gathers where the roof stays damp."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE timber merge -- four posts, four head plates, eight knee braces, two king posts, the ridge beam, six rafters, FOUR raking barge boards and eight cord lashings; ONE thatch merge carrying both slopes, the ridge roll and seven binding collars; ONE InstancedMesh of eight purlins: THREE draw calls of 4.",
+        "Two materials of three: sawn honey timber (vertex colours -- post, plate, barge, rafter, cord) and vetiver thatch (vertex colours -- thatch and binding cord). Both textureless, each with one post-construction canvas.",
+        "The seven ridge bindings were FOLDED into the thatch merge rather than instanced. Instancing saves 120 triangles and costs a fourth draw call on a ceiling of four; at 1,864 of 4,000 the triangles are the cheap axis and the submission is not.",
+        "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "At distance the identity is a thick grey-green thatch bell with a bound ridge and two raking barge boards; close up it is the combed course structure and the cord bindings over the roll. The notes forbid modelled stems, so the courses are a canvas and the mass is in the 260 mm bed and the convex rake."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-posts",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "four 160 mm sawn posts at the module corners",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-plates",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a head plate on all four sides with eight knee braces",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-truss",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "king posts, ridge beam and three pairs of rafters seen through the open gables",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-courses",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "combed vetiver courses, fine and dense, lit butts over shadow",
+          "mapsTo": {
+            "ref": "d4-courses"
+          },
+          "onMaterial": "thatch",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-bell",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a convex rake -- the roof bells out above the straight eave-to-ridge line",
+          "mapsTo": {
+            "ref": "thatch"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-ridgeroll",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a 300 mm bound thatch ridge roll with seven cord bindings",
+          "mapsTo": {
+            "ref": "thatch"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-lashing",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "two cord collars at each of the four post heads",
+          "mapsTo": {
+            "ref": "d7-lashing"
+          },
+          "onMaterial": "timber",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-barge",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "a raking barge board on each of the four rake lines, outboard of the thatch verge",
+          "mapsTo": {
+            "ref": "d8-barge"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-moss",
+          "zone": "roof",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "green moss in patches on the damp face",
+          "mapsTo": {
+            "ref": "d9-moss"
+          },
+          "onMaterial": "thatch",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+    "resolvedUnknowns": [
+      "The GABLE IS OPEN. The plate fills both gables with a thatched tympanum framed by the barge boards, and it is the most distinctive thing on the plate after the roof -- but the registry notes say \"Open on all sides -- no walls, no infill\", and a tympanum is infill. The notes are the module contract and the plate is the material and detail reference, so the tympanum is not built and the truss shows through instead, as on every other bay in the set.",
+      "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+      "The eave is the thatch TOP surface at 2.40 m, the reading that maximises pitch within the declared 3.30 m ridge.",
+      "The ridge is a bound thatch ROLL with cord bindings, as the plate shows, not a plank; the binding's top IS the declared height."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 4.00 x 3.30 x 4.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 0,
+      "microFeatureGroups": 3,
+      "materialLayers": 2,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and module contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 4.00 x 3.30 x 4.00 m with nothing crossing the cell edge",
+          "Four corner posts at the cell corners",
+          "Gable ridge along X, eave 2.40, ridge 3.30, roof visibly thicker and steeper at the eave than the nipa bay",
+          "Open on all four sides"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "an eave overhanging the cell",
+          "a roof as thin as the nipa bay",
+          "a straight rake",
+          "walls or a gable tympanum"
+        ]
+      },
+      {
+        "id": "roof-thatch",
+        "name": "Combed courses, bell and bound ridge",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Fine dense combed courses, not broad palm blades",
+          "A convex rake",
+          "A bound ridge roll with cord bindings, not a plank",
+          "Moss as a multiply, never painted green"
+        ],
+        "evidenceRefs": [
+          "region-vetiver",
+          "region-ridge",
+          "region-moss",
+          "region-eave"
+        ],
+        "failureModes": [
+          "a nipa-style ragged blade texture",
+          "a planked ridge",
+          "a straight rake",
+          "green paint"
+        ]
+      },
+      {
+        "id": "frame-and-materials",
+        "name": "Timber frame, barge boards and tone",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "A raking barge board on all four rakes, outboard of the thatch verge",
+          "Knee braces and cord lashings at every post head",
+          "Honey timber at the plate's hue with no face rendering near the backdrop"
+        ],
+        "evidenceRefs": [
+          "region-timber",
+          "region-barge"
+        ],
+        "failureModes": [
+          "no barge boards",
+          "timber as grey as the nipa bay",
+          "a post face under luma 80"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 4 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and module contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "frame",
+        "thatch"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "roof-thatch",
+      "name": "Combed courses, bell and bound ridge",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "material-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "thatch"
+      ],
+      "evidenceRefs": [
+        "region-vetiver",
+        "region-ridge",
+        "region-moss",
+        "region-eave"
+      ]
+    },
+    {
+      "id": "frame-and-materials",
+      "name": "Timber frame, barge boards and tone",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "frame"
+      ],
+      "evidenceRefs": [
+        "region-timber",
+        "region-barge"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 3,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "frame",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The GABLE IS OPEN. The plate fills both gables with a thatched tympanum framed by the barge boards, and it is the most distinctive thing on the plate after the roof -- but the registry notes say \"Open on all sides -- no walls, no infill\", and a tympanum is infill. The notes are the module contract and the plate is the material and detail reference, so the tympanum is not built and the truss shows through instead, as on every other bay in the set.",
+    "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+    "The eave is the thatch TOP surface at 2.40 m, the reading that maximises pitch within the declared 3.30 m ridge.",
+    "The ridge is a bound thatch ROLL with cord bindings, as the plate shows, not a plank; the binding's top IS the declared height."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center, +Y up, the ridge along X. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner posts then pair at the shared edge."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 4.0,
+      "h": 3.3,
+      "d": 4.0
+    },
+    "description": "A 4.00 x 4.00 m bay: four 160 mm posts at the corners carrying a head frame at 1.97-2.14 m with eight knee braces, and above it a thick gable with its ridge along X -- 260 mm of vetiver from a 2.40 m eave to a 3.15 m apex on a convex rake, a 300 mm bound ridge roll topping out at 3.30 m with seven cord bindings, and a raking barge board on each of the four rake lines. Open on all four sides.",
+    "envelopeDerivation": "z spans exactly -2.000..+2.000 at the thatch eaves and x -1.998..+1.998 at the raking barge boards, so the two axes have DIFFERENT owners and no bounding-box face is shared with another component -- which is what check-coplanar is measuring when it reports same-facing pairs. The thatch verge stops at 1.88 and the barge boards run 1.89 to 1.99 outboard of it; the barge boxes are rotated onto the rake, so their length was set from the AABB arithmetic (half-z = L/2 cos s + h/2 sin s) rather than from the rake itself. y 0.000 to 3.300 at the top of the ridge binding, which is 8 mm proud of a 150 mm ridge roll whose centre is therefore at 3.142. Proxy (Meshy v7): w:h:d 1 : 1.015 : 1.007, a near cube, post grid 0.724 x 0.860 H, roof reaching 0.965 x 0.916 H at an eave sitting at 0.50 of the total height -- the roof is HALF the prop, which is what the notes mean by steeply gabled. It cannot be built that way: the notes fix the eave at 2.40 for walk-under clearance and the ridge at 3.30, which makes the roof 27% of the height and the straight-line pitch 20.7 degrees. Two things carry the steepness instead and both are measured off the plate: the thatch is 260 mm thick against nipa's 180, and its rake is CONVEX (a negative 55 mm mid-slope sag), so the last metre before the eave is markedly steeper than the average. Post section 0.16 from the proxy's post-grid columns.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 1.015 : 1.007, post grid 0.724 x 0.860 H, roof 0.965 x 0.916 H, eave at 0.50 H. Used for the post section and for confirming that the roof is the dominant mass. NOT used for the eave height or the pitch: the notes fix both, and honouring them halves the roof's share of the height. The plate also shows a THATCHED GABLE TYMPANUM which is deliberately not built -- see assumptions."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-vetiver",
+      "viewpoint": "front",
+      "path": "crops/vetiver.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-moss",
+      "viewpoint": "front",
+      "path": "crops/moss.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-straw",
+      "viewpoint": "front",
+      "path": "crops/straw.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-timber",
+      "viewpoint": "front",
+      "path": "crops/timber.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-barge",
+      "viewpoint": "front",
+      "path": "crops/barge.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-ridge",
+      "viewpoint": "top",
+      "path": "crops/ridge.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-eave",
+      "viewpoint": "front",
+      "path": "crops/eave.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: the bay is symmetric about both axes and open on all four sides; the plate shows one gable end and one full slope, which between them cover every distinct elevation."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "frame",
+      "name": "Timber frame, truss and barge boards",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.88,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Four posts, four plates, eight braces, two king posts, a ridge beam, six rafters, four barge boards and eight collars are one merge and one draw call, and the root the purlin instances hang off.",
+      "materialId": "timber",
+      "material": "timber",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Posts 160 mm square at x,z +-1.908, y 0-1.97; head plates 130 x 170 mm on all four sides at 1.97-2.14; knee braces 100 mm square at 45 degrees, 660 mm long; king posts 130 mm from 2.14 to 2.74; ridge beam 150 mm square with its top on 2.89; six rafters 90 x 110 mm on a 20.7 degree rake; four barge boards 100 x 170 mm at x +-1.94 on the same rake, outboard of the 1.88 thatch verge; cord collars 180 mm square at 1.90 and 1.77 on every post.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Braces and rafters enter the posts and plates as solids; the barge boards stand clear of the thatch verge in x rather than meeting it; the rafters are sunk 120 mm below the thatch underside so the purlins fit between. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.60 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-posts",
+          "description": "corner posts",
+          "delivery": "boxes"
+        },
+        {
+          "id": "d2-plates",
+          "description": "head plates and knee braces",
+          "delivery": "boxes rotated 45 degrees about X or Z"
+        },
+        {
+          "id": "d3-truss",
+          "description": "king posts, ridge beam, rafters",
+          "delivery": "boxes rotated onto the rake"
+        },
+        {
+          "id": "d8-barge",
+          "description": "barge boards",
+          "delivery": "four boxes on the rake, outboard of the verge"
+        },
+        {
+          "id": "d7-lashing",
+          "description": "cord lashings",
+          "delivery": "two collars per post head"
+        },
+        {
+          "id": "d10-purlins",
+          "description": "purlins",
+          "delivery": "the eight-instance purlin InstancedMesh hung off this root"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "timber",
+        "baseColor": "#dcc8a0",
+        "recipe": "Honey sawn timber as vertex colours on a white material -- post #d2bfa0, plate and brace #e0d0b4, barge #eaddc6, rafter and purlin #c5b096, cord #9a8058 -- with a sawn-grain multiply canvas.",
+        "evidenceRef": "region-timber",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(220, 200, 160, 1.0)",
+        "secondaryAlbedo": "rgba(220, 200, 160, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "thatch",
+      "name": "Vetiver grass thatch roof with bound ridge",
+      "level": "macro",
+      "role": "surface",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "plane-card",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One height grid carries both slopes and the ridge roll and its seven bindings ride on it, so the whole roof is one draw call.",
+      "materialId": "thatch",
+      "material": "thatch",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "An 18 x 14 height grid over x +-1.88 and z +-2.00, 260 mm thick, top 3.15 m at z 0 falling to 2.40 at |z| 2.00 with a NEGATIVE 55 mm mid-slope sag so the rake is convex; a 150 mm ridge roll along X centred at 3.142 with seven 158 mm open cord collars over it at 0.5 m centres, the topmost surface of which is the declared 3.300.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The roll overlaps the apex rather than meeting it; the bindings stand 8 mm proud of the roll; the barge boards clear the verge in x. Nothing shares a bounding-box face with another component; check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 1.70 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d4-courses",
+          "description": "combed courses",
+          "delivery": "the canvas tile"
+        },
+        {
+          "id": "d5-bell",
+          "description": "convex rake",
+          "delivery": "a negative mid-slope sag in the height grid"
+        },
+        {
+          "id": "d6-ridgeroll",
+          "description": "bound ridge roll",
+          "delivery": "a 12-segment cylinder along X plus seven open partial-cylinder collars"
+        },
+        {
+          "id": "d9-moss",
+          "description": "moss",
+          "delivery": "multiply patches in the tile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "thatch",
+        "baseColor": "#a8a196",
+        "recipe": "One silver-grey albedo on a white material with a combed-course multiply canvas; the binding cords are a vertex colour on the same material, not a second one.",
+        "evidenceRef": "region-vetiver",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(168, 161, 150, 1.0)",
+        "secondaryAlbedo": "rgba(168, 161, 150, 1.0)",
+        "materialClass": "wood",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "timber",
+      "name": "Honey sawn timber",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#dcc8a0",
+      "color": "#dcc8a0",
+      "roughness": {
+        "base": 0.86,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/timber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#dcc8a0",
+        "secondary": [
+          "#d2bfa0",
+          "#e0d0b4",
+          "#eaddc6",
+          "#c5b096",
+          "#9a8058"
+        ],
+        "samplingNotes": "Measured as the mean of crops/timber.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-lashing",
+          "region": "the two cord collars at each post head",
+          "roughness": 0.95,
+          "palette": [
+            "#9A8058"
+          ],
+          "evidence": "crops/timber.png -- the plate ties every post head; authored lifted so the collar clears the gate band."
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-timber (0.88) at #9b8368 sd 23 and region-barge (0.84) at #7c5f3f sd 41 -- warmer and newer than the nipa bay's silver-brown, R minus B around 50 to 60.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER using the two-point solve probed on the nipa module (authored luma 147.5 rendered 66 and 220.5 rendered 180 on the same vertical post face). Carried at #dcc8a0 with post #d2bfa0, plate and brace #e0d0b4, barge #eaddc6, rafter #c5b096 and cord #9a8058 as vertex colours. Measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58. The first build was authored a step more saturated and rendered R minus B 91 against the plate's 70, so the whole set was pulled toward neutral at constant luma.",
+          "Textureless as DECLARED: one 512 px sawn-timber multiply canvas after construction, world UVs at 0.60 m."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/timber.png",
+        "pbrReport": "material-evidence/timber.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "thatch",
+      "name": "Vetiver grass thatch",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a8a196",
+      "color": "#a8a196",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/thatch_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a8a196",
+        "secondary": [
+          "#a8a196",
+          "#9a8058"
+        ],
+        "samplingNotes": "Measured as the mean of crops/vetiver.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-courses",
+          "region": "the whole roof surface",
+          "roughness": 0.96,
+          "palette": [
+            "#958E7C",
+            "#8E6E49"
+          ],
+          "evidence": "crops/vetiver.png and crops/straw.png -- the weathered face against the shaded face; carried as the tile's course spread rather than as two materials."
+        },
+        {
+          "id": "d9-moss",
+          "region": "damp patches on the lower slope",
+          "roughness": 0.98,
+          "palette": [
+            "#928B76"
+          ],
+          "evidence": "crops/moss.png #928b76 sd 38 -- green moss in patches on the north face; carried as nine multiply patches in the tile."
+        }
+      ],
+      "finishClass": "wood",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-vetiver (0.90) at #958e7c sd 38, region-eave (0.86) at #999084 and region-ridge (0.86) at #c2b4a5 -- SILVER-grey, R minus B only 18 to 29, against the nipa bay's warm straw. region-straw (0.82) at #8e6e49 is the shaded face and is 40 warmer, which is the tonal range the tile's course spread carries.",
+          "The first build authored this as warm as the nipa thatch and rendered R minus B 47 against the plate's 18; re-authored neutral at the same luma and measured back at 167 on the sunlit slope against the plate's 151-171.",
+          "Textureless as DECLARED: one 512 px thatch multiply canvas after construction, world UVs at 1.70 m -- SEVEN courses per tile (0.24 m per course) of 620 hairline stems 1-2 px wide at a 0.10 tonal spread and an almost straight butt, which is combed grass; the nipa bay's tile is five courses of 170 broad 3-7 px blades at 0.20 spread with a deeply ragged butt. Nine moss patches multiply green in, because the tile is a multiplier over a pale albedo and a multiply can only darken -- moss has to arrive as less red and blue, never as painted green."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/vetiver.png",
+        "pbrReport": "material-evidence/thatch.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "purlins",
+      "name": "Roof purlins",
+      "componentRef": "frame",
+      "count": 8,
+      "primitive": "box",
+      "materialId": "timber",
+      "placement": "eight instances of a 3.70 x 0.07 x 0.07 m bar along X at |z| 0.55, 1.10, 1.60 and 1.88 on both slopes, each 40 mm under the thatch underside at its own station. The outermost was at 1.93 until it put its underside on 2.0912, the same plane as the thatch fringe's 2.0900; the verge station clears it by 20 mm",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "One InstancedMesh. The seven ridge bindings were deliberately NOT instanced: that would have cost a fourth draw call on a ceiling of four to save 120 triangles at 1,864 of 4,000."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T11:40:59.182707+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.261666+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.338285+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.415411+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.494730+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.573547+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four raking barge boards outboard of the 1.88 thatch verge, eight knee braces, eight cord collars, and a truss of king posts, ridge beam, six rafters and eight instanced purlins visible through both open gables. Honey timber measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58, R minus B corrected from 91 to the plate's 70.",
+          "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.658432+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.738053+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.823694+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        },
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four raking barge boards outboard of the 1.88 thatch verge, eight knee braces, eight cord collars, and a truss of king posts, ridge beam, six rafters and eight instanced purlins visible through both open gables. Honey timber measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58, R minus B corrected from 91 to the plate's 70.",
+          "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T11:40:59.182707+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components plus one repetition system at 3 draw calls of 4; timber frame, thatch with its ridge roll, purlins.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.261666+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Outermost purlin station moved from |z| 1.93 to the verge at 1.88: at 1.93 its underside sat on 2.0912, the same plane as the thatch fringe's 2.0900, and check-coplanar reported two same-facing pairs of 0.26 m2. Clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.338285+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: posts, head plates, knee braces, king posts, ridge beam, rafters and four raking barge boards; the barge lengths set from the rotated-box AABB arithmetic so nothing crosses the cell edge.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.415411+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: a 260 mm bed on a CONVEX rake (negative mid-slope sag), a bound ridge roll with seven cord bindings, the bindings folded into the thatch merge rather than costing a fourth draw call.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.494730+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: honey timber 0.88 and silver-grey vetiver 0.90, both textureless; two 512 px post-construction canvases.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.573547+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four raking barge boards outboard of the 1.88 thatch verge, eight knee braces, eight cord collars, and a truss of king posts, ridge beam, six rafters and eight instanced purlins visible through both open gables. Honey timber measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58, R minus B corrected from 91 to the plate's 70.",
+          "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: combed-course canvas at seven courses of 620 hairlines with nine moss multiplies; timber and thatch both re-authored toward the plate's measured hue after the first build came back too warm on each.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.658432+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.84,
+      "aiVisionScore": 0.84,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Every face measured off the backdrop band at all four azimuths, darkest 105 against 58.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.738053+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T11:40:59.823694+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.86,
+        "componentStructure": 0.88,
+        "formDetail": 0.85,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.86,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope measured 3.996 x 3.300 x 4.000 m off the built module: z owned by the thatch eaves at +-2.000, x by the barge boards at +-1.998, so no bounding-box face is shared and check-coplanar is clean. Four 160 mm posts at +-1.908, head frame 1.97-2.14, eave 2.40, thatch apex 3.15, ridge binding top 3.300. Roof 260 mm thick against the nipa bay's 180, on a convex rake.",
+          "notes": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which is 27%. The steepness is carried by the thicker bed and the convex rake instead."
+        },
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Seven combed courses per 1.70 m tile (0.24 m per course) of 620 hairline stems at a 0.10 tonal spread and an almost straight butt -- measurably a different thatch from the nipa bay's five courses of 170 broad blades at 0.20 spread. Convex rake from a negative 55 mm mid-slope sag. A 300 mm bound ridge roll with seven cord bindings topping out at the declared 3.300. Nine moss patches as a multiply. Rendered 167 on the sunlit slope against the plate's 151-171, R minus B pulled from the first build's 47 to the plate's 18.",
+          "notes": ""
+        },
+        {
+          "id": "frame-and-materials",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Four raking barge boards outboard of the 1.88 thatch verge, eight knee braces, eight cord collars, and a truss of king posts, ridge beam, six rafters and eight instanced purlins visible through both open gables. Honey timber measured back at 144 / 117 / 117 / 105 across the four azimuths against a backdrop of 58, R minus B corrected from 91 to the plate's 70.",
+          "notes": "The plate's thatched gable tympanum is deliberately not built: the notes say no infill."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 1,864/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing red over the gable voids and brace bays only.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/vetiver-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 4000,
+    "maxDrawCalls": 4,
+    "maxMaterials": 3,
+    "maxUniqueGeometries": 6,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 1,
+        "projectedTotal": 3,
+        "budget": 4,
+        "headroom": 1,
+        "note": "Two components plus one repetition system: 3 of 4."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 3,
+        "headroom": 1,
+        "note": "timber and thatch: 2 of 3. Post, plate, brace, barge, rafter and both cords are vertex colours."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 6,
+        "headroom": 3,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1864,
+        "budget": 4000,
+        "headroom": 2136,
+        "note": "1,864 of 4,000: 544 in the frame merge (38 boxes), 1,180 in the thatch (an 18 x 14 grid with edge strips, a 12-segment ridge roll and seven open collars), 140 in eight purlin instances."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes throughout the frame, rotated onto the 45 degree braces and the 20.7 degree rake; the roof is a height grid with thickness, the ridge a cylinder and the bindings open partial cylinders."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh of eight purlins. In a scene the HOST places whole bays on the 4 m grid."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. Two 512 px canvases after construction, ~2 MB of texture VRAM."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "tympanum-omitted",
+      "severity": "medium",
+      "description": "The plate fills both gables with a thatched tympanum framed by the barge boards; the build leaves them open.",
+      "mitigation": "The registry notes say \"no walls, no infill\" and a tympanum is infill. Recorded in assumptions with the reasoning; the barge boards, which are the other half of what makes that gable read, ARE built."
+    },
+    {
+      "id": "notes-over-proxy",
+      "severity": "medium",
+      "description": "The proxy puts the eave at 0.50 H, making the roof half the prop; the notes fix 2.40/3.30, which makes it 27% and the straight-line pitch 20.7 degrees.",
+      "mitigation": "The notes are the contract. The steepness is carried instead by a 260 mm bed against the nipa bay's 180 and by a convex rake, both measured off the plate; arithmetic in envelopeDerivation."
+    },
+    {
+      "id": "ridge-roll-ledge",
+      "severity": "low",
+      "description": "The derived collider compound loses the ledge at y 3.1 -- the 1 m2 top of the bound ridge roll -- because no compound box reaches within 0.10 m of a 300 mm cylinder's crown. 7 of 8 ledges preserved, coverage 0.9926.",
+      "mitigation": "Above the 0.95 the gate asks for, and the lost ledge is the apex of a thatched ridge: nothing in the game stands on it. Recorded rather than forced by adding a ninth part to a compound already at its ceiling of 8."
+    },
+    {
+      "id": "open-frame-turntable",
+      "severity": "low",
+      "description": "Open on all four sides, so the volume under the roof and both gable voids are background enclosed by the silhouette.",
+      "mitigation": "Turntable run with --allow-holes on the _holecc measurement and a holeviz read per azimuth; every timber and thatch face measured off the backdrop band first, darkest 105 against 58."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Vetiver Thatch Canopy Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.4103,
+        "aspectRatioDelta": 0.1002,
+        "scaleDelta": 0.2527,
+        "bilateralSymmetryError": 0.0556,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 18.67,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 18.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.32
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.410 is below threshold 0.85",
+        "aspect-ratio delta 0.100 exceeds threshold 0.05",
+        "scale delta 0.253 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f34336b441bade50",
+      "passId": "blockout"
+    }
+  ]
+}

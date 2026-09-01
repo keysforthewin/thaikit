@@ -37,9 +37,9 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
   return (
     <div className="toolbar">
       <div className="group">
-        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title={`move — W${GIZMO_MODS}`}>move</Btn>
-        <Btn on={tool === 'rotate'} onClick={() => setTool('rotate')} title={`rotate — E${GIZMO_MODS}`}>rotate</Btn>
-        <Btn on={tool === 'scale'} onClick={() => setTool('scale')} title={`scale — R${GIZMO_MODS}`}>scale</Btn>
+        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title={`move — 1${GIZMO_MODS}`}>move</Btn>
+        <Btn on={tool === 'rotate'} onClick={() => setTool('rotate')} title={`rotate — 2 or E${GIZMO_MODS}`}>rotate</Btn>
+        <Btn on={tool === 'scale'} onClick={() => setTool('scale')} title={`scale — 3 or R${GIZMO_MODS}`}>scale</Btn>
         <Btn onClick={() => setSpace(space === 'world' ? 'local' : 'world')} title="gizmo space — Q">{space}</Btn>
       </div>
       <div className="group">
@@ -50,12 +50,12 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
         <select value={snap.rotateDeg ?? 15} onChange={(e) => setSetting('snap.rotateDeg', Number(e.target.value))} title="rotate step">
           {[5, 15, 30, 45, 90].map((v) => <option key={v} value={v}>{v}°</option>)}
         </select>
-        <Btn on={snap.surface?.enabled !== false} onClick={() => setSetting('snap.surface.enabled', snap.surface?.enabled === false)} title="snap faces flush and edges aligned to neighbours while moving — Shift+S">surface</Btn>
+        <Btn on={snap.surface?.enabled !== false} onClick={() => setSetting('snap.surface.enabled', snap.surface?.enabled === false)} title="snap faces flush and edges aligned to neighbours while moving — V">surface</Btn>
       </div>
       <div className="group">
         <Btn on={view.grid} onClick={() => toggleView('grid')} title="grid — G">grid</Btn>
         <Btn on={view.axes} onClick={() => toggleView('axes')} title="axes at the origin">axes</Btn>
-        <Btn on={view.cells} onClick={() => toggleView('cells')} title="the bake's spatial cells and what each merges to — C">cells</Btn>
+        <Btn on={view.cells} onClick={() => toggleView('cells')} title="the bake's spatial cells and what each merges to — B">cells</Btn>
         <Btn on={view.colliders} onClick={() => toggleView('colliders')} title="physics compounds — X">colliders</Btn>
         <Btn on={view.sockets} onClick={() => toggleView('sockets')} title="named sockets">sockets</Btn>
         <Btn on={view.helpers} onClick={() => toggleView('helpers')} title="light helpers">helpers</Btn>
@@ -92,7 +92,7 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
         <Btn onClick={unjoinSelection} disabled={!unjoinable} title="dissolve the selected group — Ctrl+Shift+G">unjoin</Btn>
       </div>
       <div className="group">
-        <button className="primary" onClick={onAdd} title="add an object from any installed pack — A">+ object</button>
+        <button className="primary" onClick={onAdd} title="add an object from any installed pack — N">+ object</button>
         <button onClick={() => onAddLight('directional')} disabled={hasMoon} title={hasMoon ? 'one moon per level' : 'add the moon'}>+ moon</button>
         <button onClick={() => onAddLight('point')}>+ point</button>
         <button onClick={() => onAddLight('spot')}>+ spot</button>

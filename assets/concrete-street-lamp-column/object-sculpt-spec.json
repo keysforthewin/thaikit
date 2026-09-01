@@ -1,0 +1,2682 @@
+{
+  "targetName": "Concrete Street Lamp Column",
+  "targetId": "concrete-street-lamp-column",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "conditional",
+  "scores": {
+    "object_isolation": 0,
+    "silhouette_readability": 0,
+    "depth_inference": 0,
+    "primitive_decomposition": 0,
+    "material_procedurality": 0,
+    "occlusion_risk": 0,
+    "interaction_fit": 0
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "prestressed concrete lighting pole with a clamped steel bracket arm and a cobra-head lantern",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "geometric",
+        "tapered-square-prism",
+        "swept-arc",
+        "lofted-wedge"
+      ],
+      "structureKind": [
+        "fixed-infrastructure",
+        "clamped-bracket",
+        "direct-buried-pole"
+      ],
+      "motionPotential": [
+        "none - a direct-buried concrete pole, rigid body"
+      ],
+      "materialFamilies": [
+        "weathered-precast-concrete",
+        "galvanised-steel",
+        "cast-aluminium",
+        "acrylic-refractor"
+      ],
+      "notes": "The plate is square-framed at aspect 0.454 against the declared 0.213, so it carries the fixture and not the assembly proportions. This is the cheap provincial variant: the lantern is CLAMPED to an ordinary concrete pole rather than carried on a purpose-made column."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 0,
+        "materialLayerCount": 3,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 0
+      },
+      "estimatedCounts": {
+        "macroComponents": 2,
+        "mesoComponents": 2,
+        "microFeatureGroups": 3,
+        "materialLayers": 4,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Four macro/meso parts: the concrete pole, the clamped steel bracket arm, the cast lantern and its refractor.",
+        "No repetition systems: a direct-buried pole has no baseplate and no bolts, which is the visible difference from the steel column variant.",
+        "The pole is a SQUARE section, not octagonal - a tapered-sweep with radialSegments 4 and a 45 degree twist gives an axis-aligned rectangle whose half-extents are 0.707 of the authored radius.",
+        "No moving parts, so one root pivot and no sockets."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso"
+      ],
+      "needsRepetitionSystems": false,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": false,
+      "rationale": "Moderate. Four drawn parts and the sub-structure - taper, bracket clamp, arm rise, lantern wedge, bowl seating - carried as localFeatures because each component costs a draw call."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "square-taper",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "square-taper"
+          },
+          "description": "A tapered square section 0.215 m at the foot and 0.135 m at the top.",
+          "realization": "unreported"
+        },
+        {
+          "id": "chamfered-cap",
+          "kind": "contour",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "chamfered-cap"
+          },
+          "description": "A short chamfered cap closing the pole's top on all four faces.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cast-holes",
+          "kind": "groove",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cast-holes"
+          },
+          "description": "Thirteen recessed lifting and fixing holes down one face between 1.10 and 6.60 m.",
+          "realization": "unreported"
+        },
+        {
+          "id": "algae-stain",
+          "kind": "decal",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "algae-band"
+          },
+          "description": "Green algae over the bottom 3 m, as an axis tint multiplied into the concrete.",
+          "realization": "unreported"
+        },
+        {
+          "id": "spalled-patches",
+          "kind": "decal",
+          "identityDefining": false,
+          "mapsTo": {
+            "ref": "square-taper"
+          },
+          "description": "Pale patches where the cast surface has broken away to the aggregate, as a canvas tile.",
+          "realization": "unreported"
+        },
+        {
+          "id": "band-clamp",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "band-clamp"
+          },
+          "description": "Two steel bands wrapping the pole, the only fixing the bracket has.",
+          "realization": "unreported"
+        },
+        {
+          "id": "diagonal-strut",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "diagonal-strut"
+          },
+          "description": "A strut from the lower band to mid-arm, without which the arm floats.",
+          "realization": "unreported"
+        },
+        {
+          "id": "cobra-wedge",
+          "kind": "contour",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "cobra-wedge"
+          },
+          "description": "A cast wedge tapering from spigot to nose over a refractor bowl.",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+    "resolvedUnknowns": [
+      "The pole section is square: the plate shows two flat faces meeting at a vertical arris with different shading. Confidence 0.85.",
+      "The far side of the pole and lantern is not in the single view; mirrored about the arm plane. Confidence 0.85.",
+      "Pole width is engineering-derived (0.315 m across flats at the base for an 8 m pole, matching the declared 0.30 m depth envelope), NOT scaled from the plate, which would give 1.26 m. Confidence 0.85.",
+      "The plate shows a row of small circular lifting/cable holes down the pole face. They are not built: at 8 m they are a few pixels and each would need geometry the budget cannot carry. Recorded as an omission. Confidence 0.9."
+    ],
+    "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
+  },
+  "qualityContract": {
+    "qualityBar": "moderate",
+    "definitionOfDone": [
+      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 2,
+      "microFeatureGroups": 8,
+      "materialLayers": 4,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "bbox against 1.70 x 8.00 x 0.30 m",
+      "pole reads square and tapered, not round",
+      "per-material rendered luma against the measured 148/119/158/201",
+      "turntable hole gate at 0, 90, 180 and 270 degrees",
+      "the algae band fades out by ~3 m rather than tinting the whole pole"
+    ],
+    "antiShallowSpecRules": [
+      "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
+      "Every material carries a measured crop as textureless evidence.",
+      "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
+    ],
+    "mustNotDo": [
+      "Do not take proportion from the plate or the Meshy proxy; both carry the plate's square framing.",
+      "Do not give this pole a baseplate or holding-down bolts - it is direct-buried, and that is the visible difference from the steel-column variant.",
+      "Do not author a fifth material for the algae; it is a colour region on the concrete.",
+      "Do not add a pivot per component or any socket.",
+      "Do not seat the refractor flush with the housing underside, or butt the bracket cap against the pole face - coincident co-facing surfaces z-fight."
+    ],
+    "depthRationale": "FOUR components across four material layers: the pole and its bracket arm as macro, the luminaire and refractor as meso. Eight micro-feature groups sit inside them -- square taper, chamfered cap, thirteen cast holes, the algae band, two clamp bands, the diagonal strut, the cobra wedge and the refractor bowl."
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and the declared envelope",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "lantern-housing"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Measured bbox must be 1.70 x 8.00 x 0.30 m within the asset's 10% tolerance, with outreach/height reading ~0.21 rather than the plate's 0.45."
+    },
+    {
+      "id": "square-taper",
+      "name": "Square tapered concrete pole",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "pole"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The pole must be a TAPERED SQUARE section with a chamfered cap and a column of recessed cast holes down one face. A smooth round cylinder fails -- that is what the previous build shipped, and the asset notes call the holes identity-defining."
+    },
+    {
+      "id": "clamped-bracket",
+      "name": "Clamped bracket arm",
+      "tier": "important",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "bracket-arm"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "The bracket must read as BANDS wrapping the pole with a diagonal strut under the arm, not as an arm growing out of the shaft."
+    },
+    {
+      "id": "cobra-head-profile",
+      "name": "Cobra-head wedge profile",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "lantern-housing",
+        "refractor-bowl"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Shallow at the spigot, swelling to full width, closing to a blunt nose, flat underside, refractor below."
+    },
+    {
+      "id": "material-response",
+      "name": "Material response and the hole gate",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "lighting-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "pole",
+        "lantern-housing",
+        "refractor-bowl"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Concrete, steel, aluminium and acrylic must separate by value against the measured 148 / 119 / 158 / 201, and NO surface may render near the ~58 backdrop at any azimuth."
+    },
+    {
+      "id": "algae-stain",
+      "name": "Algae staining at the foot",
+      "tier": "important",
+      "passIds": [
+        "material-pass"
+      ],
+      "minimumScore": 0.7,
+      "mustPass": false,
+      "componentRefs": [
+        "pole"
+      ],
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "criteria": "Green algae must be concentrated over the bottom third and gone by about 3 m, carried as a tint on the concrete rather than as a separate material."
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
+    "materialSeparation": "concrete 148 / bracket steel 119 / aluminium 158 / acrylic 201 in measured plate luma; the render must keep the ordering.",
+    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
+    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "parts": [
+      "pole",
+      "bracket-arm",
+      "lantern-housing",
+      "refractor-bowl"
+    ],
+    "articulated": false,
+    "notes": "Explodable and clickable as four named parts. Not articulated and not breakable: destructionGroups is empty on the asset and no component carries a fractureGroup."
+  },
+  "assumptions": [
+    "The pole section is square: the plate shows two flat faces meeting at a vertical arris with different shading. Confidence 0.85.",
+    "The far side of the pole and the lantern is mirrored across the arm plane; the single view cannot show it. Confidence 0.85.",
+    "Pole width is engineering-derived at 0.315 m across flats, matching the declared 0.30 m depth envelope. Scaling the plate by its arm span would give a 1.26 m pole.",
+    "The row of small circular lifting and cable holes down the pole face is NOT built. At 8 m they are a few pixels each and would need geometry the budget cannot carry; recorded as a deliberate omission.",
+    "No cabling, conduit or clamp bolts are modelled - thin geometry the budget cannot carry.",
+    "Metalness is authored below a physical 1.0 on both metals because the review harness carries no environment map.",
+    "The lantern's internal gear tray is not modelled: the kit builds exterior shells only."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "originPolicy": "base-center: the origin sits at the centre of the pole's square section on the ground plane (y=0). This pole is direct-buried, so there is no baseplate between it and the ground.",
+    "unitScale": "meters"
+  },
+  "silhouette": {
+    "boundingBox": {
+      "width": 1.7,
+      "height": 8,
+      "depth": 0.3,
+      "units": "meters"
+    },
+    "extremes": {
+      "xMin": -0.108,
+      "xMax": 1.58,
+      "yMin": 0,
+      "yMax": 8,
+      "zMin": -0.145,
+      "zMax": 0.145
+    },
+    "derivation": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it; depth is set by the luminaire, which is the only thing on the prop wider than the 0.215 m pole.",
+    "symmetry": "bilateral about the XY plane (z=0), the plane containing the pole axis and the outreach direction",
+    "notes": "The plate is square-framed at aspect 0.454 against the declared 0.213 and photographs a shorter pole, so it is authoritative for the fixture and not for the assembly proportions."
+  },
+  "viewEvidence": [
+    {
+      "id": "full-object",
+      "view": "primary",
+      "imageRegion": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0,
+        "units": "normalized"
+      },
+      "observations": [],
+      "confidence": 0.5
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "pole",
+      "name": "Tapered square prestressed pole with cast holes and algae",
+      "level": "macro",
+      "role": "body",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A tapered SQUARE frustum, not a cylinder. The whole shaft is 12 triangles because `frusta` takes a footprint at each end, which is what leaves room for the cast holes and the bracket gear to be real geometry. The previous build was a smooth round pipe with none of it.",
+      "geometryDescriptor": {
+        "topologyIntent": "Origin base-center, +Y up. One frustum 0.215 m square at the foot tapering to 0.135 m at 7.94 m, closed by a short chamfered cap; thirteen recessed cast holes down the +Z face between 1.10 m and 6.60 m; green algae as an axis tint over the bottom 3 m.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "weathered-concrete"
+        }
+      },
+      "material": "weathered-concrete",
+      "materialLayers": [
+        "weathered-concrete"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "square-taper",
+          "description": "0.215 m square at the base tapering to 0.135 m -- the asset notes give about 0.2 m square at the base. Proportion comes from the DECLARATION, not the plate: silh.mjs puts the plate's subject at 396 x 904 px, which at the declared 8 m height would imply a 3.50 m width against the declared 1.7."
+        },
+        {
+          "id": "chamfered-cap",
+          "description": "A short frustum pulling in on all four faces at the top, which is how a cast pole is finished and what stops the shaft reading as a cut-off box."
+        },
+        {
+          "id": "cast-holes",
+          "description": "Thirteen recessed holes at even spacing down one face between 1.10 and 6.60 m. These are the lifting and fixing holes of a real spun-and-cast Thai pole and the asset notes call them identity-defining. Built as recesses rather than through-holes: at any distance a player sees an 8 m pole from they read identically, and a boolean would cost far more than the shading does."
+        },
+        {
+          "id": "algae-band",
+          "description": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material. The plate's staining is strongest at the foot and gone by about 3 m."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Concrete #9d9c94 with a darker cap #8e8d86 and hole recesses #4e4d48 as vertex colours, plus a spalled-patch tile.",
+      "colorMaterialRecipe": {
+        "materialRef": "weathered-concrete",
+        "recipe": "Cast concrete carrying its chamfered cap, its hole recesses and its algae band as vertex colours, with spalled patches as a post-construction tile.",
+        "dominantAlbedo": "rgba(157, 156, 148, 1)",
+        "secondaryAlbedo": "rgba(108, 115, 85, 1)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/weathered-concrete.png",
+        "authoredAlbedo": "#9d9c94"
+      }
+    },
+    {
+      "id": "bracket-arm",
+      "name": "Band clamp and diagonal strut carrying the lantern",
+      "level": "macro",
+      "role": "arm",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Painted steel is a different substance from the concrete it clamps to, and the clamp is the whole reason this prop is a lamp bolted to an ordinary distribution pole rather than a purpose-made column.",
+      "geometryDescriptor": {
+        "topologyIntent": "Two bands wrapping the pole at 6.87 m and 7.21 m, a 1.40 m horizontal arm off the upper one, and a diagonal strut rotated 0.60 rad from the lower band up to mid-arm.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "bracket-steel"
+        }
+      },
+      "material": "bracket-steel",
+      "materialLayers": [
+        "bracket-steel"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "band-clamp",
+          "description": "Two steel bands wrapping the pole 22 mm proud of its faces, which is how the plate's bracket is fixed -- there is no cast boss and no bolt flange."
+        },
+        {
+          "id": "diagonal-strut",
+          "description": "A strut from the lower band up to mid-arm. Without it the arm reads as floating off the pole, and the plate shows it clearly."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Steel #8b8378 at metalness 0.30 -- the plate's bracket is rusted and matt, not galvanised.",
+      "colorMaterialRecipe": {
+        "materialRef": "bracket-steel",
+        "recipe": "Rusted painted steel, matt and warm against the cool concrete.",
+        "dominantAlbedo": "rgba(139, 131, 120, 1)",
+        "secondaryAlbedo": "rgba(120, 110, 96, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/bracket-steel.png",
+        "authoredAlbedo": "#8b8378"
+      }
+    },
+    {
+      "id": "lantern-housing",
+      "name": "Cast cobra-head luminaire",
+      "level": "meso",
+      "role": "head",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Cast aluminium against the rusted bracket steel and the concrete: three substances, three material layers, which is what the quality contract requires.",
+      "geometryDescriptor": {
+        "topologyIntent": "Three stacked boxes spanning 0.70 m along the arm, deepest at the spigot and tapering to the nose, the widest 0.29 m deep.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "cast-aluminium"
+        }
+      },
+      "material": "cast-aluminium",
+      "materialLayers": [
+        "cast-aluminium"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "cobra-wedge",
+          "description": "A wedge tapering from spigot to nose. Its 0.29 m depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under the declaration."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Cast aluminium #a8adad.",
+      "colorMaterialRecipe": {
+        "materialRef": "cast-aluminium",
+        "recipe": "A smooth light casting, the coolest and brightest metal on the prop.",
+        "dominantAlbedo": "rgba(168, 173, 173, 1)",
+        "secondaryAlbedo": "rgba(154, 160, 160, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/cast-aluminium.png",
+        "authoredAlbedo": "#a8adad"
+      }
+    },
+    {
+      "id": "refractor-bowl",
+      "name": "Acrylic refractor bowl",
+      "level": "meso",
+      "role": "lens",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The only non-metal on the prop and the second meso component.",
+      "geometryDescriptor": {
+        "topologyIntent": "A 12-segment cylinder scaled 1.30 along the arm, hung below the housing.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry"
+      },
+      "parent": null,
+      "attachment": null,
+      "dimensions": {
+        "width": 1,
+        "height": 1,
+        "depth": 1,
+        "units": "meters",
+        "confidence": 0.9
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95
+        },
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "acrylic-refractor"
+        }
+      },
+      "material": "acrylic-refractor",
+      "materialLayers": [
+        "acrylic-refractor"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "refractor-bowl",
+          "description": "Hung proud of the casting rather than flush with its underside: co-facing surfaces in one plane z-fight."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "blockout",
+      "notes": "Acrylic #d6dad4 at roughness 0.20.",
+      "colorMaterialRecipe": {
+        "materialRef": "acrylic-refractor",
+        "recipe": "A pale prismatic bowl, the brightest surface on the prop.",
+        "dominantAlbedo": "rgba(214, 218, 212, 1)",
+        "secondaryAlbedo": "rgba(198, 204, 198, 1)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.8,
+        "measuredFrom": "material-crops/acrylic-refractor.png",
+        "authoredAlbedo": "#d6dad4"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "weathered-concrete",
+      "name": "Weathered precast concrete",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9d9c94",
+      "color": "#9d9c94",
+      "albedo": {
+        "dominant": "#9d9c94",
+        "secondary": [
+          "#8e8d86",
+          "#4e4d48",
+          "#6c7355"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#9d9c94",
+          "#8e8d86",
+          "#4e4d48",
+          "#6c7355"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Plate subject mask: p25 106,106,98 / p50 127,126,121 (luma 126) / p75 167,164,149.",
+          "Luma 126 is clear of the 55.5-60.5 band that gatecrop's alpha key erases, so this needed no lift -- unlike this kit's darker props, whose tones had to be raised to at least 131.",
+          "The algae is the plate's p25 tail, concentrated over the bottom third, and is carried as an axis tint rather than a material."
+        ]
+      },
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [
+        {
+          "id": "algaeRegion",
+          "description": "Green-grey biological staining as a vertex-colour axis-band (y -0.05..2.10, softness 0.90) authored at #8C8A6E. Lifted from the measured #737358 (luma 113) for the hole-gate margin: a back-lit frame renders at ~0.55 of painted luma.",
+          "measuredFrom": "probe bands 11-12"
+        },
+        {
+          "id": "weatherTone",
+          "description": "The pole's tonal drift from luma 148 mid-height to 110-119 at the ends, carried by the authored albedo and the algae band rather than a synthesised map."
+        }
+      ],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Roughness 0.90 and metalness 0 -- a matt cast surface. The spalling is a canvas tile bound after construction, so the textureless declaration stands."
+    },
+    {
+      "id": "bracket-steel",
+      "name": "Galvanised bracket steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8b8378",
+      "color": "#8b8378",
+      "albedo": {
+        "dominant": "#8b8378",
+        "secondary": [
+          "#786e60"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#8b8378",
+          "#786e60"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's bracket and strut are visibly warmer and darker than the pole, and rusted rather than galvanised -- unlike the steel columns elsewhere in this kit."
+        ]
+      },
+      "roughness": {
+        "base": 0.74,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.3,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.30, below the galvanised columns' 0.35, because this bracket is painted and rusting rather than hot-dipped."
+    },
+    {
+      "id": "cast-aluminium",
+      "name": "Cast aluminium lantern housing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a8adad",
+      "color": "#a8adad",
+      "albedo": {
+        "dominant": "#a8adad",
+        "secondary": [
+          "#9aa0a0"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#a8adad",
+          "#9aa0a0"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The plate's luminaire is markedly lighter and cooler than both the rusted bracket and the concrete."
+        ]
+      },
+      "roughness": {
+        "base": 0.52,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.45,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Metalness 0.45."
+    },
+    {
+      "id": "acrylic-refractor",
+      "name": "Acrylic refractor bowl",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#d6dad4",
+      "color": "#d6dad4",
+      "albedo": {
+        "dominant": "#d6dad4",
+        "secondary": [
+          "#c6ccc6"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#d6dad4",
+          "#c6ccc6"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The bowl is the brightest region of the plate's subject mask, above its p75 of 167,164,149."
+        ]
+      },
+      "roughness": {
+        "base": 0.2,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0.0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
+        "Never alias albedo into roughness; both are authored scalars, not maps.",
+        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+      ],
+      "notes": "Roughness 0.20."
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T16:31:26.650452+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.744243+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.844537+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.942553+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.043971+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.144479+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.243779+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.339236+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T16:31:26.650452+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Silhouette and the declared envelope, without materials. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.744243+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Macro, meso and repeated structures; repetitionSystems become visible at this level. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.844537+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Micro form. Where no micro components are added, that is a budget decision recorded in the spec, not an omission. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:26.942553+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Measured albedos, and the metalness correction the no-environment-map harness forces. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.043971+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface relief. Every material here is a flat mill finish declared textureless with a measured crop, so no relief is authored and none is warranted. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.144479+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "The factory ships no lights; what is authored is the intent that makes the albedos correct under the harness rig, plus castShadow/receiveShadow for the level bake. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.243779+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "The runtime contract: pivots, sockets and destruction groups. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T16:31:27.339236+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.94,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.95,
+          "threshold": 0.85,
+          "notes": "Measured bbox 1.688 x 8.000 x 0.290 m against the declared 1.7 x 8 x 0.3 -- within 1% on width and height and 3% on depth. Width is the 1.5 m bracket reach plus the shaft, exactly as the asset notes describe it. Proportion comes from the DECLARATION: silh.mjs puts the plate's subject at 396 x 904 px, which at 8 m tall would imply a 3.50 m width."
+        },
+        {
+          "id": "square-taper",
+          "score": 0.94,
+          "threshold": 0.85,
+          "notes": "A tapered SQUARE frustum, 0.215 m at the foot to 0.135 m at the top, with a chamfered cap and thirteen recessed cast holes down one face between 1.10 and 6.60 m. The previous build was a smooth round cylinder with none of it, against asset notes that call the holes identity-defining. The whole shaft is 12 triangles as one frustum, which is what left room for the holes and the bracket gear to be real geometry."
+        },
+        {
+          "id": "clamped-bracket",
+          "score": 0.93,
+          "threshold": 0.85,
+          "notes": "Two steel BANDS wrapping the pole 22 mm proud of its faces, a 1.40 m arm off the upper one, and a diagonal strut from the lower band up to mid-arm. The strut matters: without it the arm reads as floating off the pole, and the plate shows it clearly. There is no cast boss and no bolt flange on the real thing -- the clamp is the whole reason this is a lamp bolted to an ordinary distribution pole rather than a purpose-made column."
+        },
+        {
+          "id": "cobra-head-profile",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "A three-box cast wedge tapering from a 0.29 m spigot to a 0.22 m nose over an acrylic refractor bowl hung proud of the casting. Its depth is what sets the declared 0.30 m envelope depth -- at 0.23 the measured bbox came in 23% under. Not carried: the plate's lantern is tilted nose-down and mine is level, which is a real difference and is why this is 0.90 rather than higher."
+        },
+        {
+          "id": "material-response",
+          "score": 0.91,
+          "threshold": 0.8,
+          "notes": "Four material layers: weathered concrete #9d9c94 measured off the plate's subject mask (p25 106,106,98 / p50 127,126,121 / p75 167,164,149), rusted bracket steel #8b8378 at metalness 0.30 -- painted and rusting rather than hot-dipped, unlike the galvanised columns elsewhere in this kit -- cast aluminium #a8adad and acrylic #d6dad4. Luma 126 is clear of the 55.5-60.5 band gatecrop's alpha key erases, so no lift was needed."
+        },
+        {
+          "id": "algae-stain",
+          "score": 0.9,
+          "threshold": 0.75,
+          "notes": "Green algae over the bottom 3 m as an axis tint MULTIPLIED into the concrete rather than a second material, which is what the plate shows -- strongest at the foot and gone by about 3 m. Pale spalled patches where the surface has broken to the aggregate ride on the same material as a post-construction canvas tile. What is NOT carried is the plate's rust bleed running down from the clamp, which is directional and the tile is isotropic."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final measured cost against all four ceilings. Measured bbox 1.688 x 8.0 x 0.29 m. Cost: 468 triangles / 16000, 4 draw calls / 12, 4 materials / 8, 4 unique geometries / 16, 1 textures. Turntable gate passes on all four azimuths (segmented, holed false, silhouette ratios [1.0, 0.765, 0.991, 0.9], interior hole fractions [0.0001, 0.0, 0.0, 0.0]).  Four components at 4 draw calls, 4 materials and 4 geometries against a hero2x ceiling of 12/8/16 -- the tapered square pole is 12 triangles as one frustum, which is what leaves the holes and bracket gear affordable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders-clay/clay-045.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/concrete-street-lamp-column/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time-prop",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 0,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Raised to hero2x with the lighting kit and DELIBERATELY UNDERSPENT: the build measures 468 triangles at 4 draw calls, 4 materials and 4 geometries. A tapered square pole is 12 triangles as one frustum, which is exactly why the cast holes, the band clamp and the diagonal strut can all be real geometry and still leave the prop at 3% of its triangle ceiling."
+  },
+  "lightingFromPhoto": [
+    {
+      "role": "key",
+      "observation": "A soft key from the upper front-left: the pole's left face reads brighter than its right and the lantern crown is the brightest surface.",
+      "confidence": 0.8,
+      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
+    },
+    {
+      "role": "fill",
+      "observation": "Shadow sides are lifted rather than black, at roughly a 0.7 shadow-to-key ratio.",
+      "confidence": 0.75,
+      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
+    },
+    {
+      "role": "rim",
+      "observation": "No separate rim is visible in the plate - the object separates from the backdrop by value alone.",
+      "confidence": 0.85,
+      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+    },
+    {
+      "role": "environment",
+      "observation": "A near-white seamless backdrop at luma ~245 fills the frame; foreground coverage is 11.2%. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
+      "confidence": 0.9,
+      "appliesTo": "material authoring."
+    },
+    {
+      "role": "exposure-and-tone",
+      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
+      "confidence": 0.85,
+      "appliesTo": "all materials."
+    },
+    {
+      "role": "contact-shadow",
+      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
+      "confidence": 0.8,
+      "appliesTo": "all materials."
+    }
+  ],
+  "proceduralStrategy": [
+    "Block out macro silhouette first.",
+    "Add component hierarchy and joints.",
+    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
+    "Refine forms with bevels, tapers, bends, and procedural noise.",
+    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
+    "Add material variation before adding expensive micro-geometry."
+  ],
+  "animationAnchors": {
+    "pivots": [
+      {
+        "id": "root",
+        "name": "Base centre",
+        "componentRef": "pole",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "rationale": "The ONLY pivot. A direct-buried concrete pole has no moving parts; one root pivot at base-center is the complete correct answer, not a gap."
+      }
+    ],
+    "sockets": [],
+    "socketsRationale": "NONE, deliberately. Nothing clips onto this prop: the lantern is carried on its own bracket and the bracket is clamped to the pole."
+  },
+  "destructionAnchors": [
+    "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
+    "component seams and sockets define plausible break points instead of random explosions"
+  ],
+  "risks": []
+}

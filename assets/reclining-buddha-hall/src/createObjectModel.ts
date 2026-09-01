@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 14.00 x 10.00 x 28.00 m, origin base-center, +Y up, long axis on Z.
+ * Envelope 12.38 x 10.00 x 19.24 m, origin base-center, +Y up, long axis on Z.
  * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.
  *
  * This is one of thaikit's MONUMENTAL buildings, and unlike the shared retail module its form is
@@ -39,7 +39,7 @@ const CONFIG = {
     "id": "reclining-buddha-hall",
     "name": "Reclining Buddha Hall",
     "exportName": "RecliningBuddhaHall",
-    "envelope": "Envelope 14.00 x 10.00 x 28.00 m, origin base-center, +Y up, long axis on Z.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+    "envelope": "Envelope 12.38 x 10.00 x 19.24 m, origin base-center, +Y up, long axis on Z.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
     "materials": [
       {
         "id": "stone",
@@ -80,87 +80,89 @@ const CONFIG = {
         [
           0,
           0.5,
-          -7,
-          7,
-          -14,
-          14
+          -6.181,
+          6.181,
+          -9.618,
+          9.618
         ],
         [
           0.5,
           1,
-          -6.55,
-          6.55,
-          -13.55,
-          13.55
+          -5.784,
+          5.784,
+          -9.309,
+          9.309
         ],
         [
           1,
           1.35,
-          -6.55,
-          6.55,
-          -13.55,
-          13.55
+          -5.784,
+          5.784,
+          -9.309,
+          9.309
         ],
         [
           1.35,
           1.75,
-          -6.1,
-          2.6,
-          -13.1,
-          13.1
+          -5.386,
+          2.296,
+          -9,
+          9
         ]
       ],
       "plinth": {
         "y0": 1.75,
         "y1": 2.62,
-        "x0": -5.2,
-        "x1": 1.6,
-        "hz": 11.6
+        "x0": -4.592,
+        "x1": 1.413,
+        "hz": 7.969
       },
       "column": {
-        "hw": 0.31,
+        "hw": 0.274,
         "y0": 1.75,
         "y1": 6.6,
-        "frontX": 2.1,
+        "frontX": 1.854,
         "frontCount": 8,
-        "frontHalfZ": 12.2,
-        "endZ": 12.2,
+        "frontHalfZ": 8.381,
+        "endZ": 8.381,
         "endX": [
-          -4.2,
-          -1.05
+          -3.709,
+          -0.927
         ]
       },
       "backWall": {
-        "x0": -6.1,
-        "x1": -5.2,
+        "x0": -5.386,
+        "x1": -4.592,
         "y0": 1.75,
         "y1": 6.6,
-        "hz": 13.1
+        "hz": 9
       },
       "tiers": [
-        [
-          6.6,
-          7.6,
-          5.15,
-          13.8
-        ],
-        [
-          7.6,
-          9.78,
-          3.4,
-          12
-        ]
+        {
+          "y0": 6.6,
+          "hx": 4.547,
+          "hz": 9.481,
+          "drop": 0.26
+        },
+        {
+          "y0": 7.75,
+          "hx": 3.002,
+          "hz": 8.244,
+          "drop": 0.22
+        }
       ],
-      "roofCentreX": -1.72,
+      "roofCentreX": -1.519,
       "band": 0.34,
       "figure": {
-        "x": -1.8,
+        "x": -1.589,
         "rest": 2.62,
         "seg": 18,
         "head": 1.12,
         "headLift": 2.3,
         "headTilt": 0.45,
-        "headZ": 9.5
+        "headZ": 9.5,
+        "fz": 0.687,
+        "fr": 1.1
       }
     }
   } as any;
@@ -744,7 +746,7 @@ export function createRecliningBuddhaHallModel(options: ProceduralModelOptions =
     tintByHeight(geo, 0, 1.75, [0.76, 0.77, 0.75]);
     add('platform', 'Stone platform and statue plinth', geo, 'stone');
     colliders['platform'] = {
-      shape: 'box', localCenter: [0, 5.0, 0], halfExtents: [7.0, 5.0, 14.0],
+      shape: 'box', localCenter: [0, 5.0, 0], halfExtents: [6.19, 5.0, 9.62],
       notes: 'Asset declares collider "box". One convex proxy over the whole envelope; a level '
            + 'builder collides with the hall, not with the figure inside it.',
     };
@@ -805,23 +807,30 @@ export function createRecliningBuddhaHallModel(options: ProceduralModelOptions =
   }
 
   /* ---------------------------------------------------------------- roof
-   * Two shallow tiers, each a truncated gable cross-section extruded along the hall's length. The
-   * pitch is 0.64 -- about 33 degrees -- which is deliberately NOT the ubosot's 46: this is a long
-   * low hall and its roof is shallow, and building it steep would have made a different building.
+   * Two HIPPED tiers. See the note on 'tiers' in the config for why this is a hip and not the
+   * gable it used to be, and for how the two tiers stack.
    *
-   * The roof is centred at x=-1.72, not at the origin: the hall sits at the -X side of the
-   * platform and the apron takes the rest, so a roof centred on the prop would overhang the wrong
-   * side and miss the colonnade entirely. */
+   * Each tier is TWO cones, not one, because the plate's tile field is banded: a gold/ochre course
+   * runs parallel to the eaves with the red field above it. The gold cone is the whole tier; the
+   * red cone starts one band-height up and is deliberately built 40 mm PROUD of the gold surface
+   * it covers, so the two never share a plane. Built flush they would be coincident co-facing
+   * surfaces over the entire roof -- the largest z-fight it is possible to author on this prop --
+   * and built inset the red would sit inside the gold and never be seen at all. Standing it proud
+   * also reads correctly: a tile course laps the one below it. */
   {
-    const T = G.tiers as number[][], B = G.band, cx = G.roofCentreX;
+    const T = G.tiers as { y0: number; hx: number; hz: number; drop: number }[];
+    const B = G.band, cx = G.roofCentreX, P = G.pitch;
     const red: THREE.BufferGeometry[] = [];
     const gold: THREE.BufferGeometry[] = [];
-    for (const [y0, y1, hx, hz] of T) {
-      const ySplit = y0 + B;
-      const g1 = extrudeAlongZ(tierProfile(hx, y0, ySplit, G.pitch), -hz, hz);
+    for (const t of T) {
+      // The gold band: the tier's full footprint, from its eaves to its own apex.
+      const g1 = hipRoof(t.hx, t.hz, t.hz - t.hx, t.y0, t.y0 + P * t.hx, 1, 3, t.drop, 0);
       g1.translate(cx, 0, 0);
       gold.push(g1);
-      const g2 = extrudeAlongZ(tierProfile(hx - B / G.pitch, ySplit, y1, G.pitch), -hz + 0.01, hz - 0.01);
+      // The red field: inset by one band of RISE (band / pitch of run), then pushed 40 mm back out
+      // so it laps the gold rather than meeting it.
+      const hx = t.hx - B / P + 0.04, hz = t.hz - B / P + 0.04;
+      const g2 = hipRoof(hx, hz, hz - hx, t.y0 + B, t.y0 + B + P * hx, 1, 3, t.drop * 0.5, 0);
       g2.translate(cx, 0, 0);
       red.push(g2);
     }
@@ -829,39 +838,64 @@ export function createRecliningBuddhaHallModel(options: ProceduralModelOptions =
     add('roof-band', 'Gold eaves bands', mergeGeos(gold), 'band');
   }
 
-  /* ---------------------------------------------------------------- bargeboards
-   * White boards up each gable rake, and a plain fascia along each eaves. Each board is a box
-   * ROTATED to the rake angle rather than a stair of small boxes: even at 33 degrees a stepped
-   * approximation reads as serration. */
+  /* ---------------------------------------------------------------- hip ribs and ridge
+   * A hip roof's corners carry a capped rib, and its ridge a capped line -- both white-grey stone
+   * in the plate, standing well proud of the tile. They are what make the form read as a hip from
+   * any angle rather than as a smooth pyramid, and on a low-poly roof they are most of the
+   * silhouette's information. They replace the bargeboards, which were rake boards for a gable
+   * that no longer exists.
+   *
+   * Each rib is aimed point to point with a quaternion rather than composed from a pitch angle.
+   * That is deliberate: the previous build carried a real bug where a rake board was rotated by
+   * atan(pitch) instead of atan2(run, rise) -- three degrees out at 46 degrees and twenty-four out
+   * at this hall's 33 -- and aiming a box at two endpoints cannot express that mistake at all. */
   {
-    const T = G.tiers as number[][], cx = G.roofCentreX;
+    const T = G.tiers as { y0: number; hx: number; hz: number; drop: number }[];
+    const cx = G.roofCentreX, P = G.pitch;
     const parts: THREE.BufferGeometry[] = [];
-    for (const [y0, y1, hx, hz] of T) {
-      const inset = (y1 - y0) / G.pitch;
-      const halfTop = Math.max(hx - inset, 0);
-      const run = hx - halfTop, rise = y1 - y0;
-      const len = Math.hypot(run, rise) + 0.10;
-      // The rake angle is atan2(RUN, RISE), not atan(pitch). rotateZ maps the box's +Y to
-      // (-sin, cos), so aiming it along (-run, rise) needs sin = run/len -- which is the
-      // complement of the pitch angle, not the pitch angle itself. At the ubosot's 46 degrees the
-      // two are three degrees apart and the error is invisible; at this hall's 33 degrees they are
-      // twenty-four degrees apart and the bargeboards stood off the roof like scaffolding.
-      const ang = Math.atan2(run, rise);
-      for (const zs of [-1, 1]) {
-        for (const xs of [-1, 1]) {
-          const g = new THREE.BoxGeometry(0.22, len, 0.24);
-          g.rotateZ(xs * ang);
-          g.translate(cx + xs * (hx + halfTop) / 2, (y0 + y1) / 2, zs * (hz + 0.06));
-          parts.push(g);
+    const aim = (a: number[], b: number[], w: number, h: number) => {
+      const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+      const len = d.length();
+      const g = new THREE.BoxGeometry(w, len, h);
+      g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0), d.clone().normalize()));
+      g.translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+      return g;
+    };
+    for (const t of T) {
+      const apex = t.y0 + P * t.hx, rz = t.hz - t.hx;
+      // Four hips, ridge end to eave corner. Lifted 60 mm along the surface normal's vertical
+      // component so the rib sits ON the tile rather than half inside it.
+      /* THE HIP IS NOT A STRAIGHT LINE, which is why the first two attempts left the ribs
+       * hanging off the roof. hipRoof shapes its rings with 'out' = 1 + 0.045 * g, where g falls
+       * from 1 at the eaves to 0 by t = 0.34 -- it is the corner-lift shaping and it is applied
+       * whether or not cornerLift is zero. So the corner path bows OUTWARD over its lower third
+       * and is straight above it, and a single box from ridge to eave corner cuts the chord of
+       * that bow: it leaves the surface just where it is most visible, at the eaves.
+       *
+       * So walk the SAME parametrisation the surface uses and chain short boxes along it. The
+       * lesson generalises -- when a helper shapes a surface, read its shaping function rather
+       * than its arguments, because the arguments are not where the shape is. */
+      const corner = (u: number, xs: number, zs: number) => {
+        const f = 1 - u;
+        const g = Math.pow(Math.max(0, 1 - u / 0.34), 2);
+        const out = 1 + 0.045 * g;
+        return [cx + xs * t.hx * f * out,
+                t.y0 + (apex - t.y0) * u + 0.06,
+                zs * (rz + (t.hz - rz) * f) * out];
+      };
+      const US = [0, 0.10, 0.20, 0.34, 0.62, 1];
+      for (const xs of [-1, 1]) {
+        for (const zs of [-1, 1]) {
+          for (let k = 0; k < US.length - 1; k++) {
+            parts.push(aim(corner(US[k], xs, zs), corner(US[k + 1], xs, zs), 0.26, 0.20));
+          }
         }
       }
-      for (const xs of [-1, 1]) {
-        parts.push(boxAt(cx + xs * (hx + 0.07), y0 + 0.09, 0, 0.14, 0.26, hz * 2 + 0.26));
-      }
+      // The ridge cap.
+      parts.push(boxAt(cx, apex + 0.09, 0, 0.30, 0.20, rz * 2 + 0.30));
     }
-    const top = T[T.length - 1];
-    parts.push(boxAt(cx, top[0] + top[2] * G.pitch + 0.05, 0, 0.30, 0.22, top[3] * 2 + 0.36));
-    add('barge-boards', 'Bargeboards and ridge', mergeGeos(parts), 'stone');
+    add('hip-ribs', 'Hip ribs and ridge caps', mergeGeos(parts), 'stone');
   }
 
   /* ---------------------------------------------------------------- the reclining figure
@@ -1028,7 +1062,19 @@ export function createRecliningBuddhaHallModel(options: ProceduralModelOptions =
       parts.push(hand);
     }
 
-    add('figure', 'Reclining Buddha figure', mergeGeos(parts), 'gold');
+    /* The figure is authored at its ORIGINAL dimensions above and reproportioned here, in one
+     * place, rather than by scaling sixty literals through the pose. Scaling about (X, rest, 0)
+     * is what keeps it sitting ON the plinth: rest is the plinth top, so that plane is the fixed
+     * point of the transform and every station's 'cy = rest + ry' stays true afterwards.
+     *
+     * fz shortens and fr thickens -- see the note on FZ/FR at the top. Doing it here also means
+     * the pose reasoning above is still stated in the proportions it was reasoned in. */
+    const fg = mergeGeos(parts);
+    fg.translate(-X, -rest, 0);
+    fg.scale(F.fr, F.fr, F.fz);
+    fg.translate(X, rest, 0);
+    fg.computeVertexNormals();
+    add('figure', 'Reclining Buddha figure', fg, 'gold');
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;

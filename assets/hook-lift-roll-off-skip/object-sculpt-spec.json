@@ -1,0 +1,2230 @@
+{
+  "targetName": "Hook-Lift Roll-Off Skip",
+  "targetId": "hook-lift-roll-off-skip",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "steel-roll-off-container",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "open-top-steel-box",
+        "panelled-sides",
+        "top-flange",
+        "front-headboard-and-hook-bar",
+        "twin-rear-doors",
+        "skid-rails-and-rollers"
+      ],
+      "structureKind": [
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop",
+        "hinged-door"
+      ],
+      "materialFamilies": [
+        "painted-steel"
+      ],
+      "notes": "An open-top steel roll-off container. Two leaves close the rear end, so the model ships a root pivot plus door-hinge-l and door-hinge-r on the two door instances; the rollers are moulded into the underframe (the container is dragged by a truck, not driven) and nothing attaches or is emitted, so zero sockets. Construction sites, condo builds, factory and hotel service yards. Orange paint chalked to a pale bloom and rusted through at the panel edges, dark rusty iron hardware, and a steel underframe of two skid rails and four rollers."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 1,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "ONE shell component: floor, three walls and their interior liners, three top-flange rails, the front headboard cap and panel frame, four corner posts, the side panel frames with two stiffener ribs a side, the kick rails, the hook bar on two brackets, two full-height I-section skid rails, three cross members and four rollers on stub axles, a rear sill under the doors and a raked gusset under each hook bracket -- fifty-three boxes and thirteen cylinders merged into one geometry: one draw call.",
+        "ONE doors InstancedMesh of two instances, so door-hinge-l and door-hinge-r each name an instance a host can rotate. The leaf is authored about its own centre and the second instance is rolled 180 degrees about Z, not yawed about Y: an InstancedMesh cannot mirror, and a yaw maps local +z to world -z and would put every hinge, keeper and handle inside the container. rz maps (x, y, z) -> (-x, -y, z), which swaps the hinge edge and keeps the outward face outward, and costs only that the leaf hardware be symmetric in its own y -- which a container door, with a strap hinge top and bottom and its cam handle at waist height, already is.",
+        "One material: painted steel. The border frames, ribs, corner posts, interior liners, rail webs, hinge straps, cam bars, roller tyres and hubs are all COLOUR differences, not material differences, so they ride vertex colours on one white shader.",
+        "Action readiness: one root pivot plus two door hinges, zero sockets, one box collider on the root, no destruction groups."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the open-top orange steel box with panelled sides, a top flange, a hook bar on the front headboard and two doors on the rear -- and the weathering, which is what a skip mostly looks like. Every part is a box or a cylinder; the rust, chalk bloom and paint grain are one post-construction canvas."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-shell",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "open-top steel box with a top flange and a lined interior",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-panels",
+          "zone": "body",
+          "kind": "linework",
+          "identityDefining": true,
+          "description": "recessed panel fields inside proud border frames, two stiffener ribs a side, corner posts and kick rails",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-underframe",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two full-height I-section skid rails, three cross members and four rollers on stub axles",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-hook",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "hook bar on two brackets across the front headboard",
+          "mapsTo": {
+            "ref": "shell"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-hardware",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "strap hinges, cam bars with keepers and cranked handles on the two rear leaves",
+          "mapsTo": {
+            "ref": "d5-hardware"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-weathering",
+          "zone": "body",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "rust clusters with granular specks and runs, chalked paint bloom, and paint grain",
+          "mapsTo": {
+            "ref": "d6-weathering"
+          },
+          "onMaterial": "steel",
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+    "resolvedUnknowns": [
+      "The declared 1.9 x 1.5 x 3.9 was corrected to 1.44 x 1.50 x 1.98 from the proxy band table and an independent projective read of the plate, before the build; the arithmetic is in the asset notes and in envelopeDerivation.",
+      "THE DOORS ARE ON THE SHORT REAR END, AND THAT IS AN ASSUMPTION RATHER THAN AN OBSERVATION. Three perspective reads of the plate put its doors on the LONG side: the two top-face edge directions (the door face lies in the flatter, more receding family), the per-corner distance ratios (1.210 across the door face against 1.119 across the other), and the skid rails' image slope of -0.32, which matches the door face's -0.375 and not the long face's +0.16, while the proxy shows the rails running along the LONG axis. They are built on the short end anyway: a generated plate is routinely projectively inconsistent, an image model puts doors on the biggest face by default, and the asset contract names door-hinge-l / door-hinge-r on the rear corner posts of a hook-lift roll-off. Confidence 0.62. The door DETAIL is read off the plate either way.",
+      "The hook bar and the raised headboard are on the one end the single view never shows, so their section and standoff are authored from the asset description at confidence 0.70 and recorded as region-headboard.",
+      "The headboard is a HEAVIER front cap (1.405-1.500) rather than a parapet above the flange. Raising it would have pushed the identity feature above the 1.50 m height the whole envelope is anchored on, and the proxy -- which never saw that end -- reads the flange top as the highest point at 1.00 H.",
+      "The interior is a plain lined box: the plate is a three-quarter view from above the rim and shows the walls' inside faces but nothing standing on the floor."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 1.44 x 1.50 x 1.98 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 2 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 0,
+      "microFeatureGroups": 6,
+      "materialLayers": 1,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Envelope 1.44 x 1.50 x 1.98 m",
+          "Every band within 0.05 of height of the proxy in width and depth"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "built to the uncorrected 3.9 m declaration",
+          "a lidded box"
+        ]
+      },
+      {
+        "id": "open-top-interior",
+        "name": "Open top and lined interior",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "No lid at any azimuth",
+          "Interior walls and floor exist and are visible from above"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a closed box",
+          "a hollow with no floor"
+        ]
+      },
+      {
+        "id": "panelled-elevations",
+        "name": "Panelled elevations",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "A recessed field inside a proud border frame on every elevation",
+          "Stiffener ribs, corner posts and a kick rail"
+        ],
+        "evidenceRefs": [
+          "region-body",
+          "region-door"
+        ],
+        "failureModes": [
+          "flat walls",
+          "coplanar co-facing frames that tear"
+        ]
+      },
+      {
+        "id": "underframe-and-hook",
+        "name": "Skid rails, rollers and hook bar",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two full-length skid rails standing the body clear of the ground",
+          "Four rollers",
+          "A hook bar proud of the front headboard"
+        ],
+        "evidenceRefs": [
+          "region-rail",
+          "region-roller"
+        ],
+        "failureModes": [
+          "stub feet instead of rails",
+          "no hook bar",
+          "a see-through underframe"
+        ]
+      },
+      {
+        "id": "rear-doors",
+        "name": "Twin hinged rear doors",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two leaves on named hinges at the outer corner posts",
+          "Strap hinges, cam bars, keepers and handles OUTWARD on both leaves"
+        ],
+        "evidenceRefs": [
+          "region-door",
+          "region-hardware"
+        ],
+        "failureModes": [
+          "one leaf",
+          "hardware mirrored inside the container by a yaw"
+        ]
+      },
+      {
+        "id": "weathering",
+        "name": "Rust and chalked paint",
+        "required": true,
+        "threshold": 0.78,
+        "qualityCriteria": [
+          "Rust in the measured ratio, clustered and granular with runs below",
+          "Chalk bloom brighter than clean paint"
+        ],
+        "evidenceRefs": [
+          "region-rust",
+          "region-body"
+        ],
+        "failureModes": [
+          "one flat colour",
+          "rust as grey smudges",
+          "chalk shipped as a dirty multiply"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "open-top-interior",
+      "name": "Open top and lined interior",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "panelled-elevations",
+      "name": "Panelled elevations",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "region-body",
+        "region-door"
+      ]
+    },
+    {
+      "id": "underframe-and-hook",
+      "name": "Skid rails, rollers and hook bar",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass",
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "region-rail",
+        "region-roller"
+      ]
+    },
+    {
+      "id": "rear-doors",
+      "name": "Twin hinged rear doors",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "interaction-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "region-door",
+        "region-hardware"
+      ]
+    },
+    {
+      "id": "weathering",
+      "name": "Rust and chalked paint",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.78,
+      "mustPass": true,
+      "componentRefs": [
+        "shell"
+      ],
+      "evidenceRefs": [
+        "region-rust",
+        "region-body"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "shell",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid shell of the container at base-center, where a level editor drops it on the ground."
+      },
+      {
+        "name": "door-hinge-l",
+        "component": "doors",
+        "type": "hinge",
+        "localPosition": [
+          -0.61,
+          0.869,
+          0.855
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "left rear leaf, hinged on the rear corner post, swings out about Y"
+      },
+      {
+        "name": "door-hinge-r",
+        "component": "doors",
+        "type": "hinge",
+        "localPosition": [
+          0.61,
+          0.869,
+          0.855
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "right rear leaf, hinged on the rear corner post, swings out about Y"
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "shell",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "The full container. physics.enabled is false on the asset, so this is the declaration and the derived compound in colliders.json is the shipped shape."
+      }
+    ],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The declared 1.9 x 1.5 x 3.9 was corrected to 1.44 x 1.50 x 1.98 from the proxy band table and an independent projective read of the plate, before the build; the arithmetic is in the asset notes and in envelopeDerivation.",
+    "THE DOORS ARE ON THE SHORT REAR END, AND THAT IS AN ASSUMPTION RATHER THAN AN OBSERVATION. Three perspective reads of the plate put its doors on the LONG side: the two top-face edge directions (the door face lies in the flatter, more receding family), the per-corner distance ratios (1.210 across the door face against 1.119 across the other), and the skid rails' image slope of -0.32, which matches the door face's -0.375 and not the long face's +0.16, while the proxy shows the rails running along the LONG axis. They are built on the short end anyway: a generated plate is routinely projectively inconsistent, an image model puts doors on the biggest face by default, and the asset contract names door-hinge-l / door-hinge-r on the rear corner posts of a hook-lift roll-off. Confidence 0.62. The door DETAIL is read off the plate either way.",
+    "The hook bar and the raised headboard are on the one end the single view never shows, so their section and standoff are authored from the asset description at confidence 0.70 and recorded as region-headboard.",
+    "The headboard is a HEAVIER front cap (1.405-1.500) rather than a parapet above the flange. Raising it would have pushed the identity feature above the 1.50 m height the whole envelope is anchored on, and the proxy -- which never saw that end -- reads the flange top as the highest point at 1.00 H.",
+    "The interior is a plain lined box: the plate is a three-quarter view from above the rim and shows the walls' inside faces but nothing standing on the floor."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center on the ground, +Y up, +Z the REAR (the two door leaves, which is the face the plate shows most fully), -Z the front headboard and hook bar. The skid rails run along Z."
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 1.44,
+      "h": 1.5,
+      "d": 1.98
+    },
+    "description": "Open-top box: floor 1.22 x 1.75 at 0.255-0.290 m; three walls 0.035 m thick over 0.290-1.448 m on a 1.28 x 1.79 footprint, the rear left open and closed by the doors; top flange 0.120 m wide around the top at 1.430-1.500 m, 1.44 x 1.92 overall; front headboard cap 1.44 x 0.120 x 0.095 at 1.405-1.500. Panel border frames and two stiffener ribs stand 0.038 m proud of each side wall; four corner posts 0.090 x 0.078 stand 0.050 m proud of both faces they meet. Hook bar r 0.036 x 0.64 across the headboard on two 0.105 x 0.280 brackets, its front at z -0.996. Two I-section skid rails at x +-0.50, 0.115 m flanges over a 0.040 m web, full height from the ground to the floor; three cross members 1.10 x 0.114; four rollers r 0.072 x 0.090 at x +-0.575, z +0.30 and +0.81, on stub axles with hub caps. Two door leaves 0.61 x 1.158 x 0.056 at z 0.855, each with a border frame and central rib on BOTH faces, two strap hinges with knuckles and bolt heads, and a cam bar r 0.017 x 1.16 with two keepers, two end collars and a cranked D-handle. A 1.30 x 0.056 rear sill under the leaves and a 0.055 x 0.110 gusset raked 36 degrees under each hook bracket.",
+    "envelopeDerivation": "x spans -0.720..+0.720 at the top flange, the declared 1.44; y 0.000 (the skid rails on the ground) to 1.500 (the flange top); z -0.996 at the hook bar to +0.986 at the door cam handles, 1.982 against the declared 1.98. Inside that: skid rails 0.000-0.262, cross members 0.145-0.258, floor 0.255-0.290, shell walls 0.290-1.448, top flange 1.430-1.500; shell 1.28 x 1.79 and top flange 1.44 x 1.92. DECLARATION CORRECTED at model time from 1.9 x 1.5 x 3.9. That was a list-time estimate of a 6 cubic metre roll-off and the plate does not show one: the Meshy proxy bbox is 1.897 x 1.480 x 1.407 (H-normalised 1.282 / 1.000 / 0.951) and the band table at 5-95 pct reads w/h 0.85, d/h 1.19 against the previously shipped 1.21 / 2.55 -- a mean depth error of 1.35 of HEIGHT. An independent projective read of the plate agrees: the two visible faces project to 1.066 m and 1.046 m at equal scale, which for a rectangular box puts d/w near 1.4 and not 2.05. Anchored on the declared 1.50 m height, unchanged and the primary axis.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, and the thing that caught the envelope. At the CORRECTED envelope the band table reads mean |delta width| 0.0066 and |delta depth| 0.0138, every band within 0.034 of height: band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005 after the rails were taken full height. At the PREVIOUS envelope the same table read 0.347 and 1.352. The proxy never saw the hook bar or the door hardware -- both sit on ends the single plate does not show -- so the declared depth exceeds the proxy bbox by 0.06 m and that is where it comes from."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-body",
+      "viewpoint": "left-three-quarter",
+      "path": "crops/body.png",
+      "confidence": 0.79
+    },
+    {
+      "id": "region-rust",
+      "viewpoint": "left-three-quarter",
+      "path": "crops/rust.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-door",
+      "viewpoint": "front-three-quarter",
+      "path": "crops/door.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-hardware",
+      "viewpoint": "front-three-quarter",
+      "path": "crops/hardware.png",
+      "confidence": 0.81
+    },
+    {
+      "id": "region-rail",
+      "viewpoint": "front-three-quarter-low",
+      "path": "crops/rail.png",
+      "confidence": 0.83
+    },
+    {
+      "id": "region-roller",
+      "viewpoint": "front-three-quarter-low",
+      "path": "crops/roller.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-headboard",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.7,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.70: the plate shows one long side and the door end only, so the front headboard and its hook bar are authored from the asset description and from what a hook-lift roll-off is, with the same panel frame the observed elevations carry."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "shell",
+      "name": "Shell, flange, headboard, hook bar, underframe and rear doors",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.79,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Fifty boxes and thirteen cylinders merged into one geometry on one material: one draw call of two.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Floor 1.22 x 0.035 x 1.75 at 0.255-0.290; three walls 0.035 thick over 0.290-1.448 on a 1.28 x 1.79 footprint with the rear open; interior liners 0.007-0.008 thick inside them; three flange rails 0.120 x 0.070 at 1.430-1.500 and a headboard cap 1.44 x 0.095 x 0.120 at 1.405-1.500; side border frames 0.046 x 0.050 standing 0.038 proud with two 0.042 ribs; four corner posts 0.090 x 0.078; kick rails 0.038 x 0.070 at 0.290-0.360; hook bar r 0.036 x 0.64 on two 0.105 x 0.280 x 0.095 brackets; I-section rails at x +-0.50 (flanges 0.115 x 0.030 at 0.015 and 0.246, web 0.040 x 0.210); three cross members 1.10 x 0.114 x 0.110; four rollers r 0.072 x 0.090 with r 0.026 axles and r 0.032 caps; a rear sill 1.30 x 0.056 x 0.034 at 0.318; a gusset 0.055 x 0.110 x 0.110 raked PI/5 about X under each hook bracket.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every proud family sits in its own plane: corner posts at 0.690 from centre, border frames at 0.678, kick rails at 0.670, ribs at 0.666. The flange rails BUTT rather than overlap -- two boxes sharing a top face over the same plan area tear -- so the side rails run x 0.600..0.720 and the rear rail x -0.600..0.600, and the side rails stop at z -0.840 where the headboard cap starts. The panel frames' top and bottom rails butt their stiles rather than running through them, and the ribs and the headboard mid-rail each sit 4-7 mm shallower than what they cross. The floor is 5 mm wider than the opening so its edge buries in the walls instead of sitting flush with their inner faces; the rail web laps 5 mm into both flanges and the top flange 7 mm into the floor. check-coplanar reports clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with HEIGHT-keyed UVs at 1.55 m -- one vertical repeat over the 1.50 m prop, so the tile's top and bottom are the prop's."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-shell",
+          "description": "shell and flange",
+          "delivery": "boxes"
+        },
+        {
+          "id": "d2-panels",
+          "description": "panel frames, ribs, posts, kick rails",
+          "delivery": "proud boxes in four separate planes"
+        },
+        {
+          "id": "d3-underframe",
+          "description": "skid rails, cross members, rollers",
+          "delivery": "boxes + cylinders"
+        },
+        {
+          "id": "d4-hook",
+          "description": "hook bar and brackets",
+          "delivery": "cylinder on two boxes"
+        },
+        {
+          "id": "d5-hardware",
+          "description": "strap hinges, cam bars, keepers, cranked handles",
+          "delivery": "boxes + cylinders + a tube on the instanced leaves"
+        },
+        {
+          "id": "d6-weathering",
+          "description": "rust, chalk bloom, grain",
+          "delivery": "post-construction canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#d7713e",
+        "recipe": "Lifted orange as vertex colour on white with a re-based weathering canvas; frames and flange #f68b4d; liners #ce7241; rail webs #d06f3b; hardware #986348; hook bar #ae6538; tyres #765f44; hubs #968061.",
+        "evidenceRef": "region-body",
+        "confidence": 0.79,
+        "dominantAlbedo": "rgba(215, 113, 62, 1.0)",
+        "secondaryAlbedo": "rgba(246, 139, 77, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.79
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "base-center on the ground under the skid rails. The shell is the rigid root; each door leaf carries its own hinge pivot on its rear corner post, and there are no other axes because nothing else on a sealed steel container moves."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            0.75,
+            0
+          ],
+          "halfExtents": [
+            0.72,
+            0.75,
+            0.99
+          ],
+          "notes": "The full container. physics.enabled is false on the asset, so this is the declaration and the derived compound in colliders.json is the shipped shape."
+        }
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Weathered painted steel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#e97d43",
+      "color": "#e97d43",
+      "roughness": {
+        "base": 0.72,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.15,
+      "albedo": {
+        "dominant": "#e97d43",
+        "secondary": [
+          "#d7713e",
+          "#f68b4d",
+          "#986348"
+        ],
+        "samplingNotes": "Measured as the mean of crops/body.png. extract_pbr_evidence confidence 0.790. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d6-weathering",
+          "region": "all painted surfaces",
+          "roughness": 0.8,
+          "palette": [
+            "#DD6D2D",
+            "#D18D5A"
+          ],
+          "evidence": "crops/rust.png -- rust bodies #a75325 against clean #b05f37 in the same light, a ratio of (0.949, 0.874, 0.673); crops/body.png -- chalk bloom #9e6b4a, a ratio of (0.898, 1.126, 1.345). The chalk is BRIGHTER than clean paint in green and blue, so no multiply can reach it and the canvas RE-BASES the envelope to #e98d5a (linear K = 1.000, 1.299, 1.822): the tile's own fill multiplies the whole prop back down to clean #e97d43, leaving rust #dd6d2d below it and bloom #d18d5a above it."
+        },
+        {
+          "id": "d5-hardware",
+          "region": "strap hinges, keepers, cam bars, hook bar, rollers",
+          "roughness": 0.85,
+          "palette": [
+            "#986348",
+            "#AE6538"
+          ],
+          "evidence": "crops/hardware.png -- straps #a66e57..#bf7d66 over near-black cores at 0.81; crops/roller.png -- tyres #3a2c1e, lifted. Vertex colours: a second material would cost the second and last draw call, and the doors need it more."
+        }
+      ],
+      "finishClass": "painted-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The same paint appears in TWO lighting states on the plate and neither is the albedo: #b05f37 (luma 109, sat 0.69) on the shaded long side and #f89543 (luma 164) on the key-lit end. Shipped at #e97d43 (luma 144, sat 0.71). The previous build shipped #c96a35 and its own review recorded that rendering side-lit at ~70 against the harness backdrop's 58; the harness returns about 0.75 of an authored vertical face, measured here as #c06537 (luma 111) coming back at luma 83, so every paint tone is lifted 1.12 and every iron tone 1.10. The lift stops at 1.12 because 1.16 clips the border frames' red channel at 255, and a clipped channel no longer answers to the canvas.",
+          "Carried as a vertex colour on a WHITE material so the panel fields (#d7713e), border frames, ribs, corner posts and flange (#f68b4d), interior liners (#ce7241), rail webs (#d06f3b), hinge straps and keepers (#986348, region-hardware), cam bars and the hook bar (#ae6538) and the roller tyres (#765f44, lifted from the plate's #3a2c1e at luma 46 -- below the backdrop) and hubs (#968061) all ride one shader. Every tone ships at saturation 0.35 or better, which is what the turntable gate actually holds on; it reports 0 enclosed background pixels at all four azimuths.",
+          "Metalness 0.15 and roughness 0.72 for chalked paint over steel: the plate carries no specular highlight anywhere, and there is no environment map. Textureless as DECLARED, with ONE 512 px canvas bound after construction as both map and bump. The shell takes HEIGHT-keyed UVs at 1.55 m so the tile has exactly one vertical repeat and its own top and bottom are the prop's: rust bleeds DOWN from the top rail, where water sits and the paint goes first, and a grime band darkens the base. A world-space tile has no up and could carry neither, which is what a first pass shipped. One repeat costs density -- the tile covers 1.55 m where the world version covered 0.90, so every mark is 1.7x larger -- so the cluster counts go up and the mark sizes come down to hold the density per METRE. The two door leaves keep world UVs: their geometry is authored about the leaf centre so the second instance can be rolled, and a height key reads local y."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/body.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.79,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "doors",
+      "name": "Rear door leaves",
+      "componentRef": "shell",
+      "count": 2,
+      "primitive": "box",
+      "materialId": "steel",
+      "placement": "two instances at x -0.305 and +0.305, y 0.869, z 0.855; the second is ROLLED 180 degrees about Z, not yawed about Y",
+      "instanced": true,
+      "pivotPerInstance": true,
+      "notes": "One InstancedMesh of the leaf plate, its border frames and rib on both faces, two strap hinges, a cam bar with keepers, collars and a cranked handle. An InstancedMesh cannot mirror, and a yaw maps local +z to world -z, which puts every fitting inside the container; rz maps (x, y, z) -> (-x, -y, z), swapping the hinge edge while keeping the outward face outward, which is legal because the leaf hardware is symmetric in its own y. Each instance is a named hinge pivot on its rear corner post."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-08-31T22:02:58.784154+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:58.861372+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:58.939190+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.019267+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.120036+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.210669+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "panelled-elevations",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A recessed field inside a proud border frame on all four elevations, with two stiffener ribs a side and a mid-rail on the headboard; four corner posts, kick rails, and a border frame plus central rib on BOTH faces of each leaf. The proud families sit in four separate planes (posts 0.690 from centre, frames 0.678, kick rails 0.670, ribs 0.666), the flange rails butt rather than overlap, and the frame rails butt their stiles: check-coplanar reports clean at 0.001 m.",
+          "notes": ""
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        },
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.291912+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.371757+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.453146+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.534481+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.614204+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.693111+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        },
+        {
+          "id": "panelled-elevations",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A recessed field inside a proud border frame on all four elevations, with two stiffener ribs a side and a mid-rail on the headboard; four corner posts, kick rails, and a border frame plus central rib on BOTH faces of each leaf. The proud families sit in four separate planes (posts 0.690 from centre, frames 0.678, kick rails 0.670, ribs 0.666), the flange rails butt rather than overlap, and the frame rails butt their stiles: check-coplanar reports clean at 0.001 m.",
+          "notes": ""
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        },
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        },
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-08-31T22:02:58.784154+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Built to the declared 1.9 x 1.5 x 3.9. The proxy band table read mean |delta depth| 1.352 of HEIGHT against it; the declaration was corrected to 1.44 x 1.50 x 1.98 on the proxy bbox and an independent projective read of the plate, and the model rebuilt to 0.0063 / 0.0147.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:58.861372+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: open-top box at the CORRECTED envelope 1.44 x 1.50 x 1.98, from the proxy band table (w/h 0.85, d/h 1.19) and a projective read of the plate, against a declaration of 1.9 x 1.5 x 3.9 the previous build was made to and could not score.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:58.939190+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The skid rails were a low channel with a 0.09 m open slot to the floor: the turntable gate found 663 enclosed background pixels in a one-pixel seam at azimuth 090 and 270. Taken full height to the floor, which closed it and moved band 0 from -0.085 to -0.005.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.019267+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: floor 0.255-0.290, walls 0.290-1.448 on a 1.28 x 1.79 footprint with the rear open, top flange 1.430-1.500 at 1.44 x 1.92, headboard cap to 1.405; full-height I-section skid rails, three cross members, four rollers, hook bar on two bracketed gussets. Stations from the proxy SIDE map.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.120036+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The two leaves' cam bars sat 90 mm apart at the seam and read as one doubled rod, and their D-handles reached toward each other and crossed at the centre. Moved off the seam to local x 0.205 and re-formed to stand OUT of the leaf face rather than sideways.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.210669+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "panelled-elevations",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A recessed field inside a proud border frame on all four elevations, with two stiffener ribs a side and a mid-rail on the headboard; four corner posts, kick rails, and a border frame plus central rib on BOTH faces of each leaf. The proud families sit in four separate planes (posts 0.690 from centre, frames 0.678, kick rails 0.670, ribs 0.666), the flange rails butt rather than overlap, and the frame rails butt their stiles: check-coplanar reports clean at 0.001 m.",
+          "notes": ""
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        },
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: panel border frames, two ribs a side and a headboard mid-rail, four corner posts, kick rails, rear sill; two door leaves with frames both faces, strap hinges, cam bars, keepers, collars and cranked handles. Four proud planes so nothing co-faces; check-coplanar clean at 0.001 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.291912+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: one painted steel at PBR confidence 0.79, textureless, roughness 0.72 and metalness 0.15 for chalked paint with no highlight anywhere on the plate. The albedo is authored against a MEASURED harness transfer -- #c06537 came back at luma 83 against the plate's shaded 109, so the paint family lifts 1.12 and the iron 1.10, stopping there because 1.16 clips red.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.371757+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The canvas was world-keyed at 0.90 m, so it had no up: the plate's most striking mark, rust bleeding down from the top rail, could not be drawn and the base grime had to be a vertex gradient. Re-keyed to height at 1.55 m for one vertical repeat, with the cluster counts raised and the mark sizes cut to hold the density per metre that the larger tile would otherwise have lost.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.453146+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: one re-based weathering canvas, height-keyed at 1.55 m. Rust runs from the top rail, clustered granular rust, chalk bloom brighter than clean paint, grime band at the base, grain, bump 0.006. The first version was world-keyed, which has no up and could carry neither the runs nor the base band.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.534481+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: the plate carries a soft key from the right, no rim light and no contact shadow; both recorded absent. Exposure 1.0, ACES filmic. The albedo is de-lit by probing the harness transfer rather than by copying either lighting state.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.614204+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        }
+      ],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot plus door-hinge-l and door-hinge-r on the two leaf instances, ZERO sockets, one BOX collider on the shell root, no destruction groups. Nothing else on a sealed steel container turns.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-08-31T22:02:59.693111+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.88,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 1.44 x 1.50 x 1.98 m, measured 1.440 x 1.500 x 1.982. Band table against the Meshy proxy: mean |delta width| 0.0063, |delta depth| 0.0147, every band within 0.034 of HEIGHT -- band 9 (the flange) +0.003 / -0.006, bands 3-7 (the walls) within 0.015, band 0 (the skid rails) -0.005. The same table read 0.347 / 1.352 against the uncorrected 1.9 x 1.5 x 3.9 declaration.",
+          "notes": "The declaration was corrected before the rebuild, not scored around."
+        },
+        {
+          "id": "open-top-interior",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "No lid at any azimuth. The walls are 0.035 m plate so their inside faces exist, and separate 0.007-0.008 m liners in a darker tone (#ce7241) give the interior its own value; the floor is visible from above at 0, 90, 180, 270 and the hero. The rear is left OPEN in the shell and closed by the leaves, so opening a door reveals the interior rather than a fourth wall.",
+          "notes": "Nothing stands on the floor: the plate shows the rim from above and no contents."
+        },
+        {
+          "id": "panelled-elevations",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A recessed field inside a proud border frame on all four elevations, with two stiffener ribs a side and a mid-rail on the headboard; four corner posts, kick rails, and a border frame plus central rib on BOTH faces of each leaf. The proud families sit in four separate planes (posts 0.690 from centre, frames 0.678, kick rails 0.670, ribs 0.666), the flange rails butt rather than overlap, and the frame rails butt their stiles: check-coplanar reports clean at 0.001 m.",
+          "notes": ""
+        },
+        {
+          "id": "underframe-and-hook",
+          "tier": "critical",
+          "score": 0.85,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two I-section skid rails at x +-0.50 running the full 1.72 m and standing the body clear of the ground; three cross members; four rollers r 0.072 on stub axles with hub caps; the hook bar r 0.036 x 0.64 standing 0.036 m proud of two brackets on the headboard, on raked gussets. The rails were a low channel first, which left a 0.09 m open slot the turntable gate found 663 background pixels in; taking them full height closed it and moved band 0 from -0.085 to -0.005.",
+          "notes": "The hook bar and headboard are on the one end the single plate never shows and are authored from the asset description at confidence 0.70, recorded as region-headboard rather than presented as observed."
+        },
+        {
+          "id": "rear-doors",
+          "tier": "critical",
+          "score": 0.84,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two leaves on door-hinge-l and door-hinge-r at the rear corner posts, each with border frames both faces, two strap hinges with knuckles and bolt heads, and a cam bar with two keepers, two end collars and a cranked D-handle. The second instance is ROLLED 180 degrees about Z, not yawed: a yaw maps local +z to world -z and puts every fitting inside the container, which is the fault this asset's own first review records, and an InstancedMesh cannot mirror.",
+          "notes": "That the doors are on the SHORT rear end is an assumption at confidence 0.62. Three perspective reads of the plate -- top-face edge directions, per-corner distance ratios 1.210 against 1.119, and the skid rails' image slope of -0.32 matching the door face's -0.375 rather than the long face's +0.16 -- put the plate's doors on the LONG side. Overridden because a generated plate is routinely projectively inconsistent and the asset contract names rear hinges."
+        },
+        {
+          "id": "weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.78,
+          "passed": true,
+          "evidence": "One 512 px canvas re-basing the envelope to #e98d5a (linear K 1.000 / 1.299 / 1.822) and multiplying back to clean #e97d43, with rust #dd6d2d in clustered granular patches and runs, chalk bloom #d18d5a, and paint grain; height-keyed at 1.55 m so rust bleeds down from the top rail and a grime band darkens the base. Both weathering tones are plate-measured RATIOS against clean paint in the same light, (0.949, 0.874, 0.673) and (0.898, 1.126, 1.345), carried onto the shipped paint rather than pasted as the pixels they were sampled from.",
+          "notes": "The chalk ratio exceeds 1 in green and blue, so a plain multiply could not reach it; the re-base is what makes the bloom possible at all. One material, so the iron hardware shares the paint's roughness response -- the second draw call went to the doors, which need it more."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 1,760/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 512 px canvas at 1.3 MB and a 61 ms factory. Turntable gate 0 enclosed background pixels at all four azimuths.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/hook-lift-roll-off-skip/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 2000,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 1,
+        "repetitionSystems": 1,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "One component and one repetition system: 2 of 2. The leaves are the repetition system rather than a second component, because a component and a system each cost a call. There is no third call to spend, which is why the hardware is a vertex colour rather than its own material."
+      },
+      "materials": {
+        "projectedTotal": 1,
+        "budget": 2,
+        "headroom": 1,
+        "note": "steel only: 1 of 2; every other tone is a vertex colour on a white shader."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1760,
+        "budget": 2000,
+        "headroom": 240,
+        "note": "1,760 of 2,000: fifty-three boxes and thirteen 5-10 segment cylinders in the shell, and twenty-eight boxes, a cylinder and a tube instanced twice. The four ceilings are per-asset overrides pinned to medium's own numbers: the class is large only because colliderPartCeiling() reads budgetClass and an open-top vessel needs eight collider parts, and the prop should claim no frame time its 1.98 m size has not earned. The round sections came down a few segments each when that pin was applied, because 1,900 of 2,000 is not headroom."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Boxes for the shell, floor, liners, flange, panel frames, ribs, posts, kick rails, cross members, brackets, the rear sill, the raked hook gussets, leaves, straps and keepers; cylinders for the hook bar, the skid-rail-mounted rollers, their axles and hub caps, and the door cam bars; one polyline tube for each cranked D-handle."
+    },
+    {
+      "id": "instancing",
+      "strategy": "One InstancedMesh: the two door leaves, each a named hinge pivot with its instance index, the second rolled 180 degrees about Z."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "The material is declared textureless. ONE 512 px weathering canvas after construction at 1.3 MB, bound as both map and bumpMap at 0.006, height-keyed on the shell at 1.55 m and world-keyed on the leaves."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "declared-size",
+      "severity": "high",
+      "description": "The list-time 1.9 x 1.5 x 3.9 contradicted the proxy (w/h 0.85, d/h 1.19) and the plate by 1.35 of HEIGHT in depth; the previous build was made to it and could not score its silhouette.",
+      "mitigation": "Corrected to 1.44 x 1.50 x 1.98 before the rebuild, recorded in the asset notes with the arithmetic; the band table now reads 0.0066 / 0.0138."
+    },
+    {
+      "id": "door-face",
+      "severity": "medium",
+      "description": "Three perspective reads of the plate put its doors on the LONG side, not on the short rear end where the asset contract names the hinges.",
+      "mitigation": "Built on the rear end and recorded as an assumption at confidence 0.62, with all three measurements written down rather than the conclusion alone."
+    },
+    {
+      "id": "instanced-mirror",
+      "severity": "medium",
+      "description": "An InstancedMesh cannot mirror, and yawing the second leaf 180 degrees puts every hinge, keeper and handle inside the container -- which is the fault this asset's own first review records.",
+      "mitigation": "Rolled about Z instead, with the leaf hardware made symmetric in its own y so the roll is legal."
+    },
+    {
+      "id": "underframe-holes",
+      "severity": "medium",
+      "description": "The first rebuild left a 0.09 m open slot between the low skid rails and the floor, and the turntable gate found 663 enclosed background pixels in a one-pixel seam there at azimuth 090 and 270.",
+      "mitigation": "The rails were taken full height to the floor, which closed it and also moved band 0 from -0.085 to -0.005; the gate now reports 0 at all four azimuths."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Hook-Lift Roll-Off Skip",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7729,
+        "aspectRatioDelta": 0.0796,
+        "scaleDelta": 0.1271,
+        "bilateralSymmetryError": 0.0649,
+        "colorDelta": {
+          "checked": 1,
+          "maxDeltaE": 12.37,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 12.37
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.773 is below threshold 0.85",
+        "aspect-ratio delta 0.080 exceeds threshold 0.05",
+        "scale delta 0.127 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "1ead2817d46565df",
+      "passId": "blockout"
+    }
+  ]
+}
