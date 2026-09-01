@@ -33,13 +33,15 @@ scene.add(createModel({ castShadow: true, textureSize: 512 }));
 supplies it, and there must be exactly one copy — a second instance means the factory's
 `Mesh` is not the renderer's `Mesh` and nothing draws.
 
-## What this pack carries beyond vibe3d's metadata
+## Extra data the pack carries as files
 
-vibe3d's model metadata schema is strict — title, description, category, tags, preview,
-controls, material slots, parts and socket names — so thaikit's extras ride in
-`thaikit.json` and `colliders.json` instead, installed beside `model.ts` like any other
-file. vibe3d itself never reads them; they are plain JSON for your game to load if it wants
-a prop's mass, its walkable shell or its budget. The source of truth is the tree at
+A vibe3d pack can ship any file alongside an item's `model.ts`, and thaikit uses that to
+carry the game-side data for every prop: `thaikit.json` (mass, physics flags, placement
+rules, pivots, destruction groups, render budgets and the review score) and
+`colliders.json` (a hand-checked walkable shell of boxes and cylinders, in root-local
+metres). `vibe3d add` installs both beside the factory like any other file, so a game can
+read a prop's mass, its collider compound or its budget straight from the install with no
+extra tooling. The source of truth is the tree at
 [`packages/props/src/models/`](https://github.com/keysforthewin/thaikit) in the thaikit
 repo; this registry is built from it.
 

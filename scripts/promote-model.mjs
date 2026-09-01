@@ -45,6 +45,7 @@ import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { entrySource } from './lib/vibe3d-entry.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict, colliderVerdict } from './lib/budget.mjs';
 import { readSkillReview } from './lib/review.mjs';
+import { writeThumb } from './lib/thumb.mjs';
 
 const nodeRequire = createRequire(import.meta.url);
 
@@ -299,10 +300,7 @@ async function main() {
     const src = path.join(from, rel);
     if (!(await exists(src))) continue;
     const dest = path.join(to, 'thumb.webp');
-    await sharp(src)
-      .resize(Number(args['thumb-size'] ?? 512), Number(args['thumb-size'] ?? 512), { fit: 'inside' })
-      .webp({ quality: 82 })
-      .toFile(dest);
+    await writeThumb(src, dest, Number(args['thumb-size'] ?? 512));
     thumb = dest;
     log(`thumb  : ${toRepoRelative(src)} -> ${toRepoRelative(dest)}`);
     break;

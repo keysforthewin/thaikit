@@ -127,7 +127,12 @@ async function run(asset, baseOpts) {
 }
 
 async function writeRecord(asset, existing, { record, meta }, opts, { measuring }) {
-  const file = collidersFile(asset.id);
+  // Qualified here rather than passed in: `run` has its own `qid` and this
+  // function referenced it across the scope boundary, so every derivation threw
+  // `qid is not defined` at the point it went to record the result -- after the
+  // voxelisation and the ray self-check had already run.
+  const qid = qualifiedId(asset.pack ?? '@thai-kit', asset.id);
+  const file = collidersFile(qid);
   const relative = toRepoRelative(file);
 
   const doc = measuring

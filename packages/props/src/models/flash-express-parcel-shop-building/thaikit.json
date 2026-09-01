@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T01:23:54.877Z",
   "description": "",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "flash-express-parcel-shop-building",
   "image": {
@@ -37,21 +38,21 @@
   "maxUniqueGeometries": 32,
   "model": {
     "colliders": {
-      "coverage": 0.9875,
-      "derivedAt": "2026-08-28T13:11:11.840Z",
+      "coverage": 1,
+      "derivedAt": "2026-09-01T18:29:29.738Z",
       "file": "packages/props/src/models/flash-express-parcel-shop-building/colliders.json",
       "handTuned": false,
-      "ledgesPreserved": "5/7",
-      "maxLedgeError": 1.005,
+      "ledgesPreserved": "2/5",
+      "maxLedgeError": 0.6825,
       "measurementSkipped": null,
-      "overshoot": 0.0232,
-      "p95LedgeError": 0.0275,
-      "parts": 8
+      "overshoot": 0,
+      "p95LedgeError": 0.205,
+      "parts": 5
     },
     "drawCalls": 13,
     "export": "createObjectModel",
-    "fileBytes": 104974,
-    "gpuBytesEstimate": 3495253,
+    "fileBytes": 99420,
+    "gpuBytesEstimate": 7034197,
     "maps": [],
     "materials": 8,
     "meshes": 13,
@@ -72,63 +73,99 @@
         "perPass": 0,
         "total": 0
       },
-      "critique": "FINAL VERDICT. Overall visual fidelity 0.83 -- not a pass self-score. 848/16000 triangles, 11/12 draw calls, 8/8 materials, 11/16 unique geometries. Every critical feature is at or above its threshold; the one that was not was fixed rather than rescored.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.91, up from 0.84, and it is a hair over rather than comfortably over. 3504/16000 triangles, 13/16 draw calls, 8/8 materials, 13/32 unique geometries. Every critical feature is at or above its threshold. Three residuals hold the number where it is: the glazing image has no parallax, the harness rig is not the plate's studio light, and the render tile is procedural rather than the plate's own dirt.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7.",
+          "evidence": "Building envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7; the rooftop plant reaches 4.82, inside the asset's own 10% scale tolerance. Shopfront 6.80 m of the 8.00 m front, shutter 4.44 x 2.70 m, fascia 7.50 m -- every one of them read off a rectified elevation rather than estimated.",
           "id": "overall-silhouette",
-          "notes": "Three separate corrections got it there, all caught by check-coplanar or the envelope measurement rather than by eye: the parapet band's bottom sat at y=3.500 with the roof deck's bottom (51 m2 of coplanar co-facing surface) and its top at y=4.600 with the coping's top (53 m2 more); and the side coping runs, sized from a sibling with a different shell setback, overhung the rear by 0.03 m and pushed the prop to 7.03 m deep. Meshy reads this plate 29% taller than the declared module -- the building really is tall and narrow -- but the declaration is the kit's shared retail module and wins.",
+          "notes": "Four measured layout errors in the first build were corrected here, and they are the bulk of the gain. The SIDE and REAR parapets were a 0.40 m kerb at cy 3.75 -- half a metre below the front, with their coping half a metre lower again -- so the coping STEPPED at the corner where the plate shows one continuous ring. The shopfront was 4.9 m wide with 0.7 m piers against the plate's 6.8 m and 0.3 m. The shutter was 3.10 m against 4.44. The roof deck sat at the shell top, putting the plant in a 0.8 m pit with only its lids clearing, where the plate stands it on a shallow roof and lets it break the roofline. What remains is the declaration: Meshy reads this plate 29% taller than the shared module, the building really is tall and narrow, and the module wins.",
           "passed": true,
-          "score": 0.85,
-          "threshold": 0.85,
+          "score": 0.92,
+          "threshold": 0.88,
           "tier": "critical"
         },
         {
-          "evidence": "Yellow lightbox #E7DF4C (PBR confidence 0.829) in a dark border standing proud of the parapet, carrying black FLASH over EXPRESS with a drawn LIGHTNING BOLT in place of the S.",
+          "evidence": "Yellow lightbox #fff600 (PBR confidence 0.829) 7.50 m wide in a dark border standing proud of the parapet, carrying black FLASH over EXPRESS with a WHITE black-outlined LIGHTNING BOLT in place of the S, baked from a real font as a 2048x320 WebP data URI.",
           "id": "brand-fascia",
-          "notes": "This feature first scored 0.84 and the pass gate refused to advance -- correctly. The bolt is the single most recognisable thing about the mark, no font can set it, and a glyph substitute would read as a typo. Rather than argue the score up or relax the threshold, the canvas route gained a polygon primitive and the wordmark is now split either side of a drawn bolt. The score moved because the model changed.",
+          "notes": "The first build drew the bolt BLACK. It is white with a thin black outline in the plate, and it is the single most recognisable thing about the mark, so that was an identity error rather than a stylistic one. The layout is now measured off the plate's own fascia by scanning the dark-glyph columns inside the yellow band: the group spans u 0.233..0.619 of the sign face against the first build's 0.285..0.700, the bolt runs v 0.13..0.91 while the caps run 0.34..0.70, and EXPRESS is right-aligned under the H rather than centred under the word. The face is BAKED rather than drawn with fillText, which picks a different font fallback on every machine; the canvas ops survive as the decode fallback only.",
           "passed": true,
-          "score": 0.87,
+          "score": 0.92,
+          "threshold": 0.88,
+          "tier": "critical"
+        },
+        {
+          "evidence": "Yellow jambs at X -3.51..-3.16 and +2.94..+3.29, a lintel cantilevering over the glazing at Y 2.70..3.19, and the delivery counter's worktop passing OUT through a real gap in the glazing -- all one material and one draw call.",
+          "id": "yellow-shopfront",
+          "notes": "The shopfront is RECESSED now: the glass sits back at z 3.155..3.245 with the jambs at 3.30 and the lintel nose at 3.46, so the opening reads as a reveal instead of glass painted on the wall. The hatch is the part worth naming -- in the plate the counter's worktop comes through the glazing line, so the pane is authored as four panels with that gap left in it rather than as one sheet with a counter drawn behind it.",
+          "passed": true,
+          "score": 0.9,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "Yellow jambs either side of the glazing and a lintel cantilevering over it, all one material and one draw call.",
-          "id": "yellow-shopfront",
-          "notes": "The lintel is 0.40 m deep, reaching z=3.50 exactly -- the declared envelope face. At 0.42 it pushed the prop past its declared depth.",
+          "evidence": "The plate's own shopfront, homography-rectified into the front plane at 200 px/m and projected by world x/y over X -3.16..+2.94, Y 0.29..2.62, so the four panels, the transom light and the door leaf each sample their own region: racking, parcels, the monitor, the yellow counter, the notice poster and the tiled floor.",
+          "id": "shopfront-interior",
+          "notes": "The first build put a flat grey pane over the largest region of the facade, which is what a building with no interior looks like when nothing stands in for one. No interior GEOMETRY was added -- the exterior-shell rule stands -- the interior is one baked image. Two things it needed. The frame lines painted into the image are LEFT IN and the model's jambs, mullion, transom and door stiles are positioned off that same image so each covers the line it corresponds to; MK inpainted its rails instead and tried here the stretched strips read as blurred rectangles across the racking. And the shadows are lifted 0 -> 68, because the racking bays render at luma ~30 and the gate reads anything at or below the backdrop's 58 as a hole. Scored 0.89 and not higher for a real limit: it is one flat image baked from a 3/4 view, so it has no parallax and the racking sits on the glass plane rather than behind it.",
           "passed": true,
-          "score": 0.83,
-          "threshold": 0.8,
+          "score": 0.89,
+          "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "22 ribbed slats filling most of the +X wall under a grey lintel, at #9AA1A7 (PBR confidence 0.831).",
+          "evidence": "40 half-round beads at 62 mm pitch over a 4.44 x 2.70 m opening at Z -1.91..+2.53, between two guide channels, over a bottom rail and under a proud cast-stone hood. #b6bcc1 (PBR confidence 0.831).",
           "id": "roller-shutter",
-          "notes": "The largest shutter in the retail set and the clearest feature on this building after the sign. Slats alternate by thinning INWARD, so no face reaches the parapet's 4.00 plane.",
+          "notes": "Both the size and the count are measurements, not choices. The ribbing runs plate x 645..858, which through the side face's projective map is Z -1.91..+2.53 -- 4.44 m against the first build's 3.10. The rib pitch is 7.3 px against 118.6 px/m at that column, i.e. 62 mm, so 40 beads and not 22. They are ROUND because the plate's slats read as alternating bright and dark stripes, which is a curved surface catching the key light; the first build alternated flat slat thickness and rendered as one grey panel.",
           "passed": true,
-          "score": 0.85,
+          "score": 0.9,
+          "threshold": 0.85,
+          "tier": "important"
+        },
+        {
+          "evidence": "Two packaged units, each a 1.34 x 0.90 x 0.88 m casing with a RECESSED louvre grille of eleven blades and the fan disc behind them, a flanged lid with a round cowl opening, two panel seams down the long side and four feet -- all merged into ONE instanced geometry, so the second unit is free.",
+          "id": "rooftop-plant",
+          "notes": "They were plain boxes with a disc on top. The deliberate cost is 0.22 m of declared height: at their real 0.90 m on a deck raised to 3.92 they reach 4.82 against a declared 4.60. That is inside the asset's own 10% tolerance and it is PLANT standing on a building whose walls, parapet and coping are still exactly 4.60. Squashing them to 0.66 m to protect the number was tried and is the wrong trade -- it reads as plant sunk in a pit, and the units breaking the roofline is one of this plate's silhouette events.",
+          "passed": true,
+          "score": 0.88,
           "threshold": 0.8,
           "tier": "important"
         },
         {
-          "evidence": "Pale coping (#9EA2A6, PBR confidence 0.726) capping front, sides and rear, inset from the parapet faces, sharing its component with the shutter lintel.",
-          "id": "parapet-coping",
-          "notes": "Grouped by MATERIAL rather than location, which is what puts a roofline coping and a lintel on the +X wall in the same submission.",
+          "evidence": "A real leaf on a real hinge at the RIGHT jamb (X +2.89), 1.36 x 2.11 m, with stiles, rails, a glazed pane carrying the same interior image offset by the hinge, and a vertical pull bar on two stand-offs at X +1.83.",
+          "id": "entrance-door",
+          "notes": "Hung on the right because the plate's handle plate is on the LEFT of the leaf at X +1.83, which is the leading edge of a right-hung door. The template gained a `flip` flag for that -- a sign on the leaf's local x rather than a mirrored transform, because a negative scale inverts every normal on the leaf and the glass renders inside-out. It is the ONE thing on this prop that moves and the only named pivot beyond the root.",
           "passed": true,
-          "score": 0.79,
+          "score": 0.87,
+          "threshold": 0.8,
+          "tier": "important"
+        },
+        {
+          "evidence": "Pale cast stone (#a9adb1, PBR confidence 0.726) capping front, sides and rear at ONE level, y 4.44..4.60, inset from the parapet faces; plus the proud hood over the roller shutter and the plinth under the shopfront, all in the same submission.",
+          "id": "parapet-coping",
+          "notes": "Grouped by MATERIAL rather than location, which is what puts a roofline coping, a hood on the +X wall and a plinth at the ground in one component. The step at the corner is gone: the side and rear runs were at 3.95..4.11 against the front's 4.44..4.60.",
+          "passed": true,
+          "score": 0.88,
+          "threshold": 0.8,
+          "tier": "important"
+        },
+        {
+          "evidence": "A seamless 512 tile in MULTIPLIER space -- rain streaking off the coping, patchy float marks, board-marked seams at 1.2 m and fine aggregate speckle -- repeated metrically at 3.2 m over the shell and the parapet. The lit front wall measures luma 193 against the plate's 193.",
+          "id": "render-weathering",
+          "notes": "Amplitude is the whole story here. At the first values the tile read as brushed metal, a regular vertical corduroy on every elevation, and cost 42% of the wall's linear albedo -- the front pier measured 146 against the plate's 193. Streaks halved in number and amplitude, tile widened, albedo lifted to #c8cac9 to pay for what the tile takes. Scored 0.85 and not higher because it is a procedural tile, not the plate's own dirt: the marks are the right KIND and the right strength, and they are not in the same places.",
+          "passed": true,
+          "score": 0.85,
           "threshold": 0.75,
           "tier": "important"
         }
       ],
-      "fidelity": 0.84,
-      "judgedAt": "2026-08-26T14:50:49.020Z",
+      "fidelity": 0.91,
+      "judgedAt": "2026-09-01T18:48:59.451Z",
       "layerScores": {
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "lightingCamera": 0.8,
-        "materialSurface": 0.83,
-        "silhouetteProportion": 0.85
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "lightingCamera": 0.87,
+        "materialSurface": 0.91,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -141,7 +178,7 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 84,
+      "score": 91,
       "threshold": 70
     },
     "runtime": {
@@ -157,11 +194,11 @@
     "spec": "packages/props/src/models/flash-express-parcel-shop-building/object-sculpt-spec.json",
     "state": "scratch/flash-express-parcel-shop-building/.img2threejs/state.json",
     "status": "done",
-    "textures": 1,
+    "textures": 3,
     "thumb": "packages/props/src/models/flash-express-parcel-shop-building/thumb.webp",
-    "triangles": 1052,
+    "triangles": 3504,
     "uniqueGeometries": 13,
-    "vertices": 3084
+    "vertices": 10452
   },
   "name": "Flash Express Parcel Shop Building",
   "nameTh": "แฟลช เอ็กซ์เพรส",
@@ -205,5 +242,5 @@
     "hero"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:11.860Z"
+  "updatedAt": "2026-09-01T18:58:38.055Z"
 }

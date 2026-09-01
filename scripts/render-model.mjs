@@ -17,7 +17,7 @@
  * Usage:
  *   node scripts/render-model.mjs --id <id> [--from scratch|pack] [--module <file.js>] [--out <dir>]
  *                                 [--angles 0,90,180,270] [--modes beauty,clay]
- *                                 [--elevation 20]
+ *                                 [--elevation 20] [--thumb]
  *
  * `--from` defaults to scratch: this runs during authoring, on the bundle
  * build-model-module.mjs just wrote. `--from pack` renders the installed pack
@@ -28,11 +28,13 @@ import http from 'node:http';
 import path from 'node:path';
 
 import puppeteer from 'puppeteer-core';
-import { REPO_ROOT, workDir, toRepoRelative, readRegistry, updateAsset, parseId, storeOptionsFor } from '@thaikit/registry-core';
+import { REPO_ROOT, workDir, modelDir, toRepoRelative, readRegistry, updateAsset, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { resolveBundle } from './lib/bundle-for.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage } from './lib/budget.mjs';
+import { checkThaiFont } from './lib/fonts.mjs';
+import { writeThumb } from './lib/thumb.mjs';
 
 const SIZE = 1024;
 /** The azimuths turntable_gate.py expects, plus the 45 deg hero. */
@@ -123,6 +125,10 @@ async function main() {
   const elevation = args.elevation !== undefined ? Number(args.elevation) : TURNTABLE_ELEVATION;
 
   const executablePath = await findChrome();
+  // A hero with tofu glyphs is a valid PNG that becomes a shipped thumbnail, so a
+  // missing Thai font fails the run here rather than being found in the browse grid.
+  const font = checkThaiFont();
+  if (!font.ok && !args['allow-no-thai-font']) return fail(`no Thai font for the canvas: ${font.reason} (--allow-no-thai-font to render anyway)`);
   const { server, port } = await serve(REPO_ROOT);
   const base = `http://127.0.0.1:${port}`;
 
@@ -297,6 +303,16 @@ async function main() {
       );
     }
     log(`luma   : ${luma.toFixed(1)}, subject covers ${(coverage * 100).toFixed(1)}% of frame`);
+
+    // --thumb: also refresh the tree's browse thumbnail from this hero, the same
+    // resize promote-model.mjs does. For re-photographing a promoted prop (a font
+    // that was missing, a harness change) without re-running the whole promote gate.
+    if (args.thumb) {
+      if (!id) throw new Error('--thumb needs --id');
+      const dest = path.join(modelDir(id), 'thumb.webp');
+      await writeThumb(path.join(outDir, heroName), dest);
+      log(`thumb  : ${toRepoRelative(dest)}`);
+    }
 
     if (id) {
       await updateAsset(id, (entry) => {

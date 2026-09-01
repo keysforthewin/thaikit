@@ -22,6 +22,7 @@ import http from 'node:http';
 import path from 'node:path';
 
 import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
+import { checkThaiFont } from '../fonts.mjs';
 
 /** Matches promote-model.mjs's browse thumbnail, so the grid is one size. */
 const THUMB = 512;
@@ -94,6 +95,10 @@ export async function renderPreviews(entries, { progress = () => {} } = {}) {
   ]);
 
   const executablePath = await findChrome();
+  // Not fatal: by now the pack is installed and usable, and a thumbnail with
+  // tofu is still a thumbnail. But say so, because it looks like a finished render.
+  const font = checkThaiFont();
+  if (!font.ok) progress(`warning: Thai text will render as boxes -- ${font.reason}`);
   const { server, port } = await serve(REPO_ROOT);
   const base = `http://127.0.0.1:${port}`;
 

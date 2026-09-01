@@ -944,7 +944,7 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, targetW: number,
 }
 
 const SANS = (px: number) => `bold ${px}px "Arial Narrow", "Helvetica Neue Condensed", Impact, sans-serif`;
-const SANS_R = (px: number) => `${px}px "Noto Sans Thai", "Arial", sans-serif`;
+const SANS_R = (px: number) => `${px}px "Noto Sans Thai", Loma, Garuda, "Arial", sans-serif`;
 
 /** Measured off assets/soi-name-sign/preview.jpg. See the spec's localOverrides for crops. */
 const PALETTE = {

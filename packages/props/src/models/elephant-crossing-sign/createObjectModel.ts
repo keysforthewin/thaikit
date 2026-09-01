@@ -1104,7 +1104,7 @@ function drawSupplementaryFace(ctx: CanvasRenderingContext2D): void {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   fitText(ctx, 'ระวังช้าง',
-          `700 ${Math.round(0.090 * S)}px "Noto Sans Thai", "Leelawadee UI", Tahoma, Loma, "Sarabun", "Thonburi", FreeSerif, sans-serif`,
+          `700 ${Math.round(0.090 * S)}px "Noto Sans Thai", "Leelawadee UI", Tahoma, Loma, Garuda, "Sarabun", "Thonburi", FreeSerif, sans-serif`,
           px(0), py(0.035), 0.34 * S);
   fitText(ctx, 'ELEPHANT CROSSING',
           `700 ${Math.round(0.055 * S)}px "Liberation Sans Narrow", "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", Arial, Helvetica, sans-serif`,
