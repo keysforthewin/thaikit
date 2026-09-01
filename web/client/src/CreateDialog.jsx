@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { describeClass, useBudgetClasses } from './budgets.js';
 
@@ -17,6 +17,12 @@ export function CreateDialog({ onClose, onCreated }) {
   const [busy, setBusy] = useState(false);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   async function submit(e) {
     e.preventDefault();
@@ -41,12 +47,15 @@ export function CreateDialog({ onClose, onCreated }) {
   }
 
   return (
-    <div className="drawer" style={{ width: 'min(560px, 100%)' }}>
-      <header>
-        <button type="button" onClick={onClose}>cancel</button>
-        <strong>New asset</strong>
-      </header>
-      <form className="content" onSubmit={submit}>
+    <>
+      <div className="side-panel-backdrop" onMouseDown={onClose} />
+      <div className="side-panel" role="dialog" aria-label="New asset">
+        <header>
+          <strong>New asset</strong>
+          <span className="grow" />
+          <button type="button" onClick={onClose} title="close — Esc">✕</button>
+        </header>
+        <form className="content" onSubmit={submit}>
         {error && <div className="banner">{error}</div>}
         <div className="field">
           <label>Name</label>
@@ -70,7 +79,7 @@ export function CreateDialog({ onClose, onCreated }) {
         </div>
         <div className="field">
           <label>Declared real-world size in metres (w / h / d)</label>
-          <div className="row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="row" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
             {['w', 'h', 'd'].map((k) => (
               <input key={k} type="number" step="0.01" required value={form[k]} onChange={set(k)} />
             ))}
@@ -99,6 +108,7 @@ export function CreateDialog({ onClose, onCreated }) {
           {busy ? 'creating…' : 'create asset'}
         </button>
       </form>
-    </div>
+      </div>
+    </>
   );
 }

@@ -22,10 +22,17 @@ function unsupportedLines(evt) {
   ];
 }
 
-/** Add, refresh and remove vibe3d packs; watch the install job's log live. */
-export function PackManagerModal({ onClose, onChanged }) {
-  const packs = useLevel((s) => s.catalogue.packs);
-  const catalogueItems = useLevel((s) => s.catalogue.items);
+/**
+ * Add, refresh and remove vibe3d packs; watch the install job's log live.
+ *
+ * Reads the level store by default; the registry page has no level, so it
+ * passes `packs` and `items` from /api/packs/items instead.
+ */
+export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: itemsProp }) {
+  const storePacks = useLevel((s) => s.catalogue.packs);
+  const storeItems = useLevel((s) => s.catalogue.items);
+  const packs = packsProp ?? storePacks;
+  const catalogueItems = itemsProp ?? storeItems;
   const doc = useLevel((s) => s.doc);
   const [source, setSource] = useState('');
   const [log, setLog] = useState([]);
@@ -90,7 +97,11 @@ export function PackManagerModal({ onClose, onChanged }) {
                   <>
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.refresh(p.id))} title={p.editable ? 'rebuild every item from the source tree' : 're-resolve the source, download the latest version and rebuild'}>refresh</button>{' '}
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.previews(p.id))} title="re-render every item's thumbnail from the bundles already on disk — nothing is downloaded">previews</button>{' '}
-                    <button className="danger" disabled={Boolean(busy)} onClick={() => { if (window.confirm(`Remove ${p.id}?${usedRefs.has(p.id) ? ' The open level uses it; its objects will become orphans.' : ''}`)) start(() => packsApi.remove(p.id)); }}>remove</button>
+                    {/* A source-tree pack is this repo's own kit; removing it would only delete
+                        its build products and orphan every level that uses it. */}
+                    {!p.editable && (
+                      <button className="danger" disabled={Boolean(busy)} onClick={() => { if (window.confirm(`Remove ${p.id}?${usedRefs.has(p.id) ? ' The open level uses it; its objects will become orphans.' : ''}`)) start(() => packsApi.remove(p.id)); }}>remove</button>
+                    )}
                   </>
                 )}
               </td>

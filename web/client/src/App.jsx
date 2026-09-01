@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from './api.js';
 import { Drawer } from './Drawer.jsx';
 import { CreateDialog } from './CreateDialog.jsx';
+import { PackManagerModal } from './level/PackManagerModal.jsx';
+import { packsApi } from './api.js';
 import { FacetDialog } from './FacetDialog.jsx';
 import { budgetRows, useBudgetClasses } from './budgets.js';
 
@@ -14,14 +16,13 @@ const PRESETS = [
   { key: 'all', label: 'All', params: {} },
   { key: 'needs-images', label: 'Needs images', params: { imageStatus: 'pending', editable: '1' } },
   { key: 'needs-model', label: 'Needs model', params: { modelStatus: 'pending', editable: '1' } },
-  { key: 'needs-review', label: 'Needs review (<70)', params: { maxScore: 69, editable: '1' } },
-  // A second, wider review band. 70 is the pass threshold, so the first chip only ever
-  // surfaces props that FAILED; this one catches everything that passed without being
-  // finished -- a 0.85 made of a strong silhouette and a weak material surface still has
-  // work in it, and nothing else in the grid brings those props together.
-  { key: 'needs-review-90', label: 'Needs review (<90)', params: { maxScore: 89, editable: '1' } },
+  // The threshold is typed into the chip itself (`reviewBelow`), so one chip covers both
+  // "what FAILED" (<70, the pass mark) and "what passed without being finished" (<90):
+  // a 0.85 made of a strong silhouette and a weak material surface still has work in it.
+  { key: 'needs-review', label: 'Needs review', params: { editable: '1' } },
   { key: 'ready', label: 'Ready', params: { supported: '1' } },
 ];
+const DEFAULT_REVIEW_BELOW = 90;
 
 function scoreClass(score) {
   if (score == null) return '';
@@ -93,6 +94,9 @@ export default function App() {
   const [items, setItems] = useState([]);
   const [health, setHealth] = useState(null);
   const [preset, setPreset] = useState('all');
+  // The number in the "Needs review (<N)" chip, kept as typed so a half-edited
+  // field does not snap back; an empty or non-numeric value simply filters nothing.
+  const [reviewBelow, setReviewBelow] = useState(String(DEFAULT_REVIEW_BELOW));
   const [pack, setPack] = useState('');
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null);
@@ -111,6 +115,13 @@ export default function App() {
   // moves, and the viewer keys its module URL off the item's version --
   // together that is what makes a new build appear without a reload.
   const [rev, setRev] = useState(0);
+  // The pack manager wants every pack and item, not the filtered page.
+  const [packsOpen, setPacksOpen] = useState(false);
+  const [packData, setPackData] = useState(null);
+  useEffect(() => {
+    if (!packsOpen) return;
+    packsApi.items().then((r) => setPackData({ packs: r.packs, items: r.items })).catch(() => setPackData({ packs: [], items: [] }));
+  }, [packsOpen, rev]);
   const [error, setError] = useState(null);
   const budgetClasses = useBudgetClasses();
 
@@ -118,6 +129,10 @@ export default function App() {
     try {
       const params = {
         ...PRESETS.find((p) => p.key === preset).params,
+        // "<N" is the server's inclusive maxScore at N-1.
+        ...(preset === 'needs-review' && Number.isFinite(Number.parseInt(reviewBelow, 10))
+          ? { maxScore: Number.parseInt(reviewBelow, 10) - 1 }
+          : {}),
         q,
         pack,
         categories: pickedCategories.join(','),
@@ -131,7 +146,7 @@ export default function App() {
     } catch (e) {
       setError(e.message);
     }
-  }, [preset, pack, q, pickedCategories, pickedTags]);
+  }, [preset, reviewBelow, pack, q, pickedCategories, pickedTags]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { api.health().then(setHealth).catch(() => {}); }, []);
@@ -178,6 +193,9 @@ export default function App() {
         <span className="grow" />
         <input placeholder="search…" value={q} onChange={(e) => setQ(e.target.value)} style={{ width: 240 }} />
         <a href="/level"><button title="build a level from these props">level editor</button></a>
+        <button onClick={() => setPacksOpen(true)} title="install, refresh or remove vibe3d asset packs">
+          packs{meta?.packs ? ` (${Object.keys(meta.packs).length})` : ''}
+        </button>
         <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>
       </div>
 
@@ -192,17 +210,39 @@ export default function App() {
         {PRESETS.map((p) => (
           <span key={p.key} className={`chip ${preset === p.key ? 'on' : ''}`} onClick={() => setPreset(p.key)}>
             {p.label}
+            {p.key === 'needs-review' && (
+              <>
+                {' (<'}
+                <input
+                  className="chip-input"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={reviewBelow}
+                  title="props whose review score is below this; type a new number to move the bar"
+                  onClick={(e) => { e.stopPropagation(); setPreset('needs-review'); }}
+                  onFocus={() => setPreset('needs-review')}
+                  onChange={(e) => setReviewBelow(e.target.value)}
+                  onBlur={() => { if (!Number.isFinite(Number.parseInt(reviewBelow, 10))) setReviewBelow(String(DEFAULT_REVIEW_BELOW)); }}
+                />
+                {')'}
+              </>
+            )}
           </span>
         ))}
-        <span className="sep" />
-        {/* One chip per installed pack. thaikit's own props are a pack like any
-            other here; the difference is that theirs can be edited in place. */}
-        <span className={`chip ${!pack ? 'on' : ''}`} onClick={() => setPack('')}>all packs</span>
-        {packChips.map(([id, n]) => (
-          <span key={id} className={`chip ${pack === id ? 'on' : ''}`} onClick={() => setPack(pack === id ? '' : id)}>
-            {id} <span className="muted">{n}</span>
-          </span>
-        ))}
+        {/* One chip per installed pack, but only once there is a choice to make:
+            with thaikit's own kit alone the row would be one chip that filters nothing. */}
+        {packChips.length > 1 && (
+          <>
+            <span className="sep" />
+            <span className={`chip ${!pack ? 'on' : ''}`} onClick={() => setPack('')}>all packs</span>
+            {packChips.map(([id, n]) => (
+              <span key={id} className={`chip ${pack === id ? 'on' : ''}`} onClick={() => setPack(pack === id ? '' : id)}>
+                {id} <span className="muted">{n}</span>
+              </span>
+            ))}
+          </>
+        )}
         <span className="sep" />
         <button
           className={pickedCategories.length ? 'on' : ''}
@@ -287,7 +327,7 @@ export default function App() {
           <p>
             Add a prop by hand, or ask Claude to run the <span className="mono">thaikit-asset-list</span>{' '}
             skill with a theme — <em>“props you’d find on a Thai street”</em>. Or install a vibe3d pack
-            from the <a href="/level">level editor</a>'s pack manager.
+            with the <strong>packs</strong> button above.
           </p>
           <p className="muted">
             Models are generated by the host-side skills, not from this page.
@@ -321,6 +361,14 @@ export default function App() {
           selected={pickedTags}
           onChange={setPickedTags}
           onClose={() => setFacet(null)}
+        />
+      )}
+      {packsOpen && (
+        <PackManagerModal
+          packs={packData?.packs ?? []}
+          items={packData?.items ?? []}
+          onClose={() => setPacksOpen(false)}
+          onChanged={() => { load(); setRev((n) => n + 1); }}
         />
       )}
       {creating && (
