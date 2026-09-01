@@ -21,14 +21,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -54,14 +46,14 @@ const CONFIG = {
       {
         "id": "paint",
         "color": 16777215,
-        "roughness": 0.6,
+        "roughness": 0.62,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "trim",
         "color": 16777215,
-        "roughness": 0.75,
+        "roughness": 0.78,
         "metalness": 0,
         "vertexColors": true
       },
@@ -86,13 +78,13 @@ const CONFIG = {
         "material": "paint",
         "kind": "rust",
         "ratio": [
-          0.55,
-          0.42,
-          0.32
+          0.5,
+          0.38,
+          0.3
         ],
         "seed": 92,
         "size": 256,
-        "density": 60
+        "density": 110
       }
     ],
     "pivots": [
@@ -201,12 +193,13 @@ const CONFIG = {
             -1.4
           ],
           "r": 0.28,
-          "rim": 0.12,
-          "halfW": 0.07,
-          "seg": 16,
-          "dish": 0.5,
-          "tyreHex": 6313290,
-          "rimHex": 8023650
+          "rim": 0.16,
+          "halfW": 0.08,
+          "seg": 14,
+          "dish": 0.55,
+          "rimBand": 2,
+          "tyreHex": 6970962,
+          "rimHex": 6182994
         },
         {
           "at": [
@@ -215,143 +208,163 @@ const CONFIG = {
             -1.4
           ],
           "r": 0.28,
-          "rim": 0.12,
-          "halfW": 0.07,
-          "seg": 16,
-          "dish": 0.5,
-          "tyreHex": 6313290,
-          "rimHex": 8023650
+          "rim": 0.16,
+          "halfW": 0.08,
+          "seg": 14,
+          "dish": 0.55,
+          "rimBand": 2,
+          "tyreHex": 6970962,
+          "rimHex": 6182994
         }
       ],
       "tubes": [
         {
           "pts": [
             [
-              0.22,
-              0.78,
-              1.3
+              0.08,
+              1.04,
+              0.56
             ],
             [
-              0.3,
-              1.05,
-              0.4
+              0.26,
+              1.16,
+              0.1
             ],
             [
-              0.34,
-              1.32,
-              -0.2
+              0.36,
+              1.3,
+              -0.32
             ]
           ],
-          "r": 0.02,
-          "hex": 8485752
+          "r": 0.022,
+          "hex": 6966590
         },
         {
           "pts": [
             [
-              -0.22,
-              0.78,
-              1.3
+              -0.08,
+              1.04,
+              0.56
             ],
             [
-              -0.3,
-              1.05,
-              0.4
+              -0.26,
+              1.16,
+              0.1
             ],
             [
-              -0.34,
-              1.32,
-              -0.2
+              -0.36,
+              1.3,
+              -0.32
             ]
           ],
-          "r": 0.02,
-          "hex": 8485752
+          "r": 0.022,
+          "hex": 6966590
         },
         {
           "pts": [
             [
-              0.3,
-              1.05,
-              0.4
+              0.26,
+              1.16,
+              0.1
             ],
             [
-              -0.3,
-              1.05,
-              0.4
+              -0.26,
+              1.16,
+              0.1
             ]
           ],
-          "r": 0.016,
-          "hex": 8485752
+          "r": 0.018,
+          "hex": 6966590,
+          "open": true
         },
         {
           "pts": [
             [
-              0.34,
+              0.36,
+              1.3,
+              -0.32
+            ],
+            [
+              0.48,
               1.32,
-              -0.2
+              -0.4
+            ]
+          ],
+          "r": 0.026,
+          "hex": 3813418
+        },
+        {
+          "pts": [
+            [
+              -0.36,
+              1.3,
+              -0.32
+            ],
+            [
+              -0.48,
+              1.32,
+              -0.4
+            ]
+          ],
+          "r": 0.026,
+          "hex": 3813418
+        },
+        {
+          "pts": [
+            [
+              0.4,
+              1.29,
+              -0.3
             ],
             [
               0.46,
-              1.34,
-              -0.3
+              1.22,
+              -0.14
             ]
           ],
-          "r": 0.022,
-          "hex": 2763304
+          "r": 0.01,
+          "hex": 7301732
         },
         {
           "pts": [
             [
-              -0.34,
-              1.32,
-              -0.2
+              0.14,
+              0.99,
+              1.16
             ],
             [
-              -0.46,
-              1.34,
-              -0.3
+              0.26,
+              1.16,
+              0.1
             ]
           ],
-          "r": 0.022,
-          "hex": 2763304
+          "r": 0.01,
+          "hex": 6966590,
+          "open": true
         },
         {
           "pts": [
             [
-              0.12,
-              0.6,
-              1.62
+              -0.14,
+              0.99,
+              1.16
             ],
             [
-              0.12,
-              0.78,
-              1.3
+              -0.26,
+              1.16,
+              0.1
             ]
           ],
-          "r": 0.014,
-          "hex": 8485752
-        },
-        {
-          "pts": [
-            [
-              -0.12,
-              0.6,
-              1.62
-            ],
-            [
-              -0.12,
-              0.78,
-              1.3
-            ]
-          ],
-          "r": 0.014,
-          "hex": 8485752
+          "r": 0.01,
+          "hex": 6966590,
+          "open": true
         },
         {
           "pts": [
             [
               0.3,
-              0.5,
-              1.86
+              0.48,
+              1.84
             ],
             [
               0.44,
@@ -375,28 +388,77 @@ const CONFIG = {
             ],
             [
               -0.3,
-              0.5,
-              1.86
+              0.48,
+              1.84
             ]
           ],
           "r": 0.02,
-          "hex": 8485752
+          "hex": 6966590
         },
         {
           "pts": [
             [
-              0.28,
-              0.98,
-              1.4
+              0.3,
+              0.58,
+              1.95
             ],
             [
-              0.28,
-              1.1,
-              1.3
+              0.3,
+              0.58,
+              2.04
+            ],
+            [
+              0.38,
+              0.58,
+              2.04
             ]
           ],
-          "r": 0.03,
-          "hex": 2763304
+          "r": 0.012,
+          "hex": 7301732
+        },
+        {
+          "pts": [
+            [
+              -0.16,
+              0.9,
+              1.3
+            ],
+            [
+              -0.2,
+              0.86,
+              1.6
+            ],
+            [
+              -0.17,
+              0.8,
+              1.78
+            ]
+          ],
+          "r": 0.006,
+          "hex": 7301732,
+          "open": true
+        },
+        {
+          "pts": [
+            [
+              0.44,
+              1.22,
+              -0.14
+            ],
+            [
+              0.22,
+              1,
+              0.9
+            ],
+            [
+              -0.08,
+              0.84,
+              1.62
+            ]
+          ],
+          "r": 0.005,
+          "hex": 3813418,
+          "open": true
         },
         {
           "pts": [
@@ -412,19 +474,11 @@ const CONFIG = {
             ]
           ],
           "r": 0.03,
-          "hex": 4867906
+          "hex": 4867906,
+          "open": true
         }
       ],
       "trim": [
-        [
-          4867906,
-          0,
-          0.42,
-          1.55,
-          1.06,
-          0.12,
-          0.3
-        ],
         [
           4867906,
           0,
@@ -433,23 +487,41 @@ const CONFIG = {
           1.3,
           0.1,
           0.1
+        ],
+        [
+          4867906,
+          0,
+          1.03,
+          0.6,
+          0.2,
+          0.1,
+          0.12
         ]
       ],
       "bike": {
         "x": 0,
         "r": 0.42,
-        "rim": 0.18,
+        "rim": 0.2,
         "halfW": 0.11,
         "zF": 1.55,
         "zR": 1.55,
-        "seg": 16,
-        "dish": 0.6,
-        "tyreHex": 6443331,
-        "rimHex": 7233624,
-        "paintHex": 13205371,
-        "chromeHex": 8485752,
-        "darkHex": 3684148,
-        "bodyName": "Engine, deck and gearbox",
+        "seg": 18,
+        "dish": 0.55,
+        "rimBand": 3,
+        "tyreHex": 8283990,
+        "rimHex": 8011571,
+        "lugs": {
+          "n": 18,
+          "w": 0.86,
+          "h": 0.045,
+          "d": 0.06,
+          "skew": 0.45,
+          "hex": 6705471
+        },
+        "paintHex": 11681334,
+        "chromeHex": 6966590,
+        "darkHex": 4470314,
+        "bodyName": "Engine, tank, column and gearbox",
         "trimName": "Handlebars, axles and trailer wheels",
         "positions": [
           [
@@ -466,85 +538,151 @@ const CONFIG = {
         "paintExtrudes": [],
         "paintBoxes": [
           [
-            13205371,
+            4470314,
             0,
-            0.86,
-            1.62,
-            0.44,
-            0.22,
-            0.36
-          ],
-          [
-            13205371,
-            0,
-            0.66,
-            1.2,
-            0.3,
-            0.22,
+            0.62,
+            1.58,
+            0.4,
+            0.36,
             0.44
           ],
           [
-            3684148,
+            4470314,
             0,
-            0.6,
-            1.68,
-            0.5,
-            0.3,
-            0.46
-          ],
-          [
-            3684148,
-            0,
+            0.42,
+            1.58,
             0.34,
-            1.62,
-            0.4,
-            0.24,
-            0.56
+            0.12,
+            0.36
           ],
           [
-            3684148,
+            4470314,
+            0,
+            0.56,
+            1.2,
             0.3,
-            0.66,
-            1.74,
+            0.3,
+            0.3
+          ],
+          [
+            4470314,
+            0.02,
+            0.88,
+            1.66,
+            0.24,
+            0.18,
+            0.26
+          ],
+          [
+            9078400,
+            0.02,
+            0.995,
+            1.66,
+            0.18,
+            0.05,
+            0.2
+          ],
+          [
+            4470314,
+            0.02,
+            0.805,
+            1.66,
+            0.28,
+            0.012,
+            0.3
+          ],
+          [
+            4470314,
+            0.02,
+            0.835,
+            1.66,
+            0.28,
+            0.012,
+            0.3
+          ],
+          [
+            4470314,
+            0.02,
+            0.865,
+            1.66,
+            0.28,
+            0.012,
+            0.3
+          ],
+          [
+            4470314,
+            0.02,
+            0.895,
+            1.66,
+            0.28,
+            0.012,
+            0.3
+          ],
+          [
+            9078400,
+            -0.17,
+            0.74,
+            1.78,
+            0.08,
             0.1,
-            0.16,
-            0.16
+            0.08
           ],
           [
-            3684148,
-            -0.3,
+            4470314,
+            0.24,
+            0.9,
+            1.8,
+            0.16,
+            0.2,
+            0.18
+          ],
+          [
+            4470314,
+            0.18,
             0.66,
-            1.74,
-            0.1,
+            1.84,
             0.16,
-            0.16
-          ],
-          [
-            5920850,
-            0,
-            0.98,
-            1.62,
-            0.16,
-            0.04,
-            0.16
-          ],
-          [
-            7105126,
-            0,
-            0.58,
-            1.95,
-            0.26,
             0.22,
-            0.06
+            0.12
+          ],
+          [
+            11681334,
+            -0.04,
+            0.92,
+            1.4,
+            0.42,
+            0.2,
+            0.3
+          ],
+          [
+            11681334,
+            0,
+            0.74,
+            1.12,
+            0.18,
+            0.08,
+            0.16
+          ],
+          [
+            11681334,
+            0,
+            0.87,
+            0.87,
+            0.16,
+            0.13,
+            0.64,
+            0.54,
+            0,
+            0
           ],
           [
             4867906,
             0,
-            0.52,
+            0.5,
             0.68,
-            0.12,
+            0.1,
             0.08,
-            0.8
+            0.84
           ]
         ],
         "tubes": [],
@@ -552,28 +690,106 @@ const CONFIG = {
         "cyls": [
           {
             "at": [
-              0,
-              0.82,
-              1.62
+              0.29,
+              0.58,
+              1.74
             ],
-            "rt": 0.14,
-            "rb": 0.14,
-            "h": 0.24,
-            "seg": 14,
-            "hex": 3684148
+            "rt": 0.22,
+            "rb": 0.22,
+            "h": 0.14,
+            "rz": 1.5707963267948966,
+            "seg": 18,
+            "hex": 4470314
           },
           {
             "at": [
-              0.32,
+              0.365,
               0.5,
+              1.82
+            ],
+            "rt": 0.12,
+            "rb": 0.12,
+            "h": 0.02,
+            "rz": 1.5707963267948966,
+            "seg": 14,
+            "hex": 9078400
+          },
+          {
+            "at": [
+              0.66,
+              0.42,
+              1.55
+            ],
+            "rt": 0.07,
+            "rb": 0.07,
+            "h": 0.04,
+            "rz": 1.5707963267948966,
+            "seg": 12,
+            "hex": 6971480
+          },
+          {
+            "at": [
+              -0.66,
+              0.42,
+              1.55
+            ],
+            "rt": 0.07,
+            "rb": 0.07,
+            "h": 0.04,
+            "rz": 1.5707963267948966,
+            "seg": 12,
+            "hex": 6971480
+          },
+          {
+            "at": [
+              0.37,
+              0.58,
+              1.74
+            ],
+            "rt": 0.05,
+            "rb": 0.05,
+            "h": 0.03,
+            "rz": 1.5707963267948966,
+            "seg": 10,
+            "hex": 9078400
+          },
+          {
+            "at": [
+              -0.26,
+              0.56,
               1.58
             ],
-            "rt": 0.16,
-            "rb": 0.16,
+            "rt": 0.17,
+            "rb": 0.17,
             "h": 0.06,
             "rz": 1.5707963267948966,
             "seg": 16,
-            "hex": 5920850
+            "hex": 9078400
+          },
+          {
+            "at": [
+              0.36,
+              0.76,
+              1.68
+            ],
+            "rt": 0.045,
+            "rb": 0.045,
+            "h": 0.2,
+            "rz": 1.5707963267948966,
+            "seg": 10,
+            "hex": 7301732
+          },
+          {
+            "at": [
+              0.06,
+              1.035,
+              1.44
+            ],
+            "rt": 0.045,
+            "rb": 0.045,
+            "h": 0.03,
+            "seg": 10,
+            "hex": 7301732
           },
           {
             "at": [
@@ -586,6 +802,45 @@ const CONFIG = {
             "h": 0.18,
             "seg": 8,
             "hex": 4867906
+          },
+          {
+            "at": [
+              0,
+              0.42,
+              1.55
+            ],
+            "rt": 0.06,
+            "rb": 0.06,
+            "h": 1.02,
+            "rz": 1.5707963267948966,
+            "seg": 10,
+            "hex": 4867906
+          },
+          {
+            "at": [
+              0.44,
+              0.42,
+              1.55
+            ],
+            "rt": 0.12,
+            "rb": 0.12,
+            "h": 0.1,
+            "rz": 1.5707963267948966,
+            "seg": 14,
+            "hex": 4470314
+          },
+          {
+            "at": [
+              -0.44,
+              0.42,
+              1.55
+            ],
+            "rt": 0.12,
+            "rb": 0.12,
+            "h": 0.1,
+            "rz": 1.5707963267948966,
+            "seg": 14,
+            "hex": 4470314
           }
         ]
       },
@@ -598,7 +853,7 @@ const CONFIG = {
           "uvScale": 0.9,
           "boxes": [
             [
-              8287079,
+              10130315,
               0,
               0.72,
               -1.1500000000000001,
@@ -607,83 +862,236 @@ const CONFIG = {
               1.9000000000000001
             ],
             [
-              8287079,
+              9801093,
               0.6,
-              0.9099999999999999,
+              0.7949999999999999,
               -1.1500000000000001,
-              0.04,
-              0.34,
-              1.9000000000000001
+              0.035,
+              0.1,
+              1.86
             ],
             [
-              8287079,
+              9801093,
               -0.6,
-              0.9099999999999999,
+              0.7949999999999999,
               -1.1500000000000001,
-              0.04,
-              0.34,
-              1.9000000000000001
+              0.035,
+              0.1,
+              1.86
             ],
             [
-              8287079,
+              9801093,
+              0.6,
+              0.915,
+              -1.1500000000000001,
+              0.035,
+              0.1,
+              1.86
+            ],
+            [
+              9801093,
+              -0.6,
+              0.915,
+              -1.1500000000000001,
+              0.035,
+              0.1,
+              1.86
+            ],
+            [
+              9801093,
+              0.6,
+              1.035,
+              -1.1500000000000001,
+              0.035,
+              0.1,
+              1.86
+            ],
+            [
+              9801093,
+              -0.6,
+              1.035,
+              -1.1500000000000001,
+              0.035,
+              0.1,
+              1.86
+            ],
+            [
+              9801093,
               0,
-              0.9099999999999999,
+              0.7949999999999999,
               -0.22,
-              1.14,
-              0.34,
-              0.04
+              1.16,
+              0.1,
+              0.035
             ],
             [
-              8287079,
+              9801093,
               0,
-              0.86,
+              0.915,
+              -0.22,
+              1.16,
+              0.1,
+              0.035
+            ],
+            [
+              9801093,
+              0,
+              1.035,
+              -0.22,
+              1.16,
+              0.1,
+              0.035
+            ],
+            [
+              9801093,
+              0,
+              0.7949999999999999,
               -2.08,
-              1.14,
-              0.24,
-              0.04
+              1.16,
+              0.1,
+              0.035
             ],
             [
-              5326137,
-              0.56,
-              1.08,
+              9801093,
+              0,
+              0.915,
+              -2.08,
+              1.16,
+              0.1,
+              0.035
+            ],
+            [
+              7231046,
+              0.625,
+              0.89,
+              -0.42000000000000004,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              -0.625,
+              0.89,
+              -0.42000000000000004,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              0.625,
+              0.89,
               -1.1500000000000001,
-              0.06,
-              0.03,
-              1.9200000000000002
+              0.05,
+              0.44,
+              0.05
             ],
             [
-              5326137,
-              -0.56,
-              1.08,
+              7231046,
+              -0.625,
+              0.89,
               -1.1500000000000001,
-              0.06,
-              0.03,
-              1.9200000000000002
+              0.05,
+              0.44,
+              0.05
             ],
             [
-              5326137,
-              0.52,
-              0.6699999999999999,
+              7231046,
+              0.625,
+              0.89,
+              -1.8800000000000001,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              -0.625,
+              0.89,
+              -1.8800000000000001,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              0.4,
+              0.89,
+              -0.195,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              -0.4,
+              0.89,
+              -0.195,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              0.5,
+              0.89,
+              -2.105,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              -0.5,
+              0.89,
+              -2.105,
+              0.05,
+              0.44,
+              0.05
+            ],
+            [
+              7231046,
+              0.5,
+              0.6599999999999999,
               -1.1500000000000001,
               0.08,
-              0.06,
+              0.08,
               1.8
             ],
             [
-              5326137,
-              -0.52,
-              0.6699999999999999,
+              7231046,
+              -0.5,
+              0.6599999999999999,
               -1.1500000000000001,
               0.08,
-              0.06,
+              0.08,
               1.8
             ],
             [
-              5326137,
-              0.26,
+              7231046,
+              0,
+              0.6599999999999999,
+              -0.6,
+              1,
+              0.06,
+              0.06
+            ],
+            [
+              7231046,
+              0,
+              0.6599999999999999,
+              -1.7,
+              1,
+              0.06,
+              0.06
+            ],
+            [
+              7231046,
+              0.25,
               0.57,
               0,
-              0.08,
+              0.07,
               0.08,
               0.86,
               0.175,
@@ -691,11 +1099,11 @@ const CONFIG = {
               0
             ],
             [
-              5326137,
-              -0.26,
+              7231046,
+              -0.25,
               0.57,
               0,
-              0.08,
+              0.07,
               0.08,
               0.86,
               0.175,
@@ -703,76 +1111,22 @@ const CONFIG = {
               0
             ],
             [
-              5326137,
+              7231046,
               0,
               0.59,
               -0.1,
-              0.72,
+              0.7,
               0.06,
               0.06
             ],
             [
-              5326137,
+              7231046,
               0,
               0.5,
               0.3,
               0.1,
               0.1,
               0.14
-            ],
-            [
-              5326137,
-              0.58,
-              0.9099999999999999,
-              -0.5,
-              0.03,
-              0.34,
-              0.05
-            ],
-            [
-              5326137,
-              -0.58,
-              0.9099999999999999,
-              -0.5,
-              0.03,
-              0.34,
-              0.05
-            ],
-            [
-              5326137,
-              0.58,
-              0.9099999999999999,
-              -1.8,
-              0.03,
-              0.34,
-              0.05
-            ],
-            [
-              5326137,
-              -0.58,
-              0.9099999999999999,
-              -1.8,
-              0.03,
-              0.34,
-              0.05
-            ],
-            [
-              5326137,
-              0.58,
-              0.9099999999999999,
-              -1.1500000000000001,
-              0.03,
-              0.34,
-              0.05
-            ],
-            [
-              5326137,
-              -0.58,
-              0.9099999999999999,
-              -1.1500000000000001,
-              0.03,
-              0.34,
-              0.05
             ]
           ]
         }
@@ -1509,14 +1863,20 @@ function archNotch(zc: number, ySill: number, r: number, n = 7): number[][] {
  * per-profile-point colour be written without a second geometry.
  */
 function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
-                  tyreHex: number, rimHex: number, dish = 0.55): THREE.BufferGeometry {
+                  tyreHex: number, rimHex: number, dish = 0.55, rimBand = 4): THREE.BufferGeometry {
   const hw = halfW;
   const pts: number[][] = [
     [0, -hw * dish], [rRim * 0.30, -hw * dish], [rRim * 0.62, -hw * 0.80], [rRim, -hw * 0.86], [rRim, -hw * 0.98],
     [rTyre * 0.93, -hw], [rTyre, -hw * 0.72], [rTyre, hw * 0.72], [rTyre * 0.93, hw],
     [rRim, hw * 0.98], [rRim, hw * 0.86], [rRim * 0.62, hw * 0.80], [rRim * 0.30, hw * dish], [0, hw * dish],
   ];
-  const rimPoint = (j: number) => j <= 4 || j >= 9;
+  // `rimBand` is the LAST profile point that carries the rim colour. Vertex colours interpolate,
+  // so with the default 4 the whole sidewall from rRim out to rTyre * 0.93 is a gradient from the
+  // rim tone to the tyre tone -- on a wheel whose rim is a small hub that paints most of the visible
+  // disc pale, and the tuk-tuk's wheels read as grey plates rather than black tyres. Passing 2
+  // stops the chrome at the hub cap and makes the sidewall tyre all the way in. The default is
+  // unchanged, so every existing prop is byte-identical.
+  const rimPoint = (j: number) => j <= rimBand || j >= pts.length - 1 - rimBand;
   const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
   const n = g.getAttribute('position').count;
   const col = new Float32Array(n * 3);
@@ -1574,13 +1934,16 @@ function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
  *  side of the rim so they cross the way real spokes do. Merged into the wheel geometry so the
  *  wheel stays ONE instanced geometry. */
-function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006): THREE.BufferGeometry {
+function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006, prism = false): THREE.BufferGeometry {
   const segs: THREE.BufferGeometry[] = [];
   for (let i = 0; i < n; i++) {
     const a = i * Math.PI * 2 / n;
     const side = (i % 2 === 0 ? 1 : -1) * halfW * 0.35;
     const len = rRim - rHub;
-    const g = new THREE.BoxGeometry(t, len, t);
+    // `prism`: an open three-sided prism at six triangles where the box costs twelve -- a wire
+    // spoke has no resolvable section at prop distance, and sixty of them on three wheels is the
+    // difference between a large prop inside its triangle ceiling and one over it
+    const g = prism ? new THREE.CylinderGeometry(t * 0.62, t * 0.62, len, 3, 1, true) : new THREE.BoxGeometry(t, len, t);
     g.translate(0, rHub + len / 2, 0);
     g.rotateX(Math.atan2(side, len) * 0.6);
     g.rotateX(0); g.translate(0, 0, side * 0.5);
@@ -1592,14 +1955,16 @@ function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: numbe
 
 /** A polyline TUBE: one cylinder per segment, each rotated onto its chord, with a small sphere-less
  *  overlap so the joints close. Handlebars, canopy rails, roll cages and frame tubes. */
-function tube(pts: number[][], r: number, seg = 8, hex?: number): THREE.BufferGeometry {
+function tube(pts: number[][], r: number, seg = 8, hex?: number, open = false): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
   for (let i = 0; i < pts.length - 1; i++) {
     const a = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]);
     const b = new THREE.Vector3(pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
     const d = b.clone().sub(a); const len = d.length();
     if (len < 1e-6) continue;
-    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, false);
+    // `open`: no end discs -- for a run whose every end is buried in a joint, a ring or a hub, the
+    // two caps are half the segment's triangles spent on faces nothing can see
+    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, open);
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
     g.applyQuaternion(q);
     const m = a.clone().add(b).multiplyScalar(0.5);
@@ -1912,9 +2277,184 @@ function flare(zc: number, yc: number, rIn: number, rOut: number, x0: number, x1
   return mergeGeos([l, r]);
 }
 
+/** Seamless around-by-profile UVs for a LatheGeometry revolved about Y: u from the SEGMENT index
+ *  (the lathe orders its vertices segment-major, index = seg * pointCount + point) so the duplicated
+ *  seam column reads u = repeats exactly and RepeatWrapping closes it; v per PROFILE POINT from
+ *  `vs` (one value per profile point), so the caller decides which tile rows land on the tread and
+ *  which on the sidewalls. `pitch` is the tile size in metres around the widest radius. */
+function latheUV(g: THREE.BufferGeometry, pointCount: number, seg: number, pitch: number, vs: number[]): void {
+  const p = g.getAttribute('position');
+  let rMax = 0;
+  for (let i = 0; i < p.count; i++) rMax = Math.max(rMax, Math.hypot(p.getX(i), p.getZ(i)));
+  const rep = Math.max(1, Math.round(2 * Math.PI * rMax / pitch));
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const s = Math.floor(i / pointCount), j = i % pointCount;
+    uv[i * 2] = (s / seg) * rep; uv[i * 2 + 1] = vs[Math.min(j, vs.length - 1)];
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+/** Pin every UV of a geometry to one texel -- the WHITE band a tyre tile keeps at its top -- so a
+ *  rim, hub or spoke sharing the tyre's material renders its vertex colour unmultiplied. */
+function pinUV(g: THREE.BufferGeometry, u: number, v: number): THREE.BufferGeometry {
+  const uv = g.getAttribute('uv');
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, u, v);
+  return g;
+}
+
+/**
+ * An OPEN spoked wheel about the X axle: a tyre RING lathe (bead, sidewall, shoulder, tread and back
+ * down the far side -- a closed torus-like profile, so nothing is open to the gate), a rim ring, a
+ * brake-drum hub, and wire spokes as three-sided prisms. The closed dish `wheelGeo` fills the wheel
+ * with a solid disc that HIDES the spokes it carries; a motorcycle's wire wheel reads by the daylight
+ * through it, so the dish is gone. Tyre UVs are around-by-profile for a tread tile (`o.pitch` metres
+ * per repeat around; v 0.5..0.96 is the treaded strip of `tyreTile`), rim, hub and spokes are pinned
+ * to the tile's white band. Revolved about Y, then laid onto X.
+ */
+function openWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number, o: any): THREE.BufferGeometry {
+  const hw = halfW, rr = rRim * 1.02;
+  const prof: number[][] = [
+    [rr, -hw * 0.72], [rTyre * 0.90, -hw * 0.98], [rTyre * 0.985, -hw * 0.66], [rTyre, -hw * 0.30],
+    [rTyre, hw * 0.30], [rTyre * 0.985, hw * 0.66], [rTyre * 0.90, hw * 0.98], [rr, hw * 0.72], [rr, -hw * 0.72],
+  ];
+  // v per profile point: sidewall 0.50..0.66, tread 0.66..0.80, sidewall 0.80..0.96 (0.96..1 is white)
+  const vs = [0.50, 0.56, 0.64, 0.68, 0.78, 0.82, 0.90, 0.96, 0.96];
+  const tyre = new THREE.LatheGeometry(prof.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  latheUV(tyre, prof.length, seg, o.pitch ?? 0.05, vs);
+  tyre.computeVertexNormals();
+  const rimProf = [[rRim * 0.90, -hw * 0.50], [rRim, -hw * 0.62], [rRim, hw * 0.62], [rRim * 0.90, hw * 0.50], [rRim * 0.90, -hw * 0.50]];
+  const rim = new THREE.LatheGeometry(rimProf.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  rim.computeVertexNormals();
+  const hubR = o.hubR ?? rRim * 0.32, hubW = o.hubW ?? hw * 2.6;
+  const hub = new THREE.CylinderGeometry(hubR, hubR, hubW, o.hubSeg ?? 12);
+  const hubCap = new THREE.CylinderGeometry(hubR * 0.55, hubR * 0.55, hubW * 1.25, o.hubSeg ?? 12);
+  const parts = [tintGeo(tyre, o.tyreHex), pinUV(tintGeo(rim, o.rimHex), 0.5, 0.985),
+                 pinUV(tintGeo(hub, o.hubHex ?? o.rimHex), 0.5, 0.985), pinUV(tintGeo(hubCap, o.capHex ?? o.rimHex), 0.5, 0.985)];
+  const g = mergeGeos(parts);
+  g.rotateZ(Math.PI / 2);                     // lathe axis Y -> the axle on X
+  const sp = pinUV(spokes(hubR * 0.9, rRim * 0.95, hw, o.spokes ?? 20, o.spokeHex ?? 0xb0aea9, o.spokeT ?? 0.006, true), 0.5, 0.985);
+  return mergeGeos([g, sp]);
+}
+
+/** TYRE tile, ported from the prop template: `o.pitch` metres around (via latheUV), the strip at
+ *  v 0.5..0.96 a treaded tyre (circumferential grooves cut by staggered sipes, bead rings, mould
+ *  lines, road dust on the lower shoulder, grey scuffs, grain), v 0..0.5 a worn slick, and the top
+ *  4% pure WHITE so pinned parts render their vertex colour. Drawn as RATIOS against the
+ *  vertex-coloured rubber at `base` (200/255 -> the tyre tone is authored 1.275x its albedo so dust
+ *  and scuffs can go BRIGHTER than the rubber under a multiply canvas). `o.band` is the tread's
+ *  share of the strip, top to bottom, and must agree with openWheelGeo's tread rows. */
+function tyreTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const base = o.base ?? 200, band = o.band ?? [0.35, 0.65], groove = o.groove ?? 0.45;
+    const gv = Math.round(base * groove), rv = Math.round(base * 0.7), mv = Math.round(base * 0.9);
+    const dust = o.dust ?? [232, 214, 190];
+    const white = Math.round(s * 0.04);
+    ctx.fillStyle = `rgb(${base},${base},${base})`; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s * s / 6; i++) { const v = base + Math.round((rnd() - 0.5) * 22); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(rnd() * s, rnd() * s, 2, 2); }
+    const strip = (ya: number, yb: number, treaded: boolean) => {
+      const h = yb - ya, b0 = ya + h * (1 - band[1]), b1 = ya + h * (1 - band[0]);
+      const ng = o.grooves ?? 3, gw = h * 0.024;
+      ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+      for (let i = 0; i < ng; i++) { const y = b0 + (b1 - b0) * (i + 1) / (ng + 1); ctx.fillRect(0, y - gw / 2, s, gw); }
+      const ns = o.sipes ?? 2, w = s * (o.sipeWidth ?? 0.05);
+      for (let k = 0; k <= ng; k++) {
+        const y0 = k === 0 ? b0 : b0 + (b1 - b0) * k / (ng + 1) + gw / 2, y1 = k === ng ? b1 : b0 + (b1 - b0) * (k + 1) / (ng + 1) - gw / 2;
+        const outer = k === 0 || k === ng;
+        if (!treaded && !outer) continue;
+        const ys0 = treaded ? y0 : (k === 0 ? y0 : y1 - (y1 - y0) * 0.45), ys1 = treaded ? y1 : (k === 0 ? y0 + (y1 - y0) * 0.45 : y1);
+        for (let i = 0; i < ns; i++) {
+          const x = ((i + 0.5) / ns + (k % 2) * 0.5 / ns) * s + (rnd() - 0.5) * s * 0.06, sl = (rnd() - 0.5) * s * 0.08;
+          for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, ys0); ctx.lineTo(x + dx + w, ys0); ctx.lineTo(x + dx + w + sl, ys1); ctx.lineTo(x + dx + sl, ys1); ctx.closePath(); ctx.fill(); }
+        }
+      }
+      const sh = ctx.createLinearGradient(0, b0 - h * 0.03, 0, b0 + h * 0.02); sh.addColorStop(0, `rgba(${gv},${gv},${gv},0)`); sh.addColorStop(1, `rgba(${gv},${gv},${gv},0.45)`);
+      ctx.fillStyle = sh; ctx.fillRect(0, b0 - h * 0.03, s, h * 0.05);
+      ctx.fillStyle = `rgb(${rv},${rv},${rv})`; ctx.fillRect(0, ya + h * 0.045, s, h * 0.012); ctx.fillRect(0, ya + h * 0.94, s, h * 0.012);
+      ctx.fillStyle = `rgb(${mv},${mv},${mv})`; ctx.fillRect(0, ya + h * 0.11, s, 2); ctx.fillRect(0, ya + h * 0.88, s, 2);
+      const dg = ctx.createLinearGradient(0, yb, 0, ya + h * 0.6); dg.addColorStop(0, `rgba(${dust[0]},${dust[1]},${dust[2]},${o.dustAlpha ?? 0.35})`); dg.addColorStop(1, `rgba(${dust[0]},${dust[1]},${dust[2]},0)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, ya + h * 0.6, s, h * 0.4);
+      for (let i = 0; i < (o.scuffs ?? 14); i++) {
+        const x = rnd() * s, y = rnd() < 0.5 ? b0 + (rnd() - 0.3) * h * 0.08 : b1 + (rnd() - 0.7) * h * 0.08, r = s * (0.02 + rnd() * 0.05), v = 225 + Math.round(rnd() * 25);
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+        ctx.fillStyle = g2; for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, r * 2.2, r * 0.6, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 60; i++) { const x = rnd() * s, y = b0 + rnd() * (b1 - b0), v = 6 + Math.round(rnd() * 14); ctx.fillStyle = `rgb(${v},${Math.round(v * 0.9)},${Math.round(v * 0.75)})`; ctx.fillRect(x, y, 2 + rnd() * 6, 2 + rnd() * 3); }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+    strip(white, s / 2, true);   // v 0.5..0.96: treaded
+    strip(s / 2, s, false);      // v 0..0.5: slick
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, white);   // v 0.96..1: white, for pinned parts
+  });
+}
+
+/**
+ * A DRAPED SHEET (ported from the prop template): `heights[j][i]` is the top surface at x = x0..x1
+ * (i over nx) and z = z0..z1 (j over nz); the sheet is `t` thick. Top and underside are smooth-shaded
+ * grids, the four edges are flat strips wound outward. A canvas canopy is a ridge line minus the sag
+ * between its posts minus the droop of its free edges -- cloth, where a slab reads as a painted box.
+ */
+function sheet(s: any): THREE.BufferGeometry {
+  const nx: number = s.nx, nz: number = s.nz, Hh: number[][] = s.heights, t: number = s.t ?? 0.012;
+  const X = (i: number) => s.x0 + (s.x1 - s.x0) * i / nx;
+  const Z = (j: number) => s.z0 + (s.z1 - s.z0) * j / nz;
+  const grid = (yOff: number, flip: boolean) => {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { pos.push(X(i), Hh[j][i] + yOff, Z(j)); uv.push(i / nx, j / nz); }
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      if (flip) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  const parts = [grid(0, false), grid(-t, true)];
+  const strip = (pts: number[][][], out: number[]) => {
+    const pos: number[] = [], uv: number[] = [];
+    for (const [p0, p1] of pts) {
+      const q0 = p0, q1 = p1, q2 = [p1[0], p1[1] - t, p1[2]], q3 = [p0[0], p0[1] - t, p0[2]];
+      const e1 = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]], e2 = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+      const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      const tri = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? [q0, q1, q2, q0, q2, q3] : [q0, q2, q1, q0, q3, q2];
+      for (const q of tri) { pos.push(q[0], q[1], q[2]); uv.push(0, 0); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.computeVertexNormals(); return g;
+  };
+  const top = (i: number, j: number) => [X(i), Hh[j][i], Z(j)];
+  const e0: number[][][] = [], e1: number[][][] = [], e2: number[][][] = [], e3: number[][][] = [];
+  for (let i = 0; i < nx; i++) { e0.push([top(i, 0), top(i + 1, 0)]); e1.push([top(i, nz), top(i + 1, nz)]); }
+  for (let j = 0; j < nz; j++) { e2.push([top(0, j), top(0, j + 1)]); e3.push([top(nx, j), top(nx, j + 1)]); }
+  parts.push(strip(e0, [0, 0, -1]), strip(e1, [0, 0, 1]), strip(e2, [-1, 0, 0]), strip(e3, [1, 0, 0]));
+  return mergeGeos(parts);
+}
+
 /** Bind a post-construction canvas tile to a material as map (and bump), leaving the textureless
  *  declaration intact: no procedural texture set is synthesised, the measured colour stays the
  *  multiplicand, and the whole thing costs one canvas. */
+/** Tractor-tyre LUGS: `n` bars laid across the tread, each yawed alternately +-`skew` rad about
+ *  its own radial so consecutive bars read as the chevron of an agricultural tyre, standing `h`
+ *  proud of the tread ring. Built about the X axle like wheelGeo and merged INTO the wheel
+ *  geometry, so the wheel stays ONE instanced geometry and the lugs cost nothing per instance.
+ *  Default-off: only a cfg that sets `bike.lugs` gets them. */
+function lugs(rTyre: number, halfW: number, o: any): THREE.BufferGeometry {
+  const n = o.n ?? 16, h = o.h ?? 0.04, parts: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < n; i++) {
+    const g = new THREE.BoxGeometry(halfW * 2 * (o.w ?? 0.85), h, o.d ?? 0.06);
+    g.rotateY((i % 2 === 0 ? 1 : -1) * (o.skew ?? 0.4));
+    g.translate(0, rTyre - h * 0.35, 0);
+    g.rotateX((i / n) * Math.PI * 2 + (o.phase ?? 0));
+    parts.push(g);
+  }
+  return tintGeo(mergeGeos(parts), o.hex ?? 0x555555);
+}
+
 function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | null, bump = 0): void {
   if (!tex) return;
   mat.map = tex;
@@ -2031,6 +2571,7 @@ export function createIronBuffaloWalkingTractorModel(options: ProceduralModelOpt
   /* ---------------------------------------------------------------- motorcycle (shared template) */
   const B = G.bike as any;
   const ox = B.x ?? 0;                       // the bike's centreline in x (a sidecar offsets it)
+  const oz = B.z ?? 0;                       // and along z, so a rig can be re-centred on its origin
   const rW = B.r, rimR = B.rim, hw = B.halfW;
   const zF = B.zF, zR = B.zR;
   const P = B.paintHex, CH = B.chromeHex ?? 0xb9bcbf, DK = B.darkHex ?? 0x4a4742;
@@ -2039,48 +2580,62 @@ export function createIronBuffaloWalkingTractorModel(options: ProceduralModelOpt
   const paintGeos: THREE.BufferGeometry[] = [];
   for (const ex of (B.paintExtrudes ?? []) as any[]) {
     const g = sideExtrude(ex.poly, ex.width, ex.shape ?? {}); if (ex.x) g.translate(ex.x, 0, 0);
-    g.translate(ox, 0, 0); paintGeos.push(tintGeo(g, ex.hex ?? P));
+    g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, ex.hex ?? P));
   }
-  for (const b of (B.paintBoxes ?? []) as number[][]) { const g = rbox(b.slice(1)); g.translate(ox, 0, 0); paintGeos.push(tintGeo(g, b[0])); }
-  for (const t of (B.paintTubes ?? []) as any[]) { const g = tube(t.pts.map((p: number[]) => [p[0] + ox, p[1], p[2]]), t.r, t.seg ?? 8); paintGeos.push(tintGeo(g, t.hex ?? P)); }
+  for (const b of (B.paintBoxes ?? []) as number[][]) { const g = rbox(b.slice(1)); g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, b[0])); }
+  for (const t of (B.paintTubes ?? []) as any[]) { const g = tube(t.pts.map((p: number[]) => [p[0] + ox, p[1], p[2] + oz]), t.r, t.seg ?? 8, undefined, t.open ?? false); paintGeos.push(tintGeo(g, t.hex ?? P)); }
   const bodyGeo = heightUV(mergeGeos(paintGeos), G.mudScale ?? 1.2);
   add('body', B.bodyName ?? 'Bodywork', bodyGeo, 'paint');
   if (G.collider) colliders['body'] = G.collider;
 
   // FRAME, FORKS, BARS, ENGINE, SEAT, RACK, LAMPS -- every tone a vertex colour on one white trim.
   const trimGeos: THREE.BufferGeometry[] = [];
-  const shift = (pts: number[][]) => pts.map((p) => [p[0] + ox, p[1], p[2]]);
-  for (const t of (B.tubes ?? []) as any[]) trimGeos.push(tube(shift(t.pts), t.r, t.seg ?? 8, t.hex ?? CH));
+  const shift = (pts: number[][]) => pts.map((p) => [p[0] + ox, p[1], p[2] + oz]);
+  for (const t of (B.tubes ?? []) as any[]) trimGeos.push(tube(shift(t.pts), t.r, t.seg ?? 8, t.hex ?? CH, t.open ?? false));
   const tb: number[][] = [];
-  for (const b of (B.trim ?? []) as number[][]) tb.push([b[0], b[1] + ox, ...b.slice(2)]);
-  for (const b of mirrorX((B.trimMirrored ?? []) as number[][])) tb.push([b[0], b[1] + ox, ...b.slice(2)]);
+  for (const b of (B.trim ?? []) as number[][]) tb.push([b[0], b[1] + ox, b[2], b[3] + oz, ...b.slice(4)]);
+  for (const b of mirrorX((B.trimMirrored ?? []) as number[][])) tb.push([b[0], b[1] + ox, b[2], b[3] + oz, ...b.slice(4)]);
   if (tb.length) trimGeos.push(tintedBoxes(tb));
   for (const c of (B.cyls ?? []) as any[]) {
     const g = new THREE.CylinderGeometry(c.rt, c.rb, c.h, c.seg ?? 12);
     if (c.rx) g.rotateX(c.rx); if (c.rz) g.rotateZ(c.rz);
-    g.translate(c.at[0] + ox, c.at[1], c.at[2]);
+    g.translate(c.at[0] + ox, c.at[1], c.at[2] + oz);
     trimGeos.push(tintGeo(g, c.hex ?? DK));
   }
   // extra loose lathes (a sidecar's third wheel, a trailer's small wheels) merged into the trim
   for (const w of (G.looseWheels ?? []) as any[]) {
-    const g = mergeGeos([wheelGeo(w.r, w.rim, w.halfW, w.seg ?? 18, w.tyreHex, w.rimHex, w.dish ?? 0.5),
+    const g = mergeGeos([wheelGeo(w.r, w.rim, w.halfW, w.seg ?? 18, w.tyreHex, w.rimHex, w.dish ?? 0.5, w.rimBand ?? 4),
                          ...(w.spokes ? [spokes(w.rim * 0.28, w.rim * 0.98, w.halfW, w.spokes, w.spokeHex ?? CH)] : [])]);
     g.translate(w.at[0], w.at[1], w.at[2]); trimGeos.push(g);
   }
-  for (const t of (G.tubes ?? []) as any[]) trimGeos.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
+  // lathes on the bike (a headlamp nacelle, a bezel) and on the rig: [radius, axial] profiles
+  // revolved about Y, then rotated onto their axis and placed
+  for (const l of [...((B.lathes ?? []) as any[]).map((l: any) => ({ ...l, at: [l.at[0] + ox, l.at[1], l.at[2] + oz] })), ...((G.lathes ?? []) as any[])]) {
+    const g = lathe(l.pts, l.seg ?? 12);
+    if (l.rx) g.rotateX(l.rx); if (l.ry) g.rotateY(l.ry); if (l.rz) g.rotateZ(l.rz);
+    g.translate(l.at[0], l.at[1], l.at[2]); trimGeos.push(tintGeo(g, l.hex ?? CH));
+  }
+  // draped sheets (a canvas canopy) as height grids -- cloth, not a slab
+  for (const s of (G.sheets ?? []) as any[]) trimGeos.push(tintGeo(sheet(s), s.hex));
+  for (const t of (G.tubes ?? []) as any[]) trimGeos.push(tube(t.pts, t.r, t.seg ?? 8, t.hex, t.open ?? false));
   for (const b of (G.trim ?? []) as number[][]) trimGeos.push(tintGeo(rbox(b.slice(1)), b[0]));
   for (const b of mirrorX((G.trimMirrored ?? []) as number[][])) trimGeos.push(tintGeo(rbox(b.slice(1)), b[0]));
   add('trim', B.trimName ?? 'Frame, forks, engine, seat and fittings', mergeGeos(trimGeos), 'trim');
 
   // WHEELS: one spoked lathe, instanced at every hub the cfg lists, each a named pivot.
-  const wheelG = mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5),
-                            ...(B.spokes ? [spokes(rimR * 0.28, rimR * 0.98, hw, B.spokes, B.spokeHex ?? CH)] : [])]);
+  // `open`: a wire wheel with daylight through it (tyre ring, rim ring, drum hub, prism spokes) and
+  // tread UVs for a tyre tile on `B.wheelMaterial`; otherwise the closed dished lathe.
+  const wheelG = B.open
+    ? openWheelGeo(rW, rimR, hw, B.seg ?? 20, { ...B.open, tyreHex: B.tyreHex, rimHex: B.rimHex, spokes: B.spokes, spokeHex: B.spokeHex ?? CH })
+    : mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5, B.rimBand ?? 4),
+                 ...(B.spokes ? [spokes(rimR * 0.28, rimR * 0.98, hw, B.spokes, B.spokeHex ?? CH)] : [])]);
+  const wheelGL = B.lugs ? mergeGeos([wheelG, lugs(rW, hw, B.lugs)]) : wheelG;   // agricultural tread bars, default-off
   const wheelMats: THREE.Matrix4[] = [];
   for (const p of B.positions as number[][]) {
     wheelMats.push(new THREE.Matrix4().compose(new THREE.Vector3(p[0], p[1], p[2]),
       new THREE.Quaternion(), new THREE.Vector3(p[3] ?? 1, p[3] ?? 1, p[3] ?? 1)));
   }
-  addInst('wheels', 'Wheels', wheelG, 'trim', wheelMats);
+  addInst('wheels', 'Wheels', wheelGL, B.wheelMaterial ?? 'trim', wheelMats);
 
   // EXTRA components (a sidecar box, a canvas canopy, a tuk-tuk cabin) -- own material each.
   for (const ex of (G.extras ?? []) as any[]) {
@@ -2104,6 +2659,7 @@ export function createIronBuffaloWalkingTractorModel(options: ProceduralModelOpt
     if (t.kind === 'dust') tex = dustTile(t.size ?? 512, t.dust, t.seed ?? 1, t.coverage ?? 0.30);
     if (t.kind === 'plank') tex = plankTile(t.size ?? 512, t.boards ?? 6, t.seed ?? 5);
     if (t.kind === 'rust') tex = rustTile(t.size ?? 512, t.ratio, t.seed ?? 7, t.density ?? 90);
+    if (t.kind === 'tyre') tex = tyreTile(t.size ?? 256, t.seed ?? 29, t);
     bindTile(mat, tex, t.bump ?? 0);
   }
 
