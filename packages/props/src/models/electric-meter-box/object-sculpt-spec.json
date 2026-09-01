@@ -70,10 +70,11 @@
       "primaryType": "wall-mounted-meter-box",
       "primaryDomain": "object",
       "formLanguage": [
-        "back-flange",
-        "box-body",
-        "rounded-door",
+        "rounded-back-flange",
+        "rounded-rim-body",
         "gasket-line",
+        "rounded-door",
+        "rim-screws",
         "conduit-stubs"
       ],
       "structureKind": [
@@ -107,8 +108,8 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE merge: a 12 mm back flange, the 0.26 x 0.34 x 0.12 body, a 3 mm gasket frame, the door 6 mm proud of it, two label plates, a latch, a rust streak, a conduit stub with its nut, a brass gland and four flange screws -- 332 triangles, ONE draw call.",
-        "One material: grey enamel as a vertex colour on white, with every other tone (gasket #3a3a3a, label #d9c48a, conduit #2b2b2b, brass #a8843a, rust #8a5a30) a vertex colour on the same shader.",
+        "ONE merge: four ROUNDED-RECTANGLE extrudes (flange r 30 mm, rim r 30, gasket r 24, door r 20; 16-point profiles, 60 triangles each), a top mounting lip, six black rim screws, the latch barrel and tab, a swept conduit with its hex nut, a brass gland with its hex nut -- 600 triangles, ONE draw call.",
+        "One material: white enamel with vertex colours for the side tones (flange #c4c7ca, rim #aeb1b4, gasket #2e2e30, conduit #262626, brass #a8843a) and ONE baked 512 x 640 WebP atlas of the plate's own front elevation, ratio-normalised over the door enamel, sampled by every +Z face through a planar UV and pinned to one clean texel elsewhere -- the printed labels, screw heads, gasket line, bevel highlight and rust arrive on the same shader.",
         "No repetition system at one draw call.",
         "Action readiness: one root pivot at the wall face, zero sockets, one cylinder collider on the root, not breakable."
       ]
@@ -124,7 +125,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the layered front -- flange, body, gasket line, door -- and the two yellow labels; each layer is a box standing proud of the one behind, so the reveals shade themselves without a texture."
+      "rationale": "The identity is the layered rounded front -- flange, rim, gasket line, door -- and the two printed labels; each layer is a rounded extrude standing proud of the one behind so the reveals shade themselves, and the front atlas carries the print and wear the geometry cannot."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -148,7 +149,7 @@
           "zone": "back",
           "kind": "contour",
           "identityDefining": true,
-          "description": "wider back flange with corner screws",
+          "description": "wider rounded back flange with a mounting lip and six black rim screws",
           "mapsTo": {
             "ref": "box"
           },
@@ -193,7 +194,7 @@
           "zone": "front",
           "kind": "stain",
           "identityDefining": false,
-          "description": "rust streak at the door head",
+          "description": "rust at the rim head and the door edges, from the plate",
           "mapsTo": {
             "ref": "box"
           },
@@ -229,7 +230,8 @@
     "sourceImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
     "resolvedUnknowns": [
       "The door is sealed to the body: one draw call cannot carry a separate hinged mesh.",
-      "The labels are plain yellow plates; their print is below the resolvable band at prop distance and a canvas would need a second material or a texture set.",
+      "The labels are the plate's own print, carried in the front atlas on the door face; they stand proud by nothing, as stickers do.",
+      "The sides and top are pinned to one clean enamel texel: the plate is frontal and shows no side wear.",
       "The conduit is a short stub, not the plate's trailing cable; a cable is scene dressing."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
@@ -259,13 +261,14 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope 0.30 x 0.40 x 0.16 m",
-          "Flange, body, door as three steps"
+          "Flange, rim, gasket, door as rounded steps"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
           "a plain box",
+          "square corners",
           "door flush"
         ]
       },
@@ -275,13 +278,14 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Two yellow plates at the plate's stations"
+          "Two printed labels at the plate's stations, WARNING header legible"
         ],
         "evidenceRefs": [
           "region-label"
         ],
         "failureModes": [
-          "no labels"
+          "no labels",
+          "blank plates"
         ]
       },
       {
@@ -622,7 +626,8 @@
   },
   "assumptions": [
     "The door is sealed to the body: one draw call cannot carry a separate hinged mesh.",
-    "The labels are plain yellow plates; their print is below the resolvable band at prop distance and a canvas would need a second material or a texture set.",
+    "The labels are the plate's own print, carried in the front atlas on the door face; they stand proud by nothing, as stickers do.",
+    "The sides and top are pinned to one clean enamel texel: the plate is frontal and shows no side wear.",
     "The conduit is a short stub, not the plate's trailing cable; a cable is scene dressing."
   ],
   "coordinateFrame": {
@@ -631,7 +636,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin BACK-CENTER: the centre of the wall-contact face, +Y up, +Z OUT from the wall. The box occupies z 0..0.167, y -0.21..+0.22, x +-0.15; a level builder places it against a wall by its origin."
+    "notes": "Origin BACK-CENTER: the centre of the wall-contact face, +Y up, +Z OUT from the wall. The box occupies z 0..0.151, y -0.253 (conduit tip)..+0.205, x +-0.15; a level builder places it against a wall by its origin."
   },
   "silhouette": {
     "envelope": {
@@ -639,8 +644,8 @@
       "h": 0.4,
       "d": 0.16
     },
-    "description": "A 0.30 x 0.40 flange 12 mm thick on the wall; a 0.26 x 0.34 x 0.12 body; a door 0.22 x 0.30 standing 9 mm proud inside a dark gasket line; two labels; a latch on the right; a conduit stub and a brass gland hanging 0.07 m below the body.",
-    "envelopeDerivation": "x +-0.15 at the flange (declared 0.30); y -0.21 (conduit stub tip) to +0.22 (flange top), 0.43 against the declared 0.40, the stubs hanging below the box proper; z 0 at the wall to 0.167 at the latch (declared 0.16). Proxy: w:h:d 1:1.536:0.588 -- 0.46 m tall at 0.30 wide because it carries the stubs -- and 0.176 deep; occupancy reads the flange full width at 0.98 H and the door 0.56-0.96 H spanning cols 3-76 of 80.",
+    "description": "A 0.30 x 0.38 rounded flange 12 mm thick on the wall with a mounting lip; a 0.275 x 0.362 rounded rim body to 0.127; a door 0.226 x 0.315 standing 15 mm proud inside a dark gasket line; six black screws on the rim; a latch on the right; a conduit and a brass gland hanging 0.07 and 0.03 m below the flange.",
+    "envelopeDerivation": "Every station is a PLATE PIXEL at S = 0.30 m / 589 px (the flange width): flange x 218..806 y 75..815 (0.299 x 0.377), rim 240..780 / 95..805 (0.275 x 0.362), gasket 283..742 / 158..792 (0.234 x 0.323), door 291..734 / 166..784 (0.226 x 0.315). y +0.205 (mounting lip) to -0.253 (conduit tip), 0.46 against the declared 0.40 with the stubs hanging 0.07 below the flange; z 0 at the wall to 0.151 at the latch (declared 0.16), the depth stack read off the proxy END view: flange 12 mm, body to 0.127, door 15 mm proud. Proxy: w:h:d 1:1.536:0.588 -- 0.46 m tall at 0.30 wide because it carries the stubs -- and 0.176 deep; occupancy reads the flange full width at 0.98 H and the door 0.56-0.96 H spanning cols 3-76 of 80.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d 1:1.536:0.588. The plate is a near-frontal elevation on a white matte, so the depth is the proxy's only: 0.176 m against the declared 0.16, within a gland's length."
   },
   "viewEvidence": [
@@ -693,12 +698,12 @@
       "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Nine boxes and seven cylinders merged into one geometry on one material: the ONE draw call the small class allows.",
+      "topologyRationale": "Four rounded extrudes, two boxes, ten cylinders and one swept tube merged into one geometry on one material: the ONE draw call the small class allows.",
       "materialId": "enamel",
       "material": "enamel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Flange 0.30 x 0.38 x 0.012 at z 0..0.012; body 0.26 x 0.34 x 0.12 to z 0.132; gasket 3 mm to 0.135; door 12 mm to 0.147; labels 1.2 mm proud of the door; latch to z 0.167; stubs below y -0.14.",
+        "topologyIntent": "Flange 0.299 x 0.377 r 0.03 at z 0..0.012; rim 0.275 x 0.362 r 0.03 to z 0.127; gasket 0.234 x 0.323 r 0.024 to 0.130; door 0.226 x 0.315 r 0.02 to 0.145; latch to z 0.151; stubs below y -0.179 at z 0.08.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -707,8 +712,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each front layer is a smaller box standing proud of the one behind: flange/body, body/gasket, gasket/door, door/labels are all OPPOSED butt joints with a reveal; the stubs enter the body bottom as interpenetrating cylinders.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.3 m."
+        "zFightingNote": "Each front layer is a smaller rounded extrude standing proud of the one behind: flange/rim, rim/gasket, gasket/door are OPPOSED butt joints with a reveal; screws and the latch stand 2-3 mm proud on their own cylinders; the stubs enter the flange foot as interpenetrating cylinders.",
+        "mergeNote": "One merged BufferGeometry; +Z faces take planar atlas UVs, all others pin to one texel."
       },
       "localFeatures": [
         {
@@ -734,22 +739,22 @@
         {
           "id": "d5-labels",
           "description": "labels",
-          "delivery": "tinted plates"
+          "delivery": "front atlas"
         },
         {
           "id": "d6-rust",
           "description": "rust",
-          "delivery": "tinted strip + canvas"
+          "delivery": "front atlas"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "enamel",
         "baseColor": "#b9bcbf",
-        "recipe": "Grey enamel as vertex colour on white with a warm grime wash; gasket, labels, conduit, brass, rust as vertex colours.",
+        "recipe": "White enamel with a baked front-elevation atlas on every +Z face and vertex tones on the rest; gasket, conduit, brass as vertex colours.",
         "evidenceRef": "region-enamel",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(185, 188, 191, 1.0)",
-        "secondaryAlbedo": "rgba(217, 196, 138, 1.0)",
+        "secondaryAlbedo": "rgba(174, 177, 180, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.9
       },
@@ -833,7 +838,7 @@
           "palette": [
             "#D9C48A"
           ],
-          "evidence": "crops/label.png -- #c3b397 sd 61 with the print; carried as plain #d9c48a plates 1.2 mm proud."
+          "evidence": "crops/label.png -- #c3b397 sd 61 with the print; carried as the plate's own print in the front atlas, WARNING header and triangle legible at prop distance."
         }
       ],
       "finishClass": "metal",
@@ -841,7 +846,7 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-enamel (0.90) at #a3a6a6 sd 3 -- a flat swatch on a WHITE matte, so the plate exposure is high and the material is carried at #b9bcbf on the door and body, #a6a9ac on the flange, as vertex colours on a WHITE material.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction (warm wash 0.80/0.74/0.66 at 0.30)."
+          "Textureless as DECLARED: one baked 512 x 640 WebP atlas (22 KB) bound after construction -- the plate crop x 200..824 y 60..835 divided by the door enamel (linear 0.368/0.381/0.382) and clamped at 1.35, so the vertex base #d4d7da x atlas lands the door at #b9bcbf."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -962,58 +967,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:45:50.910890+00:00",
+      "timestamp": "2026-09-01T21:48:59.997932+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:50.991868+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
@@ -1024,71 +998,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:51.072689+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "labels",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:51.153586+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "stubs",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:45:51.232950+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "timestamp": "2026-09-01T21:49:00.081019+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1101,27 +1013,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:51.313508+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-01T21:49:00.164369+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
-          "id": "labels",
+          "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
+          "score": 0.92,
+          "threshold": 0.85,
           "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
@@ -1132,17 +1044,140 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:51.394340+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-09-01T21:49:00.246256+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.327148+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "stubs",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Swept black conduit with a hex nut at x -0.068 curling outward to y -0.253, brass gland with its hex nut at x +0.068 hanging 0.032 below the flange.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.408886+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.488622+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.569841+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.652704+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
@@ -1153,17 +1188,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:51.477241+00:00",
+      "timestamp": "2026-09-01T21:49:00.736180+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
@@ -1174,44 +1209,44 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:45:51.560574+00:00",
+      "timestamp": "2026-09-01T21:49:00.819126+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         },
         {
           "id": "labels",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
         },
         {
           "id": "stubs",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "evidence": "Swept black conduit with a hex nut at x -0.068 curling outward to y -0.253, brass gland with its hex nut at x +0.068 hanging 0.032 below the flange.",
           "notes": ""
         }
       ],
@@ -1225,31 +1260,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:45:50.910890+00:00",
+      "timestamp": "2026-09-01T21:48:59.997932+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component at 1 draw call of 1; flange, body and door stacked from the wall face.",
+      "summary": "Blockout: one component at 1 draw call of 1; flange, rim and door stacked from the wall face at the plate's pixel stations.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1266,31 +1301,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:50.991868+00:00",
+      "timestamp": "2026-09-01T21:49:00.081019+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Square-cornered boxes replaced by rounded-rectangle extrudes at the plate's pixel stations; body depth re-read off the proxy end view.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.164369+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: flange 0.30 x 0.38 x 0.012, body 0.26 x 0.34 x 0.12, door 0.22 x 0.30 proud 9 mm inside the gasket.",
+      "summary": "Structural pass: rounded-rectangle extrudes -- flange 0.299 x 0.377 r 30, rim 0.275 x 0.362 r 30, gasket 0.234 x 0.323 r 24, door 0.226 x 0.315 r 20 -- proud 12/115/3/15 mm.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1306,31 +1365,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.072689+00:00",
+      "timestamp": "2026-09-01T21:49:00.246256+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "labels",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: labels, latch, four flange screws, conduit stub with nut, brass gland.",
+      "summary": "Form refinement: mounting lip, six black rim screws at the plate's stations, latch barrel and tab, swept conduit with hex nut, brass gland with hex nut hanging 28 mm below the flange.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1346,31 +1405,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.153586+00:00",
+      "timestamp": "2026-09-01T21:49:00.327148+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "stubs",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "evidence": "Swept black conduit with a hex nut at x -0.068 curling outward to y -0.253, brass gland with its hex nut at x +0.068 hanging 0.032 below the flange.",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "Material pass: one enamel at PBR confidence 0.90, textureless; six tones as vertex colours; albedo carried 10% under the white-matte crop mean.",
+      "summary": "Material pass: one enamel at PBR confidence 0.90, textureless; side tones as vertex colours; a baked front-elevation atlas ratio-normalised over the door enamel (clamp 1.35, base #d4d7da) carries the print, screws, gasket line and rust.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1386,9 +1445,9 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.232950+00:00",
+      "timestamp": "2026-09-01T21:49:00.408886+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1410,31 +1469,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.313508+00:00",
+      "timestamp": "2026-09-01T21:49:00.488622+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "labels",
-          "tier": "critical",
-          "score": 0.82,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: rust tile replaced by a warm grime wash after the first build read as polka dots; rust as one streak at the door head.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Blank yellow label plates and a grime tile replaced by the plate's own front elevation as a baked ratio atlas on the +Z faces.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1450,17 +1493,57 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.394340+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-09-01T21:49:00.569841+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
+      },
+      "featureReviews": [
+        {
+          "id": "labels",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: the plate's own rust at the rim head and door edges, bevel highlight and label print arrive through the atlas; sides pinned to a clean texel.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/electric-meter-box/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-01T21:49:00.652704+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.85,
+      "aiVisionScore": 0.85,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "action": "continue",
@@ -1480,17 +1563,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.477241+00:00",
+      "timestamp": "2026-09-01T21:49:00.736180+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [],
       "action": "continue",
@@ -1510,49 +1593,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:45:51.560574+00:00",
+      "timestamp": "2026-09-01T21:49:00.819126+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.85
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.30 x 0.43 x 0.167 m from the back-center origin; flange, body, gasket and door as four proud steps; proxy 1:1.536:0.588 reproduced with the stubs below the box.",
-          "notes": "Plate is a frontal elevation; depth stack inferred (0.80)."
+          "evidence": "Envelope 0.299 x 0.46 x 0.151 m from the back-center origin; flange, rim, gasket and door as four ROUNDED steps at the plate's own pixel stations (S = 0.30/589); depth stack from the proxy end view.",
+          "notes": "Plate is a frontal elevation; depth stack from the proxy (0.80)."
         },
         {
           "id": "labels",
           "tier": "critical",
-          "score": 0.82,
+          "score": 0.94,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two #d9c48a plates 0.13 x 0.05 and 0.13 x 0.03 at the plate's stations, 1.2 mm proud of the door.",
-          "notes": "Print not modelled."
+          "evidence": "The plate's own two printed labels in the baked front atlas at their stations; WARNING header and the triangle legible in the 000 and hero renders.",
+          "notes": ""
         },
         {
           "id": "stubs",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Black conduit stub with a nut at x -0.07 and a brass gland at x +0.06, hanging 0.07 m below the body.",
+          "evidence": "Swept black conduit with a hex nut at x -0.068 curling outward to y -0.253, brass gland with its hex nut at x +0.068 hanging 0.032 below the flange.",
           "notes": ""
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 332/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas at 0.25 MB.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 600/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 512 x 640 baked atlas at 1.3 MB.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1611,10 +1694,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 332,
+        "measured": 600,
         "budget": 800,
-        "headroom": 468,
-        "note": "332 of 800: nine boxes, seven 8-segment cylinders."
+        "headroom": 200,
+        "note": "600 of 800: four 16-point rounded extrudes at 60 each, two boxes, ten 6/8-segment cylinders, one 5-point swept tube."
       }
     }
   },
@@ -1672,7 +1755,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes for the flange, body, gasket, door, labels, latch and rust strip; cylinders for the conduit, nut, gland and screws."
+      "strategy": "Rounded-rectangle extrudes for the flange, rim, gasket and door; boxes for the mounting lip and latch tab; cylinders for the screws, latch barrel, nuts and gland; a swept tube for the conduit."
     },
     {
       "id": "instancing",
@@ -1684,7 +1767,7 @@
     },
     {
       "id": "textures",
-      "strategy": "The material is declared textureless. One 256 px grime canvas after construction, 0.25 MB of texture VRAM."
+      "strategy": "The material is declared textureless. One baked 512 x 640 front atlas after construction (22 KB WebP, ~1.3 MB of texture VRAM), guarded for plain Node."
     }
   ],
   "animationAnchors": [],
@@ -1699,8 +1782,8 @@
     {
       "id": "envelope-height",
       "severity": "low",
-      "description": "Built 0.43 m tall against the declared 0.40 because the stubs hang below the box.",
-      "mitigation": "The box proper is 0.38 m within the flange; the stubs are the proxy's 1.536 h/w reading, recorded here."
+      "description": "Built 0.46 m tall against the declared 0.40 because the stubs hang below the box.",
+      "mitigation": "The box proper is 0.377 m within the flange; the stubs are the proxy's 1.536 h/w reading, recorded here."
     }
   ],
   "localSpecSearch": {
@@ -1742,29 +1825,29 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.7456,
-        "aspectRatioDelta": 0.1204,
-        "scaleDelta": 0.0194,
-        "bilateralSymmetryError": 0.1973,
+        "silhouetteIoU": 0.6168,
+        "aspectRatioDelta": 0.0373,
+        "scaleDelta": 0.294,
+        "bilateralSymmetryError": 0.1012,
         "colorDelta": {
           "checked": 1,
-          "maxDeltaE": 11.03,
+          "maxDeltaE": 11.51,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 11.03
+              "deltaE": 11.51
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.746 is below threshold 0.85",
-        "aspect-ratio delta 0.120 exceeds threshold 0.05",
+        "silhouette IoU 0.617 is below threshold 0.85",
+        "scale delta 0.294 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "2ebb5ba300fb0a48",
+      "renderHash": "f58c54d1986890cb",
       "passId": "blockout"
     }
   ]

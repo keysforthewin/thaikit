@@ -45,26 +45,16 @@ const CONFIG = {
       {
         "id": "enamel",
         "color": 16777215,
-        "roughness": 0.45,
-        "metalness": 0.1,
+        "roughness": 0.48,
+        "metalness": 0.08,
         "vertexColors": true
       }
     ],
     "tiles": [
       {
         "material": "enamel",
-        "kind": "grime",
-        "size": 256,
-        "seed": 101,
-        "wash": [
-          0.8,
-          0.74,
-          0.66
-        ],
-        "washAlpha": 0.3,
-        "coverage": 0.3,
-        "streaks": 8,
-        "blotches": 16
+        "kind": "baked",
+        "uri": "data:image/webp;base64,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"
       }
     ],
     "geometry": {
@@ -73,8 +63,19 @@ const CONFIG = {
           "id": "box",
           "name": "Meter box",
           "material": "enamel",
-          "uv": "world",
-          "uvScale": 0.3,
+          "uv": "front",
+          "atlas": {
+            "x0": -0.15891341256366723,
+            "x1": 0.15891341256366723,
+            "y0": 0.20560271646859085,
+            "y1": -0.1891341256366723,
+            "yMin": -0.17741935483870963,
+            "pin": [
+              0.5,
+              0.6516129032258065
+            ],
+            "base": 13948890
+          },
           "collider": {
             "shape": "cylinder",
             "localCenter": [
@@ -91,173 +92,473 @@ const CONFIG = {
             ],
             "notes": "Declared on the asset as cylinder: one proxy about the wall normal, spanning the flange."
           },
+          "extrudes": [
+            {
+              "hex": 12896202,
+              "poly": [
+                [
+                  0.14975,
+                  0.16796
+                ],
+                [
+                  0.14573,
+                  0.18296
+                ],
+                [
+                  0.13475,
+                  0.19394
+                ],
+                [
+                  0.11975,
+                  0.19796
+                ],
+                [
+                  -0.11975,
+                  0.19796
+                ],
+                [
+                  -0.13475,
+                  0.19394
+                ],
+                [
+                  -0.14573,
+                  0.18296
+                ],
+                [
+                  -0.14975,
+                  0.16796
+                ],
+                [
+                  -0.14975,
+                  -0.14895
+                ],
+                [
+                  -0.14573,
+                  -0.16395
+                ],
+                [
+                  -0.13475,
+                  -0.17493
+                ],
+                [
+                  -0.11975,
+                  -0.17895
+                ],
+                [
+                  0.11975,
+                  -0.17895
+                ],
+                [
+                  0.13475,
+                  -0.17493
+                ],
+                [
+                  0.14573,
+                  -0.16395
+                ],
+                [
+                  0.14975,
+                  -0.14895
+                ]
+              ],
+              "z0": 0,
+              "z1": 0.012
+            },
+            {
+              "hex": 11448756,
+              "poly": [
+                [
+                  0.13752,
+                  0.15778
+                ],
+                [
+                  0.1335,
+                  0.17278
+                ],
+                [
+                  0.12252,
+                  0.18376
+                ],
+                [
+                  0.10752,
+                  0.18778
+                ],
+                [
+                  -0.10752,
+                  0.18778
+                ],
+                [
+                  -0.12252,
+                  0.18376
+                ],
+                [
+                  -0.1335,
+                  0.17278
+                ],
+                [
+                  -0.13752,
+                  0.15778
+                ],
+                [
+                  -0.13752,
+                  -0.14385
+                ],
+                [
+                  -0.1335,
+                  -0.15885
+                ],
+                [
+                  -0.12252,
+                  -0.16983
+                ],
+                [
+                  -0.10752,
+                  -0.17385
+                ],
+                [
+                  0.10752,
+                  -0.17385
+                ],
+                [
+                  0.12252,
+                  -0.16983
+                ],
+                [
+                  0.1335,
+                  -0.15885
+                ],
+                [
+                  0.13752,
+                  -0.14385
+                ]
+              ],
+              "z0": 0.012,
+              "z1": 0.127
+            },
+            {
+              "hex": 3026480,
+              "poly": [
+                [
+                  0.11689,
+                  0.13169
+                ],
+                [
+                  0.11368,
+                  0.14369
+                ],
+                [
+                  0.10489,
+                  0.15247
+                ],
+                [
+                  0.09289,
+                  0.15569
+                ],
+                [
+                  -0.09289,
+                  0.15569
+                ],
+                [
+                  -0.10489,
+                  0.15247
+                ],
+                [
+                  -0.11368,
+                  0.14369
+                ],
+                [
+                  -0.11689,
+                  0.13169
+                ],
+                [
+                  -0.11689,
+                  -0.14323
+                ],
+                [
+                  -0.11368,
+                  -0.15523
+                ],
+                [
+                  -0.10489,
+                  -0.16402
+                ],
+                [
+                  -0.09289,
+                  -0.16723
+                ],
+                [
+                  0.09289,
+                  -0.16723
+                ],
+                [
+                  0.10489,
+                  -0.16402
+                ],
+                [
+                  0.11368,
+                  -0.15523
+                ],
+                [
+                  0.11689,
+                  -0.14323
+                ]
+              ],
+              "z0": 0.127,
+              "z1": 0.13
+            },
+            {
+              "hex": 13948890,
+              "poly": [
+                [
+                  0.11282,
+                  0.13161
+                ],
+                [
+                  0.11014,
+                  0.14161
+                ],
+                [
+                  0.10282,
+                  0.14893
+                ],
+                [
+                  0.09282,
+                  0.15161
+                ],
+                [
+                  -0.09282,
+                  0.15161
+                ],
+                [
+                  -0.10282,
+                  0.14893
+                ],
+                [
+                  -0.11014,
+                  0.14161
+                ],
+                [
+                  -0.11282,
+                  0.13161
+                ],
+                [
+                  -0.11282,
+                  -0.14316
+                ],
+                [
+                  -0.11014,
+                  -0.15316
+                ],
+                [
+                  -0.10282,
+                  -0.16048
+                ],
+                [
+                  -0.09282,
+                  -0.16316
+                ],
+                [
+                  0.09282,
+                  -0.16316
+                ],
+                [
+                  0.10282,
+                  -0.16048
+                ],
+                [
+                  0.11014,
+                  -0.15316
+                ],
+                [
+                  0.11282,
+                  -0.14316
+                ]
+              ],
+              "z0": 0.13,
+              "z1": 0.145
+            }
+          ],
           "boxes": [
             [
-              10922412,
+              12896202,
               0,
-              0.03,
+              0.19996264855687607,
               0.006,
-              0.3,
-              0.38,
-              0.012
+              0.20118845500848898,
+              0.01,
+              0.008
             ],
             [
-              12172479,
-              0,
-              0.03,
-              0.072,
-              0.26,
-              0.34,
-              0.12
-            ],
-            [
-              3815994,
-              0,
-              0.03,
-              0.1335,
-              0.23600000000000002,
-              0.316,
-              0.003
-            ],
-            [
-              12172479,
-              0,
-              0.03,
-              0.14100000000000001,
-              0.224,
-              0.30400000000000005,
-              0.012
-            ],
-            [
-              14271626,
-              -0.01,
-              0.06,
-              0.15940000000000001,
-              0.13,
-              0.05,
-              0.0012
-            ],
-            [
-              14271626,
-              -0.01,
-              -0.015,
-              0.15940000000000001,
-              0.13,
-              0.03,
-              0.0012
-            ],
-            [
-              13685718,
-              0.095,
-              0.03,
-              0.163,
-              0.012,
-              0.014,
-              0.007
-            ],
-            [
-              13685718,
-              0.108,
-              0.03,
-              0.163,
-              0.02,
+              12633030,
+              0.10594227504244481,
+              -0.0032258064516128837,
+              0.148,
+              0.020373514431239387,
               0.006,
               0.006
-            ],
-            [
-              9067056,
-              0,
-              0.18000000000000002,
-              0.1596,
-              0.1,
-              0.006,
-              0.0008
             ]
           ],
           "cyls": [
             {
               "at": [
-                -0.07,
-                -0.17500000000000002,
-                0.05
+                -0.12580645161290321,
+                0.09864176570458406,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                0.12478777589134125,
+                0.09864176570458406,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                -0.12733446519524616,
+                0.0008488964346350103,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                0.12478777589134125,
+                0.0008488964346350103,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                -0.12580645161290321,
+                -0.11375212224108655,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                0.12478777589134125,
+                -0.11375212224108655,
+                0.129
+              ],
+              "rt": 0.0065,
+              "rb": 0.0065,
+              "h": 0.004,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "hex": 2500134
+            },
+            {
+              "at": [
+                0.09575551782682512,
+                -0.0032258064516128837,
+                0.148
               ],
               "rt": 0.011,
               "rb": 0.011,
-              "h": 0.07,
+              "h": 0.006,
               "seg": 8,
-              "hex": 2829099
+              "rx": 1.5707963267948966,
+              "hex": 12633030
             },
             {
               "at": [
-                -0.07,
-                -0.14800000000000002,
-                0.05
+                -0.06825127334465195,
+                -0.1959473684210526,
+                0.08
               ],
-              "rt": 0.016,
-              "rb": 0.016,
-              "h": 0.016,
-              "seg": 8,
-              "hex": 2829099
+              "rt": 0.0145,
+              "rb": 0.0145,
+              "h": 0.02,
+              "seg": 6,
+              "hex": 2500134
             },
             {
               "at": [
-                0.06,
-                -0.16,
-                0.05
+                0.06774193548387096,
+                -0.1909473684210526,
+                0.08
               ],
-              "rt": 0.009,
-              "rb": 0.009,
+              "rt": 0.011,
+              "rb": 0.011,
               "h": 0.04,
               "seg": 8,
               "hex": 11043898
             },
             {
               "at": [
-                -0.135,
-                0.205,
-                0.0125
+                0.06774193548387096,
+                -0.18294736842105258,
+                0.08
               ],
-              "rt": 0.006,
-              "rb": 0.006,
-              "h": 0.001,
-              "seg": 8,
-              "hex": 13685718
-            },
+              "rt": 0.014,
+              "rb": 0.014,
+              "h": 0.009,
+              "seg": 6,
+              "hex": 8216360
+            }
+          ],
+          "sweeps": [
             {
-              "at": [
-                0.135,
-                0.205,
-                0.0125
+              "pts": [
+                [
+                  -0.06825127334465195,
+                  -0.17394736842105257,
+                  0.08
+                ],
+                [
+                  -0.06825127334465195,
+                  -0.20894736842105258,
+                  0.08
+                ],
+                [
+                  -0.06925127334465195,
+                  -0.23094736842105257,
+                  0.082
+                ],
+                [
+                  -0.06425127334465194,
+                  -0.24494736842105258,
+                  0.09
+                ],
+                [
+                  -0.05625127334465195,
+                  -0.2529473684210526,
+                  0.1
+                ]
               ],
-              "rt": 0.006,
-              "rb": 0.006,
-              "h": 0.001,
+              "r": 0.0095,
               "seg": 8,
-              "hex": 13685718
-            },
-            {
-              "at": [
-                -0.135,
-                -0.145,
-                0.0125
-              ],
-              "rt": 0.006,
-              "rb": 0.006,
-              "h": 0.001,
-              "seg": 8,
-              "hex": 13685718
-            },
-            {
-              "at": [
-                0.135,
-                -0.145,
-                0.0125
-              ],
-              "rt": 0.006,
-              "rb": 0.006,
-              "h": 0.001,
-              "seg": 8,
-              "hex": 13685718
+              "hex": 2500134
             }
           ]
         }
@@ -333,10 +634,56 @@ function cylAt(cx: number, cy: number, cz: number, rTop: number, rBot: number, h
  *   n points at s segments is 2*(n-1)*s triangles. A 24-ring spire at 32 segments is 1,472
  *   triangles on its own, which is why the low-relief rings are a profile rather than 24 rings.
  */
-function lathe(pts: number[][], seg: number, yOffset = 0): THREE.BufferGeometry {
-  const v = pts.map((p) => new THREE.Vector2(Math.max(p[0], 0), p[1] + yOffset));
+/** LatheGeometry shares the corner vertex between an end disc and the side wall, so
+ *  computeVertexNormals tilts the wall's first ring 45 degrees toward the disc and the harness shades
+ *  a dark gradient there -- a ring the turntable gate read as a HOLE under the stainless bin's cap.
+ *  Inserting a point 0.8 mm past every sharp corner (> 70 degrees) confines the averaged normal to that
+ *  sliver. Costs one ring per corner; pass `sharp = false` where the budget cannot carry it. */
+function splitCorners(pts: number[][], minDeg = 70, eps = 0.0008): number[][] {
+  const out: number[][] = [];
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i], a = pts[i - 1], b = pts[i + 1];
+    let sharp = false;
+    if (a && b) {
+      const ux = p[0] - a[0], uy = p[1] - a[1], vx = b[0] - p[0], vy = b[1] - p[1];
+      const lu = Math.hypot(ux, uy), lv = Math.hypot(vx, vy);
+      if (lu > 0 && lv > 0) sharp = Math.acos(Math.max(-1, Math.min(1, (ux * vx + uy * vy) / (lu * lv)))) > minDeg * Math.PI / 180;
+      if (sharp && lu > 3 * eps) out.push([p[0] - ux / lu * eps, p[1] - uy / lu * eps]);
+      out.push(p);
+      if (sharp && lv > 3 * eps) out.push([p[0] + vx / lv * eps, p[1] + vy / lv * eps]);
+    } else out.push(p);
+  }
+  return out;
+}
+
+/** `weldSeam` averages the normals of the first and last radial column, which is what closes the
+ *  revolve's SHADING seam. LatheGeometry already does this itself -- it explicitly averages the two
+ *  end columns for a full 2*PI sweep -- and the `computeVertexNormals()` below throws that work
+ *  away, because a recompute sees the seam as two unconnected edges and gives each the normal of
+ *  the faces on its own side only. On a matte prop the resulting crease is invisible, which is why
+ *  it survived; on a satin metal it is a hard vertical line down the revolve. Measured on the
+ *  noodle-shop table's rim at azimuth 0: a 31-level luma step at x=512 (245 -> 214 at y=258),
+ *  REVERSING to +27 at y=266 -- a discontinuity, not a gradient.
+ *  Default OFF so no already-emitted prop changes shading if it is ever re-emitted; the recompute
+ *  is still needed for the sharp-corner splits, so this welds afterwards rather than skipping it. */
+function lathe(pts: number[][], seg: number, yOffset = 0, sharp = true, weldSeam = false): THREE.BufferGeometry {
+  const v = (sharp ? splitCorners(pts) : pts).map((p) => new THREE.Vector2(Math.max(p[0], 0), p[1] + yOffset));
   const g = new THREE.LatheGeometry(v, seg);
   g.computeVertexNormals();
+  if (weldSeam) {
+    // LatheGeometry lays out (seg + 1) columns of `rows` vertices; column 0 and column seg are the
+    // same place in space. Average the pair and write it back to both.
+    const n = g.getAttribute('normal');
+    const rows = n.count / (seg + 1);
+    for (let r = 0; r < rows; r++) {
+      const a = r, b = seg * rows + r;
+      const x = n.getX(a) + n.getX(b), y = n.getY(a) + n.getY(b), z = n.getZ(a) + n.getZ(b);
+      const l = Math.hypot(x, y, z) || 1;
+      n.setXYZ(a, x / l, y / l, z / l);
+      n.setXYZ(b, x / l, y / l, z / l);
+    }
+    n.needsUpdate = true;
+  }
   return g;
 }
 
@@ -658,12 +1005,20 @@ function tubeAlong(stations: number[][], seg: number): THREE.BufferGeometry {
   // INDEXED, with shared ring vertices, so computeVertexNormals averages across the quads and the
   // surface shades smooth. The first build emitted loose triangles, and a flat-shaded soft body
   // shows every station as a crease -- a reclining figure that looked crumpled rather than draped.
+  //
+  // A sixth station element `flatY` CLAMPS the ring's underside to that height. A body resting on
+  // the ground is not a floating ellipse: it spreads where it bears, and an unclamped tube reads as
+  // a sausage on a table. The clamp is a soft one -- the ring keeps its width and loses its droop --
+  // so the crease it leaves is the contact edge rather than a cut.
   const pos: number[] = [], idx: number[] = [];
   for (let i = 0; i < stations.length; i++) {
-    const [z, cx, cy, rx, ry] = stations[i];
+    const [z, cx, cy, rx, ry, flatY] = stations[i];
     for (let j = 0; j < seg; j++) {
       const th = j * Math.PI * 2 / seg;
-      pos.push(cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z);
+      const x = cx + Math.sin(th) * rx;
+      let y = cy + Math.cos(th) * ry;
+      if (flatY !== undefined && y < flatY) y = flatY;
+      pos.push(x, y, z);
     }
   }
   for (let i = 0; i < stations.length - 1; i++) {
@@ -860,13 +1215,16 @@ function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
  *  side of the rim so they cross the way real spokes do. Merged into the wheel geometry so the
  *  wheel stays ONE instanced geometry. */
-function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006): THREE.BufferGeometry {
+function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006, prism = false): THREE.BufferGeometry {
   const segs: THREE.BufferGeometry[] = [];
   for (let i = 0; i < n; i++) {
     const a = i * Math.PI * 2 / n;
     const side = (i % 2 === 0 ? 1 : -1) * halfW * 0.35;
     const len = rRim - rHub;
-    const g = new THREE.BoxGeometry(t, len, t);
+    // `prism`: an open three-sided prism at six triangles where the box costs twelve -- a wire
+    // spoke has no resolvable section at prop distance, and 28 of them on three wheels is the
+    // difference between a large prop inside its triangle ceiling and one over it
+    const g = prism ? new THREE.CylinderGeometry(t * 0.62, t * 0.62, len, 3, 1, true) : new THREE.BoxGeometry(t, len, t);
     g.translate(0, rHub + len / 2, 0);
     g.rotateX(Math.atan2(side, len) * 0.6);
     g.rotateX(0); g.translate(0, 0, side * 0.5);
@@ -878,18 +1236,68 @@ function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: numbe
 
 /** A polyline TUBE: one cylinder per segment, each rotated onto its chord, with a small sphere-less
  *  overlap so the joints close. Handlebars, canopy rails, roll cages and frame tubes. */
-function tube(pts: number[][], r: number, seg = 8, hex?: number): THREE.BufferGeometry {
+/**
+ * `r` may be a single radius (every segment the same, the original behaviour) or ONE RADIUS PER
+ * STATION, which tapers the tube. A capped constant-radius tube ends in a flat disc, and on the
+ * spirit house's eave horns that read as four cut-off posts rather than points; a horn, a spike or
+ * a whisker needs its last station at ~0.25 of the fascia radius. The joint overlap that hides the
+ * seam between segments is (ra + rb) * 0.6, which is exactly the old `r * 1.2` when they are equal,
+ * so a number still produces byte-identical geometry.
+ */
+function tube(pts: number[][], r: number | number[], seg = 8, hex?: number): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
+  const rAt = (i: number) => (typeof r === 'number' ? r : r[Math.min(i, r.length - 1)]);
   for (let i = 0; i < pts.length - 1; i++) {
     const a = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]);
     const b = new THREE.Vector3(pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
     const d = b.clone().sub(a); const len = d.length();
     if (len < 1e-6) continue;
-    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, false);
+    const ra = rAt(i), rb = rAt(i + 1);
+    const g = new THREE.CylinderGeometry(rb, ra, len + (ra + rb) * 0.6, seg, 1, false);
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
     g.applyQuaternion(q);
     const m = a.clone().add(b).multiplyScalar(0.5);
     g.translate(m.x, m.y, m.z);
+    parts.push(g);
+  }
+  const out = mergeGeos(parts);
+  return hex === undefined ? out : tintGeo(out, hex);
+}
+
+/**
+ * A FLAT STRAP swept along a polyline: a chain of boxes, each oriented so its LENGTH runs along the
+ * segment, its THICKNESS along the outward normal from `about`, and its WIDTH tangent to that
+ * surface. This is the difference between a guard and a wire: a bulkhead lamp's cage is pressed
+ * flat bar, and a round tube of the same measured width shades to a narrow highlight and reads as
+ * wire -- which is the thing this kit's asset notes rule out. It is also CHEAPER than `tube`: a box
+ * is 12 triangles against a capped 5-sided cylinder's 20.
+ */
+function strap(pts: number[][], w: number, t: number, about: number[], hex?: number): THREE.BufferGeometry {
+  const parts: THREE.BufferGeometry[] = [];
+  const c = new THREE.Vector3(about[0], about[1], about[2]);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]);
+    const b = new THREE.Vector3(pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
+    const dir = b.clone().sub(a); const len = dir.length();
+    if (len < 1e-6) continue;
+    dir.normalize();
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    // Outward normal at the midpoint, re-orthogonalised against the run so the basis stays square
+    // where the strap climbs steeply and the two would otherwise be nearly parallel.
+    let nrm = mid.clone().sub(c);
+    nrm.sub(dir.clone().multiplyScalar(nrm.dot(dir)));
+    if (nrm.lengthSq() < 1e-12) nrm = new THREE.Vector3(0, 0, 1).sub(dir.clone().multiplyScalar(dir.z));
+    nrm.normalize();
+    // dir x nrm, NOT nrm x dir. The basis columns are (side, dir, nrm) against a box's (w, len, t),
+    // so a right-handed basis needs side x dir = nrm; nrm x dir gives -nrm, a mirrored basis with a
+    // negative determinant, and every strap renders inside out -- which looks like a thin dark
+    // sliver rather than an obviously flipped face, so it reads as a geometry bug, not a winding one.
+    const side = new THREE.Vector3().crossVectors(dir, nrm).normalize();
+    // Overlap the joints by the thickness so consecutive boxes close the mitre rather than
+    // leaving a wedge of daylight at every station.
+    const g = new THREE.BoxGeometry(w, len + t, t);
+    g.applyMatrix4(new THREE.Matrix4().makeBasis(side, dir, nrm));
+    g.translate(mid.x, mid.y, mid.z);
     parts.push(g);
   }
   const out = mergeGeos(parts);
@@ -924,7 +1332,9 @@ function mirrorX(list: number[][]): number[][] {
 function canvasTile(size: number, draw: (ctx: CanvasRenderingContext2D, s: number) => void): THREE.CanvasTexture | null {
   if (typeof document === 'undefined') return null;
   const cv = document.createElement('canvas'); cv.width = size; cv.height = size;
-  const ctx = cv.getContext('2d'); if (!ctx) return null;
+  // willReadFrequently keeps the tile on the CPU raster path: a GPU-backed canvas costs seconds per
+  // thousand path fills where the software path takes tens of milliseconds.
+  const ctx = cv.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D | null; if (!ctx) return null;
   draw(ctx, size);
   const tex = new THREE.CanvasTexture(cv);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -1064,6 +1474,56 @@ function rustTile(size: number, ratio: number[], seed: number, density = 90): TH
 /** Height-keyed UVs: v is world HEIGHT over `scale` metres, u runs along the dominant horizontal
  *  axis. A mud tile bound this way darkens the sills and stays clean on the roof -- a plain box
  *  projection would repeat the tile's dirty band across the roof as stripes. */
+/**
+ * SHORT FUR: a seamless tile of dense, short, directional hair strokes over a cloudy tone drift, as a
+ * multiply map (and bump) on a white vertex-coloured coat. The strokes run along v with a jittered
+ * lean and a narrow tone spread -- a wide spread reads as scales, a perfect lay reads as combed
+ * plastic. `patches` adds a few soft pink-grey bare patches, the mange marks of a street dog.
+ */
+function furTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
+    const tone = o.tone ?? [0.72, 0.66, 0.58], m = s * 0.06;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+    // cloudy drift underneath so the coat is not one flat value
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < (o.clouds ?? 26); i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.08 + rnd() * 0.18), a = 0.04 + rnd() * 0.10;
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(${rgb(tone)},${a})`); g2.addColorStop(1, `rgba(${rgb(tone)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // bare patches: soft, sparse, warm grey-pink
+    for (let i = 0; i < (o.patches ?? 0); i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.04 + rnd() * 0.05), pc = o.patchTone ?? [0.72, 0.56, 0.52];
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(${rgb(pc)},0.55)`); g2.addColorStop(0.6, `rgba(${rgb(pc)},0.3)`); g2.addColorStop(1, `rgba(${rgb(pc)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r * 1.3, r, rnd() * Math.PI, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // hair strokes: dark and light, short, leaning within +-22 degrees of v
+    const strokes = o.strokes ?? 5000, len = s * (o.length ?? 0.022);
+    const drawStroke = (x: number, y: number, dx: number, dy: number, w: number) => {
+      ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dx, y + dy); ctx.stroke();
+      if (x < m) { ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + dx, y + dy); ctx.stroke(); }
+      if (x > s - m) { ctx.beginPath(); ctx.moveTo(x - s, y); ctx.lineTo(x - s + dx, y + dy); ctx.stroke(); }
+      if (y < m) { ctx.beginPath(); ctx.moveTo(x, y + s); ctx.lineTo(x + dx, y + s + dy); ctx.stroke(); }
+      if (y > s - m) { ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + dx, y - s + dy); ctx.stroke(); }
+    };
+    ctx.lineCap = 'round';
+    for (let i = 0; i < strokes; i++) {
+      const x = rnd() * s, y = rnd() * s, th = (rnd() - 0.5) * 0.78, l = len * (0.6 + rnd() * 0.8);
+      const light = rnd() < 0.42;
+      ctx.globalCompositeOperation = light ? 'screen' : 'multiply';
+      ctx.strokeStyle = light ? `rgba(255,250,240,${0.05 + rnd() * 0.10})` : `rgba(${rgb(tone)},${0.06 + rnd() * 0.14})`;
+      drawStroke(x, y, Math.sin(th) * l, Math.cos(th) * l, 0.6 + rnd() * 1.2);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
 function heightUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry {
   const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
   const uv = new Float32Array(p.count * 2);
@@ -1126,6 +1586,307 @@ function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | nu
 }
 
 
+/**
+ * A DRAPED SHEET: `heights[j][i]` is the top surface at x = x0..x1 (i over nx) and z = z0..z1 (j over
+ * nz); the sheet is `t` thick. Top and underside are smooth-shaded grids, the four edges are flat
+ * strips wound outward. A tarp canopy is a ridge line minus the sag between its poles minus the
+ * droop of its free edges -- cloth, where a slab reads as a painted box.
+ */
+function sheet(s: any): THREE.BufferGeometry {
+  const nx: number = s.nx, nz: number = s.nz, Hh: number[][] = s.heights, t: number = s.t ?? 0.012;
+  const X = (i: number) => s.x0 + (s.x1 - s.x0) * i / nx;
+  // `zs` gives the z STATIONS explicitly instead of dividing z0..z1 evenly. A roof whose eave and
+  // rake want a narrow rusted band needs rows 0.10 m in from the edge, and reaching that by raising
+  // nz alone would multiply the whole grid -- 104 flute columns is what makes a row expensive.
+  const ZS: number[] | null = Array.isArray(s.zs) ? s.zs : null;
+  const Z = (j: number) => (ZS ? ZS[j] : s.z0 + (s.z1 - s.z0) * j / nz);
+  const grid = (yOff: number, flip: boolean) => {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { pos.push(X(i), Hh[j][i] + yOff, Z(j)); uv.push(i / nx, j / nz); }
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      if (flip) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  // `hexTop` / `hexUnder`: a colour attribute written per grid, so a tarp can be blue on top and
+  // orange underneath on ONE material and ONE draw call. A component tint cannot do it -- the two
+  // surfaces are millimetres apart in y, so no axis blend separates them -- and a second sheet
+  // would double the roof's triangles for a colour. Omitted, the geometry is untinted as before.
+  const paint = (g: THREE.BufferGeometry, hex: number) => {
+    const n = g.getAttribute('position').count, c = new THREE.Color(hex), col = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g;
+  };
+  // `hexGrid[j][i]` is a colour PER TOP-GRID VERTEX, computed at emit time -- which is the only way
+  // to put a mark at a known place on the sheet. A canvas tile repeats by world position and knows
+  // nothing about where the eave is; `hexTop` is one flat tone for the whole surface. This is what
+  // carries the rusted band along the eave and the rakes, and the staining beside each sheet lap.
+  const paintGrid = (g: THREE.BufferGeometry, HG: number[][]) => {
+    const n = g.getAttribute('position').count, col = new Float32Array(n * 3), c = new THREE.Color();
+    let k = 0;
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { c.setHex(HG[j][i]); col[k++] = c.r; col[k++] = c.g; col[k++] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g;
+  };
+  const top0 = grid(0, false), und0 = grid(-t, true);
+  const parts = s.hexGrid !== undefined
+    ? [paintGrid(top0, s.hexGrid), paint(und0, s.hexUnder ?? 0xffffff)]
+    : s.hexUnder !== undefined
+      ? [paint(top0, s.hexTop ?? 0xffffff), paint(und0, s.hexUnder)]
+      : [top0, und0];
+  // edge strips: each quad from the top edge down to the underside, wound so its normal faces `out`
+  const strip = (pts: number[][][], out: number[]) => {
+    const pos: number[] = [], uv: number[] = [];
+    for (const [p0, p1] of pts) {
+      const q0 = p0, q1 = p1, q2 = [p1[0], p1[1] - t, p1[2]], q3 = [p0[0], p0[1] - t, p0[2]];
+      const e1 = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]], e2 = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+      const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      const tri = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? [q0, q1, q2, q0, q2, q3] : [q0, q2, q1, q0, q3, q2];
+      for (const q of tri) { pos.push(q[0], q[1], q[2]); uv.push(0, 0); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.computeVertexNormals(); return g;
+  };
+  const top = (i: number, j: number) => [X(i), Hh[j][i], Z(j)];
+  const e0: number[][][] = [], e1: number[][][] = [], e2: number[][][] = [], e3: number[][][] = [];
+  for (let i = 0; i < nx; i++) { e0.push([top(i, 0), top(i + 1, 0)]); e1.push([top(i, nz), top(i + 1, nz)]); }
+  for (let j = 0; j < nz; j++) { e2.push([top(0, j), top(0, j + 1)]); e3.push([top(nx, j), top(nx, j + 1)]); }
+  const edges = [strip(e0, [0, 0, -1]), strip(e1, [0, 0, 1]), strip(e2, [-1, 0, 0]), strip(e3, [1, 0, 0])];
+  // The rim is the seam between the two faces, so it takes the UNDER colour: on a draped tarp the
+  // edge is what a viewer standing beside it actually sees, and it is the lining, not the top. On a
+  // roof deck it is the fluted eave, which is where the rust is, so `hexRim` overrides it.
+  const rimHex = s.hexRim ?? s.hexUnder;
+  parts.push(...(rimHex !== undefined ? edges.map((g) => paint(g, rimHex)) : edges));
+  return mergeGeos(parts);
+}
+
+/**
+ * WEATHERED PAINT on a steel container: one seamless multiplier tile carrying clean paint, rust
+ * and chalked bloom together.
+ *
+ * The three tones cannot ride a plain multiply over the clean paint, because a chalk bloom is
+ * BRIGHTER than the paint it sits on in two channels -- a multiply can only darken. So the vertex
+ * colour is RE-BASED to an envelope above every tone the tile has to reach (`o.base` is the clean
+ * paint's own multiplier against that envelope, and it is what most of the tile is filled with),
+ * exactly as the lichen-on-stone route does. Everything after the fill is drawn source-over in
+ * absolute multiplier space, so a mark may land either side of clean.
+ *
+ * Order matters and is the difference between weathering and camouflage: a soft cloudy drift
+ * first, then the rust as clustered granular patches rather than hard blotches, then the runs it
+ * leaves BELOW itself, then the chalk blooms, then a fine grain over the lot.
+ */
+function paintTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
+    const base = o.base ?? [1, 1, 1], rust = o.rust ?? base, chalk = o.chalk ?? base;
+    const run = o.run ?? rust;
+    // wrap every mark three ways so nothing is cut by the tile edge
+    const wrap = (draw: (dx: number, dy: number) => void) => {
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) draw(dx, dy);
+    };
+    const blob = (c: number[], x: number, y: number, r: number, a: number, ry = 1) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(${rgb(c)},${a})`); g.addColorStop(0.55, `rgba(${rgb(c)},${a * 0.45})`);
+      g.addColorStop(1, `rgba(${rgb(c)},0)`);
+      ctx.fillStyle = g;
+      wrap((dx, dy) => { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r, r * ry, 0, 0, Math.PI * 2); ctx.fill(); });
+    };
+
+    ctx.fillStyle = `rgb(${rgb(base)})`; ctx.fillRect(0, 0, s, s);
+
+    // 1. cloudy drift: broad, very soft, barely off clean -- what stops the flat areas reading as paint chips on plastic
+    for (let i = 0; i < (o.drift ?? 14); i++) {
+      const c = rnd() < 0.5 ? rust : chalk;
+      blob(c, rnd() * s, rnd() * s, s * (0.18 + rnd() * 0.30) * (o.driftScale ?? 1), 0.05 + rnd() * 0.07, 0.6 + rnd() * 0.8);
+    }
+
+    // 2. rust: clusters, each a soft patch with granular specks over it. Bare steel corrodes in
+    //    fields, not in dots; a speck field with no patch under it reads as confetti.
+    for (let k = 0; k < (o.rustClusters ?? 16); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.04 + rnd() * 0.11) * (o.clusterScale ?? 1);
+      // The cluster patch's OPACITY. The tile is composited source-over on the base fill, so a
+      // cluster at alpha 0.30-0.65 blends to an intermediate tone and only the specks over it ever
+      // reach the authored rust -- which is right for a rust BLOOM on painted steel and wrong for
+      // the bold chipped patches a peeling lid carries, where bare metal is simply exposed.
+      // Defaults are the previous constants exactly, so no existing caller changes.
+      blob(rust, cx, cy, cr, (o.rustAlpha ?? 0.30) + rnd() * (o.rustAlphaVar ?? 0.35), 0.7 + rnd() * 0.6);
+      for (let i = 0; i < (o.specksPerCluster ?? 40); i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 0.8 + rnd() * 2.4;
+        ctx.fillStyle = `rgba(${rgb(rust)},${0.25 + rnd() * 0.5})`;
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+      // the run it leaves below itself: rust bleeds DOWN a vertical panel and nowhere else
+      if (rnd() < (o.runChance ?? 0.55)) {
+        const w = 1 + rnd() * s * 0.010, len = s * (0.10 + rnd() * 0.35);
+        const g = ctx.createLinearGradient(0, cy, 0, cy + len);
+        g.addColorStop(0, `rgba(${rgb(run)},${0.16 + rnd() * 0.18})`); g.addColorStop(1, `rgba(${rgb(run)},0)`);
+        ctx.fillStyle = g;
+        wrap((dx) => ctx.fillRect(cx + dx + (rnd() - 0.5) * cr, cy, w, len));
+      }
+    }
+
+    // 3. chalk bloom: large, very soft, low-contrast. It is the tone the tile was re-based for.
+    const cscale = o.chalkScale ?? 1, calpha = o.chalkAlpha ?? 0.35;
+    for (let k = 0; k < (o.chalkPatches ?? 9); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.05 + rnd() * 0.10) * cscale;
+      blob(chalk, cx, cy, cr, calpha + rnd() * 0.30, 0.5 + rnd() * 0.7);
+      for (let i = 0; i < 26; i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr * 1.25;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.7, r = 1 + rnd() * 3;
+        ctx.fillStyle = `rgba(${rgb(chalk)},${0.2 + rnd() * 0.4})`;
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+    }
+
+    // 4. the two marks that only make sense once the tile is HEIGHT-keyed: long runs bleeding down
+    //    from the top edge (the top rail is where water sits and the paint goes first) and a dirt
+    //    band along the bottom. Both are no-ops on a world-space tile, where there is no up.
+    for (let i = 0; i < (o.topStreaks ?? 0); i++) {
+      const x = rnd() * s, w = 1 + rnd() * s * 0.014, len = s * (0.25 + rnd() * 0.55);
+      const a = 0.10 + rnd() * 0.22;
+      const g = ctx.createLinearGradient(0, 0, 0, len);
+      g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(0.25, `rgba(${rgb(rust)},${a * 0.8})`);
+      g.addColorStop(1, `rgba(${rgb(rust)},0)`);
+      ctx.fillStyle = g;
+      for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, 0, w, len);
+    }
+    if (o.groundBand) {
+      const b = o.groundBand, g = ctx.createLinearGradient(0, s, 0, s * (1 - (o.groundHeight ?? 0.22)));
+      g.addColorStop(0, `rgba(${rgb(run)},${b})`); g.addColorStop(0.45, `rgba(${rgb(run)},${b * 0.4})`);
+      g.addColorStop(1, `rgba(${rgb(run)},0)`);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+    }
+
+    // 5. fine grain: the tooth of a brush-rolled industrial paint. Multiply, so it only darkens.
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < (o.grain ?? 1800); i++) {
+      const x = rnd() * s, y = rnd() * s, r = 0.5 + rnd() * 1.3, a = 0.03 + rnd() * 0.07;
+      ctx.fillStyle = `rgba(150,140,130,${a})`;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
+/**
+ * A SWEPT polyline tube: ONE ring of `seg` vertices per point, mitred at every bend, indexed and
+ * smooth-shaded. This is not what `tube` does, and the difference is a visible defect rather than a
+ * refinement. `tube` chains a separate cylinder per segment and EXTENDS each one by `r * 1.2` so the
+ * joints close -- which is fine while the segments are long, and catastrophic on a tight curve: a
+ * 0.12 m corner radius sampled in five steps has a 0.038 m chord against a 0.025 m overlap, so
+ * consecutive cylinders overshoot each other by two thirds of their length and the bend renders as a
+ * crumpled accordion of pleats. The crowd barrier's rounded top corners shipped that way.
+ *
+ * The frame is rotation-minimising (parallel transport), not Frenet: a Frenet frame flips its normal
+ * through an inflection and twists the tube, which a UV or a vertex colour then shows as a stripe
+ * spiralling along a rail that is meant to be straight. Interior points ring on the BISECTOR of the
+ * two adjacent tangents, which is the mitre a real bent tube has.
+ */
+function sweepTube(pts: number[][], r: number, seg = 10, hex?: number, cap = true): THREE.BufferGeometry {
+  const P = pts.map((p) => new THREE.Vector3(p[0], p[1], p[2]));
+  // drop repeated points: a zero-length segment has no tangent, and one duplicate is enough to
+  // put a NaN through the whole transport chain
+  for (let i = P.length - 1; i > 0; i--) if (P[i].distanceTo(P[i - 1]) < 1e-7) P.splice(i, 1);
+  if (P.length < 2) return new THREE.BufferGeometry();
+  const n = P.length;
+  const segDir: THREE.Vector3[] = [];
+  for (let i = 0; i < n - 1; i++) segDir.push(P[i + 1].clone().sub(P[i]).normalize());
+  // per-point tangent: the segment direction at the ends, the bisector between two segments inside
+  const T = P.map((_, i) => i === 0 ? segDir[0].clone()
+    : i === n - 1 ? segDir[n - 2].clone()
+    : segDir[i - 1].clone().add(segDir[i]).normalize());
+  // seed a normal that is not parallel to the first tangent, then transport it point to point
+  let N = Math.abs(T[0].y) > 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  N.sub(T[0].clone().multiplyScalar(N.dot(T[0]))).normalize();
+  const pos: number[] = [], idx: number[] = [];
+  for (let i = 0; i < n; i++) {
+    if (i > 0) {
+      // rotate the carried normal by the same rotation that takes the previous tangent to this one
+      const q = new THREE.Quaternion().setFromUnitVectors(T[i - 1], T[i]);
+      N.applyQuaternion(q);
+      N.sub(T[i].clone().multiplyScalar(N.dot(T[i]))).normalize();
+    }
+    const B = new THREE.Vector3().crossVectors(T[i], N).normalize();
+    // a mitred ring is an ELLIPSE in its own plane: widen it by 1/cos(half-angle) along the bend so
+    // the swept section stays circular through the corner rather than pinching to a waist
+    const k = i > 0 && i < n - 1 ? 1 / Math.max(0.5, segDir[i - 1].dot(T[i])) : 1;
+    for (let j = 0; j < seg; j++) {
+      const th = j * Math.PI * 2 / seg;
+      const c = Math.cos(th), s = Math.sin(th);
+      pos.push(P[i].x + (N.x * c + B.x * s * k) * r, P[i].y + (N.y * c + B.y * s * k) * r, P[i].z + (N.z * c + B.z * s * k) * r);
+    }
+  }
+  for (let i = 0; i < n - 1; i++) for (let j = 0; j < seg; j++) {
+    // (a, c2, b), NOT (a, b, c2). The ring runs N -> B with B = T x N, so winding along the tube
+    // first and around it second gives a face normal of T x B = -N: every wall triangle faces INWARD.
+    // Backface culling then hides the near wall and shows the FAR one, which for a lit grey tube looks
+    // almost right -- and writes its depth on the far side, so anything passing through the tube draws
+    // in front of it. The foot stubs stood proudly through the bottom rail because of this, and it
+    // read as a geometry error in the stub rather than a winding error in the sweep.
+    const a = i * seg + j, b = (i + 1) * seg + j, c2 = (i + 1) * seg + (j + 1) % seg, d = i * seg + (j + 1) % seg;
+    idx.push(a, c2, b, a, d, c2);
+  }
+  if (cap) {
+    // Flat end discs, on their OWN COPY of the rim vertices. Fanning them off the side wall's ring
+    // shares those vertices, and `computeVertexNormals` then averages the disc's axial normal into
+    // the wall's radial one -- which does not shade a slightly wrong rim, it tilts the normal at BOTH
+    // ends of a two-point tube and so shades the WHOLE tube wrong. The foot stubs rendered as glass
+    // test tubes with a bright band under the rail, and the band read as a separate object sitting on
+    // it. Same fault, same fix, as the sharp-corner split in `lathe`.
+    for (const [ring, at, flip] of [[0, P[0], true], [n - 1, P[n - 1], false]] as [number, THREE.Vector3, boolean][]) {
+      const base = pos.length / 3;
+      for (let j = 0; j < seg; j++) { const k = (ring * seg + j) * 3; pos.push(pos[k], pos[k + 1], pos[k + 2]); }
+      const ci = pos.length / 3; pos.push(at.x, at.y, at.z);
+      for (let j = 0; j < seg; j++) {
+        const a = base + j, b = base + (j + 1) % seg;
+        if (flip) idx.push(ci, b, a); else idx.push(ci, a, b);
+      }
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((pos.length / 3) * 2), 2));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return hex === undefined ? g : tintGeo(g, hex);
+}
+
+/**
+ * FRONT-ATLAS UVs: every vertex whose normal faces +Z and that lies inside the atlas's world
+ * rectangle takes a PLANAR (x, y) UV into a baked front-elevation image, and every other vertex is
+ * pinned to one clean texel of it. A wall-mounted box seen from the front IS its elevation, so the
+ * plate's own printed labels, screw heads, gasket line and rust land exactly where the geometry
+ * puts them, on one material. `base` overrides the front vertices' colour, because the atlas is a
+ * ratio over one reference tone and the per-part tints only belong on the faces the atlas does not
+ * reach. `yMin` keeps parts hanging below the atlas (a conduit stub) out of it.
+ */
+function frontAtlasUV(geo: THREE.BufferGeometry, a: any): THREE.BufferGeometry {
+  const p = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
+  const uv = new Float32Array(p.count * 2);
+  const col = geo.getAttribute('color') as THREE.BufferAttribute | null;
+  const base = a.base !== undefined ? new THREE.Color(a.base) : null;
+  const minNz = a.minNz ?? 0.7;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i);
+    const front = nrm.getZ(i) > minNz && x >= a.x0 && x <= a.x1 && y >= (a.yMin ?? a.y1) && y <= a.y0;
+    if (front) {
+      uv[i * 2] = (x - a.x0) / (a.x1 - a.x0);
+      uv[i * 2 + 1] = (y - a.y1) / (a.y0 - a.y1);
+      if (base && col) col.setXYZ(i, base.r, base.g, base.b);
+    } else { uv[i * 2] = a.pin[0]; uv[i * 2 + 1] = a.pin[1]; }
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  if (col) col.needsUpdate = true;
+  return geo;
+}
+
 /* ------------------------------------------------------------------ fence helpers */
 
 /** Panel UVs: u along world X over `scale` metres, v world HEIGHT over the same, regardless of the
@@ -1156,8 +1917,11 @@ function spike(at: number[], w: number, h: number): THREE.BufferGeometry {
 
 /**
  * GRIME tile: a multiplier of white with (a) a dark wash rising from the ground to `coverage`,
- * (b) vertical rain streaks from the top, (c) soft dark blotches, (d) optional green moss/algae
- * blobs concentrated in the bottom band, and (e) fine grain. Every colour is a fraction of the
+ * (b) vertical rain streaks from the top, (c) soft dark blotches, (c2) broad CLOUD mottling,
+ * (d) swept tyre SCUFFS over a
+ * height band, (e) vertical form SEAMS, (f) PINHOLES -- the air bubbles of a precast face, (g)
+ * optional green moss/algae blobs concentrated in the bottom band, and (h) fine grain. (d), (e)
+ * and (f) are off unless asked for, so nothing already emitted changes. Every colour is a fraction of the
  * material's measured albedo, and the darkest core is clamped so nothing on a white or cream
  * surface drops toward the hole gate's luma 58.
  */
@@ -1166,7 +1930,14 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     const rnd = lcg(seed);
     const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
     const wash = o.wash ?? [0.62, 0.62, 0.58], washA = o.washAlpha ?? 0.7, cov = o.coverage ?? 0.3;
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+    // `base` is the tone the UN-grimed part of the tile carries, defaulting to white -- i.e. to
+    // "leave the vertex colour alone", which is every existing caller. It exists for ENVELOPE
+    // RE-BASING: a multiply can only darken, so a part that must read clean orange in one place and
+    // grey road grime in another cannot do it from a single vertex colour, because the grime is
+    // HIGHER in blue than the orange is. The vertex colour becomes the per-channel maximum of both
+    // and this fill paints the clean tone back out of it.
+    const base = o.base ?? [1, 1, 1];
+    ctx.fillStyle = `rgb(${rgb(base)})`; ctx.fillRect(0, 0, s, s);
     ctx.globalCompositeOperation = 'multiply';
     // rain streaks from the top
     for (let i = 0; i < (o.streaks ?? 26); i++) {
@@ -1175,10 +1946,17 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2; ctx.fillRect(x, 0, w, len); ctx.fillRect(x - s, 0, w, len);
     }
-    // ground wash
-    const grad = ctx.createLinearGradient(0, s, 0, s * (1 - cov));
-    grad.addColorStop(0, `rgba(${rgb(wash)},${washA})`); grad.addColorStop(0.5, `rgba(${rgb(wash)},${washA * 0.45})`); grad.addColorStop(1, `rgba(${rgb(wash)},0)`);
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    // ground wash. `washFlat` makes it UNIFORM instead of a bottom-up gradient, which is what a
+    // horizontal slab needs: a gradient keyed to the tile's v maps straight across a flat face and
+    // splits it into a pale half and a dark half with a hard edge between them. Defaulted off, so
+    // every prop that does not ask for it is unchanged.
+    if (o.washFlat) {
+      ctx.fillStyle = `rgba(${rgb(wash)},${washA})`; ctx.fillRect(0, 0, s, s);
+    } else {
+      const grad = ctx.createLinearGradient(0, s, 0, s * (1 - cov));
+      grad.addColorStop(0, `rgba(${rgb(wash)},${washA})`); grad.addColorStop(0.5, `rgba(${rgb(wash)},${washA * 0.45})`); grad.addColorStop(1, `rgba(${rgb(wash)},0)`);
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
+    }
     // blotches
     for (let i = 0; i < (o.blotches ?? 40); i++) {
       const x = rnd() * s, y = s - Math.pow(rnd(), 1.6) * s, r = 3 + rnd() * s * 0.06, a = 0.08 + rnd() * 0.3;
@@ -1186,6 +1964,96 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // RUBS: near-black tyre smears low on the tile. Distinct from `blotches`, which darken toward
+    // the grime tone: a tyre rub is a different colour and a different shape -- long, low, and much
+    // darker than anything weather does. Default 0, so no existing caller changes.
+    if (o.rubs) {
+      const rub = o.rub ?? [0.30, 0.28, 0.30];
+      for (let i = 0; i < o.rubs; i++) {
+        const x = rnd() * s, y = s * (0.60 + rnd() * 0.38);
+        const w = s * (0.05 + rnd() * 0.22), h = s * (0.006 + rnd() * 0.030), a = 0.20 + rnd() * 0.45;
+        const g2 = ctx.createLinearGradient(x - w / 2, 0, x + w / 2, 0);
+        g2.addColorStop(0, `rgba(${rgb(rub)},0)`);
+        g2.addColorStop(0.5, `rgba(${rgb(rub)},${a})`);
+        g2.addColorStop(1, `rgba(${rgb(rub)},0)`);
+        ctx.fillStyle = g2;
+        for (const dx of [-s, 0, s]) ctx.fillRect(x - w / 2 + dx, y - h / 2, w, h);
+      }
+    }
+    // SCUFFS: soft patches where the wash is erased back toward white. The tile is composited
+    // multiply-on-white, so painting white source-over is painting "not darkened" -- which is the
+    // only way a multiply tile can put PALE wear on a dark base without re-basing the envelope
+    // twice. Defaulted to none.
+    if (o.scuffs) {
+      ctx.globalCompositeOperation = 'source-over';
+      for (let i = 0; i < o.scuffs; i++) {
+        const x = rnd() * s, y = rnd() * s, r = s * (0.05 + rnd() * (o.scuffScale ?? 0.14));
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g2.addColorStop(0, `rgba(255,255,255,${o.scuffAlpha ?? 0.55})`); g2.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g2;
+        for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'multiply';
+    }
+
+    // CLOUDS: broad, very soft patches over the WHOLE tile. A cast face is mottled at the scale of
+    // tens of centimetres -- pour lines, damp, the mould's own history -- and that low frequency is
+    // most of what separates a rendered standard deviation of 6 from the plate's 12. Small marks
+    // cannot supply it: at prop distance a thousand of them average back out to one flat tone.
+    // Keep them SMALL relative to the tile, though. A tile that repeats two or three times across a
+    // prop repeats its clouds too, and a cloud the size of a third of the tile then reads as
+    // camouflage with a visible seam -- the same failure as hard blotches, one octave lower.
+    for (let i = 0; i < (o.clouds ?? 0); i++) {
+      const v = o.cloud ?? [0.86, 0.86, 0.84];
+      const x = rnd() * s, y = rnd() * s, r = s * (o.cloudR ?? 0.16) * (0.4 + rnd() * 1.4), a = (o.cloudAlpha ?? 0.12) * (0.4 + rnd());
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(${rgb(v)},${a})`); g2.addColorStop(1, `rgba(${rgb(v)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // SCUFF arcs: the tyre and bumper marks a roadside barrier collects on the band the traffic
+    // actually reaches. Broad, soft, near-horizontal smears with a swept shape -- a blotch reads as
+    // a stain, and what the plate carries is something that went past. `scuffBand` is a pair of
+    // HEIGHT fractions (0 at the ground), so it is stated in the same terms as `coverage`.
+    if (o.scuffs) {
+      const v = o.scuff ?? [0.62, 0.62, 0.64], band = o.scuffBand ?? [0.30, 0.70];
+      for (let i = 0; i < o.scuffs; i++) {
+        const cx = rnd() * s, cy = s * (1 - (band[0] + rnd() * (band[1] - band[0])));
+        const w = s * (0.05 + rnd() * 0.11), h = w * (0.05 + rnd() * 0.10);
+        const a = (o.scuffAlpha ?? 0.34) * (0.5 + rnd());
+        for (const dx of [-s, 0, s]) {
+          ctx.save(); ctx.translate(cx + dx, cy); ctx.rotate((rnd() - 0.5) * 0.45); ctx.scale(1, h / w);
+          const g2 = ctx.createRadialGradient(0, 0, 0, 0, 0, w);
+          g2.addColorStop(0, `rgba(${rgb(v)},${a})`); g2.addColorStop(0.45, `rgba(${rgb(v)},${a * 0.55})`); g2.addColorStop(1, `rgba(${rgb(v)},0)`);
+          ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(0, 0, w, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        }
+      }
+    }
+    // FORM SEAMS: the vertical joint lines a precast mould leaves, one per tile. A dark hairline with
+    // a paler lip beside it, which is what a proud seam looks like -- a single dark line reads as a
+    // scratch. `seamAt` places it as a fraction of the tile so it does not land on the wrap.
+    if (o.seams) {
+      const v = o.seam ?? [0.72, 0.71, 0.68];
+      for (let i = 0; i < o.seams; i++) {
+        const x = Math.round(s * ((o.seamAt ?? 0.42) + i / o.seams)) % s;
+        const wpx = Math.max(1, Math.round(s * 0.004));
+        ctx.fillStyle = `rgba(${rgb(v)},${o.seamAlpha ?? 0.5})`; ctx.fillRect(x, 0, wpx, s);
+        ctx.fillStyle = `rgba(${rgb(v)},${(o.seamAlpha ?? 0.5) * 0.3})`; ctx.fillRect(x + wpx, 0, wpx, s);
+      }
+    }
+    // PINHOLES: the air bubbles a precast face is covered in. They are the single most identifying
+    // mark of bare concrete at prop distance -- without them the face is a painted slab, which is
+    // measurable as a rendered standard deviation a third of the plate's. Small, dark, and MANY.
+    for (let i = 0; i < (o.pits ?? 0); i++) {
+      const v = o.pit ?? [0.42, 0.40, 0.36];
+      const x = rnd() * s, y = rnd() * s, r = (o.pitR ?? 1.6) * (0.5 + rnd() * 1.3);
+      const a = 0.25 + rnd() * 0.5;
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
+      g2.addColorStop(0, `rgba(${rgb(v)},${a})`); g2.addColorStop(0.4, `rgba(${rgb(v)},${a * 0.45})`); g2.addColorStop(1, `rgba(${rgb(v)},0)`);
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r * 2, 0, Math.PI * 2); ctx.fill(); }
     }
     // moss / algae in the bottom band: clustered specks, brighter-than-wash green
     if (o.moss) {
@@ -1210,10 +2078,12 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
         }
       }
     }
-    // grain
-    for (let i = 0; i < 1500; i++) {
-      const x = rnd() * s, y = rnd() * s, v = 200 + Math.round(rnd() * 55);
-      ctx.fillStyle = `rgba(${v},${v},${v},0.12)`; ctx.fillRect(x, y, 1.5, 1.5);
+    // grain. `grain`/`grainAlpha` default to the original 1500 at 0.12, so no already-emitted prop
+    // changes; a tile stretched over a WHOLE prop (uvScale > its height) samples only the fraction
+    // of the tile width heightUV folds onto it, and needs the count raised to keep the same density.
+    for (let i = 0; i < (o.grain ?? 1500); i++) {
+      const lo = o.grainLo ?? 200; const x = rnd() * s, y = rnd() * s, v = lo + Math.round(rnd() * (255 - lo));
+      ctx.fillStyle = `rgba(${v},${v},${v},${o.grainAlpha ?? 0.12})`; ctx.fillRect(x, y, 1.5, 1.5);
     }
     ctx.globalCompositeOperation = 'source-over';
   });
@@ -1299,6 +2169,721 @@ function posterTile(size: number, seed: number, lines: string[]): THREE.CanvasTe
     }
   });
 }
+
+/** STRIPE tile: alternating colour bands along u (an awning), with a soft grime multiply so the cloth
+ *  reads worn rather than printed. `a`/`b` are the two band colours as [r,g,b] 0-1. Bound as map on a
+ *  WHITE material so the bands carry the whole albedo. */
+// `o` is optional and every field defaults to the previous hard-coded behaviour, so no prop that
+// does not pass it changes. `smudges` and `specks` exist because brushed STEEL wants the banding
+// without the dirt: the 40 radial smudges and 1200 light specks read as mould on a clean satin
+// surface, which is the opposite of what a stripe tile is for there.
+function stripeTile(size: number, bands: number, a: number[], b: number[], seed: number, o: any = {}): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `rgb(${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])})`;
+    const w = s / bands;
+    for (let i = 0; i < bands; i++) { ctx.fillStyle = rgb(i % 2 ? b : a); ctx.fillRect(Math.floor(i * w), 0, Math.ceil(w) + 1, s); }
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < (o.smudges ?? 40); i++) {
+      const x = rnd() * s, y = rnd() * s, r = 4 + rnd() * s * 0.08, al = 0.06 + rnd() * 0.18;
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g2.addColorStop(0, `rgba(150,140,125,${al})`); g2.addColorStop(1, 'rgba(150,140,125,0)');
+      ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    for (let i = 0; i < (o.specks ?? 1200); i++) { const v = 200 + Math.round(rnd() * 55); ctx.fillStyle = `rgba(${v},${v},${v},0.10)`; ctx.fillRect(rnd() * s, rnd() * s, 1.5, 1.5); }
+    // BROAD reflection banding: `o.broad` whole bright/dark cycles across the tile, drawn as one
+    // wrapping cosine gradient. Brushed steel with no environment map to reflect has nothing to
+    // make its flanks bright and its middle dark, and the fine grain cannot supply it -- a 3 mm
+    // pitch averages to one flat tone at prop distance, which is what a rendered stainless bin
+    // looks like when it reads as painted metal. Whole cycles, so the tile still meets itself.
+    // Defaulted OFF, so every existing caller is byte-identical.
+    if (o.broad) {
+      const lo = o.broadLo ?? 0.80, hi = o.broadHi ?? 1.0;
+      const g3 = ctx.createLinearGradient(0, 0, s, 0);
+      for (let i = 0; i <= 64; i++) {
+        const t = i / 64;
+        const v = lo + (hi - lo) * (0.5 + 0.5 * Math.cos(2 * Math.PI * o.broad * t));
+        const c = Math.round(255 * v);
+        g3.addColorStop(t, `rgb(${c},${c},${c})`);
+      }
+      ctx.fillStyle = g3; ctx.fillRect(0, 0, s, s);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
+/** Seamless around-by-up UVs for a LatheGeometry: u from the SEGMENT index (the lathe orders its
+ *  vertices segment-major, index = seg * pointCount + point), so the duplicated seam column reads
+ *  u = repeats exactly and RepeatWrapping closes it. `scale` is the tile size in metres; the
+ *  around-repeat count is rounded so the tile meets itself, from the profile's widest radius. */
+function latheUV(g: THREE.BufferGeometry, pointCount: number, seg: number, scale: number, vScale = scale, v0 = 0): void {
+  const p = g.getAttribute('position');
+  let rMax = 0;
+  for (let i = 0; i < p.count; i++) rMax = Math.max(rMax, Math.hypot(p.getX(i), p.getZ(i)));
+  const rep = Math.max(1, Math.round(2 * Math.PI * rMax / scale));
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const s = Math.floor(i / pointCount);
+    uv[i * 2] = (s / seg) * rep; uv[i * 2 + 1] = (p.getY(i) - v0) / vScale;
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+/** EXPOSED-AGGREGATE tile: a dark mortar ground packed with rounded pebbles in a measured palette,
+ *  each drawn at nine wrapped offsets so the tile is seamless. `o.palette` is a list of [r,g,b]
+ *  ratios against the material colour, `o.ground` the mortar ratio, `o.count` the pebble count. */
+function pebbleTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `rgb(${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])})`;
+    ctx.fillStyle = rgb(o.ground ?? [0.45, 0.42, 0.38]); ctx.fillRect(0, 0, s, s);
+    const pal: number[][] = o.palette ?? [[0.85, 0.78, 0.66], [0.72, 0.62, 0.50], [0.60, 0.58, 0.55], [0.90, 0.86, 0.80]];
+    const n = o.count ?? 900, rMin = s * (o.rMin ?? 0.012), rMax = s * (o.rMax ?? 0.028);
+    for (let i = 0; i < n; i++) {
+      const x = rnd() * s, y = rnd() * s, rx = rMin + rnd() * (rMax - rMin), ry = rx * (0.6 + rnd() * 0.5), a = rnd() * Math.PI;
+      const c = pal[Math.floor(rnd() * pal.length)], k = 0.85 + rnd() * 0.3;
+      // CONTACT SHADOW first, offset down-right and a touch larger, so what survives around each
+      // stone is the dark mortar crescent that makes a packed aggregate read as stones rather than
+      // as overlapping flat discs. `shade` is a ratio against the mortar ground; 0 keeps the old
+      // look for every tile already shipped.
+      if (o.shade) {
+        ctx.fillStyle = rgb((o.ground ?? [0.45, 0.42, 0.38]).map((v) => v * o.shade));
+        for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx + rx * 0.16, y + dy + ry * 0.22, rx * 1.1, ry * 1.1, a, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.fillStyle = rgb(c.map((v) => Math.min(1, v * k)));
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, rx, ry, a, 0, Math.PI * 2); ctx.fill(); }
+      // a highlight crescent on the lit side so each stone reads as a bump
+      ctx.fillStyle = `rgba(255,255,255,${o.gloss ?? 0.18})`;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx - rx * 0.2, y + dy - ry * 0.25, rx * 0.5, ry * 0.4, a, 0, Math.PI * 2); ctx.fill(); }
+    }
+  });
+}
+
+/** TYRE TREAD tile for a lathe carrying `cylUV`: u runs AROUND the tyre and v UP it, so tread slots are
+ *  bars at constant u and the circumferential grooves are lines at constant v. Drawn as ratios on white
+ *  and multiplied into the (lifted) rubber colour; `o.groove` is the darkest ratio, kept above the
+ *  luma-58 hole band by the caller. `o.slots` bars per tile, `o.rings` circumferential lines. */
+function treadTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const groove = o.groove ?? 0.80, slots = o.slots ?? 2, rings = o.rings ?? 2;
+    // `base` is the tone the UN-grimed part of the tile carries, defaulting to white -- i.e. to
+    // "leave the vertex colour alone", which is every existing caller. It exists for ENVELOPE
+    // RE-BASING: a multiply can only darken, so a part that must read clean orange in one place and
+    // grey road grime in another cannot do it from a single vertex colour, because the grime is
+    // HIGHER in blue than the orange is. The vertex colour becomes the per-channel maximum of both
+    // and this fill paints the clean tone back out of it.
+    const base = o.base ?? [1, 1, 1];
+    ctx.fillStyle = `rgb(${rgb(base)})`; ctx.fillRect(0, 0, s, s);
+    ctx.globalCompositeOperation = 'multiply';
+    const gv = Math.round(255 * groove);
+    ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+    const pitch = s / slots, w = pitch * (o.slotWidth ?? 0.16);
+    // tread slots span the band between the two edge shoulders (v 0.12..0.88 of the tile)
+    for (let i = 0; i < slots; i++) { const x = i * pitch + pitch * 0.4 + (rnd() - 0.5) * pitch * 0.1; ctx.fillRect(x, s * 0.12, w, s * 0.76); ctx.fillRect(x - s, s * 0.12, w, s * 0.76); }
+    for (let i = 0; i < rings; i++) { const y = s * (0.2 + 0.6 * (i + 0.5) / rings); ctx.fillRect(0, y - 1.5, s, 3); }
+    // sidewall sheen: a soft lighter wash so the rubber is not one flat value
+    for (let i = 0; i < 24; i++) { const x = rnd() * s, y = rnd() * s, r = s * (0.05 + rnd() * 0.12), v = 235 + Math.round(rnd() * 20);
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+      ctx.fillStyle = g2; for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); } }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
+/** OLD TYRE tile: TWO tyre heights tall by `o.pitch` metres around (cylUV). The upper half (v 0.5-1)
+ *  is a treaded tyre, the lower half (v 0-0.5) a worn SLICK with circumferential grooves and short
+ *  shoulder sipes only, so a stack mixes bald and treaded tyres off one canvas by v0. Drawn as RATIOS
+ *  against the vertex-coloured rubber at `base` (200/255 -> vertex tones are authored 1.275x the
+ *  intended albedo so dust and scuffs can go BRIGHTER than the rubber under a multiply canvas).
+ *  Rows are heights: lower sidewall, tread band (v `o.band[0]`..`o.band[1]` of the strip), upper
+ *  sidewall with bead rings and mould lines. Wear: a warm dust wash on the lower shoulder, grey scuffs
+ *  on both shoulders, dust caught in the cuts, grain over everything. */
+function tyreTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const base = o.base ?? 200, band = o.band ?? [0.24, 0.76], groove = o.groove ?? 0.45;
+    const gv = Math.round(base * groove), rv = Math.round(base * 0.7), mv = Math.round(base * 0.9);
+    const dust = o.dust ?? [232, 214, 190];
+    ctx.fillStyle = `rgb(${base},${base},${base})`; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s * s / 6; i++) { const v = base + Math.round((rnd() - 0.5) * 22); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(rnd() * s, rnd() * s, 2, 2); }
+    // one tyre strip between canvas rows ya (top) and yb (bottom); canvas y grows DOWN, v grows UP
+    const strip = (ya: number, yb: number, treaded: boolean) => {
+      const h = yb - ya, b0 = ya + h * (1 - band[1]), b1 = ya + h * (1 - band[0]);
+      const ng = o.grooves ?? 3, gw = h * 0.024;
+      ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+      for (let i = 0; i < ng; i++) { const y = b0 + (b1 - b0) * (i + 1) / (ng + 1); ctx.fillRect(0, y - gw / 2, s, gw); }
+      const ns = o.sipes ?? 2, w = s * (o.sipeWidth ?? 0.05);
+      for (let k = 0; k <= ng; k++) {
+        const y0 = k === 0 ? b0 : b0 + (b1 - b0) * k / (ng + 1) + gw / 2, y1 = k === ng ? b1 : b0 + (b1 - b0) * (k + 1) / (ng + 1) - gw / 2;
+        // a slick keeps only SHORT sipes at the two shoulder rows, cut in from the band edge
+        const outer = k === 0 || k === ng;
+        if (!treaded && !outer) continue;
+        const ys0 = treaded ? y0 : (k === 0 ? y0 : y1 - (y1 - y0) * 0.45), ys1 = treaded ? y1 : (k === 0 ? y0 + (y1 - y0) * 0.45 : y1);
+        for (let i = 0; i < ns; i++) {
+          const x = ((i + 0.5) / ns + (k % 2) * 0.5 / ns) * s + (rnd() - 0.5) * s * 0.06, sl = (rnd() - 0.5) * s * 0.08;
+          for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, ys0); ctx.lineTo(x + dx + w, ys0); ctx.lineTo(x + dx + w + sl, ys1); ctx.lineTo(x + dx + sl, ys1); ctx.closePath(); ctx.fill(); }
+        }
+      }
+      // shoulder step at the top of the band, bead rings and mould lines on the sidewalls
+      const sh = ctx.createLinearGradient(0, b0 - h * 0.03, 0, b0 + h * 0.02); sh.addColorStop(0, `rgba(${gv},${gv},${gv},0)`); sh.addColorStop(1, `rgba(${gv},${gv},${gv},0.45)`);
+      ctx.fillStyle = sh; ctx.fillRect(0, b0 - h * 0.03, s, h * 0.05);
+      ctx.fillStyle = `rgb(${rv},${rv},${rv})`; ctx.fillRect(0, ya + h * 0.045, s, h * 0.012); ctx.fillRect(0, ya + h * 0.94, s, h * 0.012);
+      ctx.fillStyle = `rgb(${mv},${mv},${mv})`; ctx.fillRect(0, ya + h * 0.11, s, 2); ctx.fillRect(0, ya + h * 0.88, s, 2);
+      // wear: warm road dust on the lower shoulder and sidewall, grey scuffs on both shoulders
+      const dg = ctx.createLinearGradient(0, yb, 0, ya + h * 0.6); dg.addColorStop(0, `rgba(${dust[0]},${dust[1]},${dust[2]},${o.dustAlpha ?? 0.35})`); dg.addColorStop(1, `rgba(${dust[0]},${dust[1]},${dust[2]},0)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, ya + h * 0.6, s, h * 0.4);
+      for (let i = 0; i < (o.scuffs ?? 14); i++) {
+        const x = rnd() * s, y = rnd() < 0.5 ? b0 + (rnd() - 0.3) * h * 0.08 : b1 + (rnd() - 0.7) * h * 0.08, r = s * (0.02 + rnd() * 0.05), v = 225 + Math.round(rnd() * 25);
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+        ctx.fillStyle = g2; for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, r * 2.2, r * 0.6, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 60; i++) { const x = rnd() * s, y = b0 + rnd() * (b1 - b0), v = 6 + Math.round(rnd() * 14); ctx.fillStyle = `rgb(${v},${Math.round(v * 0.9)},${Math.round(v * 0.75)})`; ctx.fillRect(x, y, 2 + rnd() * 6, 2 + rnd() * 3); }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+    strip(0, s / 2, true);      // v 0.5..1: treaded
+    strip(s / 2, s, false);     // v 0..0.5: slick
+  });
+}
+
+/** A tapered box: BoxGeometry(1, h, 1) whose x/z are scaled per vertex by the footprint interpolated
+ *  from (w0, d0) at the bottom to (w1, d1) at the top. Normals recomputed so the slanted faces shade
+ *  flat. `b` = [cx, yBottom, cz, w0, d0, w1, d1, h]. */
+function frustum(b: number[]): THREE.BufferGeometry {
+  const [cx, y0, cz, w0, d0, w1, d1, h] = b;
+  const g = new THREE.BoxGeometry(1, h, 1);
+  const p = g.getAttribute('position');
+  for (let i = 0; i < p.count; i++) {
+    const t = (p.getY(i) + h / 2) / h;
+    p.setX(i, p.getX(i) * (w0 + (w1 - w0) * t)); p.setZ(i, p.getZ(i) * (d0 + (d1 - d0) * t));
+  }
+  g.computeVertexNormals();
+  g.translate(cx, y0 + h / 2, cz);
+  return g;
+}
+
+/**
+ * HOT-DIP GALVANISED ZINC: cloudy tone drift, crystalline SPANGLE, and rust bleeding from the welds.
+ *
+ * This exists because `grimeTile` measurably cannot say `galvanised`. Measured on the crowd
+ * barrier's plate against its first build, over matched flat panel crops: the plate reads mean luma
+ * 157-159 with sd 12-16 and a p5..p95 span of ~42, and the render read mean 142 with sd 8-10 and a
+ * span of ~21 -- half the tonal variation, and CLIPPED at the top (p75 = p95 = 147, the tile doing
+ * nothing at all over the upper half of the panel). A galvanised surface is not dirt on grey paint:
+ * it is a frozen crystal structure, bright irregular spangle facets standing ABOVE the base tone
+ * with dull grey-brown drift between them, and the brightest fifth of it is the part that reads.
+ *
+ * A canvas tile is bound as a MULTIPLY map, so it can only ever darken -- which is why the spread
+ * was one-sided. The tile is therefore authored around a `mid` multiplier well below 1 and the
+ * caller raises the base albedo by 1/mid: the spangle then reaches back up to the base while the
+ * drift falls away below it, and the surface varies in BOTH directions about its mean. Author the
+ * albedo for that, or the prop ships as bright as the spangle everywhere.
+ *
+ * `rustBand` bleeds a desaturated brown down from the top and up from the bottom -- the two places a
+ * barrier's welds are -- because rust on galvanised steel starts at a weld, where the zinc was
+ * burnt off, and RUNS. The plate's rust measures #826e58 over 2.2% of the frame: a wash, not the
+ * orange polka dots a blotch tile gives.
+ */
+function zincTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const mid = o.mid ?? 0.88, lo = o.lo ?? 0.74;
+    const g = (v: number) => { const b = Math.round(255 * v); return `rgb(${b},${b},${b})`; };
+    ctx.fillStyle = g(mid); ctx.fillRect(0, 0, s, s);
+    // cloudy drift: broad soft blobs both above and below the mid, the mottle a dip leaves
+    for (let i = 0; i < (o.clouds ?? 60); i++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.06 + rnd() * 0.16);
+      const up = rnd() < 0.5;
+      const v = up ? mid + (1 - mid) * (0.35 + rnd() * 0.5) : lo + (mid - lo) * rnd();
+      const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},${o.cloudAlpha ?? 0.28})`);
+      gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    // SPANGLE: irregular bright crystal facets, angular rather than round, up to the base tone.
+    // Small and dense -- large ones read as splashes of white paint, which is the failure mode a
+    // blotch tile falls into.
+    // CLUSTERED, not scattered. Uniformly spread facets read as snow or dust specks -- isolated
+    // bright dots on a smooth field, which is what the second tuning shipped and what the plate has
+    // none of. Real spangle blooms: the crystals nucleate together, so the surface is patches of
+    // dense bright facets with quiet grey between them. `spangleClusters` centres carry
+    // `1 - spangleLoose` of the facets, distributed sqrt-uniformly so each bloom is dense at its
+    // middle and thins at its edge; the rest stay scattered so the field is never bald.
+    const cl = Array.from({ length: o.spangleClusters ?? 0 }, () => [rnd() * s, rnd() * s, s * (0.04 + rnd() * 0.10)]);
+    for (let i = 0; i < (o.spangle ?? 520); i++) {
+      let x = rnd() * s, y = rnd() * s;
+      if (cl.length && rnd() > (o.spangleLoose ?? 0.25)) {
+        const c = cl[(rnd() * cl.length) | 0], a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * c[2];
+        x = c[0] + Math.cos(a) * d; y = c[1] + Math.sin(a) * d;
+      }
+      const r = s * ((o.spangleMin ?? 0.004) + Math.pow(rnd(), 2) * (o.spangleMax ?? 0.013));
+      const v = mid + (1 - mid) * (0.5 + rnd() * 0.5);
+      const k = 4 + Math.floor(rnd() * 3);
+      const a0 = rnd() * Math.PI * 2;
+      ctx.fillStyle = `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},${(o.spangleAlpha ?? 0.2) + rnd() * (o.spangleAlphaVar ?? 0.35)})`;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) {
+        ctx.beginPath();
+        for (let j = 0; j < k; j++) {
+          const a = a0 + j * Math.PI * 2 / k, rr = r * (0.55 + rnd() * 0.75);
+          const px = x + dx + Math.cos(a) * rr, py = y + dy + Math.sin(a) * rr * 0.8;
+          if (j === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath(); ctx.fill();
+      }
+    }
+    // dark drip streaks running down: weathering, and what gives a flat panel a vertical read
+    for (let i = 0; i < (o.streaks ?? 30); i++) {
+      const x = rnd() * s, w = 1 + rnd() * s * 0.010, y0 = rnd() * s * 0.5, len = s * (0.2 + rnd() * 0.7);
+      const v = lo + (mid - lo) * rnd() * 0.6, a = 0.06 + rnd() * 0.14;
+      const gr = ctx.createLinearGradient(0, y0, 0, y0 + len);
+      gr.addColorStop(0, `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},0)`);
+      gr.addColorStop(0.25, `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},${a})`);
+      gr.addColorStop(1, `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},0)`);
+      ctx.fillStyle = gr;
+      for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, y0, w, len);
+    }
+    // FINE GRAIN and SCRATCHES. Measured against the plate at matched magnification, this is the
+    // layer the first tuning was missing entirely: the plate's zinc is scratchy at 1-2 px everywhere
+    // -- drawing marks, handling scuffs, the crystal boundaries themselves -- and without it the
+    // drift and the spangle read as soft snow on smooth grey however well the HISTOGRAM matches. Two
+    // crops with identical mean, sd and percentiles can look nothing alike; the statistic that
+    // separates them is spatial frequency, so tune this by eye against a matched crop, not by sd.
+    for (let i = 0; i < (o.grain ?? 0); i++) {
+      const x = rnd() * s, y = rnd() * s, w = 1 + rnd() * 2, h = 1 + rnd() * 2;
+      const up = rnd() < 0.5;
+      const v = up ? mid + (1 - mid) * (0.4 + rnd() * 0.6) : lo + (mid - lo) * rnd();
+      ctx.fillStyle = `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},${0.10 + rnd() * 0.30})`;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) ctx.fillRect(x + dx, y + dy, w, h);
+    }
+    ctx.lineCap = 'round';
+    for (let i = 0; i < (o.scratches ?? 0); i++) {
+      const x = rnd() * s, y = rnd() * s, len = s * (0.006 + rnd() * 0.055), a = (rnd() - 0.5) * 0.7 + Math.PI / 2;
+      const up = rnd() < 0.45;
+      const v = up ? mid + (1 - mid) * (0.5 + rnd() * 0.5) : lo + (mid - lo) * rnd() * 0.8;
+      ctx.strokeStyle = `rgba(${Math.round(255 * v)},${Math.round(255 * v)},${Math.round(255 * v)},${0.10 + rnd() * 0.28})`;
+      ctx.lineWidth = 0.7 + rnd() * 1.6;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) {
+        ctx.beginPath(); ctx.moveTo(x + dx, y + dy);
+        ctx.lineTo(x + dx + Math.cos(a) * len, y + dy + Math.sin(a) * len); ctx.stroke();
+      }
+    }
+    // RUST from the welds: a wash in the top and bottom bands, plus runs trailing out of it
+    if (o.rust) {
+      const c = o.rust, band = o.rustBand ?? 0.16;
+      const rgbs = `${Math.round(255 * c[0])},${Math.round(255 * c[1])},${Math.round(255 * c[2])}`;
+      // the two bands are SEPARATE: on a barrier the ground end carries the feet, the stub welds and
+      // every run off them, and the top end carries only the rail's own welds. One symmetric band
+      // wide enough to reach the rail welds at v = 0.26 also washes the whole upper third of every
+      // panel, which the plate does not have.
+      for (const [edge, dir, b] of [[0, 1, o.rustBandTop ?? band], [s, -1, band]] as number[][]) {
+        const gr = ctx.createLinearGradient(0, edge, 0, edge + dir * s * b);
+        gr.addColorStop(0, `rgba(${rgbs},${o.rustWash ?? 0.30})`); gr.addColorStop(1, `rgba(${rgbs},0)`);
+        ctx.fillStyle = gr; ctx.fillRect(0, 0, s, s);
+      }
+      for (let i = 0; i < (o.rustRuns ?? 22); i++) {
+        const x = rnd() * s, w = 1 + rnd() * s * 0.014;
+        const top = rnd() < 0.5;
+        const y0 = top ? 0 : s - s * band * (0.3 + rnd());
+        const len = s * (0.10 + rnd() * 0.32);
+        const gr = ctx.createLinearGradient(0, y0, 0, y0 + len);
+        gr.addColorStop(0, `rgba(${rgbs},${0.18 + rnd() * 0.32})`); gr.addColorStop(1, `rgba(${rgbs},0)`);
+        ctx.fillStyle = gr;
+        for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, y0, w, len);
+      }
+    }
+  });
+}
+/* ------------------------------------------------------------------ canopy-module helpers
+ * The five CANOPY MODULES -- nipa thatch, vetiver thatch, split bamboo, corrugated metal,
+ * tarpaulin -- are one family: four corner posts inside a 4 x 4 m module, a head frame, and a roof
+ * whose material is the whole identity. What they need beyond the street-prop vocabulary is a
+ * roofing tile per material and the culm mapping a round bamboo pole wants.
+ *
+ * `culmUV`, `grainLines`, `weatherPatches`, `mouldClusters` and `culmTile` are ported VERBATIM from
+ * scratch/_fence/fence.helpers.tmpl, where they were written for the bamboo fence panel and where
+ * the reasoning behind every number is recorded. They are copied rather than shared because the two
+ * families keep separate template sets; a third family wanting them should move them up into
+ * helpers.tmpl rather than copy them a second time.
+ */
+
+/** CULM UVs: u around the circumference and v along the length, both in metres over `scale`, so a
+ *  culm tile's node rings cross the culm at real spacing whichever way the cylinder is then rotated.
+ *  Apply BEFORE rotate/translate. `vOff` phases the tile along the culm so no two culms (or a cord
+ *  collar) ring at the same station. */
+function culmUV(g: THREE.BufferGeometry, r: number, h: number, scale: number, vOff = 0): THREE.BufferGeometry {
+  const uv = g.getAttribute('uv');
+  const ku = (2 * Math.PI * r) / scale, kv = h / scale;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * ku, uv.getY(i) * kv + vOff);
+  return g;
+}
+
+/** Fine longitudinal grain between y0 and y1 across a band x0..x1: many hairlines, mostly a dark
+ *  fibre tone, a few bleached, so the surface reads as fibrous bamboo rather than paint. */
+function grainLines(ctx: CanvasRenderingContext2D, rnd: () => number, x0: number, x1: number, y0: number, y1: number, n: number, dark: string, light: string, aMax: number): void {
+  for (let k = 0; k < n; k++) {
+    const x = x0 + rnd() * (x1 - x0), a = 0.04 + rnd() * aMax, w = rnd() < 0.75 ? 1 : 1.6;
+    ctx.fillStyle = `rgba(${rnd() < 0.72 ? dark : light},${a.toFixed(3)})`;
+    ctx.fillRect(x, y0, w, y1 - y0);
+  }
+}
+
+/** Soft cloudy weathering along the fibre direction: lengthwise patches of warm brown-grey (old
+ *  lignin showing through the bleach) and of near-white (sun-bleached faces), so the tone drifts
+ *  the way weathered bamboo does instead of sitting at one grey. Vertical = along the fibre. */
+function weatherPatches(ctx: CanvasRenderingContext2D, rnd: () => number, s: number, x0: number, x1: number, n: number, warmA: number, bleachA: number): void {
+  for (let k = 0; k < n; k++) {
+    const y = rnd() * s, len = s * (0.12 + rnd() * 0.45), warm = rnd() < 0.5;
+    const c = warm ? '112,100,88' : '255,255,255', a = warm ? warmA * (0.4 + rnd() * 0.6) : bleachA * (0.4 + rnd() * 0.6);
+    const g2 = ctx.createLinearGradient(0, y, 0, y + len);
+    g2.addColorStop(0, `rgba(${c},0)`); g2.addColorStop(0.35, `rgba(${c},${a})`); g2.addColorStop(0.65, `rgba(${c},${a})`); g2.addColorStop(1, `rgba(${c},0)`);
+    ctx.fillStyle = g2;
+    for (const dy of [-s, 0]) ctx.fillRect(x0, y + dy, x1 - x0, len);
+  }
+}
+
+/** Mould: clusters of small dark specks (a few dozen each), the way black mould sits on outdoor
+ *  bamboo -- dense at a few spots, absent elsewhere. Alpha capped so the darkest speck over the
+ *  measured albedo stays well clear of the hole gate's luma 58. Wraps in y. */
+function mouldClusters(ctx: CanvasRenderingContext2D, rnd: () => number, s: number, spots: number[][], rx: number, ry: number, n: number, aMax: number): void {
+  for (const [cx, cy] of spots) {
+    const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry) * 0.8);
+    g2.addColorStop(0, `rgba(28,26,22,${(aMax * 0.9).toFixed(3)})`); g2.addColorStop(1, 'rgba(28,26,22,0)');
+    ctx.fillStyle = g2;
+    for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(cx, cy + dy, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); }
+    for (let i = 0; i < n; i++) {
+      const x = cx + (rnd() + rnd() - 1) * rx, y = cy + (rnd() + rnd() - 1) * ry;
+      ctx.fillStyle = `rgba(28,26,22,${(0.08 + rnd() * aMax).toFixed(3)})`;
+      const w = 1 + rnd() * 2, h = 1 + rnd() * 3;
+      for (const dy of [-s, 0, s]) ctx.fillRect(x, y + dy, w, h);
+    }
+  }
+}
+
+/** CULM tile for the whole-bamboo post and rails: x runs AROUND the culm, y ALONG it (see culmUV),
+ *  0.6 m of culm per tile. Two node rings per tile at irregular stations -- a dark groove under a
+ *  pale raised ridge, the grain breaking at each -- with fine longitudinal grain between them, a
+ *  long drying split, lengthwise weathering patches and black mould gathered just below each node,
+ *  as in the plate's post and rail crops. A multiplier on the measured culm grey. */
+function culmTile(size: number, seed: number): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const DARK = '92,78,62', LIGHT = '255,255,255';
+    ctx.fillStyle = '#f0efec'; ctx.fillRect(0, 0, s, s);
+    // a soft tone drift around the culm, so the round is not one flat value
+    const ga = ctx.createLinearGradient(0, 0, s, 0);
+    ga.addColorStop(0, 'rgba(100,92,84,0.12)'); ga.addColorStop(0.5, 'rgba(255,255,255,0.10)'); ga.addColorStop(1, 'rgba(100,92,84,0.12)');
+    ctx.fillStyle = ga; ctx.fillRect(0, 0, s, s);
+    weatherPatches(ctx, rnd, s, 0, s, 14, 0.12, 0.30);
+    // node stations: two per tile, irregular, never within 0.18 of each other or the wrap
+    const nodes = [s * (0.20 + rnd() * 0.10), s * (0.66 + rnd() * 0.12)];
+    // grain in segments between the nodes so it breaks at each ring
+    const stations = [0, ...nodes, s];
+    for (let i = 0; i + 1 < stations.length; i++) grainLines(ctx, rnd, 0, s, stations[i], stations[i + 1], 260, DARK, LIGHT, 0.26);
+    // a couple of long drying splits along the fibre
+    for (let k = 0; k < 2; k++) {
+      const x = rnd() * s, y = rnd() * s, len = s * (0.25 + rnd() * 0.5);
+      ctx.fillStyle = 'rgba(38,32,26,0.55)';
+      for (const dy of [-s, 0]) ctx.fillRect(x, y + dy, 1.4, len);
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      for (const dy of [-s, 0]) ctx.fillRect(x + 1.4, y + dy, 1, len);
+    }
+    // the node rings
+    for (const y of nodes) {
+      const gs = ctx.createLinearGradient(0, y - s * 0.03, 0, y);
+      gs.addColorStop(0, 'rgba(60,50,40,0)'); gs.addColorStop(1, 'rgba(60,50,40,0.22)');
+      ctx.fillStyle = gs; ctx.fillRect(0, y - s * 0.03, s, s * 0.03);          // shade up to the ring
+      ctx.fillStyle = 'rgba(52,44,36,0.62)'; ctx.fillRect(0, y, s, 2.5);        // the groove
+      ctx.fillStyle = 'rgba(255,255,255,0.34)'; ctx.fillRect(0, y + 2.5, s, 4); // the raised sheath ridge
+      ctx.fillStyle = 'rgba(60,50,40,0.30)'; ctx.fillRect(0, y + 6.5, s, 1.5);  // its lower edge
+      const gd = ctx.createLinearGradient(0, y + 8, 0, y + s * 0.05);
+      gd.addColorStop(0, 'rgba(60,50,40,0.20)'); gd.addColorStop(1, 'rgba(60,50,40,0)');
+      ctx.fillStyle = gd; ctx.fillRect(0, y + 8, s, s * 0.05);
+    }
+    // mould gathers just below the nodes and in a couple of loose patches
+    const spots: number[][] = [];
+    for (const y of nodes) for (let i = 0; i < 2; i++) spots.push([rnd() * s, y + s * (0.02 + rnd() * 0.05)]);
+    for (let i = 0; i < 3; i++) spots.push([rnd() * s, rnd() * s]);
+    mouldClusters(ctx, rnd, s, spots, s * 0.10, s * 0.06, 90, 0.30);
+  });
+}
+
+
+/**
+ * THATCH tile, for a roof mapped with WORLD UVs so u runs along the ridge and v up the slope.
+ *
+ * Thatch is laid in COURSES: each course is a bundle of stems pegged to a purlin with its butts
+ * hanging over the course below, so what a viewer actually resolves at prop distance is a stack of
+ * horizontal bands with a shadow line under each butt, and a fibre texture running down the slope
+ * inside them. Modelling the stems is what the registry notes forbid; this is where that detail
+ * goes instead.
+ *
+ * One tile is `courses` courses tall. The knobs are what separates the two thatches on the plates:
+ *   nipa     broad flat palm blades -- few wide strokes (`stemW` 3-7 px), a wide tonal `spread`,
+ *            a deeply RAGGED butt line and occasional missing blades.
+ *   vetiver  combed grass -- hundreds of hairlines, a narrow spread, an almost straight butt.
+ * `moss` multiplies a green cast into scattered patches: the tile is a MULTIPLIER on a pale straw
+ * albedo, and a multiply can only darken, so green has to arrive as "less red and blue" and never
+ * as a painted green. Nothing here goes below 0.42 of the albedo, which keeps the darkest texel of
+ * a straw at luma ~150 well clear of the silhouette gate's backdrop band.
+ */
+function thatchTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const nc: number = o.courses ?? 4, ch = s / nc;
+    const stems: number = o.stems ?? 260, spread: number = o.spread ?? 0.12;
+    const wMin: number = o.stemW?.[0] ?? 1, wMax: number = o.stemW?.[1] ?? 2;
+    const ragged: number = o.ragged ?? 0.06;                 // butt-line waviness, as a share of ch
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+
+    // the butt line of each course, jittered per column and SHARED with the course above so the
+    // shadow and the blades agree on where the edge is
+    const butts: number[][] = [];
+    for (let c = 0; c <= nc; c++) {
+      const row: number[] = [];
+      let y = 0;
+      for (let x = 0; x <= s; x++) {
+        if (x % Math.max(2, Math.round(s / 48)) === 0) y = (rnd() * 2 - 1) * ragged * ch;
+        row.push(c * ch + y);
+      }
+      butts.push(row);
+    }
+
+    for (let c = 0; c < nc; c++) {
+      const y0 = c * ch;
+      // the course's own tone: thatch weathers course by course, the lower ones greyer
+      const t = 1 - spread * rnd();
+      const v = Math.round(255 * t);
+      ctx.fillStyle = `rgb(${v},${Math.round(v * 0.985)},${Math.round(v * 0.95)})`;
+      ctx.fillRect(0, y0 - ragged * ch - 1, s, ch + 2 * ragged * ch + 2);
+      // stems running DOWN the slope inside the course, each a little past its butt line
+      for (let k = 0; k < stems; k++) {
+        const x = rnd() * s;
+        const w = wMin + rnd() * (wMax - wMin);
+        const tone = 1 - spread * (0.3 + rnd() * 0.7);
+        const a = 0.18 + rnd() * 0.32;
+        const dark = rnd() < 0.62;
+        ctx.fillStyle = dark ? `rgba(${Math.round(120 * tone)},${Math.round(106 * tone)},${Math.round(84 * tone)},${a.toFixed(3)})`
+                             : `rgba(255,253,246,${(a * 0.6).toFixed(3)})`;
+        const yTop = y0 - ch * (0.15 + rnd() * 0.25);
+        const yBot = butts[c + 1][Math.min(s, Math.round(x))] + ch * (rnd() * 0.10);
+        ctx.fillRect(x, yTop, w, Math.max(2, yBot - yTop));
+      }
+      // MISSING blades: a few gaps where the course has thinned, dark but never black
+      const gaps = o.gaps ?? 0;
+      for (let k = 0; k < gaps; k++) {
+        const x = rnd() * s, w = s * (0.01 + rnd() * 0.03);
+        ctx.fillStyle = `rgba(96,84,66,${(0.20 + rnd() * 0.18).toFixed(3)})`;
+        ctx.fillRect(x, y0 + ch * 0.25, w, ch * (0.4 + rnd() * 0.5));
+      }
+    }
+
+    // the shadow each course's butt casts on the one below: a gradient falling AWAY from the line,
+    // drawn along the jittered butt so the shadow is as ragged as the edge that casts it, with the
+    // LIT TIPS of the course above it as a pale line. The pair is what makes the roof read as
+    // stacked layers; the shadow alone reads as grain, which is what the first build looked like.
+    for (let c = 1; c <= nc; c++) {
+      for (let x = 0; x < s; x++) {
+        const yb = butts[c][x];
+        const gh = ctx.createLinearGradient(0, yb - ch * 0.09, 0, yb);
+        gh.addColorStop(0, 'rgba(255,252,242,0)'); gh.addColorStop(1, `rgba(255,252,242,${(o.tip ?? 0.34).toFixed(3)})`);
+        ctx.fillStyle = gh;
+        for (const dy of [-s, 0]) ctx.fillRect(x, yb - ch * 0.09 + dy, 1, ch * 0.09);
+        const g2 = ctx.createLinearGradient(0, yb, 0, yb + ch * 0.22);
+        g2.addColorStop(0, `rgba(58,48,36,${(o.shadow ?? 0.42).toFixed(3)})`);
+        g2.addColorStop(1, 'rgba(58,48,36,0)');
+        ctx.fillStyle = g2;
+        for (const dy of [-s, 0]) ctx.fillRect(x, yb + dy, 1, ch * 0.22);
+      }
+    }
+
+    // MOSS / MOULD: less red and blue over soft patches, never a painted green
+    for (let k = 0; k < (o.moss ?? 0); k++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.05 + rnd() * 0.14);
+      const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+      const a = 0.14 + rnd() * 0.22;
+      g2.addColorStop(0, `rgba(150,190,110,${a.toFixed(3)})`); g2.addColorStop(1, 'rgba(150,190,110,0)');
+      ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = g2;
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    // soft tonal drift so the courses do not read as a printed stripe
+    weatherPatches(ctx, rnd, s, 0, s, o.weather ?? 10, 0.10, 0.22);
+  });
+}
+
+/**
+ * WOVEN TARPAULIN tile: the coarse cross-woven polypropylene tape of a Thai builder's tarp, plus
+ * the creases a folded sheet keeps for life and the sun-bleaching along the ridges. A multiplier on
+ * the measured blue, so the weave darkens and the bleach lifts toward white.
+ */
+function tarpTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
+    const pitch = Math.max(3, Math.round(s / (o.tapes ?? 64)));
+    // the weave: warp and weft tapes, each pair with a shadow at its join, alternating over/under
+    for (let x = 0; x < s; x += pitch) {
+      ctx.fillStyle = `rgba(30,34,44,${(0.10 + rnd() * 0.08).toFixed(3)})`; ctx.fillRect(x, 0, 1, s);
+      ctx.fillStyle = 'rgba(255,255,255,0.07)'; ctx.fillRect(x + 1, 0, Math.max(1, pitch * 0.35), s);
+    }
+    for (let y = 0; y < s; y += pitch) {
+      ctx.fillStyle = `rgba(30,34,44,${(0.10 + rnd() * 0.08).toFixed(3)})`; ctx.fillRect(0, y, s, 1);
+      ctx.fillStyle = 'rgba(255,255,255,0.07)'; ctx.fillRect(0, y + 1, s, Math.max(1, pitch * 0.35));
+    }
+    // fold creases: long pale lines with a shadow on one side, at the two axes a tarp is folded on
+    for (let k = 0; k < (o.creases ?? 6); k++) {
+      const horiz = rnd() < 0.5, p = rnd() * s, len = s * (0.5 + rnd() * 0.5), q = rnd() * s;
+      ctx.fillStyle = 'rgba(255,255,255,0.26)';
+      ctx.fillStyle = 'rgba(255,255,255,0.26)';
+      if (horiz) { ctx.fillRect(q - len / 2, p, len, 1.6); ctx.fillStyle = 'rgba(20,26,38,0.18)'; ctx.fillRect(q - len / 2, p + 1.6, len, 2); }
+      else { ctx.fillRect(p, q - len / 2, 1.6, len); ctx.fillStyle = 'rgba(20,26,38,0.18)'; ctx.fillRect(p + 1.6, q - len / 2, 2, len); }
+    }
+    // sun-bleached streaks and a little grime
+    weatherPatches(ctx, rnd, s, 0, s, o.weather ?? 12, 0.10, 0.34);
+  });
+}
+
+/**
+ * SAWN TIMBER tile for a weathered post-and-plate frame: fine longitudinal grain, a few knots, the
+ * odd drying split, and cloudy silver weathering. Deliberately WEAKLY directional -- the frame is
+ * mapped with world UVs, which put v along the post but ACROSS a beam, and a strongly striped tile
+ * would then read as a plank joint running the wrong way on half the frame. The weathering carries
+ * most of the read and the grain only sharpens it, which survives both orientations.
+ */
+function sawnTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const DARK = '96,84,68', LIGHT = '255,255,255';
+    ctx.fillStyle = '#f4f2ee'; ctx.fillRect(0, 0, s, s);
+    weatherPatches(ctx, rnd, s, 0, s, o.weather ?? 20, 0.14, 0.30);
+    grainLines(ctx, rnd, 0, s, 0, s, o.grain ?? 220, DARK, LIGHT, 0.18);
+    // knots: a dark ellipse with the grain sweeping round it
+    for (let k = 0; k < (o.knots ?? 4); k++) {
+      const x = rnd() * s, y = rnd() * s, r = s * (0.012 + rnd() * 0.02);
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) {
+        ctx.fillStyle = 'rgba(74,60,44,0.45)';
+        ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r, r * 1.6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(96,80,60,0.22)'; ctx.lineWidth = 1;
+        for (let q = 1; q <= 3; q++) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r * (1 + q * 0.6), r * (1.6 + q * 0.9), 0, 0, Math.PI * 2); ctx.stroke(); }
+      }
+    }
+    // drying splits along the fibre
+    for (let k = 0; k < (o.splits ?? 3); k++) {
+      const x = rnd() * s, y = rnd() * s, len = s * (0.2 + rnd() * 0.45);
+      ctx.fillStyle = 'rgba(58,48,36,0.42)';
+      for (const dy of [-s, 0]) ctx.fillRect(x, y + dy, 1.4, len);
+      ctx.fillStyle = 'rgba(255,255,255,0.16)';
+      for (const dy of [-s, 0]) ctx.fillRect(x + 1.4, y + dy, 1, len);
+    }
+    const spots: number[][] = [];
+    for (let i = 0; i < (o.mould ?? 3); i++) spots.push([rnd() * s, rnd() * s]);
+    mouldClusters(ctx, rnd, s, spots, s * 0.09, s * 0.07, 70, 0.24);
+  });
+}
+
+/**
+ * GALVANISED SHEET weathering: one seamless multiplier tile carrying the three things a zinc roof
+ * actually shows -- the chalky white oxidation that eats the spangle, the darker grey drift where
+ * it has not, and the warm rust freckles that start at every fixing and lap.
+ *
+ * Like `paintTile` it is drawn in ABSOLUTE multiplier space over a RE-BASED envelope, because
+ * chalking is BRIGHTER than the clean sheet it sits on and a plain multiply can only darken. `o.base`
+ * is the clean zinc's own multiplier against that envelope and is what most of the tile is filled
+ * with; `o.chalk` reaches back up to the envelope. Measured off the plate, the deck runs 172 to 197
+ * luma across its own surface at a saturation of 0.04 -- a 25-luma spread on a nominally flat grey,
+ * which is the whole difference between a roof and a sheet of plastic.
+ *
+ * `chalkScale` / `driftScale` exist because on a roof the tile is small against the surface: the
+ * deck repeats it four times across, so any mark wider than a tenth of it draws a visible lattice.
+ * The BROAD chalk zones belong on the sheet's own vertex grid, which does not repeat; what the tile
+ * owes is the fine speckle inside them.
+ *
+ * The roll marks are drawn LAST and along u, which on the deck's world UVs is the axis the modelled
+ * flutes run across. They are what the tile still owes the geometry once the corrugation itself is
+ * real: a roll former leaves fine lengthwise striation between the flutes, and `bump` picks it up.
+ */
+function galvTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
+    const base = o.base ?? [1, 1, 1], chalk = o.chalk ?? base, rust = o.rust ?? base, dark = o.dark ?? base;
+    const wrap = (draw: (dx: number, dy: number) => void) => {
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) draw(dx, dy);
+    };
+    const blob = (c: number[], x: number, y: number, r: number, a: number, ry = 1, rot = 0) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(${rgb(c)},${a})`); g.addColorStop(0.55, `rgba(${rgb(c)},${a * 0.5})`);
+      g.addColorStop(1, `rgba(${rgb(c)},0)`);
+      ctx.fillStyle = g;
+      wrap((dx, dy) => { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r, r * ry, rot, 0, Math.PI * 2); ctx.fill(); });
+    };
+
+    // The base fill carries the FLUTE shading when `flutes` is set: `flutes` ripples per tile, in
+    // phase with the modelled corrugation (a trough at u = 0, which is where the deck's world UVs put
+    // one). The geometry already turns the flutes to the light -- this is the ambient darkening in
+    // the valleys and the roll-former's own polish on the crests, which flat studio lighting on a
+    // smooth-shaded triangle wave gives none of. Out of phase it would BEAT with the geometry, which
+    // is why the pitch is locked to the deck's own 13 flutes per metre rather than chosen.
+    const fl = o.flutes ?? 0, flow = o.fluteLow ?? 0.88;
+    if (fl > 0) {
+      for (let x = 0; x < s; x++) {
+        const t = (1 - Math.cos(x / s * Math.PI * 2 * fl)) / 2;   // 0 in the trough, 1 at the crest
+        const k = flow + (1 - flow) * t;
+        ctx.fillStyle = `rgb(${rgb(base.map((v: number) => v * k))})`; ctx.fillRect(x, 0, 1, s);
+      }
+    } else { ctx.fillStyle = `rgb(${rgb(base)})`; ctx.fillRect(0, 0, s, s); }
+
+    // 1. the grey drift: broad, very soft, the areas the chalk has not reached
+    for (let i = 0; i < (o.drift ?? 16); i++)
+      blob(dark, rnd() * s, rnd() * s, s * (0.16 + rnd() * 0.30) * (o.driftScale ?? 1), 0.10 + rnd() * 0.18, 0.5 + rnd() * 0.9, rnd() * Math.PI);
+
+    // 2. the chalk bloom: LARGE, soft and irregular, with a granular fringe. On a roof it is the
+    //    dominant mark -- the plate's deck is more chalk than clean sheet -- so it is drawn wide and
+    //    at high alpha, unlike the sparse blooms of a painted panel.
+    for (let k = 0; k < (o.chalkPatches ?? 14); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.08 + rnd() * 0.18) * (o.chalkScale ?? 1);
+      blob(chalk, cx, cy, cr, (o.chalkAlpha ?? 0.55) + rnd() * 0.30, 0.5 + rnd() * 0.9, rnd() * Math.PI);
+      for (let i = 0; i < 40; i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr * 1.3;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 0.8 + rnd() * 2.4;
+        ctx.fillStyle = `rgba(${rgb(chalk)},${0.2 + rnd() * 0.45})`;
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+    }
+
+    // 3. rust: small warm freckle clusters, each a soft patch under a field of specks, with a short
+    //    run below it. Zinc does not sheet-rust the way bare steel does -- it freckles first.
+    for (let k = 0; k < (o.rustClusters ?? 10); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.02 + rnd() * 0.055);
+      blob(rust, cx, cy, cr, 0.25 + rnd() * 0.30, 0.7 + rnd() * 0.7, rnd() * Math.PI);
+      for (let i = 0; i < (o.specksPerCluster ?? 26); i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 0.7 + rnd() * 1.8;
+        ctx.fillStyle = `rgba(${rgb(rust)},${0.25 + rnd() * 0.45})`;
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+      if (rnd() < 0.6) {
+        const w = 1 + rnd() * s * 0.006, len = s * (0.05 + rnd() * 0.16);
+        const g = ctx.createLinearGradient(0, cy, 0, cy + len);
+        g.addColorStop(0, `rgba(${rgb(rust)},${0.14 + rnd() * 0.16})`); g.addColorStop(1, `rgba(${rgb(rust)},0)`);
+        ctx.fillStyle = g;
+        wrap((dx) => ctx.fillRect(cx + dx + (rnd() - 0.5) * cr, cy, w, len));
+      }
+    }
+
+    // 4. roll marks: fine lines of constant u, at `rolls` per tile, alternately a shade under and a
+    //    shade over the tone they cross. Bound as a bump map they are the striation between flutes.
+    const rolls = o.rolls ?? 40;
+    for (let i = 0; i < rolls; i++) {
+      const x = (i + 0.35 + rnd() * 0.3) * s / rolls, up = rnd() < 0.45;
+      const c = up ? chalk : dark, a = 0.06 + rnd() * 0.12;
+      ctx.strokeStyle = `rgba(${rgb(c)},${a})`; ctx.lineWidth = 0.7 + rnd() * 1.3;
+      for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, 0); ctx.lineTo(x + dx, s); ctx.stroke(); }
+    }
+  });
+}
 /* ------------------------------------------------------------------ materials */
 
 /**
@@ -1325,6 +2910,9 @@ function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.M
       vertexColors: s.vertexColors === true,
     });
     if (s.envMapIntensity !== undefined) m.envMapIntensity = s.envMapIntensity;
+    // A LIT surface (a fluorescent tube, a charcoal ember bed): emissive carries the glow without a
+    // light source, which the kit's props never own -- the host scene owns lighting.
+    if (s.emissive !== undefined) { m.emissive = new THREE.Color(s.emissive); m.emissiveIntensity = s.emissiveIntensity ?? 1; }
     if (s.opacity !== undefined) { m.transparent = true; m.opacity = s.opacity; m.depthWrite = true; }
     // An ALPHA-CUT pane (chain-link mesh): the canvas tile carries the cut-out in its alpha channel and
     // alphaTest discards the open cells, so the wire stays opaque and sorts like a solid.
@@ -1418,15 +3006,60 @@ export function createElectricMeterBoxModel(options: ProceduralModelOptions = {}
     for (const b of (c.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const b of mirrorX((c.boxesMirrored ?? []) as number[][])) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const t of (c.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
+    // SWEPT tubes: one mitred ring per point instead of a cylinder per segment -- the only thing that
+    // survives a tight bend. See sweepTube.
+    for (const t of (c.sweeps ?? []) as any[]) gs.push(sweepTube(t.pts, t.r, t.seg ?? 10, t.hex, t.cap !== false));
+    for (const st of (c.straps ?? []) as any[]) gs.push(strap(st.pts, st.w, st.t, st.about, st.hex));
     for (const cy of (c.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
-      if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
+      // `th0`/`thLen` make a PARTIAL cylinder (a curved sticker patch wrapped on a round body) and
+      // `open` drops the caps; the side UVs then run 0..1 across the arc and up the height, which is
+      // what a baked graphic wants. `uvRep` multiplies them for a repeating tile.
+      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, cy.open ?? false, cy.th0 ?? 0, cy.thLen ?? Math.PI * 2);
+      if (cy.uvRep) { const uv = g.getAttribute('uv'); for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * cy.uvRep[0], uv.getY(i) * cy.uvRep[1]); }
+      // `sideUV` pins the SIDE wall's UVs to one texel so a disc carrying a baked top-down image shows
+      // that image on its cap alone, with its rim in whatever the pinned texel holds (a bag tone).
+      if (cy.sideUV) { const uv = g.getAttribute('uv'), n = ((cy.seg ?? 12) + 1) * 2; for (let i = 0; i < n; i++) uv.setXY(i, cy.sideUV[0], cy.sideUV[1]); }
+      // `scale` before the rotations: an OVAL basin or disc, which a lathe or a cylinder cannot
+      // revolve on its own. Normals are recomputed because a non-uniform scale skews them.
+      if (cy.scale) { g.scale(cy.scale[0], cy.scale[1], cy.scale[2]); g.computeVertexNormals(); }
+      // CULM UVs: u around the circumference, v along the length, both in metres -- so the node
+      // rings of a culm tile cross a bamboo pole at real spacing however the pole is then turned.
+      // It has to happen BEFORE the rotations, while the cylinder still runs along its own Y.
+      if (c.uv === 'culm') culmUV(g, cy.rt, cy.h, c.uvScale ?? 1, cy.vOff ?? 0);
+      if (cy.rx) g.rotateX(cy.rx); if (cy.ry) g.rotateY(cy.ry); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
     for (const l of (c.lathes ?? []) as any[]) {
       // `ry` yaws the revolution: a 4-segment lathe turned 45 degrees is a chamfered SQUARE slab in one
       // geometry (a cone's rubber base), where two stacked boxes would cost two and a coplanar pair.
-      const g = lathe(l.pts, l.seg ?? 12); if (l.ry) g.rotateY(l.ry); g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
+      // `cylUV` (a tile size in metres) writes a seamless around-by-up UV from the lathe's own segment
+      // index -- atan2 would fold a whole tile into the seam column -- for tread, fluting and grain.
+      const g = lathe(l.pts, l.seg ?? 12, 0, l.sharp !== false, l.weldSeam === true);
+      if (l.cylUV) { const cu = Array.isArray(l.cylUV) ? l.cylUV : [l.cylUV, l.cylUV, 0]; latheUV(g, (g.getAttribute('position').count / ((l.seg ?? 12) + 1)) | 0, l.seg ?? 12, cu[0], cu[1], cu[2] ?? 0); }
+      if (l.scale) { g.scale(l.scale[0], l.scale[1], l.scale[2]); g.computeVertexNormals(); }
+      // `ry` yaws the revolution (above). `rx`/`rz` TILT the axis itself, which is what a WALL or
+      // ceiling fitting needs: a lathe revolves about +Y, and a bulkhead lamp's axis is the wall
+      // normal, so its backplate and dome are authored about Y and laid down with rx = PI/2.
+      if (l.ry) g.rotateY(l.ry); if (l.rx) g.rotateX(l.rx); if (l.rz) g.rotateZ(l.rz);
+      g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
+    }
+    // RIBBED DOMES: a surface of revolution carrying vertical FLUTES, as `1 + amp * cos(ribs * theta)`
+    // sampled per sector rather than a lathe. A pressed-glass lamp dome is fluted, and a smooth one
+    // reads as a plastic bubble -- the ribs are most of what says `glass` at prop distance. Authored
+    // about +Y like a lathe, so a wall fitting lays it down with rx.
+    for (const d of (c.domes ?? []) as any[]) {
+      const g = ribbedDome(d.pts, d.ribs, d.amp, d.seg ?? 24, d.valley);
+      if (d.ry) g.rotateY(d.ry); if (d.rx) g.rotateX(d.rx); if (d.rz) g.rotateZ(d.rz);
+      if (d.at) g.translate(d.at[0], d.at[1], d.at[2]);
+      // A fluted dome writes its OWN colour attribute (the crest-to-valley multiplier), so tintGeo
+      // would overwrite the flute striping with one flat hex -- the same trap `sheet`'s hexUnder
+      // fell into. Multiply the tone INTO the multiplier instead, so the dome carries both.
+      if (d.valley && d.hex !== undefined) {
+        const col = g.getAttribute('color') as THREE.BufferAttribute;
+        const t = new THREE.Color(d.hex);
+        for (let i = 0; i < col.count; i++) col.setXYZ(i, col.getX(i) * t.r, col.getY(i) * t.g, col.getZ(i) * t.b);
+        gs.push(g);
+      } else gs.push(d.valley ? g : tintGeo(g, d.hex));
     }
     for (const p of (c.planes ?? []) as any[]) {
       // A PANE: a single quad in the XY plane at depth z, double-sided by its material. Its UVs run
@@ -1452,15 +3085,94 @@ export function createElectricMeterBoxModel(options: ProceduralModelOptions = {}
       const g = extrudeAlongZ(shape, e.z0, e.z1);
       if (e.rx) g.rotateX(e.rx);
       if (e.ry) g.rotateY(e.ry);
+      if (e.rz) g.rotateZ(e.rz);
       if (e.at) g.translate(e.at[0], e.at[1], e.at[2]);
       gs.push(tintGeo(g, e.hex));
     }
+    // ELLIPSOIDS: [hex, cx, cy, cz, rx, ry, rz, rotX?, rotY?, rotZ?] -- a unit sphere scaled per axis
+    // and turned about its own centre. A skull dome, a paw, a nose pad: the rounded solids of an
+    // animal that a box or a station tube cannot give, sharing smooth normals through the merge.
+    for (const e of (c.ellipsoids ?? []) as number[][]) {
+      const g = new THREE.SphereGeometry(1, e[10] ?? 16, e[11] ?? 12);
+      g.scale(e[4], e[5], e[6]);
+      if (e[7]) g.rotateX(e[7]); if (e[8]) g.rotateY(e[8]); if (e[9]) g.rotateZ(e[9]);
+      g.translate(e[1], e[2], e[3]);
+      gs.push(tintGeo(g, e[0]));
+    }
+    // FRUSTA: [hex, cx, yBottom, cz, w0, d0, w1, d1, h] -- a box whose footprint changes from (w0, d0) at
+    // the bottom to (w1, d1) at the top: the tapered body of a wheelie bin or a steel container.
+    for (const f of (c.frusta ?? []) as number[][]) gs.push(tintGeo(frustum(f.slice(1)), f[0]));
     for (const s of (c.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
+    // DRAPED SHEETS: a tarp or awning as a height grid with thickness -- a ridge, the sag between
+    // its poles and the droop of its free edges are numbers in the grid, computed at emit time.
+    for (const s of (c.sheets ?? []) as any[]) {
+      // A sheet given `hexUnder` has already written its OWN colour attribute, one tone for the top
+      // grid and another for the underside and rim. tintGeo would overwrite the lot with a single
+      // hex -- which is what shipped the tarpaulin bay's blue-over-orange tarp as a white sail.
+      const g = sheet(s);
+      gs.push(s.hexUnder !== undefined ? g : tintGeo(g, s.hex));
+    }
+    // ORGANIC station tubes: [z, cx, cy, rx, ry] stations swept along Z -- the only soft form in the
+    // kit, a lying animal. Lit smooth by the helper's shared ring vertices.
+    for (const t of (c.tubesAlong ?? []) as any[]) {
+      const g = tubeAlong(t.stations, t.seg ?? 12);
+      if (t.ry) g.rotateY(t.ry); if (t.at) g.translate(t.at[0], t.at[1], t.at[2]);
+      // `hexes` -- one colour per STATION, blended along the sweep -- is how a coat pattern that runs
+      // along the body (a white collar between a tan skull and a tan saddle) is carried on a single
+      // merged mesh. The component's axis tint then multiplies the dorsal-to-ventral fade into it,
+      // and neither costs a material. A single `hex` stays the default.
+      if (t.hexes) {
+        // A station entry may be one hex, or a PAIR [dorsal, ventral] blended around the ring by the
+        // same sin(theta) tubeAlong swept the section with -- so the coat runs both ALONG the body
+        // (a white collar between a tan skull and a tan saddle) and ACROSS it (the saddle giving way
+        // to a dusty flank and a pale belly). An axis tint cannot do the second half: on an animal
+        // lying on its side the dorsal-to-ventral axis is horizontal, so a band in x cuts the crown
+        // of the sweep in half, and a MULTIPLY can only ever darken -- it cannot take a warm tan to
+        // a cooler grey. Two colours per station, one attribute, still one draw call.
+        const seg = t.seg ?? 12, n = t.stations.length;
+        const col = new Float32Array(seg * n * 3);
+        for (let i = 0; i < n; i++) {
+          const e = t.hexes[Math.min(t.hexes.length - 1, i)];
+          const d = new THREE.Color(Array.isArray(e) ? e[0] : e), v = new THREE.Color(Array.isArray(e) ? e[1] : e);
+          for (let j = 0; j < seg; j++) {
+            const f = (Math.sin(j * Math.PI * 2 / seg) + 1) / 2;
+            const k = (i * seg + j) * 3;
+            col[k] = d.r + (v.r - d.r) * f; col[k + 1] = d.g + (v.g - d.g) * f; col[k + 2] = d.b + (v.b - d.b) * f;
+          }
+        }
+        g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+        gs.push(g);
+      } else gs.push(tintGeo(g, t.hex ?? 0xffffff));
+    }
     let g = mergeGeos(gs);
+    // a per-component scale, applied to the merge before tinting: how a lying animal authored at
+    // its own proportions is fitted into the declared envelope without re-reading every station
+    if (c.scale) g.scale(c.scale[0], c.scale[1], c.scale[2]);
+    // AXIS TINT: a per-vertex blend from c0 at `from` to c1 at `to` along one axis, over the whole
+    // merge -- a tan back fading to a white belly costs an attribute, not a second material. Applied
+    // in LINEAR space through THREE.Color. `keep` multiplies the blend into the existing tint instead
+    // of replacing it, so a dark nose stays dark.
+    if (c.tint) {
+      const a = new THREE.Color(c.tint.c0), b = new THREE.Color(c.tint.c1);
+      const p = g.getAttribute('position'); let col = g.getAttribute('color') as THREE.BufferAttribute | null;
+      if (!col) { col = new THREE.BufferAttribute(new Float32Array(p.count * 3).fill(1), 3); g.setAttribute('color', col); }
+      const ax = c.tint.axis === 'x' ? 0 : c.tint.axis === 'y' ? 1 : 2;
+      for (let i = 0; i < p.count; i++) {
+        const v = ax === 0 ? p.getX(i) : ax === 1 ? p.getY(i) : p.getZ(i);
+        const t = Math.min(1, Math.max(0, (v - c.tint.from) / (c.tint.to - c.tint.from)));
+        const r = a.r + (b.r - a.r) * t, gg = a.g + (b.g - a.g) * t, bb = a.b + (b.b - a.b) * t;
+        if (c.tint.keep) col.setXYZ(i, col.getX(i) * r, col.getY(i) * gg, col.getZ(i) * bb); else col.setXYZ(i, r, gg, bb);
+      }
+      col.needsUpdate = true;
+    }
     if (c.uv === 'world') g = worldUV(g, c.uvScale ?? 1);
     if (c.uv === 'height') g = heightUV(g, c.uvScale ?? 1);
     if (c.uv === 'panel') g = panelUV(g, c.uvScale ?? 1);
     if (c.uv === 'panel-rot') g = panelUV(g, c.uvScale ?? 1, true);
+    // 'front': planar UVs into a baked front-elevation atlas on +Z faces, one pinned texel elsewhere.
+    if (c.uv === 'front') g = frontAtlasUV(g, c.atlas);
+    // 'culm' is deliberately absent here: it is written per cylinder above, before the rotations,
+    // and a whole-merge pass would flatten it back to the cylinder's default 0..1 wrap.
     add(c.id, c.name, g, c.material);
     if (c.collider) colliders[c.id] = c.collider;
   }
@@ -1471,14 +3183,36 @@ export function createElectricMeterBoxModel(options: ProceduralModelOptions = {}
     const gs: THREE.BufferGeometry[] = [];
     for (const b of (r.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const s of (r.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
+    for (const f of (r.frusta ?? []) as number[][]) gs.push(tintGeo(frustum(f.slice(1)), f[0]));
     for (const cy of (r.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
-      if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
+      // `th0`/`thLen` cut a PARTIAL cylinder the same way the component branch does: a split bamboo
+      // culm is a half pipe, thLen = PI, `open` so it is a shell with no discs at its ends. The
+      // material carries doubleSided, because a hollow-up culm is seen from the inside.
+      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, cy.open ?? false,
+                                           cy.th0 ?? 0, cy.thLen ?? Math.PI * 2);
+      if (r.uv === 'culm') culmUV(g, cy.rt, cy.h, r.uvScale ?? 1, cy.vOff ?? 0);
+      if (cy.rx) g.rotateX(cy.rx); if (cy.ry) g.rotateY(cy.ry); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
+    // An OPEN wheel -- tyre and rim as closed ring lathes, a hub, and wire spokes -- for a bicycle
+    // whose wheels read as bicycle wheels rather than discs. Lathes revolve about Y (`rx` lays the
+    // axle where the placement wants it); `spokes` radiate about X by the helper's convention, so an
+    // axle on Z takes `ry: PI/2`.
+    for (const l of (r.lathes ?? []) as any[]) {
+      const g = lathe(l.pts, l.seg ?? 12, 0, l.sharp !== false, l.weldSeam === true);
+      if (l.rx) g.rotateX(l.rx); if (l.ry) g.rotateY(l.ry); if (l.rz) g.rotateZ(l.rz);
+      if (l.at) g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
+    }
+    for (const s of (r.spokes ?? []) as any[]) {
+      const g = spokes(s.rHub, s.rRim, s.halfW, s.n, s.hex, s.t ?? 0.006, s.prism ?? false);
+      if (s.rx) g.rotateX(s.rx); if (s.ry) g.rotateY(s.ry); if (s.rz) g.rotateZ(s.rz);
+      if (s.at) g.translate(s.at[0], s.at[1], s.at[2]); gs.push(g);
+    }
+    for (const t of (r.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     let g = mergeGeos(gs);
     if (r.uv === 'world') g = worldUV(g, r.uvScale ?? 1);
     if (r.uv === 'height') g = heightUV(g, r.uvScale ?? 1);
+    // 'culm' again written per cylinder above, before the rotations.
     const mats: THREE.Matrix4[] = [];
     for (const p of r.placements as number[][]) {
       mats.push(new THREE.Matrix4().compose(
@@ -1493,16 +3227,42 @@ export function createElectricMeterBoxModel(options: ProceduralModelOptions = {}
   for (const t of (CONFIG.tiles ?? []) as any[]) {
     const mat = materials[t.material];
     if (!mat) continue;
+    // A BAKED graphic (a printed sign face): one WebP data URI composed offline from the plate's own
+    // printed region and vector marks, loaded through TextureLoader. Assigned synchronously so the
+    // harness waits on the decode. It beats fillText, which draws a different wordmark per machine.
+    if (t.kind === 'baked') {
+      // Under plain Node (the coplanar check, the runtime probe) there is no document for ImageLoader:
+      // keep the white fallback rather than throw, exactly as the retail glazing does.
+      if (typeof document === 'undefined') continue;
+      const baked = new THREE.TextureLoader().load(t.uri);
+      const srgb = (THREE as any).SRGBColorSpace;
+      if (srgb) baked.colorSpace = srgb;
+      baked.anisotropy = 4;
+      mat.map = baked; mat.needsUpdate = true;
+      continue;
+    }
     let tex: THREE.CanvasTexture | null = null;
     if (t.kind === 'mud') tex = mudTile(t.size ?? 512, t.base, t.seed ?? 1, t.coverage ?? 0.33);
     if (t.kind === 'dust') tex = dustTile(t.size ?? 512, t.dust, t.seed ?? 1, t.coverage ?? 0.30);
     if (t.kind === 'plank') tex = plankTile(t.size ?? 512, t.boards ?? 6, t.seed ?? 5);
     if (t.kind === 'rust') tex = rustTile(t.size ?? 512, t.ratio, t.seed ?? 7, t.density ?? 90);
+    if (t.kind === 'paint') tex = paintTile(t.size ?? 512, t.seed ?? 17, t);
     if (t.kind === 'corrugation') tex = corrugationTile(t.size ?? 512, t.pitch ?? 12, t.low ?? 0.7, t.seed ?? 3);
     if (t.kind === 'grime') tex = grimeTile(t.size ?? 512, t.seed ?? 11, t);
+    if (t.kind === 'zinc') tex = zincTile(t.size ?? 512, t.seed ?? 19, t);
+    if (t.kind === 'fur') tex = furTile(t.size ?? 512, t.seed ?? 13, t);
     if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4);
     if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6);
+    if (t.kind === 'stripes') tex = stripeTile(t.size ?? 256, t.bands ?? 8, t.a, t.b, t.seed ?? 9, t);
     if (t.kind === 'poster') tex = posterTile(t.size ?? 512, t.seed ?? 8, t.lines ?? []);
+    if (t.kind === 'pebble') tex = pebbleTile(t.size ?? 512, t.seed ?? 21, t);
+    if (t.kind === 'tread') tex = treadTile(t.size ?? 256, t.seed ?? 23, t);
+    if (t.kind === 'tyre') tex = tyreTile(t.size ?? 256, t.seed ?? 29, t);
+    if (t.kind === 'culm') tex = culmTile(t.size ?? 512, t.seed ?? 31);
+    if (t.kind === 'sawn') tex = sawnTile(t.size ?? 512, t.seed ?? 43, t);
+    if (t.kind === 'thatch') tex = thatchTile(t.size ?? 512, t.seed ?? 37, t);
+    if (t.kind === 'tarp') tex = tarpTile(t.size ?? 512, t.seed ?? 41, t);
+    if (t.kind === 'galv') tex = galvTile(t.size ?? 512, t.seed ?? 47, t);
     bindTile(mat, tex, t.bump ?? 0);
   }
 
