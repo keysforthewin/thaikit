@@ -470,6 +470,23 @@ export const AssetSchema = z.object({
     })
     .default({}),
 
+  /**
+   * Set when this record was forked from an adopted third-party pack item
+   * (`scripts/fork-item.mjs`): the upstream address it came from, the pack
+   * version that was adopted, and the sha256 of the factory at fork time, so a
+   * later `--upgrade` of that pack can say what diverged. Absent on anything
+   * thaikit built itself.
+   */
+  forkedFrom: z
+    .object({
+      ref: z.string().regex(/^@[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/),
+      version: z.string().default(''),
+      hash: z.string().default(''),
+    })
+    .strict()
+    .nullable()
+    .default(null),
+
   /** Excluded from the built registry without being deleted. */
   hidden: z.boolean().default(false),
   notes: z.string().default(''),

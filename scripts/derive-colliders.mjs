@@ -76,8 +76,7 @@ import {
   updateAsset,
   writeFileAtomic,
   collidersFile, shipsAsset,
-  toRepoRelative,
-} from '@thaikit/registry-core';
+  toRepoRelative, parseId, storeOptionsFor, qualifiedId } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { resolveBundle } from './lib/bundle-for.mjs';
@@ -95,9 +94,12 @@ export { RECORD_SCHEMA_VERSION };
 
 async function run(asset, baseOpts) {
   // The geometry measured is the bundle that SHIPS: the pack installer's build
-  // under packs/@thai-kit/, or the scratch bundle with --from scratch.
-  const opts = { ...baseOpts, bundle: await resolveBundle(asset.id, baseOpts.from) };
-  const file0 = collidersFile(asset.id);
+  // under packs/<ns>/, or the scratch bundle with --from scratch. `qid` is the
+  // id every path helper takes: bare for thaikit's own, `@ns/name` for an
+  // adopted pack's item.
+  const qid = qualifiedId(asset.pack ?? '@thai-kit', asset.id);
+  const opts = { ...baseOpts, bundle: await resolveBundle(qid, baseOpts.from) };
+  const file0 = collidersFile(qid);
   const existing = existsSync(file0) ? JSON.parse(readFileSync(file0, 'utf8')) : null;
 
   // --measure keeps the parts exactly as they are and only records what the rays
@@ -187,7 +189,7 @@ async function writeRecord(asset, existing, { record, meta }, opts, { measuring 
   if (opts.dryRun) return { id: asset.id, dryRun: true, parts: doc.parts.length, selfCheck: c, meta, doc };
 
   await writeFileAtomic(file, `${JSON.stringify(doc, null, 2)}\n`);
-  await updateAsset(asset.id, (current) => ({
+  await updateAsset(qid, (current) => ({
     ...current,
     model: {
       ...current.model,
@@ -214,7 +216,9 @@ async function writeRecord(asset, existing, { record, meta }, opts, { measuring 
 
 async function main() {
   const args = parseArgs();
-  const registry = await readRegistry();
+  const registry = args.all ? await readRegistry() : args.id ? await readRegistry(storeOptionsFor(String(args.id))) : await readRegistry();
+  const wanted = args.id ? parseId(String(args.id)) : null;
+  for (const a of registry.assets) a.pack = wanted?.ns ?? '@thai-kit';
 
   const opts = {
     from: args.from ?? 'pack',
@@ -238,7 +242,7 @@ async function main() {
 
   const targets = args.all
     ? registry.assets.filter(shipsAsset)
-    : registry.assets.filter((a) => a.id === args.id);
+    : registry.assets.filter((a) => a.id === wanted?.name);
 
   if (!targets.length) {
     return fail(args.all ? 'no assets ship' : `no asset with id "${args.id}"`);

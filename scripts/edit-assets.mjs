@@ -19,7 +19,7 @@
  */
 import fs from 'node:fs/promises';
 
-import { updateRegistry, readRegistry, AssetSchema } from '@thaikit/registry-core';
+import { updateRegistry, readRegistry, AssetSchema, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { BUDGET_AXES, categories, classifyBySize } from './lib/config.mjs';
@@ -317,8 +317,17 @@ async function main() {
     }
   };
 
+  // Every draft must address ONE root: bare ids edit thaikit's own tree, and
+  // `@ns/name` selectors edit that adopted pack's. The store option is derived
+  // from the first selector and the rest must agree.
+  const selectorOf = (d) => String(d.id ?? d._id ?? d.select ?? '');
+  const roots = new Set(drafts.map((d) => (selectorOf(d).startsWith('@') ? parseId(selectorOf(d)).ns : '@thai-kit')));
+  if (roots.size > 1) return fail(`one edit-assets run edits one pack; got ${[...roots].join(', ')}`);
+  const storeOptions = [...roots][0] === '@thai-kit' ? {} : storeOptionsFor(drafts.map(selectorOf).find((x) => x.startsWith('@')));
+  for (const d of drafts) for (const k of ['id', '_id', 'select']) if (typeof d[k] === 'string' && d[k].startsWith('@')) d[k] = parseId(d[k]).name;
+
   if (args['dry-run']) {
-    const result = await applyAll(await readRegistry(), drafts, options);
+    const result = await applyAll(await readRegistry(storeOptions), drafts, options);
     report(result);
     return ok({ dryRun: true, ...result });
   }
@@ -327,7 +336,7 @@ async function main() {
   await updateRegistry(async (registry) => {
     result = await applyAll(registry, drafts, options);
     return registry;
-  });
+  }, storeOptions);
 
   report(result);
   log(`updated ${result.updated.length} asset(s), skipped ${result.skipped.length}`);

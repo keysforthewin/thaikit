@@ -18,7 +18,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { REPO_ROOT, PACKS_DIR, MODELS_DIR, modelDir, toRepoRelative } from '@thaikit/registry-core';
+import { REPO_ROOT, PACKS_DIR, MODELS_DIR, modelDir, toRepoRelative, qualifiedId } from '@thaikit/registry-core';
 
 import { readSidecars, slimColliders } from '../../../../scripts/lib/packs/sidecar.mjs';
 import { readOverride } from './overrides.js';
@@ -42,6 +42,7 @@ export function mediaUrl(repoPath) {
   const p = String(repoPath).replace(/^\.?\//, '');
   if (p.startsWith('scratch/')) return `/scratch/${p.slice('scratch/'.length)}`;
   if (p.startsWith('packs/')) return `/${p}`;
+  if (p.startsWith('adopted/')) return `/${p}`;
   if (p.startsWith(`${MODELS_REL}/`)) return `/media/${p.slice(MODELS_REL.length + 1)}`;
   return `/media/${p.replace(/^assets\//, '')}`;
 }
@@ -149,6 +150,9 @@ async function mergeItem(p, it) {
     review,
     status: record?.status ?? it.status ?? null,
     editable,
+    // The id the asset routes and every script take: bare for thaikit's own
+    // props, `@ns/name` for an adopted pack's. Null when the item is not editable.
+    assetId: editable ? qualifiedId(p.id, it.name) : null,
     sourceDir,
     tree: p.tree ?? null,
     // The full record only where it can be edited; foreign items keep the
@@ -178,6 +182,10 @@ export async function installedItems() {
       unsupported: (p.items ?? []).filter((i) => i.role !== 'support' && !i.supported).length,
       warnings: p.warnings ?? [],
       license: p.license ?? null,
+      // An adopted third-party pack: its source is a tracked tree of its own
+      // (docs/adopting-packs.md), removable, and upgradable from `upstream`.
+      adopted: p.adopted ?? null,
+      upstream: p.upstream ?? null,
     });
     for (const it of p.items ?? []) {
       if (it.role === 'support') continue;

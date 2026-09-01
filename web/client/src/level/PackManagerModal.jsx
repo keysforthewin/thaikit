@@ -35,6 +35,7 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
   const catalogueItems = itemsProp ?? storeItems;
   const doc = useLevel((s) => s.doc);
   const [source, setSource] = useState('');
+  const [adopt, setAdopt] = useState(true);
   const [log, setLog] = useState([]);
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
@@ -69,9 +70,14 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
         Any <a href="https://github.com/vibe-stack/vibe3d" target="_blank" rel="noreferrer">vibe3d</a>-compatible pack: an npm package name
         (<span className="mono">@scifi-kit/registry</span>), <span className="mono">npm:name@range</span>, an <span className="mono">https://</span> registry.json, or <span className="mono">file:</span> path.
         The server downloads it, bundles every model, builds it once to measure it, and derives a collider compound.
+        With <em>adopt</em> on, its source becomes a tree of its own under <span className="mono">adopted/</span> so the
+        skills can edit every item like one of thaikit's; off, it stays a read-only download with local overrides.
       </p>
-      <form className="row-inline" onSubmit={(e) => { e.preventDefault(); if (source.trim()) start(() => packsApi.add(source.trim())); }}>
+      <form className="row-inline" onSubmit={(e) => { e.preventDefault(); if (source.trim()) start(() => packsApi.add(source.trim(), { adopt })); }}>
         <input placeholder="@scifi-kit/registry" value={source} onChange={(e) => setSource(e.target.value)} style={{ flex: 1 }} disabled={Boolean(busy)} />
+        <label className="muted" style={{ whiteSpace: 'nowrap' }} title="copy the pack's source into adopted/<ns>/ and build from there, so its props are editable in place">
+          <input type="checkbox" checked={adopt} onChange={(e) => setAdopt(e.target.checked)} disabled={Boolean(busy)} /> adopt
+        </label>
         <button className="primary" type="submit" disabled={!source.trim() || Boolean(busy)}>add pack</button>
       </form>
       {error && <div className="banner">{error}</div>}
@@ -92,15 +98,23 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
                 ) : null}
               </td>
               <td style={{ whiteSpace: 'nowrap' }}>
-                {p.editable && <span className="muted" title={`installed from the source tree ${p.tree}; edit its props in the object editor`}>source tree · </span>}
+                {p.adopted
+                  ? <span className="muted" title={`adopted into ${p.adopted}; its props are editable in the object editor and with the skills`}>adopted · </span>
+                  : p.editable && <span className="muted" title={`installed from the source tree ${p.tree}; edit its props in the object editor`}>source tree · </span>}
                 {(
                   <>
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.refresh(p.id))} title={p.editable ? 'rebuild every item from the source tree' : 're-resolve the source, download the latest version and rebuild'}>refresh</button>{' '}
+                    {p.adopted && p.upstream && (
+                      <>
+                        <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.upgrade(p.id))} title={`re-download ${p.upstream} over the adopted tree; refuses if adopted files were edited`}>upgrade</button>{' '}
+                      </>
+                    )}
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.previews(p.id))} title="re-render every item's thumbnail from the bundles already on disk — nothing is downloaded">previews</button>{' '}
-                    {/* A source-tree pack is this repo's own kit; removing it would only delete
-                        its build products and orphan every level that uses it. */}
-                    {!p.editable && (
-                      <button className="danger" disabled={Boolean(busy)} onClick={() => { if (window.confirm(`Remove ${p.id}?${usedRefs.has(p.id) ? ' The open level uses it; its objects will become orphans.' : ''}`)) start(() => packsApi.remove(p.id)); }}>remove</button>
+                    {/* thaikit's own kit is not removable: that would only delete its build
+                        products and orphan every level that uses it. An adopted pack is --
+                        removing it deletes its tree under adopted/ as well. */}
+                    {(!p.editable || p.adopted) && (
+                      <button className="danger" disabled={Boolean(busy)} onClick={() => { if (window.confirm(`Remove ${p.id}?${p.adopted ? ` This deletes its source tree ${p.adopted} and every edit made there.` : ''}${usedRefs.has(p.id) ? ' The open level uses it; its objects will become orphans.' : ''}`)) start(() => packsApi.remove(p.id)); }}>remove</button>
                     )}
                   </>
                 )}

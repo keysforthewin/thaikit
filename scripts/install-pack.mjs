@@ -25,8 +25,18 @@
  *   node scripts/install-pack.mjs --source https://example.com/registry.json
  *   node scripts/install-pack.mjs --source tree:packages/props --refresh
  *   node scripts/install-pack.mjs --refresh-item @thai-kit/oil-drum [--add]
- *   node scripts/install-pack.mjs --remove @scifi-kit
+ *   node scripts/install-pack.mjs --remove @scifi-kit [--keep-source]
  *   node scripts/install-pack.mjs --previews @scifi-kit [--force]
+ *   node scripts/install-pack.mjs --upgrade @scifi-kit [--force]
+ *   node scripts/install-pack.mjs --drop-item @scifi-kit/crate       # after a fork moved it away
+ *
+ * A downloaded pack is ADOPTED by default (docs/adopting-packs.md): its source
+ * is written to `adopted/<ns>/` -- a tracked tree laid out like thaikit's own,
+ * with a `thaikit.json` beside every item -- and the pack is built from THAT,
+ * so the skills can edit it and the watcher rebuilds it like any thaikit prop.
+ * `--no-adopt` keeps the old behaviour (bundles from the download, edits only
+ * through overrides/). `--upgrade` re-downloads upstream over the adopted tree,
+ * refusing if any adopted file has been edited unless `--force`.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -35,7 +45,7 @@ import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import os from 'node:os';
 
-import { PACKS_DIR, REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
+import { PACKS_DIR, REPO_ROOT, OWN_NAMESPACE, adoptedPackDir, namespaceOfRoot, rootFor, toRepoRelative, updateRegistry, updateAsset } from '@thaikit/registry-core';
 
 import { ok, fail, parseArgs } from './lib/out.mjs';
 import { readIndex, writeIndex } from './lib/packs/index.mjs';
@@ -58,15 +68,16 @@ const MAX_TRIANGLES = 200_000;
 let installDeps = null;
 async function loadInstallDeps() {
   if (!installDeps) {
-    const [source, fetchMod, materialiseMod, wrap, tree, sidecar] = await Promise.all([
+    const [source, fetchMod, materialiseMod, wrap, tree, sidecar, adopt] = await Promise.all([
       import('./lib/packs/source.mjs'),
       import('./lib/packs/fetch.mjs'),
       import('./lib/packs/materialise.mjs'),
       import('./lib/packs/wrap.mjs'),
       import('./lib/packs/tree.mjs'),
       import('./lib/packs/sidecar.mjs'),
+      import('./lib/packs/adopt.mjs'),
     ]);
-    installDeps = { ...source, ...fetchMod, ...materialiseMod, ...wrap, ...tree, ...sidecar };
+    installDeps = { ...source, ...fetchMod, ...materialiseMod, ...wrap, ...tree, ...sidecar, ...adopt };
   }
   return installDeps;
 }
@@ -313,6 +324,73 @@ async function finishRecord(record, probe, it, { srcDir }) {
   return record;
 }
 
+/** The adopted root (`adopted/<ns>`) behind a tree pack entry, or null for thaikit's own tree. */
+function adoptedRootOf(tree) {
+  if (!tree) return null;
+  const ns = namespaceOfRoot(path.resolve(REPO_ROOT, tree));
+  return ns && ns !== OWN_NAMESPACE ? { ns, root: adoptedPackDir(ns), modelsDir: rootFor(ns) } : null;
+}
+
+/**
+ * Give every adopted item that has none a `thaikit.json`, from what the probe
+ * measured, and re-read the sidecars so the index record reflects it. Done
+ * AFTER the probe because the record needs a size to classify a budget from.
+ */
+async function ensureAdoptedRecords(entry, built, ctx) {
+  const adopted = adoptedRootOf(entry.tree);
+  if (!adopted) return 0;
+  const { readManifest, recordForAdopted, targetToPath } = await loadInstallDeps();
+  const { classifyBySize } = await import('./lib/config.mjs');
+  const manifest = await readManifest(adopted.root);
+  if (!manifest) return 0;
+  const missing = built.filter(({ record }) => record.role === 'model' && !record.hasRecord);
+  if (!missing.length) return 0;
+  const drafts = [];
+  for (const { it, record, probe } of missing) {
+    const item = manifest.items.find((m) => m.name === it.name) ?? { name: it.name, title: record.title, description: record.description, meta: { category: record.category, tags: record.tags } };
+    const size = probe?.size ?? null;
+    const longest = size ? Math.max(size.w, size.h, size.d) : 1;
+    const entryRel = record.entry ? toRepoRelative(path.join(adopted.root, 'models', it.name, path.posix.relative(`{models}/${it.name}`, record.entry))) : null;
+    drafts.push(recordForAdopted({ ns: adopted.ns, manifest, item, probe, entryRel, budgetClass: await classifyBySize(longest) }));
+    void targetToPath;
+  }
+  await updateRegistry((registry) => {
+    const have = new Set(registry.assets.map((a) => a.id));
+    for (const d of drafts) if (!have.has(d.id)) registry.assets.push(d);
+    return registry;
+  }, { modelsDir: adopted.modelsDir });
+  for (const b of missing) await finishRecord(b.record, b.probe ?? { supported: false, error: b.record.error }, b.it, ctx);
+  progress('adopt', `wrote ${drafts.length} record(s) into ${toRepoRelative(adopted.modelsDir)}`);
+  return drafts.length;
+}
+
+/**
+ * Copy rendered thumbnails into the adopted tree as `thumb.webp` beside each
+ * item (tracked, so a fresh clone has pictures before Chrome ever runs) and
+ * point the record at them.
+ */
+async function storeAdoptedThumbs(entry) {
+  const adopted = adoptedRootOf(entry.tree);
+  if (!adopted) return 0;
+  let n = 0;
+  for (const item of entry.items) {
+    if (item.role !== 'model' || !item.preview) continue;
+    const from = path.join(PACKS_DIR, item.preview.replace(/^\/packs\//, ''));
+    const dir = path.join(adopted.modelsDir, item.name);
+    const to = path.join(dir, 'thumb.webp');
+    try {
+      await fs.access(dir);
+      const same = await fs.readFile(from).then(async (a) => a.equals(await fs.readFile(to))).catch(() => false);
+      if (same) continue;
+      await fs.copyFile(from, to);
+      const rel = toRepoRelative(to);
+      await updateAsset(item.name, (a) => ({ ...a, model: { ...a.model, thumb: rel } }), { modelsDir: adopted.modelsDir }).catch(() => {});
+      n += 1;
+    } catch { /* no directory: not adopted, or forked away */ }
+  }
+  return n;
+}
+
 /**
  * Rebuild ONE item of a tree-installed pack in place.
  *
@@ -363,6 +441,11 @@ async function refreshItem(ref, { add = false, previews = true } = {}) {
     }
   }
 
+  if (adoptedRootOf(pack.tree)) {
+    await ensureAdoptedRecords({ tree: pack.tree }, [{ it, record, probe: record.supported ? record : null }], ctx).catch((err) => warnings.push(`record: ${err.message}`));
+    await storeAdoptedThumbs({ tree: pack.tree, items: [record] }).catch((err) => warnings.push(`thumb: ${err.message}`));
+  }
+
   const next = await readIndex();
   const target = next.packs.find((p) => p.id === ns);
   if (!target) throw new Error(`${ns} disappeared from the index while refreshing ${name}`);
@@ -382,19 +465,52 @@ async function refreshItem(ref, { add = false, previews = true } = {}) {
   };
 }
 
-async function install({ source, refresh, packId, previews = true }) {
-  const { materialise } = await loadInstallDeps();
+async function install({ source, refresh, packId, previews = true, adopt = true, upgrade = false, force = false }) {
+  const { materialise, parseSource, adoptRegistry, readManifest, divergence } = await loadInstallDeps();
   const cacheDir = path.join(PACKS_DIR, '.cache');
-  const { registry, version, pkgDir, license, description, homepage, tree } = await loadRegistry(source, cacheDir);
-  validateRegistry(registry);
-  const ns = registry.namespace;
+  let loaded = await loadRegistry(source, cacheDir);
+  validateRegistry(loaded.registry);
+  const ns = loaded.registry.namespace;
   if (packId && packId !== ns) throw new Error(`source resolves to ${ns}, not the ${packId} being refreshed`);
 
   const index = await readIndex();
   const previous = index.packs.find((p) => p.id === ns) ?? null;
-  if (previous && !refresh) {
+  if (previous && !refresh && !upgrade) {
     throw new Error(`${ns} is already installed (v${previous.version}); use refresh to update it`);
   }
+
+  // Adoption: a downloaded pack becomes a tree of its own, and the build below
+  // runs from THAT tree, exactly as thaikit's own kit does.
+  let upstream = null;
+  if (source.kind !== 'tree' && ns !== OWN_NAMESPACE && adopt) {
+    const root = adoptedPackDir(ns);
+    const manifest = await readManifest(root);
+    if (manifest && !upgrade) {
+      progress('adopt', `${ns} is already adopted at ${toRepoRelative(root)}; building from that tree (--upgrade re-downloads over it)`);
+    } else {
+      if (upgrade) {
+        if (!manifest) throw new Error(`${ns} is not adopted; install it first`);
+        const edits = await divergence(root);
+        if (edits.length && !force) {
+          throw new Error(`${ns} has ${edits.length} adopted file(s) edited since adoption; --force to overwrite them:\n  ${edits.slice(0, 20).map((e) => `${e.item}: ${e.target}${e.current === null ? ' (deleted)' : ''}`).join('\n  ')}${edits.length > 20 ? `\n  … ${edits.length - 20} more` : ''}`);
+        }
+        if (edits.length) progress('adopt', `overwriting ${edits.length} edited file(s) with upstream ${loaded.version}`);
+      }
+      progress('adopt', `${upgrade ? 'upgrading' : 'adopting'} ${ns}@${loaded.version} into ${toRepoRelative(root)}`);
+      const warnings = [];
+      const done = await adoptRegistry(
+        { registry: loaded.registry, ns, version: loaded.version, source: source.spec, license: loaded.license, homepage: loaded.homepage, description: loaded.description, pkgDir: loaded.pkgDir },
+        { mode: upgrade ? 'replace' : 'create', warn: (w) => warnings.push(w) },
+      );
+      progress('adopt', `${done.files} file(s) and ${done.artifacts} artifact(s) written${done.removed ? `, ${done.removed} stale file(s) removed` : ''}`);
+      for (const w of warnings) progress('adopt', w);
+    }
+    upstream = source.spec;
+    source = parseSource(`tree:${toRepoRelative(root)}`);
+    loaded = await loadRegistry(source, cacheDir);
+    validateRegistry(loaded.registry);
+  }
+  const { registry, version, pkgDir, license, description, homepage, tree, adopted } = loaded;
 
   const buildTag = `${version}-${Date.now().toString(36)}`;
   const packRoot = path.join(PACKS_DIR, ns, buildTag);
@@ -407,6 +523,7 @@ async function install({ source, refresh, packId, previews = true }) {
   const ctx = { ns, buildTag, packRoot, srcDir, pkgDir, hashes, warnings };
   const items = [];
   const toProbe = [];
+  const builtAll = [];
   const models = registry.items.filter((it) => it.type === 'vibe3d:model');
   let n = 0;
   for (const it of registry.items) {
@@ -419,6 +536,7 @@ async function install({ source, refresh, packId, previews = true }) {
     const { record, outFile } = await buildOne(it, ctx);
     if (outFile) toProbe.push({ it, record, outFile });
     else await finishRecord(record, { supported: false, error: record.error }, it, ctx);
+    builtAll.push({ it, record });
     items.push(record);
   }
 
@@ -436,9 +554,21 @@ async function install({ source, refresh, packId, previews = true }) {
     }
   });
 
+  if (adopted) {
+    try {
+      await ensureAdoptedRecords({ tree }, builtAll.map((b) => ({ ...b, probe: b.record.supported ? b.record : { supported: false, error: b.record.error } })), ctx);
+    } catch (err) {
+      warnings.push(`records: ${err.message}`);
+      progress('adopt', `records: ${err.message}`);
+    }
+  }
+
   const entry = {
     id: ns, name: registry.name ?? ns, description: description || registry.description || '', homepage,
     source: source.spec, requested: source.kind === 'npm' ? source.range : null, version, buildTag,
+    // For an adopted pack: where it came from, so --upgrade can go back there.
+    upstream: adopted?.upstream?.source ?? upstream ?? previous?.upstream ?? null,
+    adopted: adopted ? adopted.root : null,
     installedAt: new Date().toISOString(), license: license ?? registry.license ?? null,
     three: registry.compatibility?.three ?? null, capabilities: registry.compatibility?.capabilities ?? [],
     schemaVersion: registry.schemaVersion ?? null,
@@ -459,6 +589,10 @@ async function install({ source, refresh, packId, previews = true }) {
       progress('preview', `skipped — ${err.message}`);
     }
   }
+  if (adopted) {
+    const stored = await storeAdoptedThumbs(entry).catch((err) => { warnings.push(`thumbs: ${err.message}`); return 0; });
+    if (stored) progress('adopt', `${stored} thumbnail(s) stored beside their source`);
+  }
 
   const next = await readIndex();
   next.packs = next.packs.filter((p) => p.id !== ns).concat(entry);
@@ -473,7 +607,7 @@ async function install({ source, refresh, packId, previews = true }) {
   const before = new Set((previous?.items ?? []).filter((i) => i.role === 'model').map((i) => i.name));
   const after = new Set(modelItems.map((i) => i.name));
   return {
-    pack: ns, version, previousVersion: previous?.version ?? null,
+    pack: ns, version, previousVersion: previous?.version ?? null, adopted: entry.adopted, upstream: entry.upstream,
     models: modelItems.length, supported: modelItems.filter((i) => i.supported).length,
     previews: modelItems.filter((i) => i.preview).length,
     unsupported: modelItems.filter((i) => !i.supported).map((i) => ({ name: i.name, error: i.error })),
@@ -502,19 +636,62 @@ async function previewsOnly(packId, { force }) {
   return { pack: packId, version: entry.version, models: models.length, previews: models.filter((i) => i.preview).length };
 }
 
-async function remove(packId) {
+/** Forget one item of an installed pack (its source has moved away) and delete its bundle. */
+async function dropItem(ref) {
+  const m = /^(@[a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/.exec(ref);
+  if (!m) throw new Error(`not an item ref: ${ref}`);
+  const [, ns, name] = m;
+  const index = await readIndex();
+  const pack = index.packs.find((p) => p.id === ns);
+  if (!pack) throw new Error(`no installed pack "${ns}"`);
+  const before = pack.items.length;
+  pack.items = pack.items.filter((i) => !(i.name === name && i.role === 'model'));
+  for (const it of pack.items) if (Array.isArray(it.registryDependencies)) it.registryDependencies = it.registryDependencies.filter((d) => d !== ref);
+  await writeIndex(index);
+  await fs.rm(path.join(PACKS_DIR, ns, pack.buildTag, name), { recursive: true, force: true });
+  return { pack: ns, dropped: name, wasInstalled: pack.items.length < before };
+}
+
+async function remove(packId, { keepSource = false } = {}) {
   const index = await readIndex();
   const pack = index.packs.find((p) => p.id === packId);
   if (!pack) throw new Error(`no installed pack "${packId}"`);
+  if (packId === OWN_NAMESPACE && !keepSource) throw new Error(`${packId} is thaikit's own kit; its source is not removable (pass --keep-source to drop only the build)`);
   index.packs = index.packs.filter((p) => p.id !== packId);
   await writeIndex(index);
   await fs.rm(path.join(PACKS_DIR, packId), { recursive: true, force: true });
-  return { removed: packId, version: pack.version };
+  // The adopted tree goes with it unless asked otherwise: a removed pack that
+  // leaves a tracked source tree behind is a pack that is still half here.
+  let source = null;
+  if (!keepSource && packId !== OWN_NAMESPACE) {
+    try {
+      const root = adoptedPackDir(packId);
+      await fs.access(root);
+      await fs.rm(root, { recursive: true, force: true });
+      source = toRepoRelative(root);
+    } catch { /* not adopted */ }
+  }
+  return { removed: packId, version: pack.version, sourceRemoved: source };
+}
+
+/** Re-download an adopted pack's upstream and re-adopt it over the tree. */
+async function upgrade(packId, { force = false, previews = true }) {
+  const { parseSource, readManifest } = await loadInstallDeps();
+  const index = await readIndex();
+  const pack = index.packs.find((p) => p.id === packId);
+  const manifest = await readManifest(adoptedPackDir(packId));
+  const spec = manifest?.upstream?.source ?? pack?.upstream ?? null;
+  if (!spec) throw new Error(`${packId} has no recorded upstream to upgrade from`);
+  const source = parseSource(spec);
+  if (source.kind === 'tree') throw new Error(`${packId}'s upstream is a tree; nothing to download`);
+  return install({ source, refresh: true, packId, previews, adopt: true, upgrade: true, force });
 }
 
 async function main() {
   const args = parseArgs();
-  if (args.remove) return ok(await remove(String(args.remove)));
+  if (args.remove) return ok(await remove(String(args.remove), { keepSource: Boolean(args['keep-source']) }));
+  if (args['drop-item']) return ok(await dropItem(String(args['drop-item'])));
+  if (args.upgrade) return ok(await upgrade(String(args.upgrade), { force: Boolean(args.force), previews: args['no-previews'] !== true }));
   // Previews need puppeteer and sharp, not the download stack, so this mode
   // works on a pack whose source is long gone.
   if (args.previews) return ok(await previewsOnly(String(args.previews), { force: Boolean(args.force) }));
@@ -524,7 +701,7 @@ async function main() {
   const source = parseSource(String(args.source));
   return ok(await install({
     source, refresh: Boolean(args.refresh), packId: args.pack ? String(args.pack) : null,
-    previews: args['no-previews'] !== true,
+    previews: args['no-previews'] !== true, adopt: args['no-adopt'] !== true, force: Boolean(args.force),
   }));
 }
 

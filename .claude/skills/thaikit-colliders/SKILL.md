@@ -189,3 +189,21 @@ true of a hundred props that could not be stood on.
 - Treat a sealed building front as a bug.
 
 Look at the result: `http://localhost:3733`
+
+## Adopted packs and qualified ids
+
+A third-party vibe3d pack installed with adoption (the default; see
+`docs/adopting-packs.md`) lives at `adopted/<ns>/models/<name>/` with a
+`thaikit.json` beside its source, and this skill works on it unchanged: pass
+the QUALIFIED id, `--id @medieval-kit/bronze-bell`. Everywhere this document
+says `packages/props/src/models/<id>/` read `adopted/<ns>/models/<name>/`,
+everywhere it says `scratch/<id>` read `scratch/@<ns>/<name>`, and the pack
+refresh is `--refresh-item @<ns>/<name>`. A bare id is always `@thai-kit`.
+
+An untouched adopted item keeps its upstream address so `--upgrade` can
+replace it. Before the first rebuild or new preview of an adopted item, ASK
+whether to fork it first (`node scripts/fork-item.mjs @<ns>/<name>` -> it
+becomes `@thai-kit/<name>` with `forkedFrom` recorded, and every level
+placement is re-pointed); rebuilding it in place is allowed, but it then
+diverges from upstream under upstream's name and `--upgrade` will refuse
+until `--force`.

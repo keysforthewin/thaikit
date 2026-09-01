@@ -256,3 +256,61 @@ test('migrateRegistry hands over raw records and rewrites every one it is given'
   assert.equal(after.assets[0].notes, 'migrated');
   assert.equal((await readRecord(modelsDir, 'old')).schemaVersion, 6);
 });
+
+test('ids parse bare or qualified and resolve to their own root', async () => {
+  const { parseId, qualifiedId, modelDir, workDir, rootFor, MODELS_DIR, ADOPTED_DIR, namespaceOfRoot, storeOptionsFor } = await import('../src/index.js');
+  assert.deepEqual(parseId('oil-drum'), { ns: '@thai-kit', name: 'oil-drum', own: true, ref: '@thai-kit/oil-drum' });
+  assert.deepEqual(parseId('@scifi-kit/crate'), { ns: '@scifi-kit', name: 'crate', own: false, ref: '@scifi-kit/crate' });
+  assert.equal(qualifiedId('@thai-kit', 'oil-drum'), 'oil-drum');
+  assert.equal(qualifiedId('@scifi-kit', 'crate'), '@scifi-kit/crate');
+  assert.equal(modelDir('oil-drum'), path.join(MODELS_DIR, 'oil-drum'));
+  assert.equal(modelDir('@scifi-kit/crate'), path.join(ADOPTED_DIR, '@scifi-kit', 'models', 'crate'));
+  assert.equal(rootFor('@scifi-kit'), path.join(ADOPTED_DIR, '@scifi-kit', 'models'));
+  assert.equal(namespaceOfRoot(rootFor('@scifi-kit')), '@scifi-kit');
+  assert.equal(namespaceOfRoot(MODELS_DIR), '@thai-kit');
+  assert.equal(storeOptionsFor('@scifi-kit/crate').modelsDir, rootFor('@scifi-kit'));
+  assert.ok(workDir('@scifi-kit/crate').endsWith(path.join('@scifi-kit', 'crate')));
+  for (const bad of ['../x', '@scifi-kit', '@scifi-kit/../x', 'Oil Drum', '@Scifi/crate', 'a/b']) {
+    assert.throws(() => parseId(bad), new RegExp('not a'), bad);
+  }
+});
+
+test('updateAsset and readAsset on a qualified id act on the adopted root', async () => {
+  // paths.js reads THAIKIT_ADOPTED_DIR at import time and every module shares
+  // the one instance, so the check runs in a child pointed at a temp dir --
+  // never at the repo's real adopted/ tree.
+  const adopted = await fs.mkdtemp(path.join(os.tmpdir(), 'thaikit-adopted-'));
+  const script = `
+    import assert from 'node:assert/strict';
+    const mod = await import(${JSON.stringify(new URL('../src/index.js', import.meta.url).href)});
+    const fixture = ${JSON.stringify(assetFixture('crate'))};
+    const root = mod.rootFor('@scifi-kit');
+    assert.ok(root.startsWith(${JSON.stringify(adopted)}), root);
+    await mod.updateRegistry((r) => ({ ...r, assets: [fixture] }), { modelsDir: root });
+    const { asset } = await mod.updateAsset('@scifi-kit/crate', (a) => ({ ...a, notes: 'adopted' }));
+    assert.equal(asset.notes, 'adopted');
+    const read = await mod.readAsset('@scifi-kit/crate');
+    assert.equal(read.pack, '@scifi-kit');
+    assert.equal(read.notes, 'adopted');
+    assert.equal(await mod.readAsset('@scifi-kit/nothing'), null);
+    const roots = await mod.listRoots();
+    assert.deepEqual(roots.map((r) => r.ns), ['@thai-kit', '@scifi-kit']);
+    const all = await mod.readAllAssets();
+    assert.ok(all.some((a) => a.id === 'crate' && a.pack === '@scifi-kit'));
+  `;
+  try {
+    const { code, stderr } = await new Promise((resolve) => {
+      const child = fork('--input-type=module', ['-e', script], {
+        execArgv: [],
+        env: { ...process.env, THAIKIT_ADOPTED_DIR: adopted },
+        stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
+      });
+      let stderr = '';
+      child.stderr.on('data', (d) => (stderr += d));
+      child.on('exit', (code) => resolve({ code, stderr }));
+    });
+    assert.equal(code, 0, stderr);
+  } finally {
+    await fs.rm(adopted, { recursive: true, force: true });
+  }
+});

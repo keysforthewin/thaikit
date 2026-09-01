@@ -211,6 +211,13 @@ async function readIfPresent(absolute) {
 async function buildItem(asset, previewTarget) {
   const sourceRelative = asset.model.source;
   if (!sourceRelative) throw new Error(`${asset.id}: model.source is not recorded`);
+  // A prop forked from an adopted pack and not yet rebuilt through promote
+  // has upstream's `model.ts` (plus whatever it vendored) and no
+  // createObjectModel.ts; it ships as it is, every text file under its
+  // directory, with `model.ts` as the entry.
+  if (asset.forkedFrom && !(await readIfPresent(path.join(modelDir(asset.id), 'createObjectModel.ts')))) {
+    return buildForeignShapedItem(asset, previewTarget);
+  }
 
   const sourceAbsolute = path.join(REPO_ROOT, sourceRelative);
   const source = await fs.readFile(sourceAbsolute, 'utf8');
@@ -331,6 +338,84 @@ async function buildItem(asset, previewTarget) {
       controls: CONTROLS,
       materialSlots,
       parts,
+      sockets: asset.model.runtime?.sockets ?? [],
+    },
+  };
+}
+
+const FOREIGN_TEXT = /\.(ts|tsx|js|mjs|cjs|json|md|txt|glsl|frag|vert|wgsl|csv)$/i;
+const THAIKIT_OWN_FILES = new Set(['thaikit.json', 'colliders.json', 'thumb.webp', 'preview.jpg', 'imposter.png', 'object-sculpt-spec.json']);
+
+async function walkFiles(dir, rel = '') {
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
+  const out = [];
+  for (const e of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
+    if (e.name.startsWith('.')) continue;
+    const r = rel ? `${rel}/${e.name}` : e.name;
+    if (e.isDirectory()) out.push(...(await walkFiles(path.join(dir, e.name), r)));
+    else out.push(r);
+  }
+  return out;
+}
+
+/** See buildItem: a forked, not-yet-rebuilt prop, shipped verbatim with model.ts as its entry. */
+async function buildForeignShapedItem(asset, previewTarget) {
+  const dir = modelDir(asset.id);
+  const relDir = posix(path.relative(REPO_ROOT, dir));
+  if (!(await readIfPresent(path.join(dir, 'model.ts')))) throw new Error(`${asset.id}: forked item has no model.ts`);
+  const files = [];
+  const artifacts = [];
+  // model.ts first: thaikit's installer takes files[0].hash as the item hash.
+  const all = (await walkFiles(dir)).sort((a, b) => (a === 'model.ts' ? -1 : b === 'model.ts' ? 1 : a.localeCompare(b)));
+  for (const rel of all) {
+    const name = path.posix.basename(rel);
+    if (THAIKIT_OWN_FILES.has(name)) continue;
+    const bytes = await fs.readFile(path.join(dir, rel));
+    const mediaType = MEDIA_TYPES[path.extname(name).toLowerCase()];
+    if (mediaType) {
+      artifacts.push({ path: `${relDir}/${rel}`, target: `{models}/${asset.id}/${rel}`, mediaType, encoding: 'base64', content: bytes.toString('base64'), hash: sha256(bytes), byteLength: bytes.byteLength });
+    } else if (FOREIGN_TEXT.test(name)) {
+      const text = bytes.toString('utf8');
+      files.push({ path: `${relDir}/${rel}`, target: `{models}/${asset.id}/${rel}`, content: text, hash: sha256(text) });
+    }
+  }
+  for (const name of ['thaikit.json', 'colliders.json']) {
+    const bytes = await readIfPresent(path.join(dir, name));
+    if (!bytes) {
+      if (name === 'thaikit.json') throw new Error(`${asset.id}: no thaikit.json in ${relDir}`);
+      log(`  ! ${asset.id}: no colliders.json; the pack ships without a compound for it`);
+      continue;
+    }
+    const text = bytes.toString('utf8');
+    files.push({ path: `${relDir}/${name}`, target: `{models}/${asset.id}/${name}`, content: text, hash: sha256(text) });
+  }
+  const body = asset.description?.trim() || asset.notes?.trim() || `${asset.name}: forked from ${asset.forkedFrom.ref}.`;
+  const notice = asset.license?.notice?.trim();
+  const description = notice && notice !== DEFAULT_LICENSE_NOTICE ? `${notice} ${body}` : body;
+  return {
+    name: asset.id,
+    type: 'vibe3d:model',
+    title: asset.name,
+    description,
+    dependencies: [`three@${DEFAULT_THREE}`],
+    registryDependencies: [],
+    files,
+    artifacts,
+    meta: {
+      title: asset.name,
+      description,
+      category: titleCase(asset.category),
+      tags: asset.tags ?? [],
+      ...(previewTarget ? { preview: previewTarget } : {}),
+      controls: {},
+      materialSlots: [],
+      parts: [],
       sockets: asset.model.runtime?.sockets ?? [],
     },
   };

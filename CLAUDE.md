@@ -32,6 +32,21 @@ that still says "mesh" means the model.
   a metadata edit never invalidates the level editor's prototype cache. Foreign
   pack items take LOCAL OVERRIDES (physics, placement, hand-tuned colliders,
   budgets) from the tracked `overrides/<ns>/<name>.json`.
+- **A third-party pack is ADOPTED into a tree of its own, and a prop id may be
+  qualified.** `install-pack.mjs` writes a downloaded pack's source to
+  `adopted/<ns>/` (tracked; `pack.json` + `models/<name>/` + `vibe3d/`), gives
+  every item a `thaikit.json`, and builds from THAT tree -- so
+  `adopted/<ns>/models` is a second registry-core root and every skill works on
+  `@ns/name` exactly as on a bare id (`parseId`, `storeOptionsFor`,
+  `modelDir('@medieval-kit/bronze-bell')`, `scratch/@medieval-kit/bronze-bell`).
+  The ref stays `@ns/name` because the item DIRECTORY is still the bare name;
+  nesting under `packages/props/src/models/` was rejected because
+  `readRegistry` walks one level and `ItemRef` is exactly two segments.
+  `--upgrade` refuses over edited files, `--remove` deletes the tree,
+  `fork-item.mjs` moves an item into `@thai-kit` with `forkedFrom` and VENDORS
+  the shared pack source it imports (a pack item imports `../core/index.ts`;
+  resolve those against the ORIGINAL directory, the copy has no `../core`).
+  No licence gate, by decision. docs/adopting-packs.md.
 - **`three` is external, always.** The bundle is CommonJS with a bare
   `require("three")`, and the host page injects its OWN three instance. A second
   copy of three means the factory's `Mesh` is not the renderer's `Mesh` and

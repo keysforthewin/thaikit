@@ -109,7 +109,9 @@ async function verifyPack(absolute) {
       if (actual !== file.hash) problems.push(`${item.name}: ${file.target} hash does not match its content`);
     }
     const targets = new Set((item.files ?? []).map((f) => f.target));
-    for (const required of ['createObjectModel.ts', 'model.ts', 'thaikit.json']) {
+    // createObjectModel.ts is thaikit's own shape; a prop forked from an adopted
+    // pack and not yet rebuilt ships upstream's model.ts alone (see buildForeignShapedItem).
+    for (const required of ['model.ts', 'thaikit.json']) {
       if (!targets.has(`{models}/${item.name}/${required}`)) problems.push(`${item.name}: missing file ${required}`);
     }
     if (!targets.has(`{models}/${item.name}/colliders.json`)) log(`  ! ${item.name}: ships without colliders.json`);

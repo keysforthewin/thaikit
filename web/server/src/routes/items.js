@@ -82,7 +82,7 @@ export function itemsRouter(state) {
     try {
       const item = await findItem(req);
       if (!item) return res.status(404).json({ error: `no such item: ${refOf(req)}` });
-      if (item.editable) return res.status(400).json({ error: 'this item is editable in place; there is no override', hint: `PATCH /api/assets/${item.name}` });
+      if (item.editable) return res.status(400).json({ error: 'this item is editable in place; there is no override', hint: `PATCH /api/assets/${encodeURIComponent(item.assetId)}` });
       const current = await readOverride(req.params.ns, req.params.name);
       if (!current) return res.status(404).json({ error: 'no override for this item' });
       res.set('ETag', current.etag).json(current.doc);
@@ -95,7 +95,7 @@ export function itemsRouter(state) {
     try {
       const item = await findItem(req);
       if (!item) return res.status(404).json({ error: `no such item: ${refOf(req)}` });
-      if (item.editable) return res.status(400).json({ error: 'this item is editable in place; edit the tree entry instead', hint: `PATCH /api/assets/${item.name}` });
+      if (item.editable) return res.status(400).json({ error: 'this item is editable in place; edit the tree entry instead', hint: `PATCH /api/assets/${encodeURIComponent(item.assetId)}` });
       const current = await readOverride(req.params.ns, req.params.name);
       const ifMatch = req.get('If-Match');
       if (ifMatch && current && ifMatch !== current.etag) {
@@ -128,7 +128,7 @@ export function itemsRouter(state) {
     try {
       const item = await findItem(req);
       if (!item) return res.status(404).json({ error: `no such item: ${refOf(req)}` });
-      const target = item.editable ? { kind: 'tree', id: item.name } : { kind: 'override', ns: req.params.ns, name: req.params.name };
+      const target = item.editable ? { kind: 'tree', id: item.assetId } : { kind: 'override', ns: req.params.ns, name: req.params.name };
       return getColliders(target)(req, res, next);
     } catch (err) {
       next(err);
@@ -139,8 +139,30 @@ export function itemsRouter(state) {
     try {
       const item = await findItem(req);
       if (!item) return res.status(404).json({ error: `no such item: ${refOf(req)}` });
-      const target = item.editable ? { kind: 'tree', id: item.name } : { kind: 'override', ns: req.params.ns, name: req.params.name };
+      const target = item.editable ? { kind: 'tree', id: item.assetId } : { kind: 'override', ns: req.params.ns, name: req.params.name };
       return putColliders(target)(req, res, next);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  /**
+   * Fork an adopted item into another namespace (default @thai-kit): moves its
+   * source and record, rewrites level refs, then queues the two pack jobs that
+   * bring packs/index.json into line. See docs/adopting-packs.md.
+   */
+  router.post('/items/:ns/:name/fork', guard, express.json(), async (req, res, next) => {
+    try {
+      const item = await findItem(req);
+      if (!item) return res.status(404).json({ error: `no such item: ${refOf(req)}` });
+      if (!item.editable || !item.assetId?.startsWith('@')) return res.status(400).json({ error: 'only an adopted pack\'s item can be forked' });
+      const to = typeof req.body?.to === 'string' && req.body.to ? req.body.to : '@thai-kit';
+      const { forkItem } = await import('../../../../scripts/lib/packs/fork.mjs');
+      const result = await forkItem(item.assetId, { to });
+      const drop = runPackJob(state, { dropItem: result.from });
+      const refresh = runPackJob(state, { refreshItem: result.to, add: true });
+      afterTreeEdit(state, { ref: result.to, kind: 'meta' }).catch(() => {});
+      res.status(202).json({ ...result, jobs: [drop.id, refresh.id] });
     } catch (err) {
       next(err);
     }

@@ -35,14 +35,14 @@ export function jobStatus(id) {
  * queued back to back are one job: the watcher fires per file, and a save that
  * touches the factory and its maps must not rebuild the prop twice.
  */
-export function runPackJob(state, { source, refresh = false, remove = false, previews = false, pack = null, refreshItem = null, add = false }) {
+export function runPackJob(state, { source, refresh = false, remove = false, previews = false, pack = null, refreshItem = null, add = false, upgrade = false, force = false, keepSource = false, adopt = true, dropItem = null }) {
   if (refreshItem) {
     for (const queued of jobs.values()) {
       if (queued.status === 'queued' && queued.refreshItem === refreshItem) return queued;
     }
   }
   const id = crypto.randomUUID().slice(0, 8);
-  const job = { id, source, pack, refresh, remove, previews, refreshItem, add, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
+  const job = { id, source, pack, refresh, remove, previews, refreshItem, add, upgrade, dropItem, status: 'queued', log: [], result: null, startedAt: null, endedAt: null };
   jobs.set(id, job);
 
   queue = queue.then(
@@ -50,18 +50,25 @@ export function runPackJob(state, { source, refresh = false, remove = false, pre
       new Promise((resolve) => {
         job.status = 'running';
         job.startedAt = new Date().toISOString();
-        broadcast(state, 'pack', { jobId: id, phase: 'start', item: refreshItem ?? undefined, message: refreshItem ? `rebuilding ${refreshItem}` : remove ? `removing ${pack}` : previews ? `rendering previews for ${pack}` : `installing ${source}` });
+        broadcast(state, 'pack', { jobId: id, phase: 'start', item: refreshItem ?? undefined, message: dropItem ? `dropping ${dropItem}` : refreshItem ? `rebuilding ${refreshItem}` : remove ? `removing ${pack}` : previews ? `rendering previews for ${pack}` : upgrade ? `upgrading ${pack} from upstream` : `installing ${source}` });
 
         const args = [SCRIPT];
-        if (refreshItem) {
+        if (dropItem) args.push('--drop-item', dropItem);
+        else if (refreshItem) {
           args.push('--refresh-item', refreshItem);
           if (add) args.push('--add');
-        } else if (remove) args.push('--remove', pack);
-        else if (previews) args.push('--previews', pack, '--force');
-        else {
+        } else if (remove) {
+          args.push('--remove', pack);
+          if (keepSource) args.push('--keep-source');
+        } else if (previews) args.push('--previews', pack, '--force');
+        else if (upgrade) {
+          args.push('--upgrade', pack);
+          if (force) args.push('--force');
+        } else {
           args.push('--source', source);
           if (refresh) args.push('--refresh');
           if (pack) args.push('--pack', pack);
+          if (!adopt) args.push('--no-adopt');
         }
         const child = spawn(process.execPath, args, { env: process.env });
 

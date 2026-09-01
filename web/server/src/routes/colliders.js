@@ -23,7 +23,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { updateAsset, readRegistry, writeFileAtomic, collidersFile, toRepoRelative, etagForText } from '@thaikit/registry-core';
+import { updateAsset, readRegistry, writeFileAtomic, collidersFile, toRepoRelative, etagForText, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { Part, invalidateSidecars } from '../../../../scripts/lib/packs/sidecar.mjs';
 import { readOverride, writeOverride } from '../lib/overrides.js';
@@ -121,8 +121,8 @@ export function collidersHandlers(state) {
       const ifMatch = req.get('If-Match');
       if (target.kind === 'tree') {
         const { id } = target;
-        const registry = await readRegistry();
-        const asset = registry.assets.find((a) => a.id === id);
+        const registry = await readRegistry(storeOptionsFor(id));
+        const asset = registry.assets.find((a) => a.id === parseId(id).name);
         if (!asset) return res.status(404).json({ error: `no asset with id "${id}"` });
 
         const file = collidersFile(id);

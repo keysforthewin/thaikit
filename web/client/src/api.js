@@ -36,11 +36,11 @@ export const api = {
     );
     return request(`/api/items?${q}`, {}, 'items');
   },
-  get: (id) => request(`/api/assets/${id}`, {}, `asset:${id}`),
+  get: (id) => request(`/api/assets/${encodeURIComponent(id)}`, {}, `asset:${id}`),
   create: (body) => request('/api/assets', { method: 'POST', body: JSON.stringify(body) }),
   update: (id, patch) =>
     request(
-      `/api/assets/${id}`,
+      `/api/assets/${encodeURIComponent(id)}`,
       {
         method: 'PATCH',
         // If-Match turns a concurrent write to THIS asset from a silent clobber
@@ -51,7 +51,7 @@ export const api = {
       `asset:${id}`,
     ),
   remove: (id, purgeFiles = false) =>
-    request(`/api/assets/${id}?purgeFiles=${purgeFiles}`, { method: 'DELETE' }),
+    request(`/api/assets/${encodeURIComponent(id)}?purgeFiles=${purgeFiles}`, { method: 'DELETE' }),
   bulk: (assets, mode = 'merge') =>
     request('/api/assets/bulk', { method: 'POST', body: JSON.stringify({ mode, assets }) }),
 
@@ -98,6 +98,8 @@ export const itemsApi = {
       `colliders:${ref}`,
     ),
   refresh: (ref) => request(`/api/items/${refPath(ref)}/refresh`, { method: 'POST' }, null),
+  /** Move an adopted item into another namespace (default @thai-kit); see docs/adopting-packs.md. */
+  fork: (ref, { to = '@thai-kit' } = {}) => request(`/api/items/${refPath(ref)}/fork`, { method: 'POST', body: JSON.stringify({ to }) }, null),
 };
 
 /**
@@ -112,6 +114,7 @@ export function mediaUrl(repoPath) {
   const p = String(repoPath).replace(/^\.?\//, '');
   if (p.startsWith('scratch/')) return '/scratch/' + p.slice('scratch/'.length);
   if (p.startsWith('packs/')) return '/' + p;
+  if (p.startsWith('adopted/')) return '/' + p;
   return '/media/' + p.replace(/^packages\/props\/src\/models\//, '').replace(/^assets\//, '');
 }
 
@@ -172,10 +175,12 @@ export const packsApi = {
     const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== '' && v != null));
     return request(`/api/packs/items?${q}`, {}, null);
   },
-  add: (source) => request('/api/packs', { method: 'POST', body: JSON.stringify({ source }) }, null),
+  add: (source, { adopt = true } = {}) => request('/api/packs', { method: 'POST', body: JSON.stringify({ source, adopt }) }, null),
+  /** Re-download an adopted pack's upstream over its tree; `force` overwrites edited files. */
+  upgrade: (id, { force = false } = {}) => request(`/api/packs/${encodeURIComponent(id)}/upgrade${force ? '?force=1' : ''}`, { method: 'POST' }, null),
   refresh: (id) => request(`/api/packs/${encodeURIComponent(id)}/refresh`, { method: 'POST' }, null),
   previews: (id) => request(`/api/packs/${encodeURIComponent(id)}/previews`, { method: 'POST' }, null),
-  remove: (id) => request(`/api/packs/${encodeURIComponent(id)}`, { method: 'DELETE' }, null),
+  remove: (id, { keepSource = false } = {}) => request(`/api/packs/${encodeURIComponent(id)}${keepSource ? '?keepSource=1' : ''}`, { method: 'DELETE' }, null),
   job: (id) => request(`/api/packs/jobs/${id}`, {}, null),
 };
 

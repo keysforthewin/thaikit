@@ -28,7 +28,7 @@ import http from 'node:http';
 import path from 'node:path';
 
 import puppeteer from 'puppeteer-core';
-import { REPO_ROOT, workDir, toRepoRelative, readRegistry, updateAsset } from '@thaikit/registry-core';
+import { REPO_ROOT, workDir, toRepoRelative, readRegistry, updateAsset, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { resolveBundle } from './lib/bundle-for.mjs';
@@ -94,8 +94,8 @@ async function main() {
   // explicit --module for a known prop should still be judged against it.
   let asset = null;
   if (id) {
-    const registry = await readRegistry();
-    asset = registry.assets.find((a) => a.id === id) ?? null;
+    const registry = await readRegistry(storeOptionsFor(id));
+    asset = registry.assets.find((a) => a.id === parseId(id).name) ?? null;
     if (!asset) return fail(`no asset with id ${id}`);
   }
   if (!modulePath) {

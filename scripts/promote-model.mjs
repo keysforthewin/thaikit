@@ -39,12 +39,10 @@ import { execFileSync } from 'node:child_process';
 
 import sharp from 'sharp';
 import {
-  modelDir, workDir, toRepoRelative, readRegistry, updateAsset, REPO_ROOT,
-} from '@thaikit/registry-core';
+  modelDir, workDir, toRepoRelative, readRegistry, updateAsset, REPO_ROOT, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { entrySource } from './lib/vibe3d-entry.mjs';
-import { THAIKIT_PACK } from './lib/bundle-for.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict, colliderVerdict } from './lib/budget.mjs';
 import { readSkillReview } from './lib/review.mjs';
 
@@ -147,8 +145,11 @@ async function main() {
   const id = args.id;
   if (!id) return fail('need --id');
 
-  const registry = await readRegistry();
-  const asset = registry.assets.find((a) => a.id === id);
+  // `id` may be qualified (`@scifi-kit/crate`, an adopted pack's item); the
+  // record lives in that pack's own root and the pack refresh names its ref.
+  const { name: assetId, ref: itemRef } = parseId(id);
+  const registry = await readRegistry(storeOptionsFor(id));
+  const asset = registry.assets.find((a) => a.id === assetId);
   if (!asset) return fail(`no asset with id ${id}`);
 
   // Judged BEFORE anything is copied. A prop that fails here should leave the kit
@@ -360,18 +361,18 @@ async function main() {
   // first promotion has no item to replace. Its JSON line carries the bytes.
   let pack = null;
   if (args['no-pack-refresh']) {
-    log(`pack   : skipped on --no-pack-refresh; run node scripts/install-pack.mjs --refresh-item ${THAIKIT_PACK}/${id} --add`);
+    log(`pack   : skipped on --no-pack-refresh; run node scripts/install-pack.mjs --refresh-item ${itemRef} --add`);
   } else {
-    log(`pack   : refreshing ${THAIKIT_PACK}/${id}`);
+    log(`pack   : refreshing ${itemRef}`);
     let line;
     try {
       line = execFileSync(
         process.execPath,
-        ['scripts/install-pack.mjs', '--refresh-item', `${THAIKIT_PACK}/${id}`, '--add'],
+        ['scripts/install-pack.mjs', '--refresh-item', itemRef, '--add'],
         { cwd: REPO_ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
       );
     } catch (err) {
-      return fail(`pack refresh failed for ${THAIKIT_PACK}/${id}: ${err.stdout?.trim() || err.message}`);
+      return fail(`pack refresh failed for ${itemRef}: ${err.stdout?.trim() || err.message}`);
     }
     let result;
     try {

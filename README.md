@@ -214,6 +214,15 @@ is recorded in `license.generatedBy`.
 per 24 m cell and material, three LOD tiers per cell, every texture as KTX2, a Cycles lightmap
 (Blender, headless), and the colliders, lights and spawns in the scene extras.
 
+A pack you add is **adopted** by default: its source is written to
+`adopted/<ns>/` (tracked) with a `thaikit.json` beside every item, and the
+pack is built from that tree -- so the skills can regenerate its preview
+images, rebuild its models and derive its colliders (`--id @ns/name`), the
+level builder places the edited props, *upgrade* re-downloads upstream unless
+you have edited something, and *remove* deletes the lot. `fork-item.mjs`
+moves one item into `@thai-kit`. See `docs/adopting-packs.md`.
+
+
 ```
 npm run dev                                   # editor at /level
 npm run packs:install -- --source @scifi-kit/registry

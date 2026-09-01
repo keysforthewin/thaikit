@@ -9,7 +9,7 @@
  */
 import fs from 'node:fs/promises';
 
-import { workDir } from '@thaikit/registry-core';
+import { workDir, parseId } from '@thaikit/registry-core';
 
 import { packItemBundle } from './packs/index.mjs';
 
@@ -29,14 +29,16 @@ export async function resolveBundle(id, from = 'pack') {
     return file;
   }
   if (from !== 'pack') throw new Error(`unknown bundle source "${from}" (expected pack or scratch)`);
-  const file = await packItemBundle(THAIKIT_PACK, id);
+  // A qualified id (`@scifi-kit/crate`) names an adopted pack's item.
+  const { ns, name, ref } = parseId(id);
+  const file = await packItemBundle(ns, name);
   if (!file) {
     throw new Error(
-      `${id} is not installed in the ${THAIKIT_PACK} pack; run node scripts/install-pack.mjs --refresh-item ${THAIKIT_PACK}/${id} --add (or --from scratch)`,
+      `${ref} is not installed in the ${ns} pack; run node scripts/install-pack.mjs --refresh-item ${ref} --add (or --from scratch)`,
     );
   }
   await fs.access(file).catch(() => {
-    throw new Error(`${THAIKIT_PACK}/${id} is in packs/index.json but its bundle is missing at ${file}; refresh the item`);
+    throw new Error(`${ref} is in packs/index.json but its bundle is missing at ${file}; refresh the item`);
   });
   return file;
 }

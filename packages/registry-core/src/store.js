@@ -23,7 +23,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import lockfile from 'proper-lockfile';
 
-import { MODELS_DIR } from './paths.js';
+import { MODELS_DIR, ADOPTED_DIR, OWN_NAMESPACE, parseId, rootFor, namespaceOfRoot } from './paths.js';
 import { writeFileAtomic } from './atomic.js';
 import { serializeAsset, etagFor, etagForAsset } from './hash.js';
 import { RegistrySchema, AssetFileSchema, SCHEMA_VERSION, emptyRegistry } from './schema.js';
@@ -264,6 +264,11 @@ export async function migrateRegistry(mutate, options = {}) {
  */
 export async function updateAsset(id, mutate, options = {}) {
   const { ifMatch, ...registryOptions } = options;
+  // A qualified id names its own root; a bare one keeps whatever root the
+  // caller passed (the tests point at a temp dir), defaulting to thaikit's.
+  const { ns, name } = parseId(id);
+  if (!registryOptions.modelsDir && !registryOptions.registryPath && ns !== OWN_NAMESPACE) registryOptions.modelsDir = rootFor(ns);
+  id = name;
   let updated = null;
   const result = await updateRegistry(async (registry) => {
     const index = registry.assets.findIndex((a) => a.id === id);
@@ -281,4 +286,53 @@ export async function updateAsset(id, mutate, options = {}) {
   }, registryOptions);
   updated = result.registry.assets.find((a) => a.id === id);
   return { asset: updated, etag: etagForAsset(updated), registryEtag: result.etag };
+}
+
+/**
+ * One asset by id, bare or qualified, with `pack` stamped from its root.
+ * Returns null when it does not exist.
+ */
+export async function readAsset(id, options = {}) {
+  const { ns, name } = parseId(id);
+  const modelsDir = optionsDir(options) === MODELS_DIR && ns !== OWN_NAMESPACE ? rootFor(ns) : optionsDir(options);
+  const registry = await readRegistry({ modelsDir });
+  const asset = registry.assets.find((a) => a.id === name) ?? null;
+  return asset ? { ...asset, pack: namespaceOfRoot(modelsDir) ?? ns } : null;
+}
+
+/**
+ * Every models root on disk: thaikit's own first, then each adopted pack that
+ * has a `models/` directory. `[{ ns, modelsDir }]`.
+ */
+export async function listRoots() {
+  const roots = [{ ns: OWN_NAMESPACE, modelsDir: MODELS_DIR }];
+  let entries = [];
+  try {
+    entries = await fs.readdir(ADOPTED_DIR, { withFileTypes: true });
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+  for (const entry of entries.filter((e) => e.isDirectory() && e.name.startsWith('@')).sort((a, b) => (a.name < b.name ? -1 : 1))) {
+    const modelsDir = path.join(ADOPTED_DIR, entry.name, 'models');
+    try {
+      if ((await fs.stat(modelsDir)).isDirectory()) roots.push({ ns: entry.name, modelsDir });
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
+    }
+  }
+  return roots;
+}
+
+/**
+ * Every asset in every root, each stamped with a DERIVED `pack` (never stored:
+ * the directory says it). For the callers that want the whole picture -- the
+ * catalogue, doctor -- rather than one kit.
+ */
+export async function readAllAssets() {
+  const out = [];
+  for (const { ns, modelsDir } of await listRoots()) {
+    const registry = await readRegistry({ modelsDir });
+    for (const asset of registry.assets) out.push({ ...asset, pack: ns });
+  }
+  return out;
 }

@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { MODELS_DIR, SCRATCH_DIR, LEVELS_DIR, PACKS_DIR } from '@thaikit/registry-core';
+import { MODELS_DIR, SCRATCH_DIR, LEVELS_DIR, PACKS_DIR, ADOPTED_DIR } from '@thaikit/registry-core';
 
 import { healthRouter } from './routes/health.js';
 import { assetsRouter } from './routes/assets.js';
@@ -86,6 +86,26 @@ export async function createApp(state) {
         if (ext === '.glb') res.setHeader('Content-Type', 'model/gltf-binary');
         else if (ext === '.gltf') res.setHeader('Content-Type', 'model/gltf+json');
         else if (ext === '.ktx2') res.setHeader('Content-Type', 'image/ktx2');
+        res.setHeader('Cache-Control', 'no-cache');
+      },
+    }),
+  );
+
+  // Adopted packs' images and records (adopted/<ns>/models/<name>/...), the
+  // same rules as /media: pictures and JSON, never the TypeScript.
+  app.use('/adopted', (req, res, next) => {
+    if (/\.(ts|js|mjs)$/i.test(req.path)) return res.status(404).json({ error: 'source is not served from /adopted' });
+    next();
+  });
+  app.use(
+    '/adopted',
+    express.static(ADOPTED_DIR, {
+      index: false,
+      dotfiles: 'ignore',
+      etag: true,
+      cacheControl: true,
+      maxAge: 0,
+      setHeaders(res) {
         res.setHeader('Cache-Control', 'no-cache');
       },
     }),

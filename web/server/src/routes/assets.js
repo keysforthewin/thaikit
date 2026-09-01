@@ -10,8 +10,7 @@ import {
   etagFor,
   etagForAsset,
   modelDir,
-  assetFile,
-} from '@thaikit/registry-core';
+  assetFile, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { afterTreeEdit } from '../lib/refresh.js';
 
@@ -211,10 +210,12 @@ export function assetsRouter(state) {
     }
   });
 
+  // `:id` is bare for thaikit's own props and `@ns/name` (URL-encoded) for an
+  // adopted pack's; the record lives in that pack's own root.
   router.get('/assets/:id', async (req, res, next) => {
     try {
-      const registry = await readRegistry();
-      const asset = registry.assets.find((a) => a.id === req.params.id);
+      const registry = await readRegistry(storeOptionsFor(req.params.id));
+      const asset = registry.assets.find((a) => a.id === parseId(req.params.id).name);
       if (!asset) return res.status(404).json({ error: `no such asset: ${req.params.id}` });
       // Per-asset, so a generation skill writing a different prop does not
       // invalidate this editor. The list route keeps the registry-wide ETag.
@@ -271,12 +272,13 @@ export function assetsRouter(state) {
   router.delete('/assets/:id', noWrites, async (req, res, next) => {
     try {
       let removed = null;
+      const bare = parseId(req.params.id).name;
       await updateRegistry((registry) => {
-        const i = registry.assets.findIndex((a) => a.id === req.params.id);
+        const i = registry.assets.findIndex((a) => a.id === bare);
         if (i === -1) throw Object.assign(new Error(`no such asset: ${req.params.id}`), { status: 404 });
         removed = registry.assets.splice(i, 1)[0];
         return registry;
-      });
+      }, storeOptionsFor(req.params.id));
 
       let purged = false;
       if (req.query.purgeFiles === 'true') {

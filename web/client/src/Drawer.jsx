@@ -99,7 +99,7 @@ function ColliderBar({ doc, parts, dirty, saving, onSave, item }) {
         <p className="collider-note">
           No compound yet — nothing can be walked into or stood on.
           {item.editable ? (
-            <> Derive one with <code>node scripts/derive-colliders.mjs --id {item.name}</code>, or add parts by hand with the button in the viewer.</>
+            <> Derive one with <code>node scripts/derive-colliders.mjs --id {item.assetId ?? item.name}</code>, or add parts by hand with the button in the viewer.</>
           ) : (
             <> Add parts by hand with the button in the viewer; they are kept as a local override.</>
           )}
@@ -213,7 +213,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
       // opened to write its prompts, so that case keeps `details`.
       setTab(it.bundleUrl && it.supported ? 'preview' : 'details');
       if (it.editable) {
-        const a = await api.get(it.name);
+        const a = await api.get(it.assetId ?? it.name);
         setAsset(a);
         setDraft({
           name: a.name,
@@ -262,7 +262,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
     if (!rev) return;
     itemsApi.get(itemRef).then((it) => {
       setItem(it);
-      if (it.editable) api.get(it.name).then(setAsset).catch(() => {});
+      if (it.editable) api.get(it.assetId ?? it.name).then(setAsset).catch(() => {});
       if (rebuilding && it.version !== item?.version) setRebuilding(false);
     }).catch(() => {});
   }, [itemRef, rev]);
@@ -327,7 +327,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
     setError(null);
     try {
       if (item.editable) {
-        await api.update(item.name, {
+        await api.update(item.assetId ?? item.name, {
           name: draft.name,
           nameTh: draft.nameTh,
           description: draft.description,
@@ -351,7 +351,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
           prompts: { image: draft.image, texture: draft.texture },
           scale: { declared: { w: +draft.w, h: +draft.h, d: +draft.d } },
         });
-        setAsset(await api.get(item.name));
+        setAsset(await api.get(item.assetId ?? item.name));
       } else {
         // Only what was SET goes into the override; a blank field means "what
         // the pack says", never a copy of it.
@@ -375,7 +375,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
         // Re-fetch so the client holds a current ETag; without this the editor
         // stays wedged and every retry fails the same way. Your edits are kept
         // in `draft`, so pressing save again now goes through.
-        if (item.editable) await api.get(item.name).then(setAsset).catch(() => {});
+        if (item.editable) await api.get(item.assetId ?? item.name).then(setAsset).catch(() => {});
         else await itemsApi.override(itemRef).then(setOverride).catch(() => {});
         setError(
           'This item was changed on disk while you were editing it. Your edits are still here — press save again to apply them over the new version, or close and reopen to discard them.',
@@ -408,10 +408,10 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
 
   async function remove() {
     const purge = confirm(
-      `Delete "${item.title}" from the kit?\n\nOK also deletes its files in packages/props/src/models/${item.name}/.\nCancel keeps the files and removes only the record.`,
+      `Delete "${item.title}" from the kit?\n\nOK also deletes its files in ${item.sourceDir ?? `packages/props/src/models/${item.name}`}/.\nCancel keeps the files and removes only the record.`,
     );
     if (!confirm(`Really delete "${item.title}"?`)) return;
-    await api.remove(item.name, purge);
+    await api.remove(item.assetId ?? item.name, purge);
     onChanged?.();
     onClose();
   }
@@ -421,6 +421,24 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
     try {
       await itemsApi.refresh(itemRef);
       setRebuilding(true);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  /**
+   * An adopted item keeps its upstream address until it is forked; forking
+   * moves it into thaikit's own kit (docs/adopting-packs.md), after which the
+   * skills can rebuild it without diverging from upstream under upstream's name.
+   */
+  async function fork() {
+    if (!window.confirm(`Fork ${item.ref} into @thai-kit?\n\nIts source moves to packages/props/src/models/${item.name}/, every level placement is re-pointed, and it leaves ${item.pack}.`)) return;
+    setError(null);
+    try {
+      const result = await itemsApi.fork(itemRef);
+      onChanged?.();
+      onClose();
+      window.alert(`Forked as ${result.to}${result.levels?.length ? `; re-pointed ${result.levels.map((l) => `${l.rewritten} in ${l.level}`).join(', ')}` : ''}. The pack is rebuilding.`);
     } catch (e) {
       setError(e.message);
     }
@@ -441,6 +459,9 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
           <button onClick={rebuild} disabled={rebuilding} title="rebuild this prop's bundle, probe and thumbnail from its source">
             {rebuilding ? 'rebuilding…' : 'rebuild'}
           </button>
+        )}
+        {item.editable && item.assetId?.startsWith('@') && (
+          <button onClick={fork} title={`move this item from ${item.pack} into thaikit's own kit, with forkedFrom recorded`}>fork into @thai-kit</button>
         )}
         {item.editable && <button className="danger" onClick={remove}>delete</button>}
         {!item.editable && override && <button className="danger" onClick={clearOverride} disabled={saving}>clear override</button>}

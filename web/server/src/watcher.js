@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
 
-import { readRegistry, etagFor, MODELS_DIR } from '@thaikit/registry-core';
+import { readRegistry, etagFor, MODELS_DIR, ADOPTED_DIR } from '@thaikit/registry-core';
 import { WATCH_POLL, WATCH_INTERVAL } from './paths.js';
 import { OVERRIDES_DIR } from './lib/overrides.js';
 import { INDEX_FILE, classifyChange, afterTreeEdit } from './lib/refresh.js';
@@ -20,7 +20,8 @@ import { INDEX_FILE, classifyChange, afterTreeEdit } from './lib/refresh.js';
  * generation skills' work at all.
  */
 export function startWatcher(state) {
-  const watcher = chokidar.watch([MODELS_DIR, INDEX_FILE, OVERRIDES_DIR], {
+  // ADOPTED_DIR is one level deeper (adopted/<ns>/models/<name>/maps/x), hence depth 4.
+  const watcher = chokidar.watch([MODELS_DIR, ADOPTED_DIR, INDEX_FILE, OVERRIDES_DIR], {
     ignoreInitial: true,
     ignored: (p) => /node_modules|\.git|\.tmp-|\.lock|model\.bundle\.js|\.img2threejs/.test(p),
     // A file is written progressively; reading it half-formed yields garbage.
@@ -28,7 +29,7 @@ export function startWatcher(state) {
     usePolling: WATCH_POLL,
     interval: WATCH_INTERVAL,
     binaryInterval: WATCH_INTERVAL * 2,
-    depth: 3,
+    depth: 4,
   });
 
   const timers = new Map();

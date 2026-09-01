@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { catalogue, filterItems, readPacksIndex } from '../lib/catalogue.js';
 import { runPackJob, jobStatus } from '../lib/packs.js';
 
-const AddInput = z.object({ source: z.string().min(1) });
+const AddInput = z.object({ source: z.string().min(1), adopt: z.boolean().default(true) });
 
 export function packsRouter(state) {
   const router = express.Router();
@@ -42,8 +42,8 @@ export function packsRouter(state) {
 
   router.post('/packs', guard, express.json(), async (req, res, next) => {
     try {
-      const { source } = AddInput.parse(req.body ?? {});
-      const job = runPackJob(state, { source });
+      const { source, adopt } = AddInput.parse(req.body ?? {});
+      const job = runPackJob(state, { source, adopt });
       res.status(202).json({ jobId: job.id });
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ error: 'invalid input', issues: err.issues });
@@ -78,9 +78,24 @@ export function packsRouter(state) {
     }
   });
 
+  // Re-download an adopted pack's upstream over its tree. Refuses when adopted
+  // files have been edited unless `?force=1`; the edits are what it would lose.
+  router.post('/packs/:id/upgrade', guard, async (req, res, next) => {
+    try {
+      const index = await readPacksIndex();
+      const pack = (index.packs ?? []).find((p) => p.id === req.params.id);
+      if (!pack) return res.status(404).json({ error: `no installed pack "${req.params.id}"` });
+      if (!pack.adopted) return res.status(400).json({ error: `${pack.id} is not adopted; refresh it instead` });
+      const job = runPackJob(state, { upgrade: true, pack: pack.id, force: req.query.force === '1' });
+      res.status(202).json({ jobId: job.id });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   router.delete('/packs/:id', guard, async (req, res, next) => {
     try {
-      const job = runPackJob(state, { remove: true, pack: req.params.id });
+      const job = runPackJob(state, { remove: true, pack: req.params.id, keepSource: req.query.keepSource === '1' });
       res.status(202).json({ jobId: job.id });
     } catch (err) {
       next(err);
