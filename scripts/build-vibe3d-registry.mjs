@@ -184,7 +184,7 @@ function entryModule(asset, helpers, hasArtifacts) {
   // `three.core.js`, so `Mesh` from 'three' IS `Mesh` from 'three/webgpu' --
   // verified by identity, not assumed. Importing plain 'three' keeps the wrapper
   // matched to the factory beside it, which imports 'three' too.
-  const named = ['createObjectModel'];
+  const named = ['createModel as createBaseModel'];
   if (helpers.lookDevLights) named.push(helpers.lookDevLights);
   if (helpers.frameCamera) named.push(helpers.frameCamera);
 
@@ -298,13 +298,17 @@ ${imports}
 export type { ProceduralModelOptions } from './createObjectModel';
 
 /**
- * thaikit's factory takes (spec, options). \`spec\` is host-side inspection data
- * that already lives inside the module -- it is deliberately not a second source
- * of truth -- so it is left undefined here.
+ * The prop's own one-argument factory, re-exported under vibe3d's name.
+ *
+ * thaikit's factories export BOTH \`createObjectModel(spec, options)\` -- its
+ * historical shape, kept for the render harness and the level editor -- and
+ * \`createModel(options)\`, which is what this wraps. So this file no longer
+ * knows the two-argument form exists, and the only thing it adds is the
+ * baseUrl default below.
  */
 ${baseUrlConst}
 export function createModel(options: ProceduralModelOptions = {}): Group {
-  return createObjectModel(undefined, ${baseUrlArg});
+  return createBaseModel(${baseUrlArg});
 }
 
 /** The shape Vibe3D's docs catalogue expects back from \`createPreview\`. */

@@ -20,6 +20,14 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
+  /**
+   * Where this prop's shipped files live, with a trailing slash.
+   *
+   * The maps are recorded as bare filenames because the bundle is EVALUATED
+   * rather than imported: it has no import.meta and no currentScript, so it
+   * cannot see its own URL. Every host derives this from the module URL.
+   */
+  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -2663,4 +2671,17 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
     };
   }
   return root;
+}
+
+/**
+ * The one-argument entry point: vibe3d's contract, and img2threejs's own.
+ *
+ * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
+ * the harness, the level editor and the Node-side gates carry on unchanged.
+ * `spec` has never been passed by any caller -- it is inspection data that is
+ * already baked into this module -- so this is the honest signature, and it is
+ * what a vibe3d consumer installs and calls.
+ */
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
+  return createObjectModel(undefined, options);
 }

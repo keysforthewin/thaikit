@@ -251,6 +251,14 @@ if (factory[1] !== 'createObjectModel' && !src.includes('export function createO
 export function createObjectModel(_spec?: unknown, options: ProceduralModelOptions = {}): THREE.Group {
   return ${factory[1]}(options ?? {});
 }
+
+// And the one-argument name the rest of the ecosystem uses -- vibe3d's contract,
+// which is also the shape the generator emitted before the adaptor above wrapped
+// it. Exported under the canonical name so a prop needs no wrapper to be
+// installed as a vibe3d model.
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
+  return ${factory[1]}(options ?? {});
+}
 `;
 }
 

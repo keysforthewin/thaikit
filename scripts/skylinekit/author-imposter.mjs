@@ -359,6 +359,18 @@ export function createObjectModel(
   return root;
 }
 
+/**
+ * The one-argument entry point: vibe3d's contract, and img2threejs's own.
+ *
+ * \`createObjectModel\` above keeps thaikit's historical (spec, options) shape so
+ * the harness, the level editor and the Node-side gates carry on unchanged.
+ * \`spec\` has never been passed by any caller, so this is the honest signature,
+ * and it is what a vibe3d consumer installs and calls.
+ */
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
+  return createObjectModel(undefined, options);
+}
+
 export default createObjectModel;
 `;
 }
