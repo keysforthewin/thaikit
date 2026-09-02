@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T01:23:54.876Z",
   "description": "",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "mk-restaurants-building",
   "image": {
@@ -38,20 +39,20 @@
   "model": {
     "colliders": {
       "coverage": 0.9986,
-      "derivedAt": "2026-08-28T13:11:13.767Z",
+      "derivedAt": "2026-09-02T12:41:48.049Z",
       "file": "packages/props/src/models/mk-restaurants-building/colliders.json",
       "handTuned": false,
-      "ledgesPreserved": "5/6",
-      "maxLedgeError": 1.005,
+      "ledgesPreserved": "4/5",
+      "maxLedgeError": 0.73,
       "measurementSkipped": null,
-      "overshoot": 0.0084,
-      "p95LedgeError": 0.1875,
+      "overshoot": 0,
+      "p95LedgeError": 0.125,
       "parts": 8
     },
     "drawCalls": 10,
     "export": "createObjectModel",
-    "fileBytes": 192069,
-    "gpuBytesEstimate": 5405354,
+    "fileBytes": 133004,
+    "gpuBytesEstimate": 9599657,
     "maps": [],
     "materials": 7,
     "meshes": 10,
@@ -66,69 +67,78 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/mk-restaurants-building/review/cmp.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
         "perPass": 0,
         "total": 0
       },
-      "critique": "FINAL VERDICT. Overall visual fidelity 0.85 -- not a pass self-score. 864/16000 triangles, 10/12 draw calls, 7/8 materials, 10/16 unique geometries, 2 textures. The shopfront rebuild added a door leaf, a lightbox and a pull bar at ZERO extra draw calls: all folded into the existing glazing and frame components.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92 -- not a pass self-score. 1740/16000 triangles, 10/12 draw calls, 7/8 materials, 10/16 unique geometries, 5 textures. Thirty-four more authored parts than the second build at the same draw-call and material count: every new part folded into an existing merge or the instanced unit.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7.",
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7; turntable silhouette ratios 1.00 / 0.94 / 1.04 / 0.94 at 0/90/180/270 with no enclosed hole at any azimuth; +X side and roof rectified at 150 px/m (scratch/_mk/side_rect.png, roof_rect.png).",
           "id": "overall-silhouette",
-          "notes": "Two corrections got it there. The prop first built 6.3 m DEEP against a declared 7.0, because the shared template sets the shell face back to z=2.50 to leave room for an entrance canopy -- and this building has none; the shell face was pushed out to 3.22 instead. It also built 4.69 m tall with its green pilasters dipping to y=-0.09, below its own ground plane. Meshy reads the plate 10% taller and 17% deeper than the declared module; the declaration is the kit's shared retail module across seven siblings and wins.",
+          "notes": "Third build. The shell is now four boxes leaving the service-door pocket open; the shell face stays at z=3.22 (no canopy) so the depth is the declared 7.00. The roofline is broken by the two condensers and the ducted unit along the back wall, all under the 4.60 coping (unit top 4.33, condenser top 4.33). Meshy reads the plate 10% taller and 17% deeper than the declared module; the declaration is the kit's shared retail module across seven siblings and wins.",
           "passed": true,
-          "score": 0.85,
+          "score": 0.92,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "Round white disc (#F9FAF9, PBR confidence 0.833) proud of the green band and left of centre, carrying red italic MK over a green RESTAURANTS band inside a green ring.",
+          "evidence": "Round white disc (#F9FAF9, PBR confidence 0.833) proud of the green band and left of centre, carrying the plate's own roundel: red brush-script MK over small green RESTAURANTS, no ring, no band (sign/nb_sign.png, a Nano Banana 2 front-on redraw of the plate's sign crop).",
           "id": "brand-fascia",
-          "notes": "Built as a CircleGeometry face plus a cylinder body after the first build put the mark on its SIDE: CylinderGeometry lays cap UVs out in its own XZ plane and rotating the geometry does not rotate them with it, so a rotated cylinder cap sampled the square canvas sideways. The body's UVs are collapsed onto a plain corner so the rim does not smear the mark around it. Glyphs are Arial, not MK's own script face.",
+          "notes": "The second build drew a green ring and a green RESTAURANTS bar with Arial glyphs; the plate (scratch/_mk/sign_zoom.png) has neither -- a thin grey rim, a brush-script red MK and green outlined capitals. The redraw is baked as a 512 WebP on the CircleGeometry face, scaled 1.28x about the centre so the MK spans ~70% of the disc as on the plate; the canvas ops stay as the decode fallback.",
           "passed": true,
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "Green panelling #396940 measured at standard deviation 3 (PBR confidence 0.803) as a band across the front with a full-height pilaster at BOTH front corners; walls elsewhere stay cream #E1D0B2.",
+          "evidence": "Green panelling #396940 (PBR confidence 0.803) as five panel bays between joints at x -1.90/-0.63/0.63/1.90 over a lower rail row, pilasters at BOTH front corners split at 1.55 and 2.90, the +X pilaster returning 5 cm round the corner; 2.5 cm joints over a black backing.",
           "id": "green-facade",
-          "notes": "Band and both pilasters are one component and one draw call -- they share a material, so three components would have cost three submissions for one cladding system.",
+          "notes": "The second build carried the band as one flat slab and recorded the joints as below prop resolution. The plate's front (scratch/_mk/front_zoom.png) shows the joints clearly at hero distance, including a horizontal joint 0.8 of the way down the band; they are geometry now at zero extra draw calls (panels merge into front-feature, backings into the frame merge). The -X pilaster stops 1 cm short of the wall plane after check-coplanar flagged it flush.",
           "passed": true,
-          "score": 0.85,
+          "score": 0.92,
           "threshold": 0.8,
           "tier": "critical"
         },
         {
-          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, and the lightbox border -- every black part in one component, read off the rectified plate (sign/glass.png).",
+          "evidence": "Near-black powder-coated frame #3A3023 (PBR confidence 0.734): one butt-glazed window, one door bay with transom and pull bar, the lightbox border -- layout read off the rectified plate (sign/glass.png). Window and door are PLAIN tinted glass (#5C6C70 -> #46565A) and the menu poster survives only inside the lightbox rect.",
           "id": "dark-shopfront",
-          "notes": "Rebuilt 2026-08-27 to the plate's layout. The first build carried a generic bay grid -- a floating transom and three mullions at arbitrary x -- and did not read as this storefront. The plate was rectified into the shopfront plane (250 px/m) and the layout read off it: one window to x=1.18, a single glass door bay 1.18..2.22 with a short transom and a pull bar, and a wall bay carrying a 0.80 x 2.08 m menu lightbox. The same rectified image is projected over the glazing by world position, so the interior and the menu poster come from the plate rather than a hand-drawn stand-in. The frame now sits 3 cm BEHIND the green band face, as the plate shows the storefront recessed. Metalness 0.25: the harness has no environment map.",
+          "notes": "Rebuilt to the owner's brief: the baked interior view is gone. The glazing image is a flat blue-green tint with the plate's poster pasted only at x 2.30..3.10, y 0.14..2.22, so the lightbox still reads as a lit menu. The tint is held on chroma rather than lifted to grey: turntable gate found no enclosed hole at 0/90/180/270. Roughness 0.12 for the glass lobe.",
           "passed": true,
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.8,
           "tier": "important"
         },
         {
-          "evidence": "Flush service door and a louvre vent panel on the +X wall, folded into one component.",
+          "evidence": "Rectified +X elevation (scratch/_mk/side_rect.png, 150 px/m): door 0.95 m wide at 3.60..4.55 m from the front corner, louvre 1.25 x 0.75 m at 5.20..6.45 m, h 2.45..3.20. Built at world z -1.33..-0.38 (door, recessed 0.12 m in a reveal with jambs, head and lever) and z -3.23..-1.98 (two-panel louvre: 18 slats and a mullion over a black back plate).",
           "id": "side-fittings",
-          "notes": "Deliberately NOT mirrored onto the -X wall, which the single plate does not show.",
+          "notes": "The second build had the louvre at z +0.95 -- towards the FRONT -- and a flush door slab; both were authored from the foreshortened plate. Per the brief the vent is now towards the rear and the door is inset. Deliberately NOT mirrored onto the -X wall, which the single plate does not show.",
           "passed": true,
-          "score": 0.78,
+          "score": 0.9,
           "threshold": 0.75,
+          "tier": "important"
+        },
+        {
+          "evidence": "Two split condensers (0.90 x 0.66 x 0.34 casing, dark front plate, darker fan disc behind five light guard bars, vertex-toned, one instanced geometry) at x -3.05 / -1.95 and a 2.4 x 0.75 x 0.90 m ducted unit with 8 louvre slats over a black plate and a rounded +X hood, all against the rear parapet (z -3.22..-2.32) and under the 4.60 coping.",
+          "id": "roof-plant",
+          "notes": "The roof rectification (scratch/_mk/roof_rect.png) reads the plate's three units as two 0.9 m fan condensers and one 2.4 m ducted box with a curved end. The plate stands them mid-roof; the owner's brief puts them along the back wall, and that placement is built. The second build's three identical default casings, one of them standing in for the ducted box, are replaced by two real unit types at the same 10 draw calls.",
+          "passed": true,
+          "score": 0.9,
+          "threshold": 0.8,
           "tier": "important"
         }
       ],
-      "fidelity": 0.85,
-      "judgedAt": "2026-08-27T14:46:47.621Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-02T12:42:35.768Z",
       "layerScores": {
-        "componentStructure": 0.88,
-        "formDetail": 0.85,
-        "lightingCamera": 0.8,
-        "materialSurface": 0.84,
-        "silhouetteProportion": 0.85
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "lightingCamera": 0.85,
+        "materialSurface": 0.9,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -141,7 +151,7 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 85,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
@@ -156,11 +166,11 @@
     "spec": "packages/props/src/models/mk-restaurants-building/object-sculpt-spec.json",
     "state": "scratch/mk-restaurants-building/.img2threejs/state.json",
     "status": "done",
-    "textures": 2,
+    "textures": 5,
     "thumb": "packages/props/src/models/mk-restaurants-building/thumb.webp",
-    "triangles": 864,
+    "triangles": 1740,
     "uniqueGeometries": 10,
-    "vertices": 2544
+    "vertices": 5184
   },
   "name": "MK Restaurants Building",
   "nameTh": "เอ็มเค สุกี้",
@@ -204,5 +214,5 @@
     "hero"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:13.787Z"
+  "updatedAt": "2026-09-02T12:42:39.822Z"
 }
