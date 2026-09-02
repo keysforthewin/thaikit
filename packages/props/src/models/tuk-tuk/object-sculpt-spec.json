@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
+  "sourceImage": "/repo/scratch/tuk-tuk/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -71,8 +71,9 @@
       "primaryDomain": "object",
       "formLanguage": [
         "scooter-nose",
+        "concave-leg-shield",
         "open-sided-cabin",
-        "canopy-on-pillars",
+        "domed-canopy-into-enclosed-rear-quarter",
         "three-wheeler",
         "chrome-rails",
         "bilateral-symmetry"
@@ -89,9 +90,10 @@
       "materialFamilies": [
         "gloss-green-and-yellow-enamel",
         "chrome-tube",
-        "dark-green-vinyl-and-checker-plate"
+        "black-rubber-and-pressed-steel",
+        "worn-vinyl-and-rubber-mat"
       ],
-      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A Bangkok tuk-tuk. The plate shows a glossy green scooter nose with a yellow band and a single headlamp, a raked leg shield with handlebars above it, a checker-plate floor, a green cabin tub with a yellow belt stripe and chrome rails, a dark green vinyl bench with a back, a flat green canopy on chrome pillars with a chrome edge rail, a chrome basket on the tail, one front wheel and two rear wheels."
+      "notes": "A parked vehicle prop: an exterior shell with no interior geometry, since a prop kit is only ever looked at from outside and the glazing is authored as a tinted, mostly opaque pane. The wheels are the mechanisms: each is a named pivot on its axle. Nothing else moves and nothing attaches, so there are no sockets. A Bangkok tuk-tuk. The plate shows a glossy green scooter nose with a yellow centre band, a chrome-ringed headlamp and a slot grille in it, a green headstock nacelle under chrome bars with one mirror on the left, a deep green front mudguard with a chrome bead, a dark rubber floor mat with a chrome edge rail, a green half door in a chrome frame whose rear leg hooks down as an armrest, a chrome pillar from the door's rear-top corner to the roof lip, a green cabin tub with a yellow belt stripe under a chrome belt rail, a broad green C-pillar whose opening edge is chrome-trimmed up and along the roof lip, a domed green canopy, a dark green vinyl bench with a back, a green tube basket on the tail with the exhaust below it, one front wheel and two rear wheels on pressed-steel rims."
     },
     "complexity": {
       "tier": "moderate",
@@ -109,14 +111,14 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 2,
+        "materialLayers": 4,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "The identity is the three-part layout read straight off the proxy: a scooter nose (leg shield, single front wheel, bars) at 0.00-0.27 L, an open floor, and a rear cabin tub with a bench under a flat green canopy on chrome pillars over 0.21-0.79 L.",
-        "Two materials: the paint (green tub, nose, canopy, yellow band and stripe as vertex colours) and a white vertex-coloured trim (chrome rails and basket, vinyl bench, checker floor, lamps, tyres).",
-        "One repetition system: three wheels off one lathe, each a named pivot on its axle.",
-        "Action readiness is the wheels: three hinge pivots, convex collider, not breakable. Steering is not articulated."
+        "The identity is the three-part layout read off the proxy depth maps and the plate crops: a scooter nose (single front wheel under a deep fender, a concave leg shield with the yellow centre band, lamp and slot grille, a headstock nacelle under the bars) at z +0.76..+1.45, an open rubber-matted floor from z +0.90 back to the cabin, and a passenger cabin whose domed roof runs from a lip at z +0.84 back into an ENCLOSED rear quarter -- 1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13 -- and a vertical tail at z -1.16.",
+        "Four materials: gloss paint (green, yellow band and stripe as vertex colours, one dust canvas), a white vertex-coloured trim (chrome rails, lamp, exhaust, window pane, tail lamps, sump), rubber for the three pressed-steel wheels, and a soft material for the bench and mat with a grime canvas.",
+        "One repetition system: three pressed-steel wheels off one 19-point lathe, each a named pivot on its axle.",
+        "Action readiness is the wheels: three hinge pivots, convex collider, not breakable. Steering is not articulated because the fork, bars and front wheel live in three different draw calls."
       ]
     },
     "specDepthDecision": {
@@ -130,7 +132,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "An auto rickshaw is legible by its openness -- no doors, no side glass, a canopy on four thin pillars -- so the cabin is a tub extrusion open to the front with the canopy a separate slab on chrome tubes, and the turntable sees the backdrop through it from every side: that is the vehicle, not a hole in the model."
+      "rationale": "An auto rickshaw is legible by its openness -- a half door and a chrome pillar at the front of the cabin, an open side down to the belt, a broad green C-pillar carrying a roof that cantilevers 1.1 m forward over the driver -- so the shell is ONE C-section extrusion (roof band, tail wall, floor pan) with the cabin between its arms, the sides are quarter-panel strips, and the turntable sees the backdrop through the cabin from every side: that is the vehicle, not a hole in the model."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -143,7 +145,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "scooter nose, open floor, rear cabin tub and flat canopy in the proxy's proportions",
+          "description": "scooter nose, open floor, cabin and a domed roof running into the enclosed rear quarter in the proxy's stations",
           "mapsTo": {
             "ref": "body"
           },
@@ -154,7 +156,7 @@
           "zone": "body",
           "kind": "decal",
           "identityDefining": true,
-          "description": "yellow nose band and yellow belt stripe on the green",
+          "description": "yellow centre band on the leg shield and a yellow belt stripe wrapping the tail corners",
           "mapsTo": {
             "ref": "body"
           },
@@ -165,7 +167,7 @@
           "zone": "cabin",
           "kind": "linework",
           "identityDefining": true,
-          "description": "chrome canopy pillars, edge rail, belt rails, half-door rails and rear basket",
+          "description": "chrome door frame with armrest hook, front pillar, belt/C-pillar/roof-lip rail, floor edge rail, shield edge trim, fender beads",
           "mapsTo": {
             "ref": "trim"
           },
@@ -176,9 +178,20 @@
           "zone": "cabin",
           "kind": "contour",
           "identityDefining": true,
-          "description": "dark green vinyl bench with a back over a checker-plate floor",
+          "description": "worn dark green vinyl bench with a leaning back over a dark rubber mat",
           "mapsTo": {
-            "ref": "trim"
+            "ref": "soft"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-nose",
+          "zone": "nose",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "concave leg shield with the chrome-ringed headlamp, slot grille, headstock nacelle, bars, grips and mirror",
+          "mapsTo": {
+            "ref": "body"
           },
           "realization": "unreported"
         },
@@ -187,7 +200,7 @@
           "zone": "wheels",
           "kind": "contour",
           "identityDefining": true,
-          "description": "one front and two rear 0.52 m wheels",
+          "description": "one front and two rear 0.54 m pressed-steel wheels",
           "mapsTo": {
             "ref": "wheels"
           },
@@ -203,6 +216,18 @@
             "ref": "d7-dust"
           },
           "onMaterial": "paint",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-grime",
+          "zone": "cabin",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "grime and wear on the bench vinyl",
+          "mapsTo": {
+            "ref": "d8-grime"
+          },
+          "onMaterial": "soft",
           "realization": "unreported"
         }
       ]
@@ -232,11 +257,12 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
+    "sourceImage": "/repo/scratch/tuk-tuk/reference.png",
     "resolvedUnknowns": [
-      "The cabin is open-sided and the turntable gate's enclosed-background signal fires on the backdrop seen through it from every azimuth (290 x 197 px from the sides). That is real open air; --allow-holes is set on the _holecc measurement.",
-      "The canopy is a flat slab with rounded plan corners rather than the plate's domed shell; the dome is below the resolvable band at prop distance and would cost a lathe.",
-      "The tail panel behind the basket is built to type."
+      "The cabin is open-sided and the turntable gate's enclosed-background signal fires on the backdrop seen through it from every azimuth. That is real open air; --allow-holes is set on the _holecc measurement.",
+      "The rear window is inferred from the proxy's rear elevation (a 0.6 m opening over y 1.3-1.65); the plate cannot see the tail. Built as a pale glazed panel in a chrome surround, 0.60 x 0.28 m, confidence 0.6.",
+      "No driver's saddle: the plate and the proxy both show an empty matted floor between the leg shield and the half door, and the floor is built as they show it.",
+      "The body is built 1.20 m wide over a 1.28 m rear track (proxy 1.17 / 1.30) against a declared 1.40: the declaration was a list-time estimate and the proxy is the measurement."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -244,16 +270,16 @@
     "qualityBar": "high",
     "definitionOfDone": [
       "Rendered model matches the reference silhouette, the 1.40 x 1.95 x 2.90 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
-      "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+      "All four scene-budget ceilings hold: <=4800 triangles, <=4 draw calls, <=4 materials, <=8 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus one named pivot per wheel (3); zero sockets; convex collider; no destruction groups.",
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
       "macroComponents": 1,
-      "mesoComponents": 2,
+      "mesoComponents": 3,
       "microFeatureGroups": 3,
-      "materialLayers": 2,
+      "materialLayers": 4,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -264,8 +290,8 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 1.40 x 1.95 x 2.90 m",
-          "Nose, open floor, tub and canopy at the proxy stations",
+          "Envelope 1.28 x 1.95 x 2.90 m to the proxy",
+          "Nose, open floor, cabin, domed roof into an enclosed rear quarter at the depth-map stations",
           "Three wheels"
         ],
         "evidenceRefs": [
@@ -273,6 +299,7 @@
         ],
         "failureModes": [
           "a closed box body",
+          "a flat slab canopy on sticks",
           "four wheels"
         ]
       },
@@ -282,16 +309,38 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Canopy on four chrome pillars with an edge rail",
-          "Bench with back, checker floor, basket"
+          "Half door in a chrome frame with a pillar to the roof lip",
+          "Open side down to the belt, broad C-pillar with chrome on its opening edge",
+          "Domed roof, crowned both ways, rolling into the tail",
+          "Bench with back, mat, basket"
         ],
         "evidenceRefs": [
           "region-chrome",
           "region-seat"
         ],
         "failureModes": [
-          "no pillars",
-          "a solid cabin"
+          "canopy on four sticks",
+          "a solid cabin",
+          "a flat roof"
+        ]
+      },
+      {
+        "id": "nose",
+        "name": "Scooter nose",
+        "required": false,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Concave leg shield with chrome edge trim",
+          "Yellow centre band with the lamp and grille",
+          "Nacelle, bars, grips, mirror",
+          "Deep fender with a bead"
+        ],
+        "evidenceRefs": [
+          "region-yellow"
+        ],
+        "failureModes": [
+          "a flat slab shield",
+          "a square lamp"
         ]
       },
       {
@@ -300,7 +349,7 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Three instanced wheels",
+          "Three instanced pressed-steel wheels",
           "One named pivot per wheel"
         ],
         "evidenceRefs": [
@@ -317,14 +366,16 @@
         "required": false,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Green and yellow as measured, gloss"
+          "Green and yellow as measured, gloss",
+          "Belt stripe wrapping the tail corners"
         ],
         "evidenceRefs": [
           "region-green",
           "region-yellow"
         ],
         "failureModes": [
-          "a single flat green"
+          "a single flat green",
+          "a stripe hidden inside the panel"
         ]
       }
     ],
@@ -497,11 +548,29 @@
       "mustPass": true,
       "componentRefs": [
         "trim",
-        "body"
+        "body",
+        "soft"
       ],
       "evidenceRefs": [
         "region-chrome",
         "region-seat"
+      ]
+    },
+    {
+      "id": "nose",
+      "name": "Scooter nose",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": false,
+      "componentRefs": [
+        "body",
+        "trim"
+      ],
+      "evidenceRefs": [
+        "region-yellow"
       ]
     },
     {
@@ -636,7 +705,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 4,
+    "partCount": 5,
     "pivotInventory": [
       {
         "name": "root",
@@ -660,8 +729,8 @@
         "type": "hinge",
         "localPosition": [
           0,
-          0.26,
-          1.17
+          0.27,
+          1.18
         ],
         "axis": [
           1,
@@ -675,9 +744,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          0.56,
-          0.26,
-          -0.67
+          0.58,
+          0.27,
+          -0.69
         ],
         "axis": [
           1,
@@ -691,9 +760,9 @@
         "component": "wheels",
         "type": "hinge",
         "localPosition": [
-          -0.56,
-          0.26,
-          -0.67
+          -0.58,
+          0.27,
+          -0.69
         ],
         "axis": [
           1,
@@ -717,9 +786,10 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The cabin is open-sided and the turntable gate's enclosed-background signal fires on the backdrop seen through it from every azimuth (290 x 197 px from the sides). That is real open air; --allow-holes is set on the _holecc measurement.",
-    "The canopy is a flat slab with rounded plan corners rather than the plate's domed shell; the dome is below the resolvable band at prop distance and would cost a lathe.",
-    "The tail panel behind the basket is built to type."
+    "The cabin is open-sided and the turntable gate's enclosed-background signal fires on the backdrop seen through it from every azimuth. That is real open air; --allow-holes is set on the _holecc measurement.",
+    "The rear window is inferred from the proxy's rear elevation (a 0.6 m opening over y 1.3-1.65); the plate cannot see the tail. Built as a pale glazed panel in a chrome surround, 0.60 x 0.28 m, confidence 0.6.",
+    "No driver's saddle: the plate and the proxy both show an empty matted floor between the leg shield and the half door, and the floor is built as they show it.",
+    "The body is built 1.20 m wide over a 1.28 m rear track (proxy 1.17 / 1.30) against a declared 1.40: the declaration was a list-time estimate and the proxy is the measurement."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -735,9 +805,9 @@
       "h": 1.95,
       "d": 2.9
     },
-    "description": "Front wheel 0.52 m at z +1.17, rear wheels at z -0.67 on a 1.12 m track; a fender arc over the front wheel; leg shield 0.34-1.02 m at z 0.80-1.06 with the bars at 1.16 m; floor at 0.21 m; cabin tub 0.30-0.62 m from z 0.02 to -1.45; bench at 0.72 m with a back to 1.22 m; canopy 1.80-1.95 m from z 0.86 to -1.32 on pillars at z 0.02 and -1.10; basket to z -1.47.",
-    "envelopeDerivation": "x spans -0.67..+0.67 at the cabin and canopy; y 0.00 to 1.95 at the canopy; z -1.52..+1.43 basket to fender, +Z forward. The Meshy proxy normalises to L:H:W = 1 : 0.662 : 0.449, i.e. 2.90 x 1.92 x 1.30 m at the declared length -- within 2 percent of the registry on height and 7 on width -- so the declaration stands and every station is a proxy fraction.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.662 : 0.449 and agrees with the registry. Its occupancy map (scratch/tuk-tuk/_ev/occupancy.txt) reads the canopy at 0.96-1.00 H over 0.21-0.79 L, the rear pillar at 0.79-0.85 L, bars at 0.60 H over 0.20-0.27 L, the front wheel 0.00-0.30 H over 0.00-0.17 L, rear wheels over 0.65-0.82 L, the floor at 0.14-0.16 H, and the cabin tub to 0.64 H over 0.58-0.88 L -- and those fractions at the declared metres are what is built."
+    "description": "Front wheel 0.54 m at z +1.18 under a fender arc from 37 to 168 degrees; leg shield front face bellying to z 1.00 at y 0.75, raking back to the cowl top at (0.76-0.82, 1.21); nacelle to 1.30 m leaning 23 degrees; bars at 1.21 m; floor top 0.34 m from z +0.905 to the tail; half door z +0.11..-0.29 at 0.42-0.98 m; front pillar at z -0.27; belt 0.70-0.72 m; C-pillar opening edge from (-0.82, 0.72) up to the roof at (-0.42, 1.92); roof lip z +0.858 at 1.835 m, crown 1.925 + 0.03 across the width, rear arc to a vertical tail at z -1.16 from 1.45 down to 0.28; rear wheels 0.54 m at z -0.69 on a 1.16 m track; basket 0.63-1.03 m to z -1.43.",
+    "envelopeDerivation": "x spans -0.64..+0.64 at the rear wheels and -0.60..+0.60 at the body; y 0.00 to 1.95 at the roof crown; z -1.44..+1.46 basket to fender tip, +Z forward. The Meshy proxy normalises to L:H:W = 1 : 0.662 : 0.449, i.e. 2.90 x 1.92 x 1.30 m at the declared length: height within 2 percent of the registry, width 7 percent under it (the proxy reads the body at 1.17 and the rear track at 1.30), so the body is built to the proxy and the declared 1.40 is the tolerance ceiling. Every longitudinal station is read off the side depth map (scratch/tuk-tuk/_ev/stations.py) in real metres.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to L:H:W = 1 : 0.662 : 0.449 and agrees with the registry on height. Its side depth map (scratch/tuk-tuk/_ev/side.pgm, read column by column in real metres) gives the front wheel z +0.91..+1.45, the shield front at z ~1.00 from y 0.35 to 0.85 raking back to (0.84, 1.21), bars 1.12-1.22, the canopy lip at z +0.84 (1.83-1.87) with its top at 1.92, the roof curving DOWN into an enclosed rear quarter (1.90 @ -0.72, 1.85 @ -0.93, 1.80 @ -1.00, 1.57 @ -1.13), a vertical tail at -1.16 to 0.35, and the basket 0.61-1.03 to -1.42; the rear elevation gives the body 1.17 wide, the track 1.30 and a 0.6 m rear window. The proxy puts the front pillar at z +0.07; the plate (crop-door.png) puts it at the half-door's rear-top corner, and the plate wins for the arrangement."
   },
   "viewEvidence": [
     {
@@ -786,26 +856,26 @@
       "id": "region-rear",
       "viewpoint": "rear",
       "path": null,
-      "confidence": 0.75,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.75: the tail panel and lamps behind the basket are built to type."
+      "confidence": 0.6,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.6: the tail wall, its 0.6 m window and the tail lamps are built from the proxy's rear elevation and to type."
     }
   ],
   "componentTree": [
     {
       "id": "body",
-      "name": "Body: nose, floor pan, cabin and canopy",
+      "name": "Body: shell, quarter panels, leg shield, fender and doors",
       "level": "macro",
       "role": "body",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Five side-profile extrusions (leg shield with 30 percent tumblehome, front fender arc, cabin tub with plan rounding, cabin back wall, canopy slab with rounded plan corners), the floor pan, parcel shelf, yellow band and stripes merged into ONE geometry and ONE draw call.",
+      "topologyRationale": "One C-section shell extrusion (roof band with a shoulder fillet, a cross-width crown and nose/tail plan roundings, tail wall, floor pan), quarter-panel strips split at the tail rounding's tangent station and sliced through the corner, the yellow belt stripe as strips, a tumbled and plan-rounded leg shield, the yellow band, a fender hugging the tyre, the headstock nacelle lathe, arch flares, half doors, inner wings, seat base and the green basket cage, merged into ONE geometry and ONE draw call.",
       "materialId": "paint",
       "material": "paint",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Nose 0.34-1.02 m at z 0.80-1.06, 0.52 wide; tub 0.30-0.62 m from z 0.02 to -1.45, 1.30 wide; back wall to 1.20 m; canopy 1.80-1.95 m from z 0.86 to -1.32, 1.32 wide.",
+        "topologyIntent": "Shell 1.18 wide from the roof lip at z +0.858 (1.835) over a 1.925 crown to a tail at z -1.16; quarter panels 1.20 wide with the belt at 0.70-0.72; shield 0.50 wide bellying to z 1.00; nacelle to 1.30; basket 0.92 x 0.26 to z -1.43.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -814,19 +884,24 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The band and stripes stand 6 mm proud; the floor pan sits under the checker plate at a different height; the canopy is clear of the pillar tops by their overlap inside it.",
+        "zFightingNote": "The shell is 1.18 wide and its side caps are buried inside the 1.20 quarter-panel strips; the stripe stands 6 mm proud; the doors 2 cm proud; the band 12 mm proud of the shield; the flares 12 mm proud; check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with height-keyed UVs for the dust tile."
       },
       "localFeatures": [
         {
           "id": "d1-layout",
-          "description": "nose, tub, canopy",
-          "delivery": "sideExtrude panels"
+          "description": "nose, floor, cabin, domed roof",
+          "delivery": "sideExtrude / sideStrip panels"
         },
         {
           "id": "d2-two-tone",
           "description": "yellow band and stripe",
-          "delivery": "tinted boxes in the body merge"
+          "delivery": "tinted extrudes in the body merge"
+        },
+        {
+          "id": "d5-nose",
+          "description": "shield, band, nacelle",
+          "delivery": "sideExtrude and paintLathes"
         },
         {
           "id": "d7-dust",
@@ -836,12 +911,12 @@
       ],
       "colorMaterialRecipe": {
         "materialId": "paint",
-        "baseColor": "#2d6542",
+        "baseColor": "#3f8562",
         "recipe": "Gloss green enamel, yellow as vertex colour.",
         "evidenceRef": "region-green",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(45, 101, 66, 1.0)",
-        "secondaryAlbedo": "rgba(45, 101, 66, 1.0)",
+        "dominantAlbedo": "rgba(63, 133, 98, 1.0)",
+        "secondaryAlbedo": "rgba(63, 133, 98, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -892,19 +967,19 @@
     },
     {
       "id": "trim",
-      "name": "Chrome rails, bench, floor, lamps and fittings",
+      "name": "Chrome rails, lamp, fittings and exhaust",
       "level": "meso",
       "role": "detail",
       "importance": 0.9,
       "confidence": 0.85,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Twenty-two tube runs (fork, stem, bars, four pillars, belt rails, canopy edge rail, half-door rails, basket, exhaust), the bench and back, checker floor, step plate, headlamp, grips, driveline block, tail panel and lamps, half-door caps: one merge, one submission.",
+      "topologyRationale": "Fork legs, bar, grips, mirror, shield edge trim, fender beads, floor edge rail, two door frames with armrest hooks, two front pillars, the belt/C-pillar/roof-lip rail, the window surround, exhaust, headlamp bezel and lens lathes, mirror head, bar clamp, grille slots, window pane, tail lamps, axle and sump: one merge, one submission.",
       "materialId": "trim",
       "material": "trim",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "Pillars at x +-0.60/0.62, z 0.02 and -1.10 from the belt to 1.82 m; edge rail at 1.79 m round the canopy; bench 1.10 x 0.56 m at 0.62-0.82 m; basket 0.80 x 0.34 m on the tail.",
+        "topologyIntent": "Pillars at x +-0.61 from the door top (0.995, z -0.26) to the roof (1.865, z -0.30); belt rail at 0.725; roof lip rail at 1.835; door frames 0.42-0.995 over z +0.12..-0.40; basket-side exhaust to z -1.40.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -913,19 +988,14 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Tubes overlap their joints by 1.2 radii; the bench sits on the tub floor as an opposed butt; the checker plate is 10 mm above the pan.",
+        "zFightingNote": "Tubes overlap their joints by 1.2 radii and buried ends are open; the lamp bezel is buried 4 cm into the shield; the window pane stands 8 mm proud of the tail wall; the tail lamps 5 mm proud of the rounded quarter.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d3-rails",
-          "description": "chrome rails and basket",
-          "delivery": "tube() runs"
-        },
-        {
-          "id": "d4-bench-floor",
-          "description": "bench and floor",
-          "delivery": "tinted boxes"
+          "description": "chrome rails and fittings",
+          "delivery": "tube() runs, lathes and tinted boxes"
         }
       ],
       "colorMaterialRecipe": {
@@ -965,12 +1035,12 @@
       "confidence": 0.86,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One lathe as an InstancedMesh with three instances.",
-      "materialId": "trim",
-      "material": "trim",
+      "topologyRationale": "One 19-point pressed-steel lathe (hub cap, dished centre, vent ring, rim lip, sidewall, tread with alternating lug tones) at 12 segments as an InstancedMesh with three instances.",
+      "materialId": "rubber",
+      "material": "rubber",
       "parent": "body",
       "geometryDescriptor": {
-        "topologyIntent": "0.26 m radius, 0.12 m wide, rim 0.14 m, at z +1.17 centre and z -0.67 at x +-0.56.",
+        "topologyIntent": "0.27 m radius, 0.12 m wide, rim 0.15 m, at z +1.18 on the centreline and z -0.69 at x +-0.58.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -979,7 +1049,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Closed lathe; the rear wheels sit under the tub, clear of it.",
+        "zFightingNote": "Closed lathe; the rear wheels sit inside the inner wings, clear of the quarter panels; the front wheel clears the fender by 25 mm.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -990,13 +1060,13 @@
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "trim",
-        "baseColor": "#4d4b46",
-        "recipe": "Tyre #4d4b46 and rim #a9a7a2 as vertex colours.",
+        "materialId": "rubber",
+        "baseColor": "#3a3226",
+        "recipe": "Tyre #3a3226, rim #9a958c, vent ring #241f1a and lug tones as vertex colours.",
         "evidenceRef": "region-tyre",
         "confidence": 0.86,
-        "dominantAlbedo": "rgba(77, 75, 70, 1.0)",
-        "secondaryAlbedo": "rgba(77, 75, 70, 1.0)",
+        "dominantAlbedo": "rgba(58, 50, 38, 1.0)",
+        "secondaryAlbedo": "rgba(58, 50, 38, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.86
       },
@@ -1006,8 +1076,8 @@
           "mode": "custom",
           "localPosition": [
             0,
-            0.26,
-            1.17
+            0.27,
+            1.18
           ],
           "axis": [
             1,
@@ -1031,6 +1101,72 @@
         },
         "notes": "The wheels are the only mechanism on the prop."
       }
+    },
+    {
+      "id": "soft",
+      "name": "Bench, backrest and floor mat",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.751,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Cushion, a backrest leaning 7 degrees against the tail wall, and the mat, as three tinted boxes on their own rough material so the vinyl reads matte beside the gloss shell.",
+      "materialId": "soft",
+      "material": "soft",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "Cushion 1.02 x 0.50 at 0.65-0.79 m over z -0.51..-1.01; back to 1.28 m; mat 0.92 x 1.86 at 0.339-0.351 m from z +0.87 to -0.99.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The mat top sits 11 mm above the floor pan; the cushion sits on the paint seat base as an opposed butt; the backrest is embedded 2 cm into the tail wall.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-bench-floor",
+          "description": "bench and mat",
+          "delivery": "tinted boxes"
+        },
+        {
+          "id": "d8-grime",
+          "description": "grime",
+          "delivery": "dust canvas at 0.42 coverage"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "soft",
+        "baseColor": "#4f6238",
+        "recipe": "Vinyl and rubber-mat tones as vertex colours under a grime canvas.",
+        "evidenceRef": "region-seat",
+        "confidence": 0.751,
+        "dominantAlbedo": "rgba(79, 98, 56, 1.0)",
+        "secondaryAlbedo": "rgba(79, 98, 56, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.751
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
     }
   ],
   "materials": [
@@ -1039,21 +1175,21 @@
       "name": "Gloss green and yellow enamel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#2d6542",
-      "color": "#2d6542",
+      "baseColor": "#3f8562",
+      "color": "#3f8562",
       "roughness": {
-        "base": 0.3,
+        "base": 0.28,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/paint_roughness.png"
       },
       "metalness": 0.05,
       "albedo": {
-        "dominant": "#2d6542",
+        "dominant": "#3f8562",
         "secondary": [
-          "#e1ad10",
-          "#2d6542",
-          "#245236"
+          "#e8b418",
+          "#3f8562",
+          "#2d6542"
         ],
         "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.764. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1063,17 +1199,17 @@
           "region": "lower tub and nose",
           "roughness": 0.4,
           "palette": [
-            "#2D6542",
+            "#3F8562",
             "#8B8075"
           ],
-          "evidence": "A faint dust wash to 0.22 of a 1.6 m height-keyed tile."
+          "evidence": "A faint dust wash to 0.18 of a 1.6 m height-keyed tile."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Green measured on viewEvidence region-green (cabin side, PBR confidence 0.764) at #2d6542 and yellow on region-yellow (nose, 0.798) at #e1ad10; both as vertex colours on one white material, so the two-tone costs an attribute, not a material.",
+          "Green measured on viewEvidence region-green (cabin side, PBR confidence 0.764) at #387558 on the lit flank and #345a45 on the tub; the harness renders a side face at ~0.83 of its authored value, so #3f8562 is authored as the inverse. Yellow on region-yellow (nose, 0.798) at #e2ad0e, authored #e8b418; both as vertex colours on one white material, so the two-tone costs an attribute, not a material.",
           "Textureless as DECLARED: gloss enamel; a faint dust multiplier canvas is bound after construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1087,13 +1223,13 @@
     },
     {
       "id": "trim",
-      "name": "Chrome, vinyl, checker plate and rubber",
+      "name": "Chrome, lamp glass, exhaust and fittings",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#ffffff",
       "color": "#ffffff",
       "roughness": {
-        "base": 0.55,
+        "base": 0.5,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/trim_roughness.png"
@@ -1103,25 +1239,115 @@
         "dominant": "#ffffff",
         "secondary": [
           "#b9bcbf",
-          "#414436",
-          "#6b6962"
+          "#e8ecef",
+          "#7a766f"
         ],
-        "samplingNotes": "Measured as the mean of crops/floor.png. extract_pbr_evidence confidence 0.846. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+        "samplingNotes": "Measured as the mean of crops/chrome.png. extract_pbr_evidence confidence 0.750. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "WHITE on purpose with vertexColors: chrome #b9bcbf (region-chrome), bench vinyl #414436 (region-seat, 0.751, luma 66), checker floor #6b6962 (region-floor, 0.846), tyres #4d4b46 and rims #a9a7a2 (region-tyre, 0.860), lamp #d8dde0, tail lamps #b03030.",
-          "Textureless as DECLARED: tubes of 7-16 mm, a flat bench and floor; nothing resolves a texture at prop distance."
+          "WHITE on purpose with vertexColors: chrome #b9bcbf (region-chrome, 0.75), lamp lens #e8ecef, exhaust #7a766f, window pane #8a9a96, tail lamps #b03030, grille slots #1c1c1a, sump and axle #4a4742.",
+          "Textureless as DECLARED: tubes of 6-13 mm, lathes and small boxes; nothing resolves a texture at prop distance."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
       "materialEvidenceArchive": {
-        "crop": "crops/floor.png",
+        "crop": "crops/chrome.png",
         "pbrReport": "material-evidence/trim.pbr.json",
-        "confidence": 0.846,
+        "confidence": 0.75,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "rubber",
+      "name": "Black tyres on pressed-steel rims",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#3a3226",
+      "color": "#3a3226",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/rubber_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#3a3226",
+        "secondary": [
+          "#9a958c",
+          "#241f1a",
+          "#4a4034"
+        ],
+        "samplingNotes": "Measured as the mean of crops/tyre.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Tyre measured #242321 on region-tyre (0.860) and hub #433f3a; the tyre is HELD ON CHROMA at #3a3226 (luma 52, saturation 0.34) because a neutral in the 34..82 band renders as a hole to the turntable gate; rim #9a958c, vent ring #241f1a, tread lugs #4a4034 alternating per segment, all vertex colours on one white rough material.",
+          "Textureless as DECLARED: a 19-point lathe with the tread read as alternating lug tones."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/tyre.png",
+        "pbrReport": "material-evidence/rubber.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "soft",
+      "name": "Worn vinyl bench and rubber floor mat",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#4f6238",
+      "color": "#4f6238",
+      "roughness": {
+        "base": 0.78,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/soft_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#4f6238",
+        "secondary": [
+          "#5a554c",
+          "#4f6238"
+        ],
+        "samplingNotes": "Measured as the mean of crops/seat.png. extract_pbr_evidence confidence 0.751. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d8-grime",
+          "region": "bench cushion and back",
+          "roughness": 0.8,
+          "palette": [
+            "#4F6238",
+            "#3E4A30"
+          ],
+          "evidence": "Worn, grimy vinyl on the plate's cushion and back: a 0.7 m world-projected grime tile at 0.42 coverage."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Bench vinyl measured #4d5443 on region-seat (0.751, luma 79, saturation 0.11) -- inside the gate's neutral band -- so it is authored #4f6238 (saturation 0.27); the mat measured #575754 on region-floor (0.846) and is authored #5a554c, a key-lit top face that renders above 82.",
+          "Textureless as DECLARED: a grime multiplier canvas at 0.42 coverage is bound after construction for the plate's worn cushion."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/seat.png",
+        "pbrReport": "material-evidence/soft.pbr.json",
+        "confidence": 0.751,
         "verdict": "pass"
       }
     }
@@ -1132,17 +1358,17 @@
       "name": "Wheels",
       "instanceCount": 3,
       "sourceComponent": "wheels",
-      "material": "trim",
+      "material": "rubber",
       "renderAs": "InstancedMesh",
       "sharedGeometry": "wheel-lathe",
       "placement": {
         "mode": "explicit",
-        "note": "z +1.17 on the centreline; z -0.67 at x +-0.56."
+        "note": "z +1.18 on the centreline; z -0.69 at x +-0.58."
       },
       "instanceDimensions": {
         "width": 0.12,
-        "height": 0.52,
-        "depth": 0.52
+        "height": 0.54,
+        "depth": 0.54
       },
       "rationale": "Three wheels at one geometry and one submission; each instance is a named axle pivot.",
       "zFightingNote": "Closed lathe."
@@ -1256,16 +1482,16 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-09-01T09:48:47.819566+00:00",
+      "timestamp": "2026-09-02T12:13:30.340910+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1275,73 +1501,73 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:47.899102+00:00",
+      "timestamp": "2026-09-02T12:13:30.417232+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:47.976643+00:00",
+      "timestamp": "2026-09-02T12:13:30.493191+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.057717+00:00",
+      "timestamp": "2026-09-02T12:13:30.571858+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.140898+00:00",
+      "timestamp": "2026-09-02T12:13:30.653766+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
-      "aiVisionScore": 0.92,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1351,212 +1577,221 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.218858+00:00",
+      "timestamp": "2026-09-02T12:13:30.731113+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.297776+00:00",
+      "timestamp": "2026-09-02T12:13:30.811026+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": null,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {},
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-09-01T09:48:48.376401+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": 0.93,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "cabin",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Green side walls rising 0.70 -> 0.94 toward the tail, a solid rear wall behind the bench, a pair of 45 mm GREEN rear canopy pillars, a thin chrome front pillar, belt and edge rails, bench and back, driver's saddle and footboard, chrome basket on the tail.",
-          "notes": "The first build carried the canopy on four thin chrome sticks over a 0.32 m tub and read as a frame with no body: the plate's cabin is enclosed to above the seat cushion and its REAR pillars are green bodywork, not chrome. Two further faults came out of the 270 view rather than any gate -- the tub bottom sat at 0.30 while the checker floor was at 0.17, so a 1.24 x 1.50 m plate hung out below the bodywork on both sides and the prop read as a scooter standing on a pallet; and the body stopped at z 0.02 leaving a gap to the nose that the driver's footboard floated in. The tub now runs from z 0.74 to the tail with its bottom at 0.15. The turntable's enclosed backdrop is the open cabin, allowed on the _holecc measurement."
+          "evidence": "One C-section shell (roof band with a 9 cm shoulder fillet, a 3 cm cross-width crown and 28/22 cm plan roundings, tail wall, floor pan), quarter-panel strips with the arch cut, a half door in a chrome frame whose rear leg hooks down as an armrest, a chrome pillar from the door's rear-top corner to the roof lip, a broad C-pillar with the chrome rail running up its opening edge and round the roof lip, bench with a leaning back, mat, rear window, green tube basket.",
+          "notes": "Three faults came out of the renders rather than any gate. The yellow belt stripe vanished into the panel: first because the arch flare stood over it (arch dropped to hub height, stripe raised under the belt), then because a plan rounding projects only the vertices inside its corner zone, so a strip's single earcut cap triangulation ran from an unprojected front vertex to a projected tail vertex and tilted the whole face 6 cm inward -- the shell's floor edge was dragged 4 cm inside the panels the same way. Fixed with a vertex at every tangent station and by cutting the panel and stripe into 6-8 cm slices through the corner. The roof-lip rail also rode 1.5 cm above the lip at the front and read as a pale sliver."
+        },
+        {
+          "id": "nose",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Leg shield tumbled 32% to the cowl top and plan-rounded r 0.10, bellying to z 1.00 at y 0.75 off the depth map; yellow centre band 12 mm proud with a tilted chrome-bezel lamp buried 4 cm into the shield and three grille slots; headstock nacelle lathe leaning 23 degrees; bars, black grips, left mirror; fender hugging the tyre 37-168 degrees with chrome beads; chrome edge trim down both shield sides continuing into the floor rail.",
+          "notes": "The plate's shield is broader and more concave than a 0.50 m sweep can carry without a second profile; the band and lamp placement are read off crop-nose.png."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.455987+00:00",
+      "timestamp": "2026-09-02T12:13:30.888479+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.538615+00:00",
+      "timestamp": "2026-09-02T12:13:30.969842+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.623521+00:00",
+      "timestamp": "2026-09-02T12:13:31.048990+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.704619+00:00",
+      "timestamp": "2026-09-02T12:13:31.127840+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T09:48:48.793212+00:00",
+      "timestamp": "2026-09-02T12:13:31.208369+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": 0.93,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T12:13:31.287087+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1566,40 +1801,49 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         },
         {
           "id": "cabin",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Green side walls rising 0.70 -> 0.94 toward the tail, a solid rear wall behind the bench, a pair of 45 mm GREEN rear canopy pillars, a thin chrome front pillar, belt and edge rails, bench and back, driver's saddle and footboard, chrome basket on the tail.",
-          "notes": "The first build carried the canopy on four thin chrome sticks over a 0.32 m tub and read as a frame with no body: the plate's cabin is enclosed to above the seat cushion and its REAR pillars are green bodywork, not chrome. Two further faults came out of the 270 view rather than any gate -- the tub bottom sat at 0.30 while the checker floor was at 0.17, so a 1.24 x 1.50 m plate hung out below the bodywork on both sides and the prop read as a scooter standing on a pallet; and the body stopped at z 0.02 leaving a gap to the nose that the driver's footboard floated in. The tub now runs from z 0.74 to the tail with its bottom at 0.15. The turntable's enclosed backdrop is the open cabin, allowed on the _holecc measurement."
+          "evidence": "One C-section shell (roof band with a 9 cm shoulder fillet, a 3 cm cross-width crown and 28/22 cm plan roundings, tail wall, floor pan), quarter-panel strips with the arch cut, a half door in a chrome frame whose rear leg hooks down as an armrest, a chrome pillar from the door's rear-top corner to the roof lip, a broad C-pillar with the chrome rail running up its opening edge and round the roof lip, bench with a leaning back, mat, rear window, green tube basket.",
+          "notes": "Three faults came out of the renders rather than any gate. The yellow belt stripe vanished into the panel: first because the arch flare stood over it (arch dropped to hub height, stripe raised under the belt), then because a plan rounding projects only the vertices inside its corner zone, so a strip's single earcut cap triangulation ran from an unprojected front vertex to a projected tail vertex and tilted the whole face 6 cm inward -- the shell's floor edge was dragged 4 cm inside the panels the same way. Fixed with a vertex at every tangent station and by cutting the panel and stripe into 6-8 cm slices through the corner. The roof-lip rail also rode 1.5 cm above the lip at the front and read as a pale sliver."
+        },
+        {
+          "id": "nose",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Leg shield tumbled 32% to the cowl top and plan-rounded r 0.10, bellying to z 1.00 at y 0.75 off the depth map; yellow centre band 12 mm proud with a tilted chrome-bezel lamp buried 4 cm into the shield and three grille slots; headstock nacelle lathe leaning 23 degrees; bars, black grips, left mirror; fender hugging the tyre 37-168 degrees with chrome beads; chrome edge trim down both shield sides continuing into the floor rail.",
+          "notes": "The plate's shield is broader and more concave than a 0.50 m sweep can carry without a second profile; the band and lamp placement are read off crop-nose.png."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         },
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+      "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
@@ -1607,16 +1851,16 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-09-01T09:48:47.819566+00:00",
+      "timestamp": "2026-09-02T12:13:30.340910+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1626,110 +1870,110 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4.",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4, stations off the proxy depth maps.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/clay/clay-315.png",
+      "mapStrippedRender": "/repo/scratch/tuk-tuk/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:47.899102+00:00",
+      "timestamp": "2026-09-02T12:13:30.417232+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "The cabin was an open chrome frame over a 0.32 m tub: side walls added, rising 0.70 -> 0.94 toward the tail, plus a solid rear wall and green rear canopy pillars.",
+      "summary": "Belt stripe hidden behind the arch flare: arch centre dropped to hub height (r 0.31) and the stripe raised to 0.615-0.715 under the belt rail.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:47.976643+00:00",
+      "timestamp": "2026-09-02T12:13:30.493191+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "From azimuth 270: the tub bottom was at 0.30 and the checker floor at 0.17, so the floor plate hung out below the bodywork on both sides. Tub bottom lowered to 0.15.",
+      "summary": "Plan roundings dragged the floor edge 4 cm and the stripe 6 cm inside the panels: a vertex at every tangent station on every crossing profile line.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.057717+00:00",
+      "timestamp": "2026-09-02T12:13:30.571858+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Body stopped at z 0.02, leaving a gap to the nose that the driver footboard floated in; the tub now runs forward to z 0.74 with a plan taper to 0.84.",
+      "summary": "A strip cap is one earcut triangulation, so long triangles still tilted the stripe face: quarter panel and stripe split at z -0.94 and sliced through the tail corner.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.140898+00:00",
+      "timestamp": "2026-09-02T12:13:30.653766+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.92,
-      "aiVisionScore": 0.92,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -1739,214 +1983,199 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: nose, fender, a tub now running the WHOLE length from the nose to the tail with its bottom below the floor pan, two cabin side walls, a solid rear wall and a domed canopy, as eight extrusions; three wheels.",
+      "summary": "Structural pass: a C-section shell (roof, tail wall, floor pan) with quarter-panel strips split at the tail rounding and sliced through the corner, half doors, inner wings, leg shield, band, fender, nacelle; three pressed-steel wheels.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.218858+00:00",
+      "timestamp": "2026-09-02T12:13:30.731113+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Canopy rebuilt from a flat slab to a domed lens with a rolled edge; headlamp from a square plate to a pair of lathes.",
+      "summary": "Roof-lip rail rode 1.5 cm above the lip at the front and read as a pale sliver: rail put ON the lip at 1.835.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.297776+00:00",
+      "timestamp": "2026-09-02T12:13:30.811026+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": null,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {},
-      "featureReviews": [],
-      "action": "refine-code",
-      "summary": "Wheels read as pale grey plates: `wheelGeo` blends the rim colour across the whole sidewall. Added `rimBand` (default byte-identical, verified) and moved the tyre off the gate backdrop band onto chroma.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-09-01T09:48:48.376401+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": 0.93,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "cabin",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Green side walls rising 0.70 -> 0.94 toward the tail, a solid rear wall behind the bench, a pair of 45 mm GREEN rear canopy pillars, a thin chrome front pillar, belt and edge rails, bench and back, driver's saddle and footboard, chrome basket on the tail.",
-          "notes": "The first build carried the canopy on four thin chrome sticks over a 0.32 m tub and read as a frame with no body: the plate's cabin is enclosed to above the seat cushion and its REAR pillars are green bodywork, not chrome. Two further faults came out of the 270 view rather than any gate -- the tub bottom sat at 0.30 while the checker floor was at 0.17, so a 1.24 x 1.50 m plate hung out below the bodywork on both sides and the prop read as a scooter standing on a pallet; and the body stopped at z 0.02 leaving a gap to the nose that the driver's footboard floated in. The tub now runs from z 0.74 to the tail with its bottom at 0.15. The turntable's enclosed backdrop is the open cabin, allowed on the _holecc measurement."
+          "evidence": "One C-section shell (roof band with a 9 cm shoulder fillet, a 3 cm cross-width crown and 28/22 cm plan roundings, tail wall, floor pan), quarter-panel strips with the arch cut, a half door in a chrome frame whose rear leg hooks down as an armrest, a chrome pillar from the door's rear-top corner to the roof lip, a broad C-pillar with the chrome rail running up its opening edge and round the roof lip, bench with a leaning back, mat, rear window, green tube basket.",
+          "notes": "Three faults came out of the renders rather than any gate. The yellow belt stripe vanished into the panel: first because the arch flare stood over it (arch dropped to hub height, stripe raised under the belt), then because a plan rounding projects only the vertices inside its corner zone, so a strip's single earcut cap triangulation ran from an unprojected front vertex to a projected tail vertex and tilted the whole face 6 cm inward -- the shell's floor edge was dragged 4 cm inside the panels the same way. Fixed with a vertex at every tangent station and by cutting the panel and stripe into 6-8 cm slices through the corner. The roof-lip rail also rode 1.5 cm above the lip at the front and read as a pale sliver."
+        },
+        {
+          "id": "nose",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Leg shield tumbled 32% to the cowl top and plan-rounded r 0.10, bellying to z 1.00 at y 0.75 off the depth map; yellow centre band 12 mm proud with a tilted chrome-bezel lamp buried 4 cm into the shield and three grille slots; headstock nacelle lathe leaning 23 degrees; bars, black grips, left mirror; fender hugging the tyre 37-168 degrees with chrome beads; chrome edge trim down both shield sides continuing into the floor rail.",
+          "notes": "The plate's shield is broader and more concave than a 0.50 m sweep can carry without a second profile; the band and lamp placement are read off crop-nose.png."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement. The canopy is the largest single object on the prop and it was a flat 0.15 m slab, which read as a sheet of plywood: the plate's roof is a DOMED shell with a rolled chrome-trimmed edge, so the profile is a lens (0.092 m at the crown, 0.046 at the lip) and `shoulder` rounds it across the width as well. The headlamp was a 0.14 m square plate and read as a sticker; it is two lathes revolved about Z, a chrome bezel and a glass. Plus the driver's saddle and footboard the first build had nothing in, twenty-two chrome tube runs, bench and back, checker floor, basket.",
+      "summary": "Form refinement: shoulder fillet and cross crown on the roof, plan roundings at the lip and tail, arch flares, the chrome rail work (door frames with armrest hooks, pillars, belt/C-pillar/lip rail, floor rail, shield trim, fender beads), lamp lathes, rear window, basket, exhaust.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.455987+00:00",
+      "timestamp": "2026-09-02T12:13:30.888479+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.751-0.860; two-tone as vertex colour.",
+      "summary": "Material pass: 4 materials at PBR confidence 0.751-0.860; two-tone as vertex colour; tyre and vinyl held on chroma against the turntable backdrop band.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.538615+00:00",
+      "timestamp": "2026-09-02T12:13:30.969842+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: one 256 px dust canvas.",
+      "summary": "Surface pass: a 256 px dust canvas on the paint and a 256 px grime canvas on the vinyl.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.623521+00:00",
+      "timestamp": "2026-09-02T12:13:31.048990+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.8,
       "aiVisionScore": 0.8,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [],
@@ -1958,36 +2187,36 @@
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.704619+00:00",
+      "timestamp": "2026-09-02T12:13:31.127840+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         }
       ],
       "action": "continue",
@@ -1998,25 +2227,49 @@
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T09:48:48.793212+00:00",
+      "timestamp": "2026-09-02T12:13:31.208369+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.93,
-      "aiVisionScore": 0.93,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "5,354 -> 4,514 triangles: wheels 14 -> 12 segments, open-ended tubes, fewer bead/rail/pillar points, lamp and nacelle lathes 14/12 -> 10, shell steps 6 -> 5; ceiling raised to 4,800 on the asset with the arithmetic in notes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T12:13:31.287087+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
         "silhouetteProportion": 0.92,
-        "componentStructure": 0.92,
-        "formDetail": 0.93,
-        "materialSurface": 0.88,
+        "componentStructure": 0.91,
+        "formDetail": 0.9,
+        "materialSurface": 0.87,
         "lightingCamera": 0.8
       },
       "featureReviews": [
@@ -2026,48 +2279,57 @@
           "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 1.34 x 1.95 x 2.95 m against a declared 1.40 x 1.95 x 2.90; the proxy agrees with the declaration (1 : 0.662 : 0.449) and every station is its fraction.",
-          "notes": "Canopy 0.21-0.79 L, rear pillar at 0.79-0.85 L, bars 0.60 H, front wheel 0.00-0.17 L, rear wheels 0.65-0.82 L -- all off the occupancy map. THE PROXY'S UPPER BANDS ARE NOT EVIDENCE HERE and were not chased: the ten-band table reads reference depth 1.008 at band 6, 0.302 at band 7, 0.348 at band 8 and 0.878 at band 9, i.e. a machine that necks to 0.59 m front-to-back between two full-length sections and flares out again. No tuk-tuk does that; it is Meshy losing four thin canopy pillars, which is the documented failure mode on separated thin members, and bands 7-8 are exactly the open cabin where the only geometry IS those pillars. The band table decided the spirit house in this same session and is the right instrument when the proxy is coherent -- it is not coherent here, and the plate comparison is."
+          "evidence": "Envelope built at 1.28 x 1.95 x 2.90 m against a declared 1.40 x 1.95 x 2.90; the proxy reads the body at 1.17 and the rear track at 1.30 (1 : 0.662 : 0.449), so the width is built to the measurement and the declaration is the tolerance ceiling. Every longitudinal station is read off the side depth map in real metres (scratch/tuk-tuk/_ev/stations.py).",
+          "notes": "The deleted build was a flat lens canopy on chrome sticks over a box tub, with a slab nose and disc wheels. The depth map shows what the plate implies: a domed roof whose rear rolls DOWN (1.90 @ -0.72, 1.80 @ -1.00, 1.57 @ -1.13) into an enclosed rear quarter with a vertical tail at z -1.16, a roof lip cantilevered to z +0.84 over the driver, a concave leg shield bellying to z 1.00, and a front pillar at the half-door's rear edge -- the proxy puts that pillar at z +0.07 and the plate crop wins."
         },
         {
           "id": "cabin",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Green side walls rising 0.70 -> 0.94 toward the tail, a solid rear wall behind the bench, a pair of 45 mm GREEN rear canopy pillars, a thin chrome front pillar, belt and edge rails, bench and back, driver's saddle and footboard, chrome basket on the tail.",
-          "notes": "The first build carried the canopy on four thin chrome sticks over a 0.32 m tub and read as a frame with no body: the plate's cabin is enclosed to above the seat cushion and its REAR pillars are green bodywork, not chrome. Two further faults came out of the 270 view rather than any gate -- the tub bottom sat at 0.30 while the checker floor was at 0.17, so a 1.24 x 1.50 m plate hung out below the bodywork on both sides and the prop read as a scooter standing on a pallet; and the body stopped at z 0.02 leaving a gap to the nose that the driver's footboard floated in. The tub now runs from z 0.74 to the tail with its bottom at 0.15. The turntable's enclosed backdrop is the open cabin, allowed on the _holecc measurement."
+          "evidence": "One C-section shell (roof band with a 9 cm shoulder fillet, a 3 cm cross-width crown and 28/22 cm plan roundings, tail wall, floor pan), quarter-panel strips with the arch cut, a half door in a chrome frame whose rear leg hooks down as an armrest, a chrome pillar from the door's rear-top corner to the roof lip, a broad C-pillar with the chrome rail running up its opening edge and round the roof lip, bench with a leaning back, mat, rear window, green tube basket.",
+          "notes": "Three faults came out of the renders rather than any gate. The yellow belt stripe vanished into the panel: first because the arch flare stood over it (arch dropped to hub height, stripe raised under the belt), then because a plan rounding projects only the vertices inside its corner zone, so a strip's single earcut cap triangulation ran from an unprojected front vertex to a projected tail vertex and tilted the whole face 6 cm inward -- the shell's floor edge was dragged 4 cm inside the panels the same way. Fixed with a vertex at every tangent station and by cutting the panel and stripe into 6-8 cm slices through the corner. The roof-lip rail also rode 1.5 cm above the lip at the front and read as a pale sliver."
+        },
+        {
+          "id": "nose",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Leg shield tumbled 32% to the cowl top and plan-rounded r 0.10, bellying to z 1.00 at y 0.75 off the depth map; yellow centre band 12 mm proud with a tilted chrome-bezel lamp buried 4 cm into the shield and three grille slots; headstock nacelle lathe leaning 23 degrees; bars, black grips, left mirror; fender hugging the tyre 37-168 degrees with chrome beads; chrome edge trim down both shield sides continuing into the floor rail.",
+          "notes": "The plate's shield is broader and more concave than a 0.50 m sweep can carry without a second profile; the band and lamp placement are read off crop-nose.png."
         },
         {
           "id": "wheels",
           "tier": "critical",
-          "score": 0.93,
+          "score": 0.9,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Three instanced wheels, tyre #3a3025 with a chrome hub at 40% of the tyre radius, measured off the plate (hub 84 px across a 212 px tyre). One lathe, three instances.",
-          "notes": "The wheels rendered as PALE GREY PLATES and two separate things were behind it. `wheelGeo` interpolates the rim colour outward from rRim to the tread, so the whole sidewall is a gradient from hub tone to tyre tone -- shrinking the rim only made the pale gradient wider. `rimBand` (default unchanged, so every other vehicle is byte-identical: verified against the shipped songthaew bundle at max |diff| 0 over position AND colour) stops the chrome at the hub cap. And the old tyre #4d4b46 sat INSIDE the turntable gate's backdrop test at luma 75 (|d| 17 <= 24) and saturation 0.09 (<= 0.16); it is held on CHROMA now at luma 52, saturation 0.36."
+          "evidence": "Three instanced pressed-steel wheels: hub cap, dished centre, vent ring, rim lip and a tread whose lugs alternate two tones per segment, 19 points at 12 segments. Tyre held on chroma at #3a3226; hub #9a958c measured off the plate's front wheel.",
+          "notes": "12 segments is the floor for a 0.54 m wheel; 14 cost 228 triangles across the three instances for no visible gain at prop distance."
         },
         {
           "id": "two-tone",
           "tier": "important",
-          "score": 0.88,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Green #2d6542 and yellow #e1ad10 as measured, both vertex colours on one gloss material.",
-          "notes": "Yellow band on the nose and stripe on the tub as the plate has them."
+          "evidence": "Green authored #3f8562 as the inverse of the harness's 0.83 side transfer against the plate's #387558 lit flank; yellow #e8b418 against #e2ad0e. Band on the shield, stripe under the belt rail wrapping the tail corners on the corner slices.",
+          "notes": "Stripe visible end to end on the 090/270 frames and wrapping to the tail on 180."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 3,244/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, one 256 px canvas at 0.3 MB, factory 108 ms. Turntable: enclosed background is the open cabin, allowed on measurement.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.90. 4,514/4,800 triangles (asset ceiling raised from 4,000 with the arithmetic in notes), 4/4 draw calls, 4/4 materials, 4/8 unique geometries, two 256 px canvases at 0.7 MB, factory 74 ms. Turntable: enclosed background is the open cabin, allowed on measurement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tuk-tuk/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/tuk-tuk/reference.png",
+        "renderScreenshot": "/repo/scratch/tuk-tuk/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/tuk-tuk/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
@@ -2088,39 +2350,39 @@
   ],
   "performanceBudget": {
     "qualityPriority": "real-time",
-    "targetTriangles": 4000,
+    "targetTriangles": 4800,
     "maxDrawCalls": 4,
-    "maxMaterials": 3,
-    "maxUniqueGeometries": 6,
+    "maxMaterials": 4,
+    "maxUniqueGeometries": 8,
     "textureSize": 1024,
     "fpsTarget": 60,
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 3,
+        "components": 4,
         "repetitionSystems": 1,
+        "projectedTotal": 5,
+        "budget": 4,
+        "headroom": -1,
+        "note": "Three components and one repetition system: 4 of 4."
+      },
+      "materials": {
         "projectedTotal": 4,
         "budget": 4,
         "headroom": 0,
-        "note": "Two components and one repetition system: 3 of 4."
-      },
-      "materials": {
-        "projectedTotal": 2,
-        "budget": 3,
-        "headroom": 1,
-        "note": "paint and a white vertex-coloured trim: 2 of 3; green and yellow are vertex colours."
+        "note": "paint, trim, rubber and soft, every one white with vertex colours: 4 of 4."
       },
       "uniqueGeometries": {
-        "projectedTotal": 4,
-        "budget": 6,
-        "headroom": 2,
+        "projectedTotal": 5,
+        "budget": 8,
+        "headroom": 3,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 2700,
-        "budget": 4000,
-        "headroom": 1300,
-        "note": "2,700 of 4,000: an 18-segment wheel lathe (three instances), 8-segment tubes, thin extrusions."
+        "measured": 4514,
+        "budget": 4800,
+        "headroom": 286,
+        "note": "4,514 of 4,800 (asset ceiling; the class default 4,000 was set against the deleted 3,244-triangle slab build): three 12-segment 19-point wheels are 1,368, the shell, panels and corner slices ~1,600, the chrome work ~1,400."
       }
     }
   },
@@ -2178,7 +2440,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Side-profile extrusions for nose, fender, tub, back wall and canopy; polyline tubes for every chrome part; one wheel lathe; boxes for bench, floor, lamps."
+      "strategy": "Side-profile extrusions and strips for the shell, quarter panels, stripe, shield, band and fender; lathes for the nacelle, lamp and wheels; polyline tubes for every chrome and basket part; boxes for doors, wings, bench, mat, lamps."
     },
     {
       "id": "instancing",
@@ -2190,7 +2452,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. One 256 px dust canvas on the paint. 0.3 MB of texture VRAM, factory 108 ms."
+      "strategy": "Every material is declared textureless. One 256 px dust canvas on the paint and one on the soft material: 0.7 MB of texture VRAM, factory 74 ms."
     }
   ],
   "animationAnchors": [],
@@ -2203,10 +2465,16 @@
       "mitigation": "Real open air; --allow-holes on the _holecc measurement."
     },
     {
-      "id": "flat-canopy",
+      "id": "roof-collider-overshoot",
       "severity": "low",
-      "description": "The canopy is a flat slab, not the plate's dome.",
-      "mitigation": "Below the resolvable band at prop distance; recorded as an assumption."
+      "description": "The derived compound boxes the rounded, cantilevered roof, so 12% of the footprint stands over a step height above the real surface at the roof corners.",
+      "mitigation": "Under the 15% gate; a hand compound with a narrower roof box is the follow-up if a level walks on it."
+    },
+    {
+      "id": "rear-window",
+      "severity": "low",
+      "description": "The rear window is inferred from the proxy, not seen on the plate.",
+      "mitigation": "Recorded as an assumption at confidence 0.6."
     }
   ],
   "localSpecSearch": {
@@ -2223,38 +2491,42 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.3525,
-        "aspectRatioDelta": 0.053,
-        "scaleDelta": 0.4612,
-        "bilateralSymmetryError": 0.15,
+        "silhouetteIoU": 0.299,
+        "aspectRatioDelta": 0.0932,
+        "scaleDelta": 0.5149,
+        "bilateralSymmetryError": 0.1267,
         "colorDelta": {
-          "checked": 3,
-          "maxDeltaE": 47.07,
+          "checked": 4,
+          "maxDeltaE": 32.02,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 10.66
+              "deltaE": 7.19
             },
             {
               "componentId": null,
-              "deltaE": 47.07
+              "deltaE": 32.02
             },
             {
               "componentId": null,
-              "deltaE": 11.93
+              "deltaE": 23.9
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.59
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.353 is below threshold 0.85",
-        "aspect-ratio delta 0.053 exceeds threshold 0.05",
-        "scale delta 0.461 exceeds threshold 0.08",
+        "silhouette IoU 0.299 is below threshold 0.85",
+        "aspect-ratio delta 0.093 exceeds threshold 0.05",
+        "scale delta 0.515 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "80c2f5a4a1870299",
+      "renderHash": "8759c2929b6d1648",
       "passId": "blockout"
     }
   ]

@@ -870,6 +870,11 @@ invokes the `img2threejs` skill. Then `build-model-module.mjs` (esbuild) →
 `render-model.mjs` (puppeteer) → `promote-model.mjs`, which ends by refreshing
 the prop's `@thai-kit` pack item. `build-vibe3d-registry.mjs` is the PUBLISH step.
 
+`scripts/delete-model.mjs --id <id>` (skill `thaikit-delete-model`) is promote's
+inverse: built files out of the tree, `model` reset and stage `pending`, pack item
+dropped, scratch moved to `scratch/_deleted/`. It never touches the plate or the record's
+authoring fields.
+
 ## Conventions
 
 - ES modules everywhere, Node ≥ 22, no build step for server or scripts.
