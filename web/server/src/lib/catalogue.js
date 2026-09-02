@@ -18,7 +18,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { REPO_ROOT, PACKS_DIR, MODELS_DIR, modelDir, toRepoRelative, qualifiedId } from '@thaikit/registry-core';
+import { REPO_ROOT, PACKS_DIR, MODELS_DIR, modelDir, toRepoRelative, qualifiedId, readRegistry } from '@thaikit/registry-core';
 
 import { readSidecars, slimColliders } from '../../../../scripts/lib/packs/sidecar.mjs';
 import { readOverride } from './overrides.js';
@@ -122,6 +122,9 @@ async function mergeItem(p, it) {
     // Per item once the installer records one; the pack's for older installs.
     version: it.version ?? p.version,
     supported: Boolean(it.supported),
+    // True for a tree asset the installer did not ship: no model yet, rather
+    // than a model that failed to build.
+    unbuilt: Boolean(it.unbuilt),
     error: it.error ?? null,
     size,
     pivot: merged.pivot,
@@ -163,6 +166,32 @@ async function mergeItem(p, it) {
   };
 }
 
+/**
+ * The assets in a tree pack's root that the installer did not ship, shaped like
+ * index records with nothing built: no bundle, no preview, `supported` false.
+ * Hidden assets stay hidden, as they do in every other listing.
+ */
+async function unbuiltTreeAssets(p, seen) {
+  const modelsDir = path.join(REPO_ROOT, p.tree);
+  let registry;
+  try {
+    registry = await readRegistry({ modelsDir });
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
+  return registry.assets
+    .filter((a) => !seen.has(a.id) && !a.hidden)
+    .map((a) => ({
+      name: a.id,
+      role: 'model',
+      supported: false,
+      unbuilt: true,
+      error: a.model?.status === 'failed' ? 'the model build failed' : 'no model built yet',
+      sourceDir: toRepoRelative(path.join(modelsDir, a.id)),
+    }));
+}
+
 /** Every installed pack's items, as the editors want them. */
 export async function installedItems() {
   const index = await readPacksIndex();
@@ -187,9 +216,18 @@ export async function installedItems() {
       adopted: p.adopted ?? null,
       upstream: p.upstream ?? null,
     });
+    const seen = new Set();
     for (const it of p.items ?? []) {
       if (it.role === 'support') continue;
+      seen.add(it.name);
       items.push(await mergeItem(p, it));
+    }
+    // A tree pack only SHIPS the assets whose model is done, but the browser is
+    // the whole asset list: a prop whose model is pending, failed or cleared is
+    // still an asset with a plate, a record and a place in the "needs model"
+    // tab. Merge every tree asset the installer left out, with no bundle.
+    if (p.tree) {
+      for (const asset of await unbuiltTreeAssets(p, seen)) items.push(await mergeItem(p, asset));
     }
   }
   return { packs, items };

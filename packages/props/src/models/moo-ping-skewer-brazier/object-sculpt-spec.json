@@ -73,8 +73,9 @@
         "half-drum-trough",
         "splayed-angle-legs",
         "ash-drawer",
-        "hook-arm",
-        "skewer-row"
+        "crook-hook-arm",
+        "skewer-row",
+        "coal-bed"
       ],
       "structureKind": [
         "extruded-profile",
@@ -89,7 +90,7 @@
         "bamboo-and-grilled-pork",
         "translucent-polythene"
       ],
-      "notes": "A standing charcoal brazier on legs, not a cart: nothing rolls, opens, turns or swings, nothing attaches -- the bag hangs from a fixed hook -- so one root pivot and zero sockets. Morning street corners and school gates; the pork skewers and the sticky-rice bag are the read. Sooty black steel, blue-grey heat tint, glowing embers, charred bamboo."
+      "notes": "A standing charcoal brazier on legs, not a cart: nothing rolls, opens, turns or swings, nothing attaches -- the bag hangs from a fixed hook -- so one root pivot and zero sockets. Morning street corners and school gates; the pork skewers and the sticky-rice bag are the read. Sooty black steel, rust on the angle iron, grey ash with glowing embers, charred bamboo."
     },
     "complexity": {
       "tier": "moderate",
@@ -111,9 +112,9 @@
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE steel merge -- the half-drum trough as an extruded semicircular shell along X (capped by the extrusion), rim flanges, an ash bed with ember strips, a grill bar, the ash drawer with its handle, a leg brace, four splayed angle legs and the hook arm as a polyline tube; ONE translucent bag (a lathe plus a rice block); ONE InstancedMesh of fourteen skewers: THREE draw calls of 4.",
-        "Three materials as the registry notes require: sooty steel (vertex colours: steel, legs, ash, ember), the skewer row (bamboo and two meat tones as vertex colours), and the translucent bag at opacity 0.62.",
-        "One repetition system: fourteen skewers off one four-box geometry, alternately offset and yawed by index.",
+        "ONE steel merge -- the half-drum as an extruded ring profile (r 0.155, 5 mm wall, 20-segment arc) with a solid plate of the same profile at each end, folded lips along both long edges and both ends, a rear rod the skewers rest on, an ash slab with 22 charcoal / ash / ember chunks and two ember strips, the drawer housing with its proud front and handle, four splayed L-angle legs (two 6 mm flanges each), the crook as a swept round bar and the rice mass as an ellipsoid; ONE translucent bag lathe; ONE InstancedMesh of twenty skewers: THREE draw calls of 4.",
+        "Three materials as the registry notes require: sooty steel (vertex colours: soot-black drum, rusty legs, ash, charcoal, ember, rice), the skewer row (bamboo, scorched stick, three meat tones and char as vertex colours on a WHITE material), and the translucent bag at opacity 0.68.",
+        "One repetition system: twenty skewers off one nine-box geometry (handle, scorched stick, four flattened meat pieces, three char scraps), jittered in x, y, z, pitch, yaw and roll by index.",
         "Action readiness: one root pivot, zero sockets, one box collider, not breakable."
       ]
     },
@@ -128,7 +129,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the row of skewers across an open half-drum on tall legs with the bag on its hook; the skewer row is instanced because it is the whole silhouette and the budget cannot spend fourteen draw calls on it."
+      "rationale": "The identity is the row of skewers across an open half-drum on tall splayed legs with the bag on its crook; the skewer row is instanced because it is the whole silhouette and the budget cannot spend twenty draw calls on it."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -141,7 +142,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "half-drum trough on legs",
+          "description": "half-drum trough with folded lips on splayed angle legs",
           "mapsTo": {
             "ref": "brazier"
           },
@@ -152,7 +153,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "row of pork skewers across the rim",
+          "description": "row of twenty pork skewers across the rim",
           "mapsTo": {
             "ref": "brazier"
           },
@@ -163,7 +164,7 @@
           "zone": "side",
           "kind": "contour",
           "identityDefining": true,
-          "description": "sticky-rice bag on the hook arm",
+          "description": "sticky-rice bag on the crook",
           "mapsTo": {
             "ref": "bag"
           },
@@ -185,7 +186,7 @@
           "zone": "body",
           "kind": "stain",
           "identityDefining": true,
-          "description": "soot over the steel",
+          "description": "soot over the steel, rust on the legs",
           "mapsTo": {
             "ref": "d5-soot"
           },
@@ -197,7 +198,7 @@
           "zone": "top",
           "kind": "gloss",
           "identityDefining": false,
-          "description": "red embers in the ash",
+          "description": "charcoal chunks and red embers in the ash",
           "mapsTo": {
             "ref": "brazier"
           },
@@ -232,16 +233,16 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
     "resolvedUnknowns": [
-      "The steel is carried at luma ~88 rather than the crop's #2d2c2c (luma 45): the silhouette gate reads any surface at the backdrop's luma 58 as a hole, and the sooty read is kept by the grime canvas.",
-      "The trough is 0.72 m so the bag on the hook stays inside the declared 0.90 width; the plate's trough is longer relative to the bag.",
-      "Fourteen skewers with three meat pieces each; the plate shows a dense row, not a countable one."
+      "The drum is carried at the plate's own luma 40 (#2e2724, sat 0.22) rather than lifted to grey: a neutral is foreground to the silhouette gate only when it renders below ~34 or above ~82, and a soot-black authored at 40 renders ~22 on its flanks and ~46 on key-lit tops, so the drum sits in the LOWER band with the open-leg holes already declared. The legs carry a rust cast at sat 0.33 (#46392f).",
+      "The trough is 0.68 m so the bag on the crook stays near the declared 0.90 width; built 0.934.",
+      "Twenty skewers with four meat pieces each: the plate shows a dense row of ~20 with the meat massed on the FRONT half and the bamboo overhanging the rear rod, which is what the placements do."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.90 x 0.85 x 0.35 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "Rendered model matches the reference silhouette, the 0.90 x 0.85 x 0.44 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
       "All four scene-budget ceilings hold: <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
@@ -262,8 +263,8 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.90 x 0.85 x 0.35 m",
-          "Trough, legs, drawer, hook at the proxy stations"
+          "Envelope 0.90 x 0.85 x 0.44 m",
+          "Trough, legs, drawer, crook at the plate stations, hook on the left"
         ],
         "evidenceRefs": [
           "view-full"
@@ -279,14 +280,15 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "A dense row across the trough",
-          "Bamboo and meat tones"
+          "A dense row across the trough, meat on the front half, bamboo overhanging the rear",
+          "Bamboo, meat, glaze and char tones"
         ],
         "evidenceRefs": [
           "region-meat"
         ],
         "failureModes": [
-          "empty trough"
+          "empty trough",
+          "short chunky sticks"
         ]
       },
       {
@@ -295,9 +297,9 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Sooty steel",
-          "Translucent bag on the hook",
-          "Ash with embers"
+          "Soot-black steel with rusty legs",
+          "Translucent bag with a rice mass on the crook",
+          "Ash with charcoal and embers"
         ],
         "evidenceRefs": [
           "region-steel",
@@ -306,7 +308,8 @@
         ],
         "failureModes": [
           "clean grey steel",
-          "no bag"
+          "no bag",
+          "open drum ends"
         ]
       }
     ],
@@ -634,9 +637,9 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The steel is carried at luma ~88 rather than the crop's #2d2c2c (luma 45): the silhouette gate reads any surface at the backdrop's luma 58 as a hole, and the sooty read is kept by the grime canvas.",
-    "The trough is 0.72 m so the bag on the hook stays inside the declared 0.90 width; the plate's trough is longer relative to the bag.",
-    "Fourteen skewers with three meat pieces each; the plate shows a dense row, not a countable one."
+    "The drum is carried at the plate's own luma 40 (#2e2724, sat 0.22) rather than lifted to grey: a neutral is foreground to the silhouette gate only when it renders below ~34 or above ~82, and a soot-black authored at 40 renders ~22 on its flanks and ~46 on key-lit tops, so the drum sits in the LOWER band with the open-leg holes already declared. The legs carry a rust cast at sat 0.33 (#46392f).",
+    "The trough is 0.68 m so the bag on the crook stays near the declared 0.90 width; built 0.934.",
+    "Twenty skewers with four meat pieces each: the plate shows a dense row of ~20 with the meat massed on the FRONT half and the bamboo overhanging the rear rod, which is what the placements do."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -650,11 +653,11 @@
     "envelope": {
       "w": 0.9,
       "h": 0.85,
-      "d": 0.35
+      "d": 0.44
     },
-    "description": "A 0.72 m half-drum trough r 0.165 with its rim at 0.66 m on four splayed angle legs to feet at +-0.34, +-0.20; an ash drawer 0.28 x 0.10 x 0.20 under it; a hook arm from the -X end curling to 0.85 m with a bag hanging to 0.32 m; fourteen skewers across the rim.",
-    "envelopeDerivation": "x -0.505 (the rice bag on the hook arm) to +0.38 (the +X feet), 0.885 inside the declared 0.90; y 0 to 0.853 at the hook (declared 0.85); z +-0.22 at the splayed feet (declared 0.35: 0.045 over each side at the feet only, the trough at 0.33). Proxy occupancy: legs 0-0.40 H, drawer 0.42-0.50, trough 0.50-0.78 H full width, skewers 0.74-0.78, hook arm to 0.98 H; w:h:d 1:0.550:0.379 is the plate's foreshortened three-quarter view, so the declared 0.90 x 0.85 governs and the proxy fixes the stations: trough rim at 0.66, drawer at 0.43, legs to 0.36.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:0.550:0.379, 3,803 triangles, the hook arm mirrored to +X; occupancy stations as above. The plate puts the hook and bag on the LEFT and the plate is the authority."
+    "description": "A 0.68 m half-drum trough r 0.155 with its rim at 0.60 m on four splayed L-angle legs to feet at +-0.40, +-0.185; a drawer housing 0.26 x 0.10 x 0.20 under the +X half; a round-bar crook off the -X end plate curling to 0.85 m with a squat bag hanging 0.295-0.70 m; twenty long skewers across the rim, meat on the front half, bamboo overhanging the rear rod.",
+    "envelopeDerivation": "Third build (2026-09-01), authored from the PLATE: the Meshy proxy fused three legs into one, mirrored the hook to +X and read w:h:d 1:0.550:0.379, so it fixes nothing here beyond the stations. Plate mask (scratch/_prop/_plate_moo.mjs, backdrop 163): foreground w/h 1.220 in the three-quarter view; drum ~0.31 across; skewer handles overhang the rear rim by ~0.10; hook and bag on the LEFT. Built: x -0.514 (bag) to +0.420 (rear rod), 0.934 against the declared 0.90 (+3.8%); y 0 to 0.857 at the crook (declared 0.85); z -0.254 (skewer handles) to +0.205 (feet at +-0.185), 0.459 against the declared 0.44, which was corrected from 0.35 on this build with the arithmetic in the asset notes. Stations: drum equator 0.57, rim 0.60 (3 cm of vertical wall above the equator, lips folded out), drum bottom 0.415, drawer 0.345-0.445 under the +X half, legs from the belly at y 0.52 to feet at +-0.40 x, crook top 0.848, bag 0.295-0.70.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1:0.550:0.379, 3,803 triangles, three legs fused into one and the hook arm mirrored to +X (scratch/_mon/vox.mjs SIDE/END/TOP maps). The plate puts the hook and bag on the LEFT and the plate is the authority; the proxy contributed only the vertical stations."
   },
   "viewEvidence": [
     {
@@ -698,7 +701,7 @@
       "viewpoint": "rear",
       "path": null,
       "confidence": 0.88,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.88: a half-drum on legs is symmetric across its length; the drawer is centred."
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.88: a half-drum on legs is symmetric across its length; the drawer housing is centred on z and the rear lip mirrors the front."
     }
   ],
   "componentTree": [
@@ -711,12 +714,12 @@
       "confidence": 0.86,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One extruded semicircular shell, twelve boxes, four rotated legs and one tube merged on one material: one draw call.",
+      "topologyRationale": "One extruded ring shell with two solid end plates, thirty-odd boxes, eight rotated leg flanges, one rod, one swept crook and one ellipsoid merged on one material: one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Trough profile r 0.165 (4 mm shell) extruded 0.72 m along X with its rim at 0.66; legs 0.035 angle from 0.62 tall splayed to +-0.34, +-0.20; drawer 0.28 x 0.10 x 0.20 at 0.43; hook tube r 0.012 to 0.85.",
+        "topologyIntent": "Drum profile r 0.155 (5 mm wall, 3 cm vertical wall above the equator at 0.57) extruded from x -0.32 to +0.36 with its rim at 0.60 and a solid plate closing each end; lips 28 mm folded out along both long edges; a rear rod r 6 mm at z -0.095; L-angle legs 40 x 40 x 6 mm from the belly at (+-0.30, 0.52, +-0.145) to feet at (+-0.40, 0, +-0.185); drawer housing 0.26 x 0.10 x 0.20 at x +0.16; crook r 9.5 mm from the -X end plate at 0.48 up to 0.848 and over to its tip at 0.706.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -725,44 +728,44 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The shell is a closed 4 mm ring so its inner and outer faces are 4 mm apart; the ash bed sits inside it clear of the shell; rim flanges stand 3 mm above the rim; legs enter the shell bottom as interpenetrating solids.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.5 m."
+        "zFightingNote": "The shell is a closed 5 mm ring so its inner and outer faces are 5 mm apart and the end plates overlap its first 6 mm; the ash slab sits inside it clear of the wall (half-width 0.1175 against the shell's 0.131 at its base); lips stand 4 mm above the rim; legs enter the shell as interpenetrating solids; the drawer front stands 4 mm proud of its housing.",
+        "mergeNote": "One merged BufferGeometry with world UVs at 0.45 m."
       },
       "localFeatures": [
         {
           "id": "d1-trough",
           "description": "trough",
-          "delivery": "extruded shell"
+          "delivery": "extruded ring shell + end plates + lips"
         },
         {
           "id": "d2-skewers",
           "description": "skewer row",
-          "delivery": "InstancedMesh of 14 across the rim"
+          "delivery": "InstancedMesh of 20 across the rim"
         },
         {
           "id": "d4-drawer",
           "description": "drawer",
-          "delivery": "boxes"
+          "delivery": "housing, proud front and handle boxes"
         },
         {
           "id": "d5-soot",
-          "description": "soot",
-          "delivery": "grime canvas"
+          "description": "soot and rust",
+          "delivery": "vertex tones + grime canvas"
         },
         {
           "id": "d6-embers",
-          "description": "embers",
-          "delivery": "tinted strips"
+          "description": "coal bed",
+          "delivery": "22 tinted chunks and two ember strips"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#5c5754",
-        "recipe": "Lifted sooty steel as vertex colour with a grime canvas; ash and embers tinted.",
+        "baseColor": "#2e2724",
+        "recipe": "Soot-black steel at the plate luma as vertex colour with a grime canvas; rust on the legs, ash, charcoal, embers and rice tinted.",
         "evidenceRef": "region-steel",
         "confidence": 0.86,
-        "dominantAlbedo": "rgba(92, 87, 84, 1.0)",
-        "secondaryAlbedo": "rgba(141, 138, 133, 1.0)",
+        "dominantAlbedo": "rgba(46, 39, 36, 1.0)",
+        "secondaryAlbedo": "rgba(70, 57, 47, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.86
       },
@@ -805,7 +808,7 @@
           "halfExtents": [
             0.45,
             0.425,
-            0.175
+            0.22
           ],
           "notes": "Declared on the asset as box: the whole brazier envelope."
         }
@@ -820,12 +823,12 @@
       "confidence": 0.82,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One lathe and one box on the translucent material: one draw call.",
+      "topologyRationale": "One 14-segment lathe flattened to 0.72 in z on the translucent material: one draw call; the rice ellipsoid rides the steel merge.",
       "materialId": "bag",
       "material": "bag",
       "parent": "brazier",
       "geometryDescriptor": {
-        "topologyIntent": "Lathe r 0.065 from 0.32 to 0.70 hanging from the hook at x -0.44; rice block 0.09 x 0.11 x 0.08 inside it.",
+        "topologyIntent": "Lathe r 0.094 at 0.40 from 0.295 to 0.70 with a knot bulge at 0.648-0.66, hanging from the crook tip at x -0.422; rice ellipsoid 0.078 x 0.052 x 0.050 at 0.372 inside it.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -834,26 +837,26 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rice block is wholly inside the bag; the bag neck ends inside the hook tube.",
+        "zFightingNote": "The rice ellipsoid is wholly inside the bag; the bag tail ends inside the crook tip.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d3-bag",
           "description": "bag",
-          "delivery": "lathe + box"
+          "delivery": "lathe with knot + rice ellipsoid"
         }
       ],
       "attachment": {
         "parentSocket": "hook-tip",
         "localStart": [
-          -0.44,
+          -0.422,
           0.7,
           0
         ],
         "localEnd": [
-          -0.44,
-          0.32,
+          -0.422,
+          0.295,
           0
         ],
         "contactType": "hanging",
@@ -863,7 +866,7 @@
       "colorMaterialRecipe": {
         "materialId": "bag",
         "baseColor": "#f2f0ec",
-        "recipe": "Translucent film over a rice block.",
+        "recipe": "Translucent film gathered to a knot over a rice mass.",
         "evidenceRef": "region-bag",
         "confidence": 0.82,
         "dominantAlbedo": "rgba(242, 240, 236, 1.0)",
@@ -895,41 +898,43 @@
       "name": "Sooty sheet steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#5c5754",
-      "color": "#5c5754",
+      "baseColor": "#2e2724",
+      "color": "#2e2724",
       "roughness": {
-        "base": 0.85,
+        "base": 0.82,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/steel_roughness.png"
       },
-      "metalness": 0.2,
+      "metalness": 0.18,
       "albedo": {
-        "dominant": "#5c5754",
+        "dominant": "#2e2724",
         "secondary": [
-          "#5c5754",
-          "#8d8a85",
-          "#c5391a"
+          "#2e2724",
+          "#46392f",
+          "#8e8b86",
+          "#ff5a1a"
         ],
         "samplingNotes": "Measured as the mean of crops/steel.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
           "id": "d5-soot",
-          "region": "trough and drawer",
+          "region": "trough, legs and drawer",
           "roughness": 0.9,
           "palette": [
-            "#3F3B38"
+            "#2E2724",
+            "#46392F"
           ],
-          "evidence": "crops/steel.png -- #2d2c2c soot; carried as the grime wash (0.62/0.58/0.54 at 0.45) over the lifted base."
+          "evidence": "crops/steel.png -- #282828 soot on the drum, #786f68 rust on the legs; soot as the base tone, rust as the leg vertex colour, both broken by the grime canvas."
         }
       ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-steel (0.84) at #2d2c2c and region-leg at #514a42; LIFTED to #5c5754 / #625c58 (luma ~88, a 30-level margin over the backdrop 58) so the trough is not read as a hole; ash #8d8a85 off region-coals #666265, embers #c5391a.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction. Double-sided so the inside of the trough shades."
+          "Measured on viewEvidence region-steel (0.84) at #282828 (luma 40) and region-leg at #4b463d with rust #786f68; carried at #2e2724 (luma 40, sat 0.22) for the drum, #46392f for the angle iron, lips #35302c, drawer #33302c; ash #8e8b86 / #b8b5af off region-coals #828182, charcoal #221c18, embers #ff5a1a / #c23e10, rice #d9d2c0.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction (wash 0.62/0.58/0.55 at 0.40, 45 blotches, bump 0.012) over world UVs at 0.45 m. Double-sided so the inside of the drum shades."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -945,21 +950,22 @@
       "name": "Bamboo skewer and grilled pork",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#8a4626",
-      "color": "#8a4626",
+      "baseColor": "#9a5c3a",
+      "color": "#9a5c3a",
       "roughness": {
-        "base": 0.6,
+        "base": 0.45,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/skewer_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#8a4626",
+        "dominant": "#9a5c3a",
         "secondary": [
-          "#8a4626",
-          "#a65a2a",
-          "#c9a86a"
+          "#9a5c3a",
+          "#7e4a2e",
+          "#ae6e44",
+          "#c9b070"
         ],
         "samplingNotes": "Measured as the mean of crops/meat.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -968,8 +974,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-meat (0.80) at #724a37 sd 71 (meat, glaze and bamboo together); carried as vertex colours #8a4626 meat, #a65a2a glaze, #c9a86a bamboo on a WHITE material.",
-          "Textureless as DECLARED: the row reads by colour and repetition."
+          "Measured on region-meat (0.80) at #b1724e / #a76c58 (meat), #c3b492 (bamboo); carried as vertex colours #9a5c3a / #7e4a2e meat, #ae6e44 glaze, #4e2716 char, #c9b070 bamboo, #6b4a2a scorched stick on a WHITE material at roughness 0.45 for the glaze sheen.",
+          "Textureless as DECLARED: the row reads by colour, repetition and the char scraps."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -988,7 +994,7 @@
       "baseColor": "#f2f0ec",
       "color": "#f2f0ec",
       "roughness": {
-        "base": 0.3,
+        "base": 0.28,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/bag_roughness.png"
@@ -998,7 +1004,7 @@
         "dominant": "#f2f0ec",
         "secondary": [
           "#f2f0ec",
-          "#e8e4da"
+          "#d9d2c0"
         ],
         "samplingNotes": "Measured as the mean of crops/bag.png. extract_pbr_evidence confidence 0.820. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1007,7 +1013,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-bag (0.82) at #cfcdc3; carried at #f2f0ec with opacity 0.62 and a rice block #e8e4da inside.",
+          "Measured on region-bag (0.82) at #d9d7cd with the rice at #cbc4b5; carried at #f2f0ec with opacity 0.68 over a rice ellipsoid #d9d2c0 on the steel merge; the neck gathers to a knot at 0.65 and a tail up to the crook tip at 0.70.",
           "Textureless as DECLARED: a plain translucent film."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1025,12 +1031,12 @@
       "id": "skewers",
       "name": "Pork skewers",
       "componentRef": "brazier",
-      "count": 14,
+      "count": 20,
       "primitive": "box",
       "materialId": "skewer",
-      "placement": "fourteen skewers at 42 mm pitch across the rim from x -0.27, alternately offset 10 mm in z and yawed +-0.06 rad by index",
+      "placement": "twenty skewers at 20 mm pitch across the rim from x -0.19, jittered +-3 mm in x, stepped 5 mm in y by index mod 3, +-25 mm in z, pitched -0.03 +-0.04, yawed 0.42 +-0.09 rad so the bamboo overhangs the rear rod and the meat sits on the front half, rolled +-0.12",
       "instanced": true,
-      "notes": "One InstancedMesh of a bamboo stick with three meat pieces."
+      "notes": "One InstancedMesh of a bamboo handle, a scorched stick, four flattened meat pieces and three char scraps: 9 boxes, 108 triangles, 2,160 for the row."
     }
   ],
   "buildPasses": [
@@ -1141,27 +1147,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:59:23.373826+00:00",
+      "timestamp": "2026-09-02T02:37:33.571833+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1172,9 +1178,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.455356+00:00",
+      "timestamp": "2026-09-02T02:37:33.658581+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1187,27 +1193,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.538623+00:00",
+      "timestamp": "2026-09-02T02:37:33.742811+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:37:33.830867+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1218,27 +1239,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.617910+00:00",
+      "timestamp": "2026-09-02T02:37:33.925052+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:37:34.014639+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1249,9 +1285,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.700293+00:00",
+      "timestamp": "2026-09-02T02:37:34.104564+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1264,27 +1300,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.783115+00:00",
+      "timestamp": "2026-09-02T02:37:34.189028+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:37:34.273130+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Steel lifted to luma 88 with a grime wash; translucent bag at 0.62 with a rice block; ash bed with two ember strips.",
-          "notes": "Rectangular end plates of the first build removed: the extrusion caps the half-drum."
+          "evidence": "Soot-black drum at the plate's luma 40 with folded lips, solid end plates and a rear rod; rusty L-angle legs; drawer housing with proud front and handle; round-bar crook; translucent bag (0.68) with a knot over a rice ellipsoid; ash slab with 22 charcoal / ash / ember chunks and two ember strips.",
+          "notes": "Rust patina on the legs is a vertex tone, not a patterned tile: a multiply cannot lighten soot to rust, and the ash bed shares the material so envelope re-basing was not available."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1295,27 +1346,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.864078+00:00",
+      "timestamp": "2026-09-02T02:37:34.358542+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1326,17 +1377,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:23.946823+00:00",
+      "timestamp": "2026-09-02T02:37:34.444799+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1347,17 +1398,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:24.030390+00:00",
+      "timestamp": "2026-09-02T02:37:34.530581+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1368,45 +1419,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:59:24.118757+00:00",
+      "timestamp": "2026-09-02T02:37:34.614944+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         },
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Steel lifted to luma 88 with a grime wash; translucent bag at 0.62 with a rice block; ash bed with two ember strips.",
-          "notes": "Rectangular end plates of the first build removed: the extrusion caps the half-drum."
+          "evidence": "Soot-black drum at the plate's luma 40 with folded lips, solid end plates and a rear rod; rusty L-angle legs; drawer housing with proud front and handle; round-bar crook; translucent bag (0.68) with a knot over a rice ellipsoid; ash slab with 22 charcoal / ash / ember chunks and two ember strips.",
+          "notes": "Rust patina on the legs is a vertex tone, not a patterned tile: a multiply cannot lighten soot to rust, and the ash bed shares the material so envelope re-basing was not available."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
@@ -1419,31 +1470,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:59:23.373826+00:00",
+      "timestamp": "2026-09-02T02:37:33.571833+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4; trough, legs, skewers, bag.",
+      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4; drum, legs, skewers, bag at the plate stations.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1460,9 +1511,9 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.455356+00:00",
+      "timestamp": "2026-09-02T02:37:33.658581+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1484,31 +1535,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.538623+00:00",
+      "timestamp": "2026-09-02T02:37:33.742811+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Third build: the second build sat its rim at 0.66 on thin square legs with a brace the plate does not have, and its skewers were short cubes with no overhang; rebuilt from the plate mask (drum r 0.155, rim 0.60, L-angle legs splayed to +-0.40, twenty 0.36 m skewers, squat knotted bag). The first pass of it overran to 1.03 m wide and was held to 0.934.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:37:33.830867+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: trough 0.72 m, rim 0.66, legs splayed to +-0.34, hook arm to 0.85; width brought inside the declared 0.90 after the first build overran it.",
+      "summary": "Structural pass: drum r 0.155 with 3 cm of vertical wall, rim 0.60, legs from the belly at 0.52 splayed to +-0.40 / +-0.185, crook to 0.848, bag to 0.295; width held to 0.934 after a first pass overran to 1.03.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1524,31 +1599,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.617910+00:00",
+      "timestamp": "2026-09-02T02:37:33.925052+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The ring profile extruded as an OPEN half-tube (the end view showed the ash slab through the ends); a solid plate of the same profile closes each end, and the slab was cut to the shortened drum after it poked past the -X end.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:37:34.014639+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: drawer and handle, brace, rim flanges, grill bar, ember strips; end plates dropped in favour of the extrusion caps.",
+      "summary": "Form refinement: folded lips, solid end plates, rear rod, L-angle leg flanges, drawer housing with proud front, knotted bag over a rice ellipsoid, twenty long skewers with four meat pieces and char scraps, 22 coal chunks.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1564,9 +1663,9 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.700293+00:00",
+      "timestamp": "2026-09-02T02:37:34.104564+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
+      "estimatedFidelity": 0.9,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1588,31 +1687,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.783115+00:00",
+      "timestamp": "2026-09-02T02:37:34.189028+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The lifted #5c5754 read as grey-brown wood, not soot: the drum is now at the plate's own luma 40 (#2e2724), which renders in the LOWER neutral band (~22 on flanks) rather than in the backdrop band, the legs carry rust at sat 0.33, and the rice block that poked through the bag became an ellipsoid inside it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/moo-ping-skewer-brazier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:37:34.273130+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Steel lifted to luma 88 with a grime wash; translucent bag at 0.62 with a rice block; ash bed with two ember strips.",
-          "notes": "Rectangular end plates of the first build removed: the extrusion caps the half-drum."
+          "evidence": "Soot-black drum at the plate's luma 40 with folded lips, solid end plates and a rear rod; rusty L-angle legs; drawer housing with proud front and handle; round-bar crook; translucent bag (0.68) with a knot over a rice ellipsoid; ash slab with 22 charcoal / ash / ember chunks and two ember strips.",
+          "notes": "Rust patina on the legs is a vertex tone, not a patterned tile: a multiply cannot lighten soot to rust, and the ash bed shares the material so envelope re-basing was not available."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: steel 0.84, skewer 0.80, bag 0.82, all textureless; steel base lifted 30 levels above the backdrop luma for the hole gate.",
+      "summary": "Material pass: steel 0.84, skewer 0.80, bag 0.82, all textureless; the drum at the plate luma 40 in the lower neutral band, the legs rust-cast at sat 0.33, meat darkened to render at the plate tone under the harness key.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1628,31 +1751,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.864078+00:00",
+      "timestamp": "2026-09-02T02:37:34.358542+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: grime canvas for the soot.",
+      "summary": "Surface pass: grime canvas with bump over the steel; the bag film at opacity 0.68 with a knot.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1668,17 +1791,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:23.946823+00:00",
+      "timestamp": "2026-09-02T02:37:34.444799+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [],
       "action": "continue",
@@ -1698,17 +1821,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:24.030390+00:00",
+      "timestamp": "2026-09-02T02:37:34.530581+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [],
       "action": "continue",
@@ -1728,49 +1851,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:59:24.118757+00:00",
+      "timestamp": "2026-09-02T02:37:34.614944+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.89
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.885 x 0.853 x 0.44 m; trough rim 0.66, drawer 0.43, legs to 0.36, hook to 0.85 -- the proxy stations; hook and bag on the LEFT as the plate shows.",
-          "notes": "First build overran the width to 1.04 m; trough shortened and the bag brought in."
+          "evidence": "Built 0.934 x 0.857 x 0.459 m against the declared 0.90 x 0.85 x 0.44 (+3.8 / +0.8 / +4.3%); drum rim 0.60, drum bottom 0.415, drawer 0.345-0.445, crook 0.848, bag 0.295-0.70, legs splayed to +-0.40 -- the plate's stations, hook and bag on the LEFT as the plate shows; skewer handles overhang the rear rod as in the plate.",
+          "notes": "Third build: the second build's trough sat 6 cm too high with a leg brace the plate does not have; rebuilt from the plate mask, not the proxy, which fused three legs into one."
         },
         {
           "id": "skewers",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced skewers across the rim, bamboo #c9a86a with #8a4626/#a65a2a meat, offset and yawed by index.",
-          "notes": ""
+          "evidence": "Twenty instanced 0.36 m skewers at 20 mm pitch, meat massed on the front half in three tones with char scraps, bamboo handles overhanging the rear rod, jittered in x/y/z/pitch/yaw/roll by index.",
+          "notes": "Meat pieces are flattened boxes; the plate's are rounder. Second build had fourteen 0.34 m sticks with three cubes each and no overhang."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Steel lifted to luma 88 with a grime wash; translucent bag at 0.62 with a rice block; ash bed with two ember strips.",
-          "notes": "Rectangular end plates of the first build removed: the extrusion caps the half-drum."
+          "evidence": "Soot-black drum at the plate's luma 40 with folded lips, solid end plates and a rear rod; rusty L-angle legs; drawer housing with proud front and handle; round-bar crook; translucent bag (0.68) with a knot over a rice ellipsoid; ash slab with 22 charcoal / ash / ember chunks and two ember strips.",
+          "notes": "Rust patina on the legs is a vertex tone, not a patterned tile: a multiply cannot lighten soot to rust, and the ash bed shares the material so envelope re-basing was not available."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84. 1,220/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 3,920/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, one 256 px canvas.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1829,10 +1952,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1220,
+        "measured": 3920,
         "budget": 4000,
-        "headroom": 2780,
-        "note": "1,220 of 4,000: one 17-point extrusion, sixteen boxes, a 7-point tube, a 12-segment lathe and a four-box skewer instanced fourteen times."
+        "headroom": 80,
+        "note": "3,920 of 4,000: a 44-point ring extrusion with two 23-point end plates, ~40 boxes, a 20-point 20-segment lathe, a 12-point swept crook, a 16x12 ellipsoid and a nine-box skewer instanced twenty times."
       }
     }
   },
@@ -1890,11 +2013,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "An extruded semicircular shell for the trough; rotated boxes for the legs; a polyline tube for the hook; a lathe for the bag; boxes for everything else."
+      "strategy": "An extruded ring profile with solid end plates for the drum; rotated box pairs for the L-angle legs; a swept round bar for the crook; a lathe for the bag; an ellipsoid for the rice; boxes for everything else."
     },
     {
       "id": "instancing",
-      "strategy": "One InstancedMesh: fourteen skewers with per-index offset and yaw."
+      "strategy": "One InstancedMesh: twenty skewers with per-index offset, pitch, yaw and roll."
     },
     {
       "id": "determinism",
@@ -1911,13 +2034,13 @@
     {
       "id": "dark-steel-hole",
       "severity": "medium",
-      "description": "The plate's steel is luma 45, below the backdrop; rendered as measured the trough would be read as a hole.",
-      "mitigation": "Base lifted to luma ~88 with soot carried by the canvas; first build at luma 60 rendered a mean of 56.3 and was corrected."
+      "description": "The plate's steel is luma 40, below the backdrop; a mid-dark render of the drum would be read as a hole.",
+      "mitigation": "Carried at the plate luma in the LOWER neutral band (renders ~22 on flanks); the open legs already make this an --allow-holes prop, with _holecc thicknesses recorded per azimuth."
     },
     {
       "id": "feet-over-depth",
       "severity": "low",
-      "description": "The splayed feet reach +-0.22 against the declared +-0.175.",
+      "description": "The splayed feet reach +-0.185 and the skewer handles -0.254 against the corrected declared +-0.22.",
       "mitigation": "The collider stays at the declared depth; the trough is within it."
     }
   ],
@@ -1935,36 +2058,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.378,
-        "aspectRatioDelta": 0.281,
-        "scaleDelta": 0.2257,
-        "bilateralSymmetryError": 0.1594,
+        "silhouetteIoU": 0.2778,
+        "aspectRatioDelta": 0.3029,
+        "scaleDelta": 0.4361,
+        "bilateralSymmetryError": 0.1112,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 59.38,
+          "maxDeltaE": 35.64,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 1.91
+              "deltaE": 7.07
             },
             {
               "componentId": null,
-              "deltaE": 59.38
+              "deltaE": 35.64
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.378 is below threshold 0.85",
-        "aspect-ratio delta 0.281 exceeds threshold 0.05",
-        "scale delta 0.226 exceeds threshold 0.08",
+        "silhouette IoU 0.278 is below threshold 0.85",
+        "aspect-ratio delta 0.303 exceeds threshold 0.05",
+        "scale delta 0.436 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
-      "maskWarnings": [
-        "render: 5.0% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
-      ],
-      "renderHash": "8dbb597f17efb2ac",
+      "maskWarnings": [],
+      "renderHash": "1950f551739d6f73",
       "passId": "blockout"
     }
   ]

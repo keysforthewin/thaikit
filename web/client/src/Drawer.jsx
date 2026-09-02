@@ -726,7 +726,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
                   model {item.status.model ?? 'pending'}
                 </span>
               )}
-              {!item.supported && <span className="badge score-bad" title={item.error ?? ''}>unsupported</span>}
+              {item.unbuilt ? <span className="badge" title={item.error ?? ""}>no model</span> : !item.supported && <span className="badge score-bad" title={item.error ?? ""}>unsupported</span>}
               {item.review?.score != null && (
                 <span className={`badge ${scoreClass(item.review.score)}`}>
                   {item.review.score}

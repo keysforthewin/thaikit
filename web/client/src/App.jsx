@@ -68,7 +68,11 @@ function Card({ item, budgetClasses, onOpen }) {
           {item.physics?.enabled && <span className="badge">physics</span>}
           {item.collidersSource === 'hand-tuned' && <span className="badge" title="collider compound placed by hand">hand-tuned</span>}
           {item.override && <span className="badge" title="a local override changes what this pack says">override</span>}
-          {!item.supported && <span className="badge score-bad" title={item.error ?? 'did not build'}>unsupported</span>}
+          {item.unbuilt ? (
+            <span className="badge" title={item.error ?? 'no model built yet'}>no model</span>
+          ) : (
+            !item.supported && <span className="badge score-bad" title={item.error ?? 'did not build'}>unsupported</span>
+          )}
           {/*
             Scanning the grid should show which props cost too much, and the
             triangle count alone never did: a prop at a third of its triangle
